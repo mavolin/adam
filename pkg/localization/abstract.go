@@ -20,10 +20,3 @@ type (
 	// If it is nil, there is no pluralization.
 	LangFunc func(term string, placeholders Placeholders, plural interface{}) (string, error)
 )
-
-// Localizer creates a new Localizer from the LangFunc.
-func (f LangFunc) Localizer() *Localizer {
-	return &Localizer{
-		f: f,
-	}
-}
