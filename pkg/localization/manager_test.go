@@ -12,6 +12,7 @@ func TestNewManager(t *testing.T) {
 		m := NewManager(nil)
 
 		assert.NotNil(t, m.f)
+		assert.Nil(t, m.f(""))
 	})
 }
 
