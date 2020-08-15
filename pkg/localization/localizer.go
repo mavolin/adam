@@ -42,15 +42,13 @@ func (f Fallback) genTranslation(placeholders Placeholders, plural interface{}) 
 		if isOne, err := isOne(plural); err != nil { // attempt to check if plural is == 1
 			return "", err
 		} else if isOne {
-			s, err := fillTemplate(f.One, placeholders)
-			return s, err
+			return fillTemplate(f.One, placeholders)
 		}
 	}
 
 	// no plural information or plural was != 1
 
-	s, err := fillTemplate(f.Other, placeholders)
-	return s, err
+	return fillTemplate(f.Other, placeholders)
 }
 
 // Localizer is a translator for a specific language.
