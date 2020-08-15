@@ -58,6 +58,10 @@ func (f Fallback) genTranslation(placeholders Placeholders, plural interface{}) 
 type Localizer struct {
 	// f is the LangFunc used to create translations.
 	f LangFunc
+	// Lang is the language the Localizer is translating to.
+	// This does not account for possible fallbacks being used, because
+	// the wanted language was not available.
+	Lang string
 }
 
 // Localize generates a localized message using the passed config.

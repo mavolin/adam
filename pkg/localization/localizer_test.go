@@ -137,7 +137,9 @@ func TestLocalizer_Localize(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				l := c.langFunc.Localizer()
+				l := &Localizer{
+					f: c.langFunc,
+				}
 
 				actual, err := l.Localize(c.config)
 				require.NoError(t, err)
@@ -175,7 +177,9 @@ func TestLocalizer_Localize(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				l := c.langFunc.Localizer()
+				l := &Localizer{
+					f: c.langFunc,
+				}
 
 				if c.config.Term == "" {
 					c.config.Term = "term"
@@ -195,21 +199,23 @@ func TestLocalizer_LocalizeTerm(t *testing.T) {
 
 		expect := "def"
 
-		l := LangFunc(func(t string, placeholders Placeholders, plural interface{}) (string, error) {
-			if t != term {
-				panic(fmt.Sprint("unexpected term: ", term))
-			}
+		l := &Localizer{
+			f: func(t string, placeholders Placeholders, plural interface{}) (string, error) {
+				if t != term {
+					panic(fmt.Sprint("unexpected term: ", term))
+				}
 
-			if placeholders != nil {
-				panic(fmt.Sprint("unexpected placeholders: ", placeholders))
-			}
+				if placeholders != nil {
+					panic(fmt.Sprint("unexpected placeholders: ", placeholders))
+				}
 
-			if plural != nil {
-				panic(fmt.Sprint("unexpected plural: ", plural))
-			}
+				if plural != nil {
+					panic(fmt.Sprint("unexpected plural: ", plural))
+				}
 
-			return expect, nil
-		}).Localizer()
+				return expect, nil
+			},
+		}
 
 		actual, err := l.LocalizeTerm(term)
 		require.NoError(t, err)
@@ -219,7 +225,9 @@ func TestLocalizer_LocalizeTerm(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		term := "abc"
 
-		l := LangFunc(nil).Localizer()
+		l := &Localizer{
+			f: nil,
+		}
 
 		actual, err := l.LocalizeTerm(term)
 		assert.Equal(t, term, actual)
@@ -233,7 +241,9 @@ func TestLocalizer_MustLocalize(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := "abc"
 
-		l := LangFunc(nil).Localizer()
+		l := &Localizer{
+			f: nil,
+		}
 
 		var actual string
 
@@ -248,7 +258,9 @@ func TestLocalizer_MustLocalize(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		l := LangFunc(nil).Localizer()
+		l := &Localizer{
+			f: nil,
+		}
 
 		assert.Panics(t, func() {
 			l.MustLocalize(Config{})
@@ -262,21 +274,23 @@ func TestLocalizer_MustLocalizeTerm(t *testing.T) {
 
 		expect := "def"
 
-		l := LangFunc(func(t string, placeholders Placeholders, plural interface{}) (string, error) {
-			if t != term {
-				panic(fmt.Sprint("unexpected term: ", term))
-			}
+		l := &Localizer{
+			f: func(t string, placeholders Placeholders, plural interface{}) (string, error) {
+				if t != term {
+					panic(fmt.Sprint("unexpected term: ", term))
+				}
 
-			if placeholders != nil {
-				panic(fmt.Sprint("unexpected placeholders: ", placeholders))
-			}
+				if placeholders != nil {
+					panic(fmt.Sprint("unexpected placeholders: ", placeholders))
+				}
 
-			if plural != nil {
-				panic(fmt.Sprint("unexpected plural: ", plural))
-			}
+				if plural != nil {
+					panic(fmt.Sprint("unexpected plural: ", plural))
+				}
 
-			return expect, nil
-		}).Localizer()
+				return expect, nil
+			},
+		}
 
 		var actual string
 
@@ -287,7 +301,9 @@ func TestLocalizer_MustLocalizeTerm(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		l := LangFunc(nil).Localizer()
+		l := &Localizer{
+			f: nil,
+		}
 
 		assert.Panics(t, func() {
 			l.MustLocalizeTerm("abc")
