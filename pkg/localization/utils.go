@@ -46,12 +46,12 @@ func isOne(plural interface{}) (bool, error) {
 	case string:
 		num, err := strconv.ParseFloat(plural, 64)
 		if err != nil {
-			return false, ErrNaN
+			return false, withStack(ErrNaN)
 		}
 
 		return num == 1 || num == -1, nil
 	default:
-		return false, ErrNaN
+		return false, withStack(ErrNaN)
 	}
 }
 
@@ -63,14 +63,14 @@ func fillTemplate(tmpl string, placeholders Placeholders) (string, error) {
 
 	t, err := template.New("").Parse(tmpl)
 	if err != nil {
-		return "", err
+		return "", withStack(err)
 	}
 
 	var b bytes.Buffer
 
 	err = t.Execute(&b, placeholders)
 	if err != nil {
-		return "", err
+		return "", withStack(err)
 	}
 
 	return b.String(), err
