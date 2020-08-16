@@ -9,6 +9,7 @@ import (
 	"github.com/mavolin/disstate/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/utils/discordutil"
 )
 
 // NewContext creates a new Context using the passed state.State.
@@ -72,6 +73,25 @@ func (c *Context) Reply(content string) (*discord.Message, error) {
 // was originally sent in.
 func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
 	return c.s.SendEmbed(c.ChannelID, e)
+}
+
+// ReplyEmbedBuilder builds the discord.Embed from the passed
+// discordutil.EmbedBuilder and sends it in the channel the command was sent
+// in.
+func (c *Context) ReplyEmbedBuilder(e *discordutil.EmbedBuilder) (*discord.Message, error) {
+	return c.ReplyEmbed(e.Build())
+}
+
+// ReplyLocalizedEmbedBuilder builds the discord.Embed from the passed
+// discordutil.LocalizedEmbedBuilder and sends it in the channel the command
+// was sent  in.
+func (c *Context) ReplyLocalizedEmbedBuilder(e *discordutil.LocalizedEmbedBuilder) (*discord.Message, error) {
+	b, err := e.Build(c.Localizer)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.ReplyEmbed(b)
 }
 
 // Replyl replies with the message translated from the passed
