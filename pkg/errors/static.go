@@ -21,6 +21,6 @@ func (e *noHandlingError) Handle(*state.State, *plugin.Context) error { return n
 //
 // It is intended to be used, if the user signals to cancel a command early
 // and is therefore just a signaling error, rather than an actual exception.
-var Abort = &noHandlingError{
+var Abort error = &noHandlingError{
 	s: "abort",
 }
