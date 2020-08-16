@@ -5,8 +5,12 @@ import "github.com/mavolin/adam/pkg/localization"
 const (
 	// termErrorTitle is the title of an error message.
 	termErrorTitle = "errors.title"
-	// termInternalDescription is the default description of an InternalError.
-	termInternalDescription = "errors.internal.description"
+	// termInternalDefaultDescription is the default description of an
+	// InternalError.
+	termInternalDefaultDescription = "errors.internal.description.default"
+	// termRestrictionDefaultDescription is the default description of an
+	// RestrictionError.
+	termRestrictionDefaultDescription = "errors.restriction.description.default"
 	// termErrorID is the error id footer of an InternalError.
 	termErrorID = "errors.error_id"
 	// termInfoTitle is the title of an info message.

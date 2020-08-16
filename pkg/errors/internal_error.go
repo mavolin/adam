@@ -207,17 +207,14 @@ func WithDescriptionlt(cause error, term string) error {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *InternalError) Description(l *localization.Localizer) (desc string) {
-	var err error
+	if e.descString != "" {
+		return e.descString
+	}
 
-	desc = e.descString
-	if desc == "" {
-		desc, err = l.Localize(e.descConfig)
-		if err != nil { // use default on failure
-			// we can safely discard this error, as it is impossible for
-			// Localize to fail, ad defaultInternalDescConfig provides a
-			// fallback.
-			desc, _ = l.Localize(defaultInternalDescConfig)
-		}
+	var err error
+	if desc, err = l.Localize(e.descConfig); err != nil {
+		// we can ignore the error, as there is a fallback
+		desc, _ = l.Localize(defaultInternalDescConfig)
 	}
 
 	return desc
