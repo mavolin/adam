@@ -1,56 +1,109 @@
 package localization
 
-type (
-	// Config is a data struct that contains all information needed to create
-	// a localized message.
-	Config struct {
-		// Term is the key of the translation.
-		Term string
-		// Placeholders are the filled placeholders of the translation.
-		Placeholders Placeholders
-		// Plural is a number or a string containing such, that is used to
-		// identify if the message should be pluralized or not.
-		//
-		// If nil, the other message should be used.
-		Plural interface{}
+import (
+	"errors"
+	"reflect"
 
-		// Fallback is the fallback used if the LangFunc is nil or the
-		// LangFunc returned an error.
-		Fallback Fallback
-	}
-
-	// Placeholders is the type used for placeholders.
-	Placeholders map[string]interface{}
-
-	// Fallback is the English fallback used if a translation is not available.
-	// The message is created using go's text/template system and left and
-	// right delimiters are {{ and }} respectively.
-	Fallback struct {
-		// One is the singular form of the fallback message, if there is any.
-		One string
-		// Other is the plural form of the fallback message.
-		// This is also the default form, meaning if no pluralization is needed
-		// this field should be used.
-		Other string
-	}
+	"github.com/iancoleman/strcase"
 )
+
+var ErrInvalidPlaceholders = errors.New("placeholders must be of type map[string]string or struct")
+
+// Config is a data struct that contains all information needed to create
+// a localized message.
+type Config struct {
+	// Term is the key of the translation.
+	Term string
+	// Placeholders contains the placeholder data.
+	// This can either be a map[string]string or a struct (see section
+	// Structs for further info).
+	//
+	// Structs
+	//
+	// If you use a struct the Localizer will to convert the
+	// name of the fields to snake_case.
+	// However, if you want to use a custom name for the keys, you
+	// can use the `localization:"myname"` struct tag.
+	Placeholders interface{}
+	// Plural is a number or a string containing such, that is used to
+	// identify if the message should be pluralized or not.
+	//
+	// If nil, the other message should be used.
+	Plural interface{}
+
+	// Fallback is the fallback used if the LangFunc is nil or the
+	// LangFunc returned an error.
+	Fallback Fallback
+}
+
+func (c Config) placeholdersToMap() (map[string]interface{}, error) {
+	if c.Placeholders == nil {
+		return nil, nil
+	}
+
+	if v, ok := c.Placeholders.(map[string]interface{}); ok {
+		return v, nil
+	}
+
+	v := reflect.ValueOf(c.Placeholders)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	t := v.Type()
+
+	if v.Kind() != reflect.Struct {
+		return nil, withStack(ErrInvalidPlaceholders)
+	}
+
+	placeholders := make(map[string]interface{}, v.NumField())
+
+	for i := 0; i < v.NumField(); i++ {
+		fv := v.Field(i)
+		tv := t.Field(i)
+
+		if !fv.CanInterface() {
+			continue
+		}
+
+		key := tv.Tag.Get("localization")
+
+		if key == "" {
+			key = strcase.ToSnake(tv.Name)
+		}
+
+		placeholders[key] = fv.Interface()
+	}
+
+	return placeholders, nil
+}
+
+// Fallback is the English fallback used if a translation is not available.
+// The message is created using go's text/template system and left and
+// right delimiters are {{ and }} respectively.
+type Fallback struct {
+	// One is the singular form of the fallback message, if there is any.
+	One string
+	// Other is the plural form of the fallback message.
+	// This is also the default form, meaning if no pluralization is needed
+	// this field should be used.
+	Other string
+}
 
 // genTranslation attempts to generate the translation using the passed
 // Placeholders and the passed plural data.
-func (f Fallback) genTranslation(placeholders Placeholders, plural interface{}) (string, error) {
+func (f Fallback) genTranslation(placeholderData map[string]interface{}, plural interface{}) (string, error) {
 	if plural != nil { // we have plural information
 		if isOne, err := isOne(plural); err != nil { // attempt to check if plural is == 1
 			return "", err
 		} else if isOne {
-			s, err := fillTemplate(f.One, placeholders)
-			return s, err
+			return fillTemplate(f.One, placeholderData)
 		}
 	}
 
 	// no plural information or plural was != 1
 
-	s, err := fillTemplate(f.Other, placeholders)
-	return s, err
+	return fillTemplate(f.Other, placeholderData)
 }
 
 // Localizer is a translator for a specific language.
@@ -67,8 +120,13 @@ type Localizer struct {
 // Localize generates a localized message using the passed config.
 // c.Term must be set.
 func (l *Localizer) Localize(c Config) (s string, err error) {
+	placeholders, err := c.placeholdersToMap()
+	if err != nil {
+		return c.Term, err
+	}
+
 	if l.f != nil { // try the user-defined translator first, if there is one
-		s, err = l.f(c.Term, c.Placeholders, c.Plural)
+		s, err = l.f(c.Term, placeholders, c.Plural)
 		if err == nil {
 			return
 		}
@@ -77,12 +135,10 @@ func (l *Localizer) Localize(c Config) (s string, err error) {
 	// otherwise use fallback if there is;
 	// checking other suffices as it will always be set if there is a fallback
 	if c.Fallback.Other == "" {
-		return c.Term, &NoTranslationGeneratedError{
-			Term: c.Term,
-		}
+		return c.Term, NewNoTranslationGeneratedError(c.Term)
 	}
 
-	s, err = c.Fallback.genTranslation(c.Placeholders, c.Plural)
+	s, err = c.Fallback.genTranslation(placeholders, c.Plural)
 	if err != nil {
 		return c.Term, err
 	}

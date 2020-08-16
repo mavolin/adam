@@ -44,7 +44,7 @@ func (l *Localizer) Clone() *Localizer {
 
 func (l *Localizer) Build() *localization.Localizer {
 	m := localization.NewManager(func(lang string) localization.LangFunc {
-		return func(term string, _ localization.Placeholders, _ interface{}) (string, error) {
+		return func(term string, _ map[string]interface{}, _ interface{}) (string, error) {
 			r, ok := l.on[term]
 			if !ok {
 				if l.def == "" {
