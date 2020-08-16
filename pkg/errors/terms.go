@@ -2,38 +2,26 @@ package errors
 
 import "github.com/mavolin/adam/pkg/localization"
 
-const (
-	// termErrorTitle is the title of an error message.
-	termErrorTitle = "errors.title"
-	// termInternalDefaultDescription is the default description of an
-	// InternalError.
-	termInternalDefaultDescription = "errors.internal.description.default"
-	// termRestrictionDefaultDescription is the default description of an
-	// RestrictionError.
-	termRestrictionDefaultDescription = "errors.restriction.description.default"
-	// termErrorID is the error id footer of an InternalError.
-	termErrorID = "errors.error_id"
-	// termInfoTitle is the title of an info message.
-	termInfoTitle = "info.title"
-)
+// termErrorID is the error id footer of an InternalError.
+const termErrorID = "errors.error_id"
 
 var (
 	// errorTitleConfig is the localization.Config used to generate the title
 	// of an error message.
-	errorTitleConfig = localization.QuickFallbackConfig(termErrorTitle, "Error")
+	errorTitleConfig = localization.QuickFallbackConfig("errors.title", "Error")
 
 	// defaultInternalDescConfig is the localization.Config used by default as
 	// description for an InternalError.
-	defaultInternalDescConfig = localization.QuickFallbackConfig(termInternalDefaultDescription,
+	defaultInternalDescConfig = localization.QuickFallbackConfig("errors.internal.description.default",
 		"Oh no! Something went wrong and I couldn't finish executing your command. I've informed my team and they'll "+
 			"get on fixing the bug asap.")
 
-	defaultRestrictionDescConfig = localization.QuickFallbackConfig(termRestrictionDefaultDescription,
+	defaultRestrictionDescConfig = localization.QuickFallbackConfig("errors.restriction.description.default",
 		"👮 You are not allowed to use this command.")
 
 	// infoTitleConfig is the localization.Config used to generate the title
 	// of an info message.
-	infoTitleConfig = localization.QuickFallbackConfig(termInfoTitle, "Info")
+	infoTitleConfig = localization.QuickFallbackConfig("info.title", "Info")
 )
 
 // errorIDPlaceholders is the placeholders struct for the errors.error_id
