@@ -1,8 +1,6 @@
 package errors
 
-import (
-	"github.com/mavolin/adam/internal/locutil"
-)
+import "github.com/mavolin/adam/pkg/localization"
 
 const (
 	// termErrorTitle is the title of an error message.
@@ -18,11 +16,11 @@ const (
 var (
 	// errorTitleConfig is the localization.Config used to generate the title
 	// of an error message.
-	errorTitleConfig = locutil.QuickConfig(termErrorTitle, "Error")
+	errorTitleConfig = localization.QuickFallbackConfig(termErrorTitle, "Error")
 
 	// infoTitleConfig is the localization.Config used to generate the title
 	// of an info message.
-	infoTitleConfig = locutil.QuickConfig(termInfoTitle, "Info")
+	infoTitleConfig = localization.QuickFallbackConfig(termInfoTitle, "Info")
 )
 
 // errorIDPlaceholders is the placeholders struct for the errors.error_id

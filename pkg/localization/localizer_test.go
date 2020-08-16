@@ -10,6 +10,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestQuickConfig(t *testing.T) {
+	term := "abc"
+
+	expect := Config{
+		Term: term,
+	}
+
+	actual := QuickConfig(term)
+	assert.Equal(t, expect, actual)
+}
+
+func TestQuickFallbackConfig(t *testing.T) {
+	var (
+		term     = "abc"
+		fallback = "def"
+	)
+
+	expect := Config{
+		Term: term,
+		Fallback: Fallback{
+			Other: fallback,
+		},
+	}
+
+	actual := QuickFallbackConfig(term, fallback)
+	assert.Equal(t, expect, actual)
+}
+
 func TestConfig_placeholdersToMap(t *testing.T) {
 	successCases := []struct {
 		name         string
