@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
+	"github.com/getsentry/sentry-go"
 	"github.com/mavolin/disstate/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
@@ -23,6 +24,8 @@ type Context struct {
 	// MessageCreateEvent contains the event data about the invoking message.
 	*state.MessageCreateEvent
 
+	Hub *sentry.Hub
+
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Args Args
@@ -30,8 +33,8 @@ type Context struct {
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Flags Flags
 
-	// PluginIdentifier is the Identifier of the command.
-	PluginIdentifier Identifier
+	// CommandIdentifier is the Identifier of the command.
+	CommandIdentifier Identifier
 
 	// DiscordDataProvider is an embedded interface that provides additional
 	// data fetched from Discord's API.
