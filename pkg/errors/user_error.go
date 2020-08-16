@@ -34,7 +34,7 @@ func NewUserErrorl(desc localization.Config) *UserError {
 	}
 }
 
-// NewUserInfolt creates a new UserInfo using the message generated from the
+// NewUserErrorlt creates a new UserError using the message generated from the
 // passed term as description.
 func NewUserErrorlt(term string) *UserError {
 	return NewUserErrorl(localization.Config{
