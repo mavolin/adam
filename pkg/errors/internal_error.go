@@ -151,14 +151,14 @@ func WithDescriptionf(cause error, format string, args ...interface{}) error {
 
 	if ie, ok := cause.(*InternalError); ok {
 		ie.descConfig = localization.Config{}
-		ie.descString = fmt.Sprintf(format, args)
+		ie.descString = fmt.Sprintf(format, args...)
 		return ie
 	}
 
 	return &InternalError{
 		cause:      cause,
 		stack:      stackTrace(cause, 1),
-		descString: fmt.Sprintf(format, args),
+		descString: fmt.Sprintf(format, args...),
 	}
 }
 
