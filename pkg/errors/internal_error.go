@@ -26,7 +26,7 @@ var defaultInternalDescConfig = localization.Config{
 // InternalError represents a non-user triggered error, that is reported to
 // the user.
 // By default, an InternalError does not explicitly state any information about
-// the err or context of the error, but creates a generalised message.
+// the cause or context of the error, but sends a generalised message.
 // However, using WithDescription, WithDetailsl or WithDetailslt, the default
 // description can be replaced.
 type InternalError struct {
@@ -215,13 +215,6 @@ func WithDescriptionlt(cause error, term string) error {
 	}
 }
 
-func (e *InternalError) Error() string {
-	return e.cause.Error()
-}
-
-func (e *InternalError) Unwrap() error         { return e.cause }
-func (e *InternalError) StackTrace() []uintptr { return e.stack }
-
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *InternalError) Description(l *localization.Localizer) (desc string) {
@@ -241,9 +234,11 @@ func (e *InternalError) Description(l *localization.Localizer) (desc string) {
 	return desc
 }
 
-// Handle handles the error.
-// It logs it, captures the exception and then sends an error embed to the
-// user.
+func (e *InternalError) Error() string         { return e.cause.Error() }
+func (e *InternalError) Unwrap() error         { return e.cause }
+func (e *InternalError) StackTrace() []uintptr { return e.stack }
+
+// Handle logs the error, and sends it to sentry, if configured.
 func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 	logstract.
 		WithFields(logstract.Fields{
