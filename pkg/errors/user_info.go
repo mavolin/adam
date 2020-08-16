@@ -57,7 +57,7 @@ func (i *UserInfo) Error() string { return "user info" }
 // Handle sends an info embed with the description of the UserInfo.
 func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) error {
 	// we can ignore the error, because the fallback is set
-	title, _ := ctx.Localizer.Localize(infoTitleConfig)
+	title, _ := ctx.Localize(infoTitleConfig)
 
 	desc, err := i.Description(ctx.Localizer)
 	if err != nil {

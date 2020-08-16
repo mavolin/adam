@@ -57,7 +57,7 @@ func (e *UserError) Error() string { return "user error" }
 // Handle sends an error embed with the description of the UserError.
 func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) error {
 	// we can ignore the error, because the fallback is set
-	title, _ := ctx.Localizer.Localize(errorTitleConfig)
+	title, _ := ctx.Localize(errorTitleConfig)
 
 	desc, err := e.Description(ctx.Localizer)
 	if err != nil {

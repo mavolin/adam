@@ -248,8 +248,8 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 
 	eventID := ctx.Hub.CaptureException(e)
 
-	// We can ignore the error, as we have a fallback.
-	title, _ := ctx.Localizer.Localize(errorTitleConfig)
+	// we can ignore the error, as we have a fallback.
+	title, _ := ctx.Localize(errorTitleConfig)
 
 	embed := discord.Embed{
 		Title:       title,
@@ -258,8 +258,19 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 	}
 
 	if eventID != nil {
+		// we can ignore the error, as we have a fallback.
+		footerText, _ := ctx.Localize(localization.Config{
+			Term: termErrorID,
+			Placeholders: errorIDPlaceholders{
+				ErrorID: string(*eventID),
+			},
+			Fallback: localization.Fallback{
+				Other: "Error-ID: {{.error_id}}",
+			},
+		})
+
 		embed.Footer = &discord.EmbedFooter{
-			Text: string(*eventID),
+			Text: footerText,
 		}
 	}
 

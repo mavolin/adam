@@ -24,7 +24,11 @@ type Context struct {
 	// MessageCreateEvent contains the event data about the invoking message.
 	*state.MessageCreateEvent
 
+	// Hub is the sentry.Hub of the command.
 	Hub *sentry.Hub
+
+	// Localizer is the localizer set to the guilds language.
+	*localization.Localizer
 
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
@@ -46,9 +50,6 @@ type Context struct {
 	Lang string
 	// Location is the timezone of the guild.
 	Location *time.Location
-
-	// Localizer is the localizer set to the guilds language.
-	Localizer *localization.Localizer
 
 	// Provider is an embedded interface that provides access to the Commands
 	// and Modules of the Bot, as well as the runtime commands and modules
