@@ -14,5 +14,6 @@ func GenerateStackTrace() Stack {
 	pcs := make([]uintptr, stackDepth)
 
 	n := runtime.Callers(3, pcs)
+
 	return pcs[0:n]
 }
