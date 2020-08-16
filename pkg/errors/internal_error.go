@@ -13,16 +13,6 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// defaultInternalDescConfig is the localization.Config used by default as
-// description for an InternalError.
-var defaultInternalDescConfig = localization.Config{
-	Term: termInternalDescription,
-	Fallback: localization.Fallback{
-		Other: "Oh no! Something went wrong and I couldn't finish executing your command. I've informed my team and " +
-			"they'll get on fixing the bug asap.",
-	},
-}
-
 // InternalError represents a non-user triggered error, that is reported to
 // the user.
 // By default, an InternalError does not explicitly state any information about
