@@ -15,8 +15,7 @@ func TestPermissionNames(t *testing.T) {
 	perms := discord.PermissionAdministrator | discord.PermissionStream
 
 	actual := PermissionNames(perms)
-	assert.Subset(t, expect, actual)
-	assert.Equal(t, len(expect), len(actual), "expect and actual have different lengths")
+	assert.Equal(t, expect, actual)
 }
 
 func TestPermissionNamesl(t *testing.T) {
@@ -31,37 +30,22 @@ func TestPermissionNamesl(t *testing.T) {
 		Build()
 
 	actual := PermissionNamesl(perms, l)
-	assert.Subset(t, expect, actual)
-	assert.Equal(t, len(expect), len(actual), "expect and actual have different lengths")
+	assert.Equal(t, expect, actual)
 }
 
 func TestPermissionList(t *testing.T) {
 	// maps don't have a deterministic order, so actual could be any one of these
-	expect := []string{
-		"Ban Members, Manage Nicknames and View Channel",
-		"Ban Members, View Channel and Manage Nicknames",
-		"Manage Nicknames, Ban Members and View Channel",
-		"Manage Nicknames, View Channel and Ban Members",
-		"View Channel, Ban Members and Manage Nicknames",
-		"View Channel, Manage Nicknames and Ban Members",
-	}
+	expect := "Ban Members, Manage Nicknames and View Channel"
 
 	perms := discord.PermissionBanMembers | discord.PermissionManageNicknames | discord.PermissionViewChannel
 
 	actual := PermissionList(perms)
-	assert.Contains(t, expect, actual)
+	assert.Equal(t, expect, actual)
 }
 
 func TestPermissionListl(t *testing.T) {
 	// maps don't have a deterministic order, so actual could be any one of these
-	expect := []string{
-		"Ban Members, Manage Nicknames and View Channel",
-		"Ban Members, View Channel and Manage Nicknames",
-		"Manage Nicknames, Ban Members and View Channel",
-		"Manage Nicknames, View Channel and Ban Members",
-		"View Channel, Ban Members and Manage Nicknames",
-		"View Channel, Manage Nicknames and Ban Members",
-	}
+	expect := "Ban Members, Manage Nicknames and View Channel"
 
 	perms := discord.PermissionBanMembers | discord.PermissionManageNicknames | discord.PermissionViewChannel
 
@@ -75,5 +59,5 @@ func TestPermissionListl(t *testing.T) {
 		Build()
 
 	actual := PermissionListl(perms, l)
-	assert.Contains(t, expect, actual)
+	assert.Equal(t, expect, actual)
 }

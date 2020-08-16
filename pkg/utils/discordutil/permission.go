@@ -1,6 +1,7 @@
 package discordutil
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -9,14 +10,14 @@ import (
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
-// PermissionNames returns the names of the passed discord.Permissions, as
-// found in the client.
+// PermissionNames returns the sorted names of the passed discord.Permissions,
+// as found in the client.
 func PermissionNames(perms discord.Permissions) []string {
 	l := localization.NewManager(nil).Localizer("")
 	return PermissionNamesl(perms, l)
 }
 
-// PermissionNamel returns the localized names of the passed
+// PermissionNamel returns the sorted and localized names of the passed
 // discord.Permissions, as found in the client.
 func PermissionNamesl(perms discord.Permissions, l *localization.Localizer) (s []string) {
 	for perm, c := range permissionConfigs {
@@ -25,6 +26,8 @@ func PermissionNamesl(perms discord.Permissions, l *localization.Localizer) (s [
 			s = append(s, permString)
 		}
 	}
+
+	sort.Strings(s)
 
 	return s
 }
@@ -64,8 +67,8 @@ func PermissionList(perms discord.Permissions) string {
 	return b.String()
 }
 
-// PermissionListl creates a written list from the passed permissions using the
-// passed localization.Localizer.
+// PermissionListl creates a sorted written list from the passed permissions
+// using the passed localization.Localizer.
 func PermissionListl(perms discord.Permissions, l *localization.Localizer) string {
 	var cfgs []localization.Config
 
@@ -76,7 +79,7 @@ func PermissionListl(perms discord.Permissions, l *localization.Localizer) strin
 	}
 
 	// we can ignore the error because all translations have fallbacks
-	s, _ := locutil.ConfigsToList(cfgs, l)
+	s, _ := locutil.ConfigsToSortedList(cfgs, l)
 
 	return s
 }
