@@ -36,7 +36,6 @@ type InternalError struct {
 	stack errorutil.Stack
 
 	// description of the error, either is set
-
 	descString string
 	descConfig localization.Config
 }
