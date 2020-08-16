@@ -56,7 +56,7 @@ func isOne(plural interface{}) (bool, error) {
 }
 
 // fillTemplate is a helper to execute templates.
-func fillTemplate(tmpl string, placeholders Placeholders) (string, error) {
+func fillTemplate(tmpl string, placeholders map[string]interface{}) (string, error) {
 	if !strings.Contains(tmpl, "{{") { // no need for parsing
 		return tmpl, nil
 	}

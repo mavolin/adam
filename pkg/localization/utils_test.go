@@ -95,7 +95,7 @@ func Test_fillName(t *testing.T) {
 	successCases := []struct {
 		name         string
 		tmpl         string
-		placeholders Placeholders
+		placeholders map[string]interface{}
 		expect       string
 	}{
 		{
@@ -106,8 +106,8 @@ func Test_fillName(t *testing.T) {
 		{
 			name: "template",
 			tmpl: "this is a {{.Test.Type}} test",
-			placeholders: Placeholders{
-				"Test": Placeholders{
+			placeholders: map[string]interface{}{
+				"Test": map[string]interface{}{
 					"Type": "unit",
 				},
 			},
