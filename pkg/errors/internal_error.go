@@ -246,16 +246,24 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 		}).
 		Error("command returned with error")
 
-	ctx.Hub.CaptureException(e)
+	eventID := ctx.Hub.CaptureException(e)
 
 	// We can ignore the error, as we have a fallback.
 	title, _ := ctx.Localizer.Localize(errorTitleConfig)
 
-	_, err := ctx.ReplyEmbed(discord.Embed{
+	embed := discord.Embed{
 		Title:       title,
 		Description: e.Description(ctx.Localizer),
 		Color:       constant.ErrorColor,
-	})
+	}
+
+	if eventID != nil {
+		embed.Footer = &discord.EmbedFooter{
+			Text: string(*eventID),
+		}
+	}
+
+	_, err := ctx.ReplyEmbed(embed)
 
 	return err
 }
