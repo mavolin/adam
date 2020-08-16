@@ -19,7 +19,7 @@ type NoTranslationGeneratedError struct {
 func NewNoTranslationGeneratedError(term string) *NoTranslationGeneratedError {
 	return &NoTranslationGeneratedError{
 		Term: term,
-		s:    errorutil.GenerateStackTrace(),
+		s:    errorutil.GenerateStackTrace(1),
 	}
 }
 
@@ -53,7 +53,7 @@ type stackError struct {
 func withStack(err error) *stackError {
 	return &stackError{
 		cause: err,
-		s:     errorutil.GenerateStackTrace(),
+		s:     errorutil.GenerateStackTrace(1),
 	}
 }
 
