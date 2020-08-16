@@ -11,7 +11,7 @@ type Stack []uintptr
 
 // GenerateStackTrace generates a Stack.
 func GenerateStackTrace() Stack {
-	var pcs []uintptr
+	pcs := make([]uintptr, stackDepth)
 
 	n := runtime.Callers(3, pcs)
 	return pcs[0:n]
