@@ -264,9 +264,7 @@ func TestInternalError_Handle(t *testing.T) {
 
 	m.SendEmbed(discord.Message{
 		ChannelID: ctx.ChannelID,
-		Embeds: []discord.Embed{
-			embed,
-		},
+		Embeds:    []discord.Embed{embed},
 	})
 
 	e := WithDescription(New(""), expectDesc).(Handler)

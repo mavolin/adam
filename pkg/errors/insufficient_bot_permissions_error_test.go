@@ -59,9 +59,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 	m.SendEmbed(discord.Message{
 		ChannelID: ctx.ChannelID,
-		Embeds: []discord.Embed{
-			embed,
-		},
+		Embeds:    []discord.Embed{embed},
 	})
 
 	e := NewInsufficientBotPermissionsError(discord.PermissionAdministrator | discord.PermissionStream)

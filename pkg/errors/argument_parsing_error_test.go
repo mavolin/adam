@@ -169,9 +169,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 			Build()
 		m.SendEmbed(discord.Message{
 			ChannelID: ctx.ChannelID,
-			Embeds: []discord.Embed{
-				embed,
-			},
+			Embeds:    []discord.Embed{embed},
 		})
 
 		e := NewArgumentParsingError(expectDesc).
