@@ -225,7 +225,7 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 			"cmd_ident": ctx.CommandIdentifier,
 			"err":       e,
 		}).
-		Error("command returned with error")
+		Error("command returned with an error")
 
 	eventID := ctx.Hub.CaptureException(e)
 
