@@ -10,10 +10,10 @@ const stackDepth = 32
 type Stack []uintptr
 
 // GenerateStackTrace generates a Stack.
-func GenerateStackTrace() Stack {
+func GenerateStackTrace(skip int) Stack {
 	pcs := make([]uintptr, stackDepth)
 
-	n := runtime.Callers(3, pcs)
+	n := runtime.Callers(2+skip, pcs)
 
 	return pcs[0:n]
 }

@@ -5,9 +5,11 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
+	"github.com/getsentry/sentry-go"
 	"github.com/mavolin/disstate/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/utils/discordutil"
 )
 
 // NewContext creates a new Context using the passed state.State.
@@ -23,6 +25,12 @@ type Context struct {
 	// MessageCreateEvent contains the event data about the invoking message.
 	*state.MessageCreateEvent
 
+	// Hub is the sentry.Hub of the command.
+	Hub *sentry.Hub
+
+	// Localizer is the localizer set to the guilds language.
+	*localization.Localizer
+
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Args Args
@@ -30,8 +38,8 @@ type Context struct {
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Flags Flags
 
-	// PluginIdentifier is the Identifier of the command.
-	PluginIdentifier Identifier
+	// CommandIdentifier is the Identifier of the command.
+	CommandIdentifier Identifier
 
 	// DiscordDataProvider is an embedded interface that provides additional
 	// data fetched from Discord's API.
@@ -39,23 +47,32 @@ type Context struct {
 
 	// Prefix is the prefix of the bot in the guild.
 	Prefix string
-	// Lang is the language in the guild.
-	Lang string
 	// Location is the timezone of the guild.
 	Location *time.Location
 
-	// Localizer is the localizer set to the guilds language.
-	Localizer *localization.Localizer
+	// HelpCommandIdentifier is the identifier of the help command.
+	HelpCommandIdentifier Identifier
+
+	// BotOwnerIDs contains the ids of the bot owners.
+	BotOwnerIDs []discord.UserID
 
 	// Provider is an embedded interface that provides access to the Commands
 	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.
 	Provider
 
-	// BotOwnerIDs contains the ids of the bot owners.
-	BotOwnerIDs []discord.UserID
-
 	s *state.State
+}
+
+// IsBotOwner checks if the invoking user is a bot owner.
+func (c *Context) IsBotOwner() bool {
+	for _, owner := range c.BotOwnerIDs {
+		if c.Author.ID == owner {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Reply replies with the passed message in the channel the command was
@@ -68,6 +85,25 @@ func (c *Context) Reply(content string) (*discord.Message, error) {
 // was originally sent in.
 func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
 	return c.s.SendEmbed(c.ChannelID, e)
+}
+
+// ReplyEmbedBuilder builds the discord.Embed from the passed
+// discordutil.EmbedBuilder and sends it in the channel the command was sent
+// in.
+func (c *Context) ReplyEmbedBuilder(e *discordutil.EmbedBuilder) (*discord.Message, error) {
+	return c.ReplyEmbed(e.Build())
+}
+
+// ReplyLocalizedEmbedBuilder builds the discord.Embed from the passed
+// discordutil.LocalizedEmbedBuilder and sends it in the channel the command
+// was sent  in.
+func (c *Context) ReplyLocalizedEmbedBuilder(e *discordutil.LocalizedEmbedBuilder) (*discord.Message, error) {
+	b, err := e.Build(c.Localizer)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.ReplyEmbed(b)
 }
 
 // Replyl replies with the message translated from the passed
@@ -83,7 +119,7 @@ func (c *Context) Replyl(cfg localization.Config) (*discord.Message, error) {
 
 // Replylt replies with the message translated from the passed term in the
 // channel the command was originally sent in.
-func (c *Context) Replylt(term string) (*discord.Message, error) {
+func (c *Context) Replylt(term localization.Term) (*discord.Message, error) {
 	return c.Replyl(localization.Config{
 		Term: term,
 	})

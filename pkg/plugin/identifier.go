@@ -22,6 +22,16 @@ func (id Identifier) Parent() Identifier {
 	return id[:i]
 }
 
+// AsCommandInvoke returns the identifier as a prefixless command invoke.
+//
+// Returns "" if the Identifier is root.
+//
+// Example:
+// 	.mod.ban -> mod ban
+func (id Identifier) AsCommandInvoke() string {
+	return strings.ReplaceAll(string(id)[1:], ".", " ")
+}
+
 // IsRoot checks if the identifier is the root identifier.
 func (id Identifier) IsRoot() bool {
 	return id == "."

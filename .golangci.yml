@@ -29,12 +29,10 @@ linters:
     - lll
     - unparam
     - dogsled
-    - nakedret
     - prealloc
     - gocritic
     - gochecknoinits
     - funlen
-    - whitespace
 
 issues:
   exclude-rules:
@@ -47,3 +45,14 @@ issues:
         - gosec
         - goconst
         - funlen
+    # there would be no point in splitting this up
+    - path: ^pkg/utils/discordutil/embed.go$
+      linters:
+        - funlen
+      text: ^Function 'Build' is too long \(\d+ > \d+\)$
+    # this is required to maintain readability
+    - path: ^pkg/utils/discordutil/terms.go$
+      linters:
+        - golint
+        - stylecheck
+      text: should not use dot imports
