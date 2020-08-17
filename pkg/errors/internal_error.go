@@ -236,6 +236,7 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 	embed := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(e.Description(ctx.Localizer))
 
+	// make sure sentry is even running
 	if eventID != nil {
 		// we can ignore the error, as we have a fallback.
 		footerText, _ := ctx.Localize(errorIDFooter.
