@@ -36,23 +36,29 @@ type Config struct {
 	Fallback Fallback
 }
 
-// QuickConfig is a utility function that can be used to inline term-only
-// Configs.
-func QuickConfig(term string) Config {
+// Term is a utility function that can be used to inline term-only Configs.
+func Term(term string) Config {
 	return Config{
 		Term: term,
 	}
 }
 
-// QuickFallbackConfig is a utility function that can be used to inline
+// NewFallbackConfig is a utility function that can be used to inline
 // term-only Configs with a fallback.
-func QuickFallbackConfig(term, fallback string) Config {
+func NewFallbackConfig(term, fallback string) Config {
 	return Config{
 		Term: term,
 		Fallback: Fallback{
 			Other: fallback,
 		},
 	}
+}
+
+// WithPlaceholders returns a copy of the Config with the passed Placeholders
+// set.
+func (c Config) WithPlaceholders(placeholders interface{}) Config {
+	c.Placeholders = placeholders
+	return c
 }
 
 func (c Config) placeholdersToMap() (map[string]interface{}, error) {

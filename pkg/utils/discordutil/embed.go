@@ -208,7 +208,7 @@ func (b *LocalizedEmbedBuilder) WithSimpleTitle(title localization.Config) *Loca
 
 // WithSimpleTitlet adds a plain title (max. 256 characters) to the embed.
 func (b *LocalizedEmbedBuilder) WithSimpleTitlet(titleTerm string) *LocalizedEmbedBuilder {
-	return b.WithSimpleTitle(localization.QuickConfig(titleTerm))
+	return b.WithSimpleTitle(localization.Term(titleTerm))
 }
 
 // WithTitle adds a title (max. 256 characters) with a link to the embed.
@@ -220,7 +220,7 @@ func (b *LocalizedEmbedBuilder) WithTitle(title localization.Config, url discord
 
 // WithTitlet adds a title (max. 256 characters) with a link to the embed.
 func (b *LocalizedEmbedBuilder) WithTitlet(titleTerm string, url discord.URL) *LocalizedEmbedBuilder {
-	return b.WithTitle(localization.QuickConfig(titleTerm), url)
+	return b.WithTitle(localization.Term(titleTerm), url)
 }
 
 // WithDescription adds a description (max. 2048 characters) to the embed.
@@ -231,7 +231,7 @@ func (b *LocalizedEmbedBuilder) WithDescription(description localization.Config)
 
 // WithDescriptiont adds a description (max. 2048 characters) to the embed.
 func (b *LocalizedEmbedBuilder) WithDescriptiont(descriptionTerm string) *LocalizedEmbedBuilder {
-	return b.WithDescription(localization.QuickConfig(descriptionTerm))
+	return b.WithDescription(localization.Term(descriptionTerm))
 }
 
 // WithTimestamp adds a discord.Timestamp to the embed.
@@ -262,7 +262,7 @@ func (b *LocalizedEmbedBuilder) WithSimpleFooter(text localization.Config) *Loca
 
 // WithSimpleFootert adds a plain footer (max. 2048 characters) to the embed.
 func (b *LocalizedEmbedBuilder) WithSimpleFootert(textTerm string) *LocalizedEmbedBuilder {
-	return b.WithSimpleFooter(localization.QuickConfig(textTerm))
+	return b.WithSimpleFooter(localization.Term(textTerm))
 }
 
 // WithFooter adds a footer (max. 2048 character) with an icon to the embed.
@@ -277,7 +277,7 @@ func (b *LocalizedEmbedBuilder) WithFooter(text localization.Config, icon discor
 
 // WithFootert adds a footer (max. 2048 character) with an icon to the embed.
 func (b *LocalizedEmbedBuilder) WithFootert(textTerm string, icon discord.URL) *LocalizedEmbedBuilder {
-	return b.WithFooter(localization.QuickConfig(textTerm), icon)
+	return b.WithFooter(localization.Term(textTerm), icon)
 }
 
 // WithImage adds an image to the embed.
@@ -304,7 +304,7 @@ func (b *LocalizedEmbedBuilder) WithSimpleAuthor(name localization.Config) *Loca
 
 // WithSimpleAuthort adds a plain author (max. 256 characters) to the embed.
 func (b *LocalizedEmbedBuilder) WithSimpleAuthort(nameTerm string) *LocalizedEmbedBuilder {
-	return b.WithSimpleAuthor(localization.QuickConfig(nameTerm))
+	return b.WithSimpleAuthor(localization.Term(nameTerm))
 }
 
 // WithSimpleAuthorWithURL adds an author (max. 256 character) with a URL to
@@ -321,7 +321,7 @@ func (b *LocalizedEmbedBuilder) WithSimpleAuthorWithURL(name localization.Config
 // WithSimpleAuthorWithURLt adds an author (max. 256 character) with a URL to
 // the embed.
 func (b *LocalizedEmbedBuilder) WithSimpleAuthorWithURLt(nameTerm string, url discord.URL) *LocalizedEmbedBuilder {
-	return b.WithSimpleAuthorWithURL(localization.QuickConfig(nameTerm), url)
+	return b.WithSimpleAuthorWithURL(localization.Term(nameTerm), url)
 }
 
 // WithAuthor adds an author (max 256 characters) with an icon to the embed.
@@ -336,7 +336,7 @@ func (b *LocalizedEmbedBuilder) WithAuthor(name localization.Config, icon discor
 
 // WithAuthort adds an author (max 256 characters) with an icon to the embed.
 func (b *LocalizedEmbedBuilder) WithAuthort(nameTerm string, icon discord.URL) *LocalizedEmbedBuilder {
-	return b.WithAuthor(localization.QuickConfig(nameTerm), icon)
+	return b.WithAuthor(localization.Term(nameTerm), icon)
 }
 
 // WithAuthorWithURLt adds an author (max 256 characters) with an icon and a URL
@@ -354,7 +354,7 @@ func (b *LocalizedEmbedBuilder) WithAuthorWithURL(name localization.Config, icon
 // WithAuthorWithURLt adds an author (max 256 characters) with an icon and a URL
 // to the embed.
 func (b *LocalizedEmbedBuilder) WithAuthorWithURLt(nameTerm string, icon, url discord.URL) *LocalizedEmbedBuilder {
-	return b.WithAuthorWithURL(localization.QuickConfig(nameTerm), icon, url)
+	return b.WithAuthorWithURL(localization.Term(nameTerm), icon, url)
 }
 
 // WithField appends a field (name: max. 256 characters, value: max 1024
@@ -372,7 +372,7 @@ func (b *LocalizedEmbedBuilder) WithField(name, value localization.Config) *Loca
 // WithFieldt appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
 func (b *LocalizedEmbedBuilder) WithFieldt(nameTerm, valueTerm string) *LocalizedEmbedBuilder {
-	return b.WithField(localization.QuickConfig(nameTerm), localization.QuickConfig(valueTerm))
+	return b.WithField(localization.Term(nameTerm), localization.Term(valueTerm))
 }
 
 // WithInlinedField appends an inlined field (name: max. 256 characters, value: max 1024
@@ -390,7 +390,7 @@ func (b *LocalizedEmbedBuilder) WithInlinedField(name, value localization.Config
 // WithInlinedFieldt appends an inlined field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
 func (b *LocalizedEmbedBuilder) WithInlinedFieldt(nameTerm, valueTerm string) *LocalizedEmbedBuilder {
-	return b.WithInlinedField(localization.QuickConfig(nameTerm), localization.QuickConfig(valueTerm))
+	return b.WithInlinedField(localization.Term(nameTerm), localization.Term(valueTerm))
 }
 
 // Build builds the discord.Embed.

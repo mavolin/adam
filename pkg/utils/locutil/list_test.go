@@ -43,9 +43,9 @@ func TestConfigsToList(t *testing.T) {
 	expect := "milk, eggs and orange juice"
 
 	list := []localization.Config{
-		localization.QuickConfig("milk"),
-		localization.QuickConfig("eggs"),
-		localization.QuickConfig("orange_juice"),
+		localization.Term("milk"),
+		localization.Term("eggs"),
+		localization.Term("orange_juice"),
 	}
 
 	l := mock.
@@ -66,9 +66,9 @@ func TestConfigsToSortedList(t *testing.T) {
 	expect := "eggs, milk and orange juice"
 
 	list := []localization.Config{
-		localization.QuickConfig("milk"),
-		localization.QuickConfig("eggs"),
-		localization.QuickConfig("orange_juice"),
+		localization.Term("milk"),
+		localization.Term("eggs"),
+		localization.Term("orange_juice"),
 	}
 
 	l := mock.

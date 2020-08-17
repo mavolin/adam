@@ -17,7 +17,7 @@ func TestQuickConfig(t *testing.T) {
 		Term: term,
 	}
 
-	actual := QuickConfig(term)
+	actual := Term(term)
 	assert.Equal(t, expect, actual)
 }
 
@@ -34,8 +34,19 @@ func TestQuickFallbackConfig(t *testing.T) {
 		},
 	}
 
-	actual := QuickFallbackConfig(term, fallback)
+	actual := NewFallbackConfig(term, fallback)
 	assert.Equal(t, expect, actual)
+}
+
+func TestConfig_WithPlaceholders(t *testing.T) {
+	c1 := Config{
+		Term: "abc",
+	}
+
+	c2 := c1.WithPlaceholders(map[string]interface{}{"def": "ghi"})
+
+	assert.NotEqual(t, c1, c2)
+	assert.Equal(t, c1.Term, c2.Term)
 }
 
 func TestConfig_placeholdersToMap(t *testing.T) {
