@@ -96,7 +96,7 @@ func TestArgumentParsingError_Reason(t *testing.T) {
 			Build()
 
 		e := NewArgumentParsingError("").
-			WithReason(expect)
+			WithReasonlt(term)
 
 		actual := e.Reason(l)
 		assert.Equal(t, expect, actual)
