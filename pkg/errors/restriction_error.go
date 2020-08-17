@@ -25,17 +25,17 @@ func NewRestrictionError(desc string) *RestrictionError {
 
 // NewRestrictionErrorl creates a new RestrictionError using the message
 // generated from the passed localization.Config as description.
-func NewRestrictionErrorl(desc localization.Config) *RestrictionError {
+func NewRestrictionErrorl(description localization.Config) *RestrictionError {
 	return &RestrictionError{
-		descConfig: desc,
+		descConfig: description,
 	}
 }
 
 // NewUserInfolt creates a new RestrictionError using the message generated
 // from the passed term as description.
-func NewRestrictionErrorlt(descTerm string) *RestrictionError {
+func NewRestrictionErrorlt(description localization.Term) *RestrictionError {
 	return NewRestrictionErrorl(localization.Config{
-		Term: descTerm,
+		Term: description,
 	})
 }
 

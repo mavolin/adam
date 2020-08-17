@@ -87,8 +87,8 @@ func TestContext_Replyl(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
-		term    = "abc"
-		content = "def"
+		term    localization.Term = "abc"
+		content                   = "def"
 	)
 
 	ctx := &Context{
@@ -129,8 +129,8 @@ func TestContext_Replylt(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
-		term    = "abc"
-		content = "def"
+		term    localization.Term = "abc"
+		content                   = "def"
 	)
 
 	ctx := &Context{

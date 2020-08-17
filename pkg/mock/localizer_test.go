@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/mavolin/adam/pkg/localization"
 )
 
 func TestLocalizer_Clone(t *testing.T) {
@@ -32,7 +34,7 @@ func TestLocalizer_Build(t *testing.T) {
 	})
 
 	t.Run("expected localization", func(t *testing.T) {
-		term := "abc"
+		var term localization.Term = "abc"
 
 		expect := "def"
 

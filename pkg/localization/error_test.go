@@ -10,7 +10,7 @@ import (
 func TestNoTranslationGeneratedError_Error(t *testing.T) {
 	testCases := []struct {
 		name   string
-		term   string
+		term   Term
 		expect string
 	}{
 		{

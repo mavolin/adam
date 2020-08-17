@@ -26,18 +26,16 @@ func NewUserInfo(desc string) *UserInfo {
 
 // NewUserInfol creates a new UserInfo using the message generated from the
 // passed localization.Config.
-func NewUserInfol(desc localization.Config) *UserInfo {
+func NewUserInfol(description localization.Config) *UserInfo {
 	return &UserInfo{
-		descConfig: desc,
+		descConfig: description,
 	}
 }
 
 // NewUserInfolt creates a new UserInfo using the message generated from the
 // passed term.
-func NewUserInfolt(descTerm string) *UserInfo {
-	return NewUserInfol(localization.Config{
-		Term: descTerm,
-	})
+func NewUserInfolt(description localization.Term) *UserInfo {
+	return NewUserInfol(description.AsConfig())
 }
 
 // Description returns the description of the error and localizes it, if

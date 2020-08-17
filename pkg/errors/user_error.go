@@ -26,18 +26,16 @@ func NewUserError(desc string) *UserError {
 
 // NewUserErrorl creates a new UserError using the message generated from the
 // passed localization.Config as description.
-func NewUserErrorl(desc localization.Config) *UserError {
+func NewUserErrorl(description localization.Config) *UserError {
 	return &UserError{
-		descConfig: desc,
+		descConfig: description,
 	}
 }
 
 // NewUserErrorlt creates a new UserError using the message generated from the
 // passed term as description.
-func NewUserErrorlt(descTerm string) *UserError {
-	return NewUserErrorl(localization.Config{
-		Term: descTerm,
-	})
+func NewUserErrorlt(description localization.Term) *UserError {
+	return NewUserErrorl(description.AsConfig())
 }
 
 // Description returns the description of the error and localizes it, if

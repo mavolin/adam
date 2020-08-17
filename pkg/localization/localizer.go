@@ -7,13 +7,25 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
+// ErrInvalidPlaceholders gets returned, if the type of Placeholders is
+// invalid.
 var ErrInvalidPlaceholders = errors.New("placeholders must be of type map[string]string or struct")
+
+// Term is a type used to make distinction between unlocalized strings and
+// actual Config.Terms easier.
+type Term string
+
+func (t Term) AsConfig() Config {
+	return Config{
+		Term: t,
+	}
+}
 
 // Config is a data struct that contains all information needed to create
 // a localized message.
 type Config struct {
 	// Term is the key of the translation.
-	Term string
+	Term Term
 	// Placeholders contains the placeholder data.
 	// This can either be a map[string]string or a struct (see section
 	// Structs for further info).
@@ -36,8 +48,8 @@ type Config struct {
 	Fallback Fallback
 }
 
-// Term is a utility function that can be used to inline term-only Configs.
-func Term(term string) Config {
+// NewTermConfig is a utility function that can be used to inline term-only Configs.
+func NewTermConfig(term Term) Config {
 	return Config{
 		Term: term,
 	}
@@ -45,7 +57,7 @@ func Term(term string) Config {
 
 // NewFallbackConfig is a utility function that can be used to inline
 // term-only Configs with a fallback.
-func NewFallbackConfig(term, fallback string) Config {
+func NewFallbackConfig(term Term, fallback string) Config {
 	return Config{
 		Term: term,
 		Fallback: Fallback{
@@ -143,11 +155,11 @@ type Localizer struct {
 }
 
 // Localize generates a localized message using the passed config.
-// c.Term must be set.
+// c.NewTermConfig must be set.
 func (l *Localizer) Localize(c Config) (s string, err error) {
 	placeholders, err := c.placeholdersToMap()
 	if err != nil {
-		return c.Term, err
+		return string(c.Term), err
 	}
 
 	if l.f != nil { // try the user-defined translator first, if there is one
@@ -160,12 +172,12 @@ func (l *Localizer) Localize(c Config) (s string, err error) {
 	// otherwise use fallback if there is;
 	// checking other suffices as it will always be set if there is a fallback
 	if c.Fallback.Other == "" {
-		return c.Term, NewNoTranslationGeneratedError(c.Term)
+		return string(c.Term), NewNoTranslationGeneratedError(c.Term)
 	}
 
 	s, err = c.Fallback.genTranslation(placeholders, c.Plural)
 	if err != nil {
-		return c.Term, err
+		return string(c.Term), err
 	}
 
 	return
@@ -173,9 +185,9 @@ func (l *Localizer) Localize(c Config) (s string, err error) {
 
 // LocalizeTerm is a short for
 //		l.Localize(localization.Config{
-//			Term: term,
+//			NewTermConfig: term,
 //		})
-func (l *Localizer) LocalizeTerm(term string) (string, error) { return l.Localize(Config{Term: term}) }
+func (l *Localizer) LocalizeTerm(term Term) (string, error) { return l.Localize(NewTermConfig(term)) }
 
 // MustLocalize is the same as Localize, but it panics if there is an error.
 func (l *Localizer) MustLocalize(c Config) string {
@@ -189,7 +201,7 @@ func (l *Localizer) MustLocalize(c Config) string {
 
 // MustLocalizeTerm is the same as LocalizeTerm, but it panics if there is an
 // error.
-func (l *Localizer) MustLocalizeTerm(term string) string {
+func (l *Localizer) MustLocalizeTerm(term Term) string {
 	s, err := l.LocalizeTerm(term)
 	if err != nil {
 		panic(err)

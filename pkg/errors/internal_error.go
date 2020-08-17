@@ -108,21 +108,21 @@ func Wrapf(err error, format string, args ...interface{}) error {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescription(cause error, desc string) error {
+func WithDescription(cause error, description string) error {
 	if cause == nil {
 		return nil
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
 		ie.descConfig = localization.Config{}
-		ie.descString = desc
+		ie.descString = description
 		return ie
 	}
 
 	return &InternalError{
 		cause:      cause,
 		stack:      stackTrace(cause, 1),
-		descString: desc,
+		descString: description,
 	}
 }
 
@@ -156,13 +156,13 @@ func WithDescriptionf(cause error, format string, args ...interface{}) error {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionl(cause error, desc localization.Config) error {
+func WithDescriptionl(cause error, description localization.Config) error {
 	if cause == nil {
 		return nil
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.descConfig = desc
+		ie.descConfig = description
 		ie.descString = ""
 		return ie
 	}
@@ -170,7 +170,7 @@ func WithDescriptionl(cause error, desc localization.Config) error {
 	return &InternalError{
 		cause:      cause,
 		stack:      stackTrace(cause, 1),
-		descConfig: desc,
+		descConfig: description,
 	}
 }
 
@@ -180,25 +180,21 @@ func WithDescriptionl(cause error, desc localization.Config) error {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionlt(cause error, descTerm string) error {
+func WithDescriptionlt(cause error, description localization.Term) error {
 	if cause == nil {
 		return nil
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.descConfig = localization.Config{
-			Term: descTerm,
-		}
+		ie.descConfig = description.AsConfig()
 		ie.descString = ""
 		return ie
 	}
 
 	return &InternalError{
-		cause: cause,
-		stack: stackTrace(cause, 1),
-		descConfig: localization.Config{
-			Term: descTerm,
-		},
+		cause:      cause,
+		stack:      stackTrace(cause, 1),
+		descConfig: description.AsConfig(),
 	}
 }
 

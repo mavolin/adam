@@ -107,7 +107,7 @@ func (c *Context) Replyl(cfg localization.Config) (*discord.Message, error) {
 
 // Replylt replies with the message translated from the passed term in the
 // channel the command was originally sent in.
-func (c *Context) Replylt(term string) (*discord.Message, error) {
+func (c *Context) Replylt(term localization.Term) (*discord.Message, error) {
 	return c.Replyl(localization.Config{
 		Term: term,
 	})

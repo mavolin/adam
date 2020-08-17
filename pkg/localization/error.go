@@ -10,13 +10,13 @@ import (
 // to produce a translation with the data available, i.e. if neither the
 // underlying LangFunc, nor the Fallback return a non-error value.
 type NoTranslationGeneratedError struct {
-	Term string
+	Term Term
 	s    errorutil.Stack
 }
 
 // NewNoTranslationGeneratedError creates a new NoTranslationGeneratedError
 // for the passed term.
-func NewNoTranslationGeneratedError(term string) *NoTranslationGeneratedError {
+func NewNoTranslationGeneratedError(term Term) *NoTranslationGeneratedError {
 	return &NoTranslationGeneratedError{
 		Term: term,
 		s:    errorutil.GenerateStackTrace(1),

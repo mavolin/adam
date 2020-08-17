@@ -18,5 +18,5 @@ type (
 	//
 	// The third parameter is a number or a string of such defining the plural.
 	// If it is nil, there is no pluralization.
-	LangFunc func(term string, placeholders map[string]interface{}, plural interface{}) (string, error)
+	LangFunc func(term Term, placeholders map[string]interface{}, plural interface{}) (string, error)
 )

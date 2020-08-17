@@ -279,7 +279,7 @@ func TestLocalizedEmbedBuilder_WithSimpleTitle(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleTitle(localization.Term("a")).
+		WithSimpleTitle(localization.NewTermConfig("a")).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -323,7 +323,7 @@ func TestLocalizedEmbedBuilder_WithTitle(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithTitle(localization.Term("a"), url).
+		WithTitle(localization.NewTermConfig("a"), url).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -367,7 +367,7 @@ func TestLocalizedEmbedBuilder_WithDescription(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithDescription(localization.Term("a")).
+		WithDescription(localization.NewTermConfig("a")).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -443,7 +443,7 @@ func TestLocalizedEmbedBuilder_WithSimpleFooter(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleFooter(localization.Term("a")).
+		WithSimpleFooter(localization.NewTermConfig("a")).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -491,7 +491,7 @@ func TestLocalizedEmbedBuilder_WithFooter(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithFooter(localization.Term("a"), icon).
+		WithFooter(localization.NewTermConfig("a"), icon).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -577,7 +577,7 @@ func TestLocalizedEmbedBuilder_WithSimpleAuthor(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleAuthor(localization.Term("a")).
+		WithSimpleAuthor(localization.NewTermConfig("a")).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -625,7 +625,7 @@ func TestLocalizedEmbedBuilder_WithSimpleAuthorWithURL(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleAuthorWithURL(localization.Term("a"), url).
+		WithSimpleAuthorWithURL(localization.NewTermConfig("a"), url).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -677,7 +677,7 @@ func TestLocalizedEmbedBuilder_WithAuthor(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithAuthor(localization.Term("a"), icon).
+		WithAuthor(localization.NewTermConfig("a"), icon).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -731,7 +731,7 @@ func TestLocalizedEmbedBuilder_WithAuthorWithURL(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithAuthorWithURL(localization.Term("a"), icon, url).
+		WithAuthorWithURL(localization.NewTermConfig("a"), icon, url).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -784,7 +784,7 @@ func TestLocalizedEmbedBuilder_WithField(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithField(localization.Term("a"), localization.Term("b")).
+		WithField(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -834,7 +834,7 @@ func TestLocalizedEmbedBuilder_WithInlinedField(t *testing.T) {
 		Build()
 
 	actual, err := NewLocalizedEmbedBuilder().
-		WithInlinedField(localization.Term("a"), localization.Term("b")).
+		WithInlinedField(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
 		Build(l)
 
 	assert.NoError(t, err)
