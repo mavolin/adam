@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -14,6 +15,198 @@ import (
 	"github.com/mavolin/adam/pkg/mock"
 	"github.com/mavolin/adam/pkg/plugin"
 )
+
+func TestWithStack(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := WithStack(nil)
+		assert.Nil(t, err)
+	})
+
+	t.Run("handler", func(t *testing.T) {
+		cause := NewWithStack("abc")
+
+		err := WithStack(cause)
+
+		assert.True(t, cause == err)
+	})
+
+	t.Run("not handler", func(t *testing.T) {
+		cause := New("abc")
+
+		err := WithStack(cause)
+
+		assert.Equal(t, cause.Error(), err.Error())
+		assert.IsType(t, new(InternalError), err)
+
+		casted := err.(*InternalError)
+
+		assert.Equal(t, cause, casted.cause)
+	})
+}
+
+func TestWrap(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := Wrap(nil, "")
+		assert.Nil(t, err)
+	})
+
+	t.Run("not nil", func(t *testing.T) {
+		var (
+			cause   = New("abc")
+			message = "def"
+		)
+
+		err := Wrap(cause, message)
+
+		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
+	})
+}
+
+func TestWrapf(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := Wrapf(nil, "")
+		assert.Nil(t, err)
+	})
+
+	t.Run("not nil", func(t *testing.T) {
+		var (
+			cause   = New("abc")
+			message = "def ghi"
+		)
+
+		err := Wrapf(cause, "def %s", "ghi")
+
+		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
+	})
+}
+
+func TestWithDescription(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := WithDescription(nil, "")
+		assert.Nil(t, err)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		var (
+			cause = new(InternalError)
+			desc  = "abc"
+		)
+
+		err := WithDescription(cause, desc)
+		assert.True(t, err == cause)
+		assert.Equal(t, desc, cause.descString)
+	})
+
+	t.Run("normal error", func(t *testing.T) {
+		var (
+			cause = New("abc")
+			desc  = "def"
+		)
+
+		err := WithDescription(cause, desc)
+		assert.IsType(t, new(InternalError), err)
+
+		casted := err.(*InternalError)
+		assert.Equal(t, cause, casted.cause)
+		assert.Equal(t, desc, casted.descString)
+	})
+}
+
+func TestWithDescriptionf(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := WithDescriptionf(nil, "")
+		assert.Nil(t, err)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		var (
+			cause = new(InternalError)
+			desc  = "abc def"
+		)
+
+		err := WithDescriptionf(cause, "abc %s", "def")
+		assert.True(t, err == cause)
+		assert.Equal(t, desc, cause.descString)
+	})
+
+	t.Run("normal error", func(t *testing.T) {
+		var (
+			cause = New("abc")
+			desc  = "def ghi"
+		)
+
+		err := WithDescriptionf(cause, "def %s", "ghi")
+		assert.IsType(t, new(InternalError), err)
+
+		casted := err.(*InternalError)
+		assert.Equal(t, cause, casted.cause)
+		assert.Equal(t, desc, casted.descString)
+	})
+}
+
+func TestWithDescriptionl(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := WithDescriptionl(nil, localization.Config{})
+		assert.Nil(t, err)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		var (
+			cause = new(InternalError)
+			desc  = localization.NewTermConfig("abc")
+		)
+
+		err := WithDescriptionl(cause, desc)
+		assert.True(t, err == cause)
+		assert.Equal(t, desc, cause.descConfig)
+	})
+
+	t.Run("normal error", func(t *testing.T) {
+		var (
+			cause = New("abc")
+			desc  = localization.NewTermConfig("def")
+		)
+
+		err := WithDescriptionl(cause, desc)
+		assert.IsType(t, new(InternalError), err)
+
+		casted := err.(*InternalError)
+		assert.Equal(t, cause, casted.cause)
+		assert.Equal(t, desc, casted.descConfig)
+	})
+}
+
+func TestWithDescriptionlt(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := WithDescriptionlt(nil, "")
+		assert.Nil(t, err)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		var (
+			cause                   = new(InternalError)
+			desc  localization.Term = "abc"
+		)
+
+		err := WithDescriptionlt(cause, desc)
+		assert.True(t, err == cause)
+		assert.Equal(t, desc.AsConfig(), cause.descConfig)
+	})
+
+	t.Run("normal error", func(t *testing.T) {
+		var (
+			cause                   = New("abc")
+			desc  localization.Term = "def"
+		)
+
+		err := WithDescriptionlt(cause, desc)
+		assert.IsType(t, new(InternalError), err)
+
+		casted := err.(*InternalError)
+		assert.Equal(t, cause, casted.cause)
+		assert.Equal(t, desc.AsConfig(), casted.descConfig)
+	})
+}
 
 func TestInternalError_Description(t *testing.T) {
 	t.Run("string description", func(t *testing.T) {
