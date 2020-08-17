@@ -150,27 +150,26 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 			expectReason = "def"
 		)
 
-		var channelID discord.ChannelID = 123
-
 		m, s := state.NewMocker(t)
 
 		ctx := plugin.NewContext(s)
 		ctx.MessageCreateEvent = &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
-					ChannelID: channelID,
+					ChannelID: 123,
 				},
 			},
 		}
 		ctx.Localizer = mock.NewNoOpLocalizer()
 
+		embed := newErrorEmbedBuilder(ctx.Localizer).
+			WithDescription(expectDesc).
+			WithField("Reason", expectReason).
+			Build()
 		m.SendEmbed(discord.Message{
-			ChannelID: channelID,
+			ChannelID: ctx.ChannelID,
 			Embeds: []discord.Embed{
-				newErrorEmbedBuilder(ctx.Localizer).
-					WithDescription(expectDesc).
-					WithField("Reason", expectReason).
-					Build(),
+				embed,
 			},
 		})
 
