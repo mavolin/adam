@@ -26,6 +26,7 @@ func (e *EmbedBuilder) WithSimpleTitle(title string) *EmbedBuilder {
 func (e *EmbedBuilder) WithTitle(title string, url discord.URL) *EmbedBuilder {
 	e.e.Title = title
 	e.e.URL = url
+
 	return e
 }
 
@@ -215,6 +216,7 @@ func (b *LocalizedEmbedBuilder) WithSimpleTitlet(title localization.Term) *Local
 func (b *LocalizedEmbedBuilder) WithTitle(title localization.Config, url discord.URL) *LocalizedEmbedBuilder {
 	b.title = &title
 	b.url = url
+
 	return b
 }
 
@@ -361,7 +363,6 @@ func (b *LocalizedEmbedBuilder) WithAuthorWithURL(
 // to the embed.
 func (b *LocalizedEmbedBuilder) WithAuthorWithURLt(
 	name localization.Term, icon, url discord.URL) *LocalizedEmbedBuilder {
-
 	return b.WithAuthorWithURL(name.AsConfig(), icon, url)
 }
 
