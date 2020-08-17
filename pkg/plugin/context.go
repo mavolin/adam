@@ -52,15 +52,29 @@ type Context struct {
 	// Location is the timezone of the guild.
 	Location *time.Location
 
+	// HelpCommandIdentifier is the identifier of the help command.
+	HelpCommandIdentifier Identifier
+
+	// BotOwnerIDs contains the ids of the bot owners.
+	BotOwnerIDs []discord.UserID
+
 	// Provider is an embedded interface that provides access to the Commands
 	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.
 	Provider
 
-	// BotOwnerIDs contains the ids of the bot owners.
-	BotOwnerIDs []discord.UserID
-
 	s *state.State
+}
+
+// IsBotOwner checks if the invoking user is a bot owner.
+func (c *Context) IsBotOwner() bool {
+	for _, owner := range c.BotOwnerIDs {
+		if c.Author.ID == owner {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Reply replies with the passed message in the channel the command was

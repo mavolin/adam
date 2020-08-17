@@ -13,6 +13,44 @@ import (
 	"github.com/mavolin/adam/pkg/mock"
 )
 
+func TestContext_IsBotOwner(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		var owner discord.UserID = 123
+
+		ctx := &Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						Author: discord.User{
+							ID: owner,
+						},
+					},
+				},
+			},
+			BotOwnerIDs: []discord.UserID{owner},
+		}
+
+		assert.True(t, ctx.IsBotOwner())
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		ctx := &Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						Author: discord.User{
+							ID: 123,
+						},
+					},
+				},
+			},
+			BotOwnerIDs: []discord.UserID{465},
+		}
+
+		assert.False(t, ctx.IsBotOwner())
+	})
+}
+
 func TestContext_Reply(t *testing.T) {
 	m, s := state.NewMocker(t)
 
