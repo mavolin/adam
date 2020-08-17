@@ -8,6 +8,13 @@ import (
 	"github.com/mavolin/adam/pkg/localization"
 )
 
+func TestNewNoOpLocalizer(t *testing.T) {
+	l := NewNoOpLocalizer()
+
+	_, err := l.LocalizeTerm("abc")
+	assert.Error(t, err)
+}
+
 func TestLocalizer_Clone(t *testing.T) {
 	l1 := NewLocalizer().
 		On("abc", "def")
@@ -34,17 +41,30 @@ func TestLocalizer_Build(t *testing.T) {
 	})
 
 	t.Run("expected localization", func(t *testing.T) {
-		var term localization.Term = "abc"
+		t.Run("error on", func(t *testing.T) {
+			var term localization.Term = "abc"
 
-		expect := "def"
+			l := NewLocalizer().
+				ErrorOn(term).
+				Build()
 
-		l := NewLocalizer().
-			On(term, expect).
-			Build()
+			_, err := l.LocalizeTerm(term)
+			assert.Error(t, err)
+		})
 
-		actual, err := l.LocalizeTerm(term)
-		assert.NoError(t, err)
-		assert.Equal(t, expect, actual)
+		t.Run("on", func(t *testing.T) {
+			var term localization.Term = "abc"
+
+			expect := "def"
+
+			l := NewLocalizer().
+				On(term, expect).
+				Build()
+
+			actual, err := l.LocalizeTerm(term)
+			assert.NoError(t, err)
+			assert.Equal(t, expect, actual)
+		})
 	})
 
 	t.Run("unexpected localization", func(t *testing.T) {
