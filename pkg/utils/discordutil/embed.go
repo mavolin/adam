@@ -309,7 +309,9 @@ func (b *LocalizedEmbedBuilder) WithSimpleAuthort(name localization.Term) *Local
 
 // WithSimpleAuthorWithURL adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *LocalizedEmbedBuilder) WithSimpleAuthorWithURL(name localization.Config, url discord.URL) *LocalizedEmbedBuilder {
+func (b *LocalizedEmbedBuilder) WithSimpleAuthorWithURL(
+	name localization.Config, url discord.URL) *LocalizedEmbedBuilder {
+
 	b.author = &localizedAuthor{
 		name: name,
 		url:  url,
@@ -320,7 +322,9 @@ func (b *LocalizedEmbedBuilder) WithSimpleAuthorWithURL(name localization.Config
 
 // WithSimpleAuthorWithURLt adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *LocalizedEmbedBuilder) WithSimpleAuthorWithURLt(name localization.Term, url discord.URL) *LocalizedEmbedBuilder {
+func (b *LocalizedEmbedBuilder) WithSimpleAuthorWithURLt(
+	name localization.Term, url discord.URL) *LocalizedEmbedBuilder {
+
 	return b.WithSimpleAuthorWithURL(name.AsConfig(), url)
 }
 
@@ -341,7 +345,9 @@ func (b *LocalizedEmbedBuilder) WithAuthort(name localization.Term, icon discord
 
 // WithAuthorWithURLt adds an author (max 256 characters) with an icon and a URL
 // to the embed.
-func (b *LocalizedEmbedBuilder) WithAuthorWithURL(name localization.Config, icon, url discord.URL) *LocalizedEmbedBuilder {
+func (b *LocalizedEmbedBuilder) WithAuthorWithURL(
+	name localization.Config, icon, url discord.URL) *LocalizedEmbedBuilder {
+
 	b.author = &localizedAuthor{
 		name: name,
 		icon: icon,
@@ -353,7 +359,9 @@ func (b *LocalizedEmbedBuilder) WithAuthorWithURL(name localization.Config, icon
 
 // WithAuthorWithURLt adds an author (max 256 characters) with an icon and a URL
 // to the embed.
-func (b *LocalizedEmbedBuilder) WithAuthorWithURLt(name localization.Term, icon, url discord.URL) *LocalizedEmbedBuilder {
+func (b *LocalizedEmbedBuilder) WithAuthorWithURLt(
+	name localization.Term, icon, url discord.URL) *LocalizedEmbedBuilder {
+
 	return b.WithAuthorWithURL(name.AsConfig(), icon, url)
 }
 
@@ -398,14 +406,14 @@ func (b *LocalizedEmbedBuilder) Build(l *localization.Localizer) (e discord.Embe
 	if b.title != nil {
 		e.Title, err = l.Localize(*b.title)
 		if err != nil {
-			return discord.Embed{}, err
+			return
 		}
 	}
 
 	if b.description != nil {
 		e.Description, err = l.Localize(*b.description)
 		if err != nil {
-			return discord.Embed{}, err
+			return
 		}
 	}
 
@@ -420,7 +428,7 @@ func (b *LocalizedEmbedBuilder) Build(l *localization.Localizer) (e discord.Embe
 
 		e.Footer.Text, err = l.Localize(b.footer.text)
 		if err != nil {
-			return discord.Embed{}, err
+			return
 		}
 	}
 
@@ -444,7 +452,7 @@ func (b *LocalizedEmbedBuilder) Build(l *localization.Localizer) (e discord.Embe
 
 		e.Author.Name, err = l.Localize(b.author.name)
 		if err != nil {
-			return discord.Embed{}, err
+			return
 		}
 	}
 
@@ -458,7 +466,7 @@ func (b *LocalizedEmbedBuilder) Build(l *localization.Localizer) (e discord.Embe
 		if f.name != nil {
 			name, err = l.Localize(*f.name)
 			if err != nil {
-				return discord.Embed{}, err
+				return
 			}
 		}
 
@@ -467,7 +475,7 @@ func (b *LocalizedEmbedBuilder) Build(l *localization.Localizer) (e discord.Embe
 		if f.value != nil {
 			value, err = l.Localize(*f.value)
 			if err != nil {
-				return discord.Embed{}, err
+				return
 			}
 		}
 
