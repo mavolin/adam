@@ -16,8 +16,10 @@ var (
 	insufficientBotPermissionsDesc = localization.NewFallbackConfig("errors.insufficient_bot_permissions.description",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
 			"permissions and try again.")
-	insufficientBotPermissionMissingPermissionField = localization.NewFallbackConfig(
-		"errors.insufficient_bot_permissions.missing_permission", "Missing Permission")
+	insufficientBotPermissionMissingPermissionFieldName = localization.NewFallbackConfig(
+		"errors.insufficient_bot_permissions.missing_permission.name", "Missing Permission")
+
+	argumentParsingReasonFieldName = localization.NewFallbackConfig("errors.argument_parsing.reason.name", "Reason")
 
 	errorIDFooter = localization.NewFallbackConfig("errors.error_id", "Error-ID: {{.error_id}}")
 )

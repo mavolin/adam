@@ -35,23 +35,23 @@ func (e *InsufficientBotPermissionsError) Description(l *localization.Localizer)
 }
 
 func (e *InsufficientBotPermissionsError) Error() string {
-	return fmt.Sprintf("MissingPermissions bot permissions: %d", e.MissingPermissions)
+	return fmt.Sprintf("missingPermissions bot permissions: %d", e.MissingPermissions)
 }
 
 func (e *InsufficientBotPermissionsError) Is(err error) bool {
-	ierr, ok := err.(*InsufficientBotPermissionsError)
+	casted, ok := err.(*InsufficientBotPermissionsError)
 	if !ok {
 		return false
 	}
 
-	return e.MissingPermissions == ierr.MissingPermissions
+	return e.MissingPermissions == casted.MissingPermissions
 }
 
 // Handle sends an error message stating the MissingPermissions permissions.
 func (e *InsufficientBotPermissionsError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 	permNames := discordutil.PermissionNamesl(e.MissingPermissions, ctx.Localizer)
 
-	perms, _ := ctx.Localize(insufficientBotPermissionMissingPermissionField)
+	perms, _ := ctx.Localize(insufficientBotPermissionMissingPermissionFieldName)
 	permsVal := "• " + strings.Join(permNames, "\n• ")
 
 	embed := newErrorEmbedBuilder(ctx.Localizer).
