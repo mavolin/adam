@@ -28,7 +28,7 @@ func newErrorEmbedBuilder(l *localization.Localizer) *discordutil.EmbedBuilder {
 		WithColor(constant.ErrorColor)
 }
 
-func newInfoEmbedBuild(l *localization.Localizer) *discordutil.EmbedBuilder {
+func newInfoEmbedBuilder(l *localization.Localizer) *discordutil.EmbedBuilder {
 	// the error can be ignored, because there is fallback
 	title, _ := l.Localize(infoTitle)
 

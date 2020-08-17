@@ -57,7 +57,7 @@ func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 		return err
 	}
 
-	embed := newInfoEmbedBuild(ctx.Localizer).
+	embed := newInfoEmbedBuilder(ctx.Localizer).
 		WithDescription(desc)
 
 	_, err = ctx.ReplyEmbedBuilder(embed)
