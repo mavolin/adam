@@ -47,8 +47,6 @@ type Context struct {
 
 	// Prefix is the prefix of the bot in the guild.
 	Prefix string
-	// Lang is the language in the guild.
-	Lang string
 	// Location is the timezone of the guild.
 	Location *time.Location
 
