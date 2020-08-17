@@ -8,6 +8,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/mavolin/disstate/pkg/state"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/mock"
@@ -78,7 +79,7 @@ func TestInternalError_Handle(t *testing.T) {
 	e := WithDescription(New(""), expectDesc).(Handler)
 
 	err := e.Handle(s, ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	m.Eval()
 }

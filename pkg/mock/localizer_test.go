@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
 )
@@ -36,7 +37,7 @@ func TestLocalizer_Build(t *testing.T) {
 			Build()
 
 		actual, err := l.LocalizeTerm("")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -62,7 +63,7 @@ func TestLocalizer_Build(t *testing.T) {
 				Build()
 
 			actual, err := l.LocalizeTerm(term)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, expect, actual)
 		})
 	})

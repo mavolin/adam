@@ -142,7 +142,7 @@ func TestConfig_placeholdersToMap(t *testing.T) {
 			}
 
 			actual, err := cfg.placeholdersToMap()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -436,7 +436,7 @@ func TestLocalizer_MustLocalizeTerm(t *testing.T) {
 
 		var actual string
 
-		assert.NotPanics(t, func() {
+		require.NotPanics(t, func() {
 			actual = l.MustLocalizeTerm(expectTerm)
 		})
 		assert.Equal(t, expect, actual)

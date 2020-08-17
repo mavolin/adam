@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/mock"
@@ -370,7 +371,7 @@ func TestLocalizedEmbedBuilder_WithDescription(t *testing.T) {
 		WithDescription(localization.NewTermConfig("a")).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -390,7 +391,7 @@ func TestLocalizedEmbedBuilder_WithDescriptiont(t *testing.T) {
 		WithDescriptiont("a").
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -407,7 +408,7 @@ func TestLocalizedEmbedBuilder_WithTimestamp(t *testing.T) {
 		WithTimestamp(timestamp).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -424,7 +425,7 @@ func TestLocalizedEmbedBuilder_WithColor(t *testing.T) {
 		WithColor(color).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -446,7 +447,7 @@ func TestLocalizedEmbedBuilder_WithSimpleFooter(t *testing.T) {
 		WithSimpleFooter(localization.NewTermConfig("a")).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -468,7 +469,7 @@ func TestLocalizedEmbedBuilder_WithSimpleFootert(t *testing.T) {
 		WithSimpleFootert("a").
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -494,7 +495,7 @@ func TestLocalizedEmbedBuilder_WithFooter(t *testing.T) {
 		WithFooter(localization.NewTermConfig("a"), icon).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -520,7 +521,7 @@ func TestLocalizedEmbedBuilder_WithFootert(t *testing.T) {
 		WithFootert("a", icon).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -539,7 +540,7 @@ func TestLocalizedEmbedBuilder_WithImage(t *testing.T) {
 		WithImage(image).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -558,7 +559,7 @@ func TestLocalizedEmbedBuilder_WithThumbnail(t *testing.T) {
 		WithThumbnail(thumbnail).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -580,7 +581,7 @@ func TestLocalizedEmbedBuilder_WithSimpleAuthor(t *testing.T) {
 		WithSimpleAuthor(localization.NewTermConfig("a")).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -602,7 +603,7 @@ func TestLocalizedEmbedBuilder_WithSimpleAuthort(t *testing.T) {
 		WithSimpleAuthort("a").
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -628,7 +629,7 @@ func TestLocalizedEmbedBuilder_WithSimpleAuthorWithURL(t *testing.T) {
 		WithSimpleAuthorWithURL(localization.NewTermConfig("a"), url).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -654,7 +655,7 @@ func TestLocalizedEmbedBuilder_WithSimpleAuthorWithURLt(t *testing.T) {
 		WithSimpleAuthorWithURLt("a", url).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -680,7 +681,7 @@ func TestLocalizedEmbedBuilder_WithAuthor(t *testing.T) {
 		WithAuthor(localization.NewTermConfig("a"), icon).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -706,7 +707,7 @@ func TestLocalizedEmbedBuilder_WithAuthort(t *testing.T) {
 		WithAuthort("a", icon).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -734,7 +735,7 @@ func TestLocalizedEmbedBuilder_WithAuthorWithURL(t *testing.T) {
 		WithAuthorWithURL(localization.NewTermConfig("a"), icon, url).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -762,7 +763,7 @@ func TestLocalizedEmbedBuilder_WithAuthorWithURLt(t *testing.T) {
 		WithAuthorWithURLt("a", icon, url).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -787,7 +788,7 @@ func TestLocalizedEmbedBuilder_WithField(t *testing.T) {
 		WithField(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -812,7 +813,7 @@ func TestLocalizedEmbedBuilder_WithFieldt(t *testing.T) {
 		WithFieldt("a", "b").
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -837,7 +838,7 @@ func TestLocalizedEmbedBuilder_WithInlinedField(t *testing.T) {
 		WithInlinedField(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -862,6 +863,6 @@ func TestLocalizedEmbedBuilder_WithInlinedFieldt(t *testing.T) {
 		WithInlinedFieldt("a", "b").
 		Build(l)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }

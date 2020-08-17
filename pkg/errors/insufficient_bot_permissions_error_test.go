@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/pkg/state"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/mock"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -66,7 +67,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 	e := NewInsufficientBotPermissionsError(discord.PermissionAdministrator | discord.PermissionStream)
 
 	err := e.Handle(s, ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	m.Eval()
 }

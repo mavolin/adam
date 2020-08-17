@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/pkg/state"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/mock"
@@ -68,7 +69,7 @@ func TestArgumentParsingError_Description(t *testing.T) {
 		e := NewArgumentParsingErrorlt(term)
 
 		actual, err := e.Description(l)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -139,7 +140,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		e := NewArgumentParsingError(expectDesc)
 
 		err := e.Handle(nil, ctx)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		m.Eval()
 	})
@@ -177,7 +178,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 			WithReason(expectReason)
 
 		err := e.Handle(s, ctx)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		m.Eval()
 	})
