@@ -17,7 +17,7 @@ var (
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
 			"permissions and try again.")
 	insufficientBotPermissionMissingPermissionFieldName = localization.NewFallbackConfig(
-		"errors.insufficient_bot_permissions.missing_permission.name", "Missing Permission")
+		"errors.insufficient_bot_permissions.missing_permission.name", "Missing Permissions")
 
 	argumentParsingReasonFieldName = localization.NewFallbackConfig("errors.argument_parsing.reason.name", "Reason")
 
