@@ -78,7 +78,6 @@ func (e *ArgumentParsingError) Description(l *localization.Localizer) (string, e
 	}
 
 	return desc, nil
-
 }
 
 // Reason returns the reason of the error and to localizes it, if
