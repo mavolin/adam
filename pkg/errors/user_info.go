@@ -1,10 +1,8 @@
 package errors
 
 import (
-	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -36,9 +34,9 @@ func NewUserInfol(desc localization.Config) *UserInfo {
 
 // NewUserInfolt creates a new UserInfo using the message generated from the
 // passed term.
-func NewUserInfolt(term string) *UserInfo {
+func NewUserInfolt(descTerm string) *UserInfo {
 	return NewUserInfol(localization.Config{
-		Term: term,
+		Term: descTerm,
 	})
 }
 
@@ -55,20 +53,15 @@ func (i *UserInfo) Description(l *localization.Localizer) (string, error) {
 func (i *UserInfo) Error() string { return "user info" }
 
 // Handle sends an info embed with the description of the UserInfo.
-func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) error {
-	// we can ignore the error, because the fallback is set
-	title, _ := ctx.Localize(infoTitleConfig)
-
+func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 	desc, err := i.Description(ctx.Localizer)
 	if err != nil {
 		return err
 	}
 
-	_, err = ctx.ReplyEmbed(discord.Embed{
-		Title:       title,
-		Description: desc,
-		Color:       constant.InfoColor,
-	})
+	embed := newInfoEmbedBuild(ctx.Localizer).
+		WithDescription(desc)
 
-	return err
+	_, err = ctx.ReplyEmbedBuilder(embed)
+	return
 }

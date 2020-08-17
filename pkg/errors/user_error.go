@@ -1,10 +1,8 @@
 package errors
 
 import (
-	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -36,9 +34,9 @@ func NewUserErrorl(desc localization.Config) *UserError {
 
 // NewUserErrorlt creates a new UserError using the message generated from the
 // passed term as description.
-func NewUserErrorlt(term string) *UserError {
+func NewUserErrorlt(descTerm string) *UserError {
 	return NewUserErrorl(localization.Config{
-		Term: term,
+		Term: descTerm,
 	})
 }
 
@@ -56,19 +54,14 @@ func (e *UserError) Error() string { return "user error" }
 
 // Handle sends an error embed with the description of the UserError.
 func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) error {
-	// we can ignore the error, because the fallback is set
-	title, _ := ctx.Localize(errorTitleConfig)
-
 	desc, err := e.Description(ctx.Localizer)
 	if err != nil {
 		return err
 	}
 
-	_, err = ctx.ReplyEmbed(discord.Embed{
-		Title:       title,
-		Description: desc,
-		Color:       constant.ErrorColor,
-	})
+	embed := newErrorEmbedBuilder(ctx.Localizer).
+		WithDescription(desc)
 
+	_, err = ctx.ReplyEmbedBuilder(embed)
 	return err
 }

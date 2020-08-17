@@ -3,11 +3,9 @@ package errors
 import (
 	"fmt"
 
-	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 	"github.com/mavolin/logstract/pkg/logstract"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -54,7 +52,7 @@ func withStack(err error, skip int) error {
 	return &InternalError{
 		cause:      err,
 		stack:      stackTrace(err, 1+skip),
-		descConfig: defaultInternalDescConfig,
+		descConfig: defaultInternalDesc,
 	}
 }
 
@@ -81,7 +79,7 @@ func Wrap(err error, message string) error {
 			cause: err,
 		},
 		stack:      stackTrace(err, 1),
-		descConfig: defaultInternalDescConfig,
+		descConfig: defaultInternalDesc,
 	}
 }
 
@@ -100,7 +98,7 @@ func Wrapf(err error, format string, args ...interface{}) error {
 			cause: err,
 		},
 		stack:      stackTrace(err, 1),
-		descConfig: defaultInternalDescConfig,
+		descConfig: defaultInternalDesc,
 	}
 }
 
@@ -109,7 +107,7 @@ func Wrapf(err error, format string, args ...interface{}) error {
 // The description will be sent instead of a generic error message.
 //
 // When using a custom error handler, the description can be retrieved by
-// calling internalError.Description(localizer).
+// calling internalError.WithDescription(localizer).
 func WithDescription(cause error, desc string) error {
 	if cause == nil {
 		return nil
@@ -133,7 +131,7 @@ func WithDescription(cause error, desc string) error {
 // The description will be sent instead of a generic error message.
 //
 // When using a custom error handler, the description can be retrieved by
-// calling internalError.Description(localizer).
+// calling internalError.WithDescription(localizer).
 func WithDescriptionf(cause error, format string, args ...interface{}) error {
 	if cause == nil {
 		return nil
@@ -157,14 +155,14 @@ func WithDescriptionf(cause error, format string, args ...interface{}) error {
 // The description will be sent instead of a generic error message.
 //
 // When using a custom error handler, the description can be retrieved by
-// calling internalError.Description(localizer).
-func WithDescriptionl(cause error, c localization.Config) error {
+// calling internalError.WithDescription(localizer).
+func WithDescriptionl(cause error, desc localization.Config) error {
 	if cause == nil {
 		return nil
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.descConfig = c
+		ie.descConfig = desc
 		ie.descString = ""
 		return ie
 	}
@@ -172,7 +170,7 @@ func WithDescriptionl(cause error, c localization.Config) error {
 	return &InternalError{
 		cause:      cause,
 		stack:      stackTrace(cause, 1),
-		descConfig: c,
+		descConfig: desc,
 	}
 }
 
@@ -181,15 +179,15 @@ func WithDescriptionl(cause error, c localization.Config) error {
 // The description will be sent instead of a generic error message.
 //
 // When using a custom error handler, the description can be retrieved by
-// calling internalError.Description(localizer).
-func WithDescriptionlt(cause error, term string) error {
+// calling internalError.WithDescription(localizer).
+func WithDescriptionlt(cause error, descTerm string) error {
 	if cause == nil {
 		return nil
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
 		ie.descConfig = localization.Config{
-			Term: term,
+			Term: descTerm,
 		}
 		ie.descString = ""
 		return ie
@@ -199,7 +197,7 @@ func WithDescriptionlt(cause error, term string) error {
 		cause: cause,
 		stack: stackTrace(cause, 1),
 		descConfig: localization.Config{
-			Term: term,
+			Term: descTerm,
 		},
 	}
 }
@@ -214,7 +212,7 @@ func (e *InternalError) Description(l *localization.Localizer) (desc string) {
 	var err error
 	if desc, err = l.Localize(e.descConfig); err != nil {
 		// we can ignore the error, as there is a fallback
-		desc, _ = l.Localize(defaultInternalDescConfig)
+		desc, _ = l.Localize(defaultInternalDesc)
 	}
 
 	return desc
@@ -235,33 +233,20 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 
 	eventID := ctx.Hub.CaptureException(e)
 
-	// we can ignore the error, as we have a fallback.
-	title, _ := ctx.Localize(errorTitleConfig)
-
-	embed := discord.Embed{
-		Title:       title,
-		Description: e.Description(ctx.Localizer),
-		Color:       constant.ErrorColor,
-	}
+	embed := newErrorEmbedBuilder(ctx.Localizer).
+		WithDescription(e.Description(ctx.Localizer))
 
 	if eventID != nil {
 		// we can ignore the error, as we have a fallback.
-		footerText, _ := ctx.Localize(localization.Config{
-			Term: termErrorID,
-			Placeholders: errorIDPlaceholders{
+		footerText, _ := ctx.Localize(errorIDFooter.
+			WithPlaceholders(errorIDPlaceholders{
 				ErrorID: string(*eventID),
-			},
-			Fallback: localization.Fallback{
-				Other: "Error-ID: {{.error_id}}",
-			},
-		})
+			}))
 
-		embed.Footer = &discord.EmbedFooter{
-			Text: footerText,
-		}
+		embed.WithSimpleFooter(footerText)
 	}
 
-	_, err := ctx.ReplyEmbed(embed)
+	_, err := ctx.ReplyEmbedBuilder(embed)
 
 	return err
 }

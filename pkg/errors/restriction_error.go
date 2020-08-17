@@ -1,15 +1,13 @@
 package errors
 
 import (
-	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-var DefaultRestrictionError = NewRestrictionErrorl(defaultRestrictionDescConfig)
+var DefaultRestrictionError = NewRestrictionErrorl(defaultRestrictionDesc)
 
 type RestrictionError struct {
 	// description of the error, either is set
@@ -35,9 +33,9 @@ func NewRestrictionErrorl(desc localization.Config) *RestrictionError {
 
 // NewUserInfolt creates a new RestrictionError using the message generated
 // from the passed term as description.
-func NewRestrictionErrorlt(term string) *RestrictionError {
+func NewRestrictionErrorlt(descTerm string) *RestrictionError {
 	return NewRestrictionErrorl(localization.Config{
-		Term: term,
+		Term: descTerm,
 	})
 }
 
@@ -51,7 +49,7 @@ func (e *RestrictionError) Description(l *localization.Localizer) (desc string) 
 	var err error
 	if desc, err = l.Localize(e.descConfig); err != nil {
 		// we can ignore the error, as there is a fallback
-		desc, _ = l.Localize(defaultInternalDescConfig)
+		desc, _ = l.Localize(defaultInternalDesc)
 	}
 
 	return desc
@@ -60,15 +58,10 @@ func (e *RestrictionError) Description(l *localization.Localizer) (desc string) 
 func (e *RestrictionError) Error() string { return "user error" }
 
 // Handle sends an error embed with the description of the UserError.
-func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
-	// we can ignore the error, because the fallback is set
-	title, _ := ctx.Localize(errorTitleConfig)
+func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
+	embed := newErrorEmbedBuilder(ctx.Localizer).
+		WithDescription(e.Description(ctx.Localizer))
 
-	_, err := ctx.ReplyEmbed(discord.Embed{
-		Title:       title,
-		Description: e.Description(ctx.Localizer),
-		Color:       constant.ErrorColor,
-	})
-
-	return err
+	_, err = ctx.ReplyEmbedBuilder(embed)
+	return
 }
