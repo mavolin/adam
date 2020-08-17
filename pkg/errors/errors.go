@@ -3,4 +3,5 @@
 //
 // Additionally, errors defines custom error types that are specially handled
 // when returned by plugin.Command.Invoke.
+// See their XError.Handle methods description for more info.
 package errors
