@@ -176,7 +176,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		e := NewArgumentParsingError(expectDesc).
 			WithReason(expectReason)
 
-		err := e.Handle(nil, ctx)
+		err := e.Handle(s, ctx)
 		assert.NoError(t, err)
 
 		m.Eval()
