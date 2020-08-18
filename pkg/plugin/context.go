@@ -81,6 +81,23 @@ func (c *Context) Reply(content string) (*discord.Message, error) {
 	return c.s.SendText(c.ChannelID, content)
 }
 
+// Replyl replies with the message translated from the passed
+// localization.Config in the channel the command was originally sent in.
+func (c *Context) Replyl(cfg localization.Config) (*discord.Message, error) {
+	s, err := c.Localizer.Localize(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.Reply(s)
+}
+
+// Replylt replies with the message translated from the passed term in the
+// channel the command was originally sent in.
+func (c *Context) Replylt(term localization.Term) (*discord.Message, error) {
+	return c.Replyl(term.AsConfig())
+}
+
 // ReplyEmbed replies with the passed discord.Embed in the channel the command
 // was originally sent in.
 func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
@@ -106,29 +123,69 @@ func (c *Context) ReplyLocalizedEmbedBuilder(e *discordutil.LocalizedEmbedBuilde
 	return c.ReplyEmbed(b)
 }
 
+// ReplyMessage sends the passed api.SendMessageData to the channel the command
+// was originally sent in.
+func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
+	return c.s.SendMessageComplex(c.ChannelID, data)
+}
+
+// Reply replies with the passed message in the channel the command was
+// originally sent in.
+func (c *Context) ReplyDM(content string) (*discord.Message, error) {
+	return c.ReplyMessageDM(api.SendMessageData{Content: content})
+}
+
 // Replyl replies with the message translated from the passed
 // localization.Config in the channel the command was originally sent in.
-func (c *Context) Replyl(cfg localization.Config) (*discord.Message, error) {
+func (c *Context) ReplyDMl(cfg localization.Config) (*discord.Message, error) {
 	s, err := c.Localizer.Localize(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.Reply(s)
+	return c.ReplyDM(s)
 }
 
 // Replylt replies with the message translated from the passed term in the
 // channel the command was originally sent in.
-func (c *Context) Replylt(term localization.Term) (*discord.Message, error) {
-	return c.Replyl(localization.Config{
-		Term: term,
-	})
+func (c *Context) ReplyDMlt(term localization.Term) (*discord.Message, error) {
+	return c.ReplyDMl(term.AsConfig())
+}
+
+// ReplyEmbed replies with the passed discord.Embed in the channel the command
+// was originally sent in.
+func (c *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
+	return c.ReplyMessageDM(api.SendMessageData{Embed: &e})
+}
+
+// ReplyEmbedBuilder builds the discord.Embed from the passed
+// discordutil.EmbedBuilder and sends it in the channel the command was sent
+// in.
+func (c *Context) ReplyEmbedBuilderDM(e *discordutil.EmbedBuilder) (*discord.Message, error) {
+	return c.ReplyEmbedDM(e.Build())
+}
+
+// ReplyLocalizedEmbedBuilder builds the discord.Embed from the passed
+// discordutil.LocalizedEmbedBuilder and sends it in the channel the command
+// was sent  in.
+func (c *Context) ReplyLocalizedEmbedBuilderDM(e *discordutil.LocalizedEmbedBuilder) (*discord.Message, error) {
+	b, err := e.Build(c.Localizer)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.ReplyEmbedDM(b)
 }
 
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
-func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	return c.s.SendMessageComplex(c.ChannelID, data)
+func (c *Context) ReplyMessageDM(data api.SendMessageData) (*discord.Message, error) {
+	channel, err := c.s.CreatePrivateChannel(c.Author.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.s.SendMessageComplex(channel.ID, data)
 }
 
 type (
