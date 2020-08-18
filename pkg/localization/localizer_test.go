@@ -238,12 +238,124 @@ func TestFallback_genTranslation(t *testing.T) {
 	})
 }
 
+func TestLocalizer_WithDefaultPlaceholder(t *testing.T) {
+	t.Run("new map", func(t *testing.T) {
+		k, v := "abc", "def"
+
+		expect := map[string]interface{}{
+			k: v,
+		}
+
+		l := new(Localizer)
+		l.WithDefaultPlaceholder(k, v)
+
+		assert.Equal(t, expect, l.defaultPlaceholders)
+	})
+
+	t.Run("append map", func(t *testing.T) {
+		k, v := "ghi", "jkl"
+
+		expect := map[string]interface{}{
+			"abc": "def",
+			k:     v,
+		}
+
+		l := &Localizer{
+			defaultPlaceholders: map[string]interface{}{
+				"abc": "def",
+			},
+		}
+
+		l.WithDefaultPlaceholder(k, v)
+
+		assert.Equal(t, expect, l.defaultPlaceholders)
+	})
+
+	t.Run("overwrite map", func(t *testing.T) {
+		k, v := "abc", "ghi"
+
+		expect := map[string]interface{}{
+			k: v,
+		}
+
+		l := &Localizer{
+			defaultPlaceholders: map[string]interface{}{
+				k: "def",
+			},
+		}
+
+		l.WithDefaultPlaceholder(k, v)
+
+		assert.Equal(t, expect, l.defaultPlaceholders)
+	})
+}
+
+func TestLocalizer_WithDefaultPlaceholders(t *testing.T) {
+	t.Run("new map", func(t *testing.T) {
+		m := map[string]interface{}{
+			"abc": 123,
+			"def": "ghi",
+		}
+
+		l := new(Localizer)
+		l.WithDefaultPlaceholders(m)
+
+		assert.Equal(t, m, l.defaultPlaceholders)
+	})
+
+	t.Run("append map", func(t *testing.T) {
+		m := map[string]interface{}{
+			"ghi": 123,
+			"jkl": "mno",
+		}
+
+		expect := map[string]interface{}{
+			"abc": "def",
+			"ghi": 123,
+			"jkl": "mno",
+		}
+
+		l := &Localizer{
+			defaultPlaceholders: map[string]interface{}{
+				"abc": "def",
+			},
+		}
+
+		l.WithDefaultPlaceholders(m)
+
+		assert.Equal(t, expect, l.defaultPlaceholders)
+	})
+
+	t.Run("overwrite map", func(t *testing.T) {
+		m := map[string]interface{}{
+			"abc": 123,
+			"def": "ghi",
+		}
+
+		expect := map[string]interface{}{
+			"abc": 123,
+			"def": "ghi",
+		}
+
+		l := &Localizer{
+			defaultPlaceholders: map[string]interface{}{
+				"abc": "def",
+			},
+		}
+
+		l.WithDefaultPlaceholders(m)
+
+		assert.Equal(t, expect, l.defaultPlaceholders)
+	})
+}
+
 func TestLocalizer_Localize(t *testing.T) {
 	successCases := []struct {
-		name     string
-		langFunc func(*testing.T) LangFunc
-		config   Config
-		expect   string
+		name                string
+		defaultPlaceholders map[string]interface{}
+		langFunc            func(*testing.T) LangFunc
+		config              Config
+		expect              string
 	}{
 		{
 			name: "lang func",
@@ -270,8 +382,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			expect: "abc",
 		},
 		{
-			name:     "fallback",
-			langFunc: nil,
+			name: "fallback",
 			config: Config{
 				Fallback: Fallback{
 					Other: "abc",
@@ -279,17 +390,30 @@ func TestLocalizer_Localize(t *testing.T) {
 			},
 			expect: "abc",
 		},
+		{
+			name: "default placeholders",
+			defaultPlaceholders: map[string]interface{}{
+				"def": "ghi",
+			},
+			config: Config{
+				Fallback: Fallback{
+					Other: "abc {{.def}}",
+				},
+			},
+			expect: "abc ghi",
+		},
 	}
 
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
-			if c.langFunc == nil {
-				c.langFunc = func(t *testing.T) LangFunc { return nil }
-			}
-
 			t.Run(c.name, func(t *testing.T) {
+				if c.langFunc == nil {
+					c.langFunc = func(t *testing.T) LangFunc { return nil }
+				}
+
 				l := &Localizer{
-					f: c.langFunc(t),
+					f:                   c.langFunc(t),
+					defaultPlaceholders: c.defaultPlaceholders,
 				}
 
 				actual, err := l.Localize(c.config)

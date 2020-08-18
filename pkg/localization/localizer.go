@@ -152,6 +152,36 @@ type Localizer struct {
 	// This does not account for possible fallbacks being used, because
 	// the wanted language was not available.
 	Lang string
+
+	// defaultPlaceholders is a list of placeholders that is automatically
+	// added to every config.
+	defaultPlaceholders map[string]interface{}
+}
+
+// WithDefaultPlaceholder adds the passed default placeholder to the Localizer.
+func (l *Localizer) WithDefaultPlaceholder(key string, val interface{}) {
+	if l.defaultPlaceholders == nil {
+		l.defaultPlaceholders = map[string]interface{}{
+			key: val,
+		}
+
+		return
+	}
+
+	l.defaultPlaceholders[key] = val
+}
+
+// WithDefaultPlaceholders adds the passed default placeholders to the
+// Localizer.
+func (l *Localizer) WithDefaultPlaceholders(p map[string]interface{}) {
+	if l.defaultPlaceholders == nil {
+		l.defaultPlaceholders = p
+		return
+	}
+
+	for k, v := range p {
+		l.defaultPlaceholders[k] = v
+	}
 }
 
 // Localize generates a localized message using the passed config.
@@ -160,6 +190,18 @@ func (l *Localizer) Localize(c Config) (s string, err error) {
 	placeholders, err := c.placeholdersToMap()
 	if err != nil {
 		return string(c.Term), err
+	}
+
+	if placeholders == nil && len(l.defaultPlaceholders) > 0 {
+		placeholders = make(map[string]interface{}, len(l.defaultPlaceholders))
+	}
+
+	for k, v := range l.defaultPlaceholders {
+		if _, ok := placeholders[k]; ok {
+			continue
+		}
+
+		placeholders[k] = v
 	}
 
 	if l.f != nil { // try the user-defined translator first, if there is one
