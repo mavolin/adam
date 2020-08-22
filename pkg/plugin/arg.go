@@ -21,15 +21,22 @@ type (
 		// and Flags.
 		// args is the trimmed message, with prefix and command stripped.
 		Parse(args string, s *state.State, ctx *Context) (Args, Flags, error)
-		// ArgsInfo returns localized information about the arguments and
-		// flags.
-		ArgsInfo(l *localization.Localizer) ([]ArgsInfo, error)
+	}
+
+	// ArgsInfoer is an interface that can be optionally implemented by an
+	// ArgConfig.
+	// It provides meta information about the arguments and flags of a command.
+	ArgsInfoer interface {
+		// Info returns localized information about the arguments and flags of
+		// a command.
+		Info(l *localization.Localizer) ([]ArgsInfo, error)
 	}
 
 	// ArgsInfo contains localized information about a command's arguments.
 	ArgsInfo struct {
 		// Prefix contains the prefix, if there are multiple argument
 		// combinations.
+		// Otherwise it should be empty.
 		Prefix string
 		// Required contains information about required arguments.
 		Required []ArgInfo
@@ -49,7 +56,7 @@ type (
 		Name string
 		// Type contains information about the type of the argument.
 		Type TypeInfo
-		// Description is a description of the argument.
+		// Description is the optional description of the argument.
 		Description string
 	}
 
@@ -61,7 +68,7 @@ type (
 		Aliases []string
 		// Type contains information about the type of the flag.
 		Type TypeInfo
-		// Description is a description of the flag.
+		// Description is the optional description of the flag.
 		Description string
 		// Multi specifies whether the flag may be used multiple times.
 		Multi bool
@@ -71,7 +78,7 @@ type (
 	TypeInfo struct {
 		// Name is the name of the type.
 		Name string
-		// Description is the description of the type.
+		// Description is the optional description of the type.
 		Description string
 	}
 )
