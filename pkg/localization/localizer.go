@@ -66,6 +66,10 @@ func NewFallbackConfig(term Term, fallback string) Config {
 	}
 }
 
+// IsValid checks if the Config could theoretically generate a message.
+// This does not take into account invalid keys.
+func (c Config) IsValid() bool { return c.Term != "" || c.Fallback.Other != "" }
+
 // WithPlaceholders returns a copy of the Config with the passed Placeholders
 // set.
 func (c Config) WithPlaceholders(placeholders interface{}) Config {
@@ -158,8 +162,8 @@ type Localizer struct {
 	defaultPlaceholders map[string]interface{}
 }
 
-// WithDefaultPlaceholder adds the passed default placeholder to the Localizer.
-func (l *Localizer) WithDefaultPlaceholder(key string, val interface{}) {
+// WithPlaceholder adds the passed default placeholder to the Localizer.
+func (l *Localizer) WithPlaceholder(key string, val interface{}) {
 	if l.defaultPlaceholders == nil {
 		l.defaultPlaceholders = map[string]interface{}{
 			key: val,
@@ -171,9 +175,9 @@ func (l *Localizer) WithDefaultPlaceholder(key string, val interface{}) {
 	l.defaultPlaceholders[key] = val
 }
 
-// WithDefaultPlaceholders adds the passed default placeholders to the
+// WithPlaceholders adds the passed default placeholders to the
 // Localizer.
-func (l *Localizer) WithDefaultPlaceholders(p map[string]interface{}) {
+func (l *Localizer) WithPlaceholders(p map[string]interface{}) {
 	if l.defaultPlaceholders == nil {
 		l.defaultPlaceholders = p
 		return
