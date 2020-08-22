@@ -28,6 +28,7 @@ type ArgumentParsingError struct {
 
 // NewArgumentParsingError returns a new ArgumentParsingError with the passed
 // description.
+// The description mustn't be empty for this error to be handled properly.
 func NewArgumentParsingError(description string) *ArgumentParsingError {
 	return &ArgumentParsingError{
 		descString: description,

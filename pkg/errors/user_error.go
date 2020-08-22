@@ -18,6 +18,7 @@ type UserError struct {
 }
 
 // NewUserError creates a new UserError with the passed description.
+// The description mustn't be empty for this error to be handled properly.
 func NewUserError(desc string) *UserError {
 	return &UserError{
 		descString: desc,

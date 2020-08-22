@@ -18,6 +18,7 @@ type UserInfo struct {
 }
 
 // NewUserInfo creates a new UserInfo using the passed description.
+// The description mustn't be empty for this error to be handled properly.
 func NewUserInfo(desc string) *UserInfo {
 	return &UserInfo{
 		descString: desc,
