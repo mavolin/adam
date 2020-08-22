@@ -24,6 +24,7 @@ type (
 		//	• discord.Embed
 		//	• discordutil.EmbedBuilder, discordutil.LocalizedEmbedBuilder
 		//	• api.SendMessageData
+		//	• localization.Term
 		//	• localization.Config
 		//	• any type implementing Response
 		//
