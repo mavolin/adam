@@ -368,38 +368,52 @@ func (b *LocalizedEmbedBuilder) WithAuthorWithURLt(
 
 // WithField appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
+// Name and value may be empty, in which case the field won't have a name or
+// value.
 func (b *LocalizedEmbedBuilder) WithField(name, value localization.Config) *LocalizedEmbedBuilder {
-	b.fields = append(b.fields, localizedField{
-		name:    &name,
-		value:   &value,
-		inlined: false,
-	})
-
+	b.withField(name, value, false)
 	return b
 }
 
 // WithFieldt appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
+// Name and value may be empty, in which case the field won't have a name or
+// value.
 func (b *LocalizedEmbedBuilder) WithFieldt(name, value localization.Term) *LocalizedEmbedBuilder {
 	return b.WithField(name.AsConfig(), value.AsConfig())
 }
 
 // WithInlinedField appends an inlined field (name: max. 256 characters, value: max 1024
 // // characters) to the embed.
+// Name and value may be empty, in which case the field won't have a name or
+// value.
 func (b *LocalizedEmbedBuilder) WithInlinedField(name, value localization.Config) *LocalizedEmbedBuilder {
-	b.fields = append(b.fields, localizedField{
-		name:    &name,
-		value:   &value,
-		inlined: true,
-	})
-
+	b.withField(name, value, true)
 	return b
 }
 
 // WithInlinedFieldt appends an inlined field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
+// Name and value may be empty, in which case the field won't have a name or
+// value.
 func (b *LocalizedEmbedBuilder) WithInlinedFieldt(name, value localization.Term) *LocalizedEmbedBuilder {
 	return b.WithInlinedField(name.AsConfig(), value.AsConfig())
+}
+
+func (b *LocalizedEmbedBuilder) withField(name, value localization.Config, inlined bool) {
+	f := localizedField{
+		inlined: inlined,
+	}
+
+	if name.IsValid() {
+		f.name = &name
+	}
+
+	if value.IsValid() {
+		f.value = &value
+	}
+
+	b.fields = append(b.fields, f)
 }
 
 // Build builds the discord.Embed.

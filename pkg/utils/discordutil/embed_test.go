@@ -866,3 +866,72 @@ func TestLocalizedEmbedBuilder_WithInlinedFieldt(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
+
+func TestLocalizedEmbedBuilder_withField(t *testing.T) {
+	t.Run("all filled", func(t *testing.T) {
+		var (
+			name    = localization.NewTermConfig("abc")
+			value   = localization.NewTermConfig("def")
+			inlined = true
+		)
+
+		expect := &LocalizedEmbedBuilder{
+			fields: []localizedField{
+				{
+					name:    &name,
+					value:   &value,
+					inlined: inlined,
+				},
+			},
+		}
+
+		actual := NewLocalizedEmbedBuilder()
+		actual.withField(name, value, inlined)
+
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("name filled", func(t *testing.T) {
+		var (
+			name    = localization.NewTermConfig("abc")
+			inlined = false
+		)
+
+		expect := &LocalizedEmbedBuilder{
+			fields: []localizedField{
+				{
+					name:    &name,
+					value:   nil,
+					inlined: inlined,
+				},
+			},
+		}
+
+		actual := NewLocalizedEmbedBuilder()
+		actual.withField(name, localization.Config{}, inlined)
+
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("value filled", func(t *testing.T) {
+		var (
+			value   = localization.NewTermConfig("def")
+			inlined = true
+		)
+
+		expect := &LocalizedEmbedBuilder{
+			fields: []localizedField{
+				{
+					name:    nil,
+					value:   &value,
+					inlined: inlined,
+				},
+			},
+		}
+
+		actual := NewLocalizedEmbedBuilder()
+		actual.withField(localization.Config{}, value, inlined)
+
+		assert.Equal(t, expect, actual)
+	})
+}
