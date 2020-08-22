@@ -49,7 +49,7 @@ func (e *RestrictionError) Description(l *localization.Localizer) (desc string) 
 	var err error
 	if desc, err = l.Localize(e.descConfig); err != nil {
 		// we can ignore the error, as there is a fallback
-		desc, _ = l.Localize(defaultInternalDesc)
+		desc, _ = l.Localize(defaultRestrictionDesc)
 	}
 
 	return desc
