@@ -24,6 +24,6 @@ var (
 	errorIDFooter = localization.NewFallbackConfig("errors.error_id", "Error-ID: {{.error_id}}")
 )
 
-type errorIDPlaceholders struct {
+type errorIDFooterPlaceholders struct {
 	ErrorID string
 }

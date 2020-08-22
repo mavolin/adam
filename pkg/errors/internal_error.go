@@ -236,7 +236,7 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 	if eventID != nil {
 		// we can ignore the error, as we have a fallback.
 		footerText, _ := ctx.Localize(errorIDFooter.
-			WithPlaceholders(errorIDPlaceholders{
+			WithPlaceholders(errorIDFooterPlaceholders{
 				ErrorID: string(*eventID),
 			}))
 
