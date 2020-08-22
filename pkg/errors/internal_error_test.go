@@ -34,13 +34,11 @@ func TestWithStack(t *testing.T) {
 		cause := New("abc")
 
 		err := WithStack(cause)
+		unwrapper := err.(interface {
+			Unwrap() error
+		})
 
-		assert.Equal(t, cause.Error(), err.Error())
-		assert.IsType(t, new(InternalError), err)
-
-		casted := err.(*InternalError)
-
-		assert.Equal(t, cause, casted.cause)
+		assert.Equal(t, cause, unwrapper.Unwrap())
 	})
 }
 
@@ -104,11 +102,8 @@ func TestWithDescription(t *testing.T) {
 		)
 
 		err := WithDescription(cause, desc)
-		assert.IsType(t, new(InternalError), err)
-
-		casted := err.(*InternalError)
-		assert.Equal(t, cause, casted.cause)
-		assert.Equal(t, desc, casted.descString)
+		assert.Equal(t, cause, err.cause)
+		assert.Equal(t, desc, err.descString)
 	})
 }
 
@@ -136,11 +131,8 @@ func TestWithDescriptionf(t *testing.T) {
 		)
 
 		err := WithDescriptionf(cause, "def %s", "ghi")
-		assert.IsType(t, new(InternalError), err)
-
-		casted := err.(*InternalError)
-		assert.Equal(t, cause, casted.cause)
-		assert.Equal(t, desc, casted.descString)
+		assert.Equal(t, cause, err.cause)
+		assert.Equal(t, desc, err.descString)
 	})
 }
 
@@ -168,11 +160,8 @@ func TestWithDescriptionl(t *testing.T) {
 		)
 
 		err := WithDescriptionl(cause, desc)
-		assert.IsType(t, new(InternalError), err)
-
-		casted := err.(*InternalError)
-		assert.Equal(t, cause, casted.cause)
-		assert.Equal(t, desc, casted.descConfig)
+		assert.Equal(t, cause, err.cause)
+		assert.Equal(t, desc, err.descConfig)
 	})
 }
 
@@ -200,11 +189,8 @@ func TestWithDescriptionlt(t *testing.T) {
 		)
 
 		err := WithDescriptionlt(cause, desc)
-		assert.IsType(t, new(InternalError), err)
-
-		casted := err.(*InternalError)
-		assert.Equal(t, cause, casted.cause)
-		assert.Equal(t, desc.AsConfig(), casted.descConfig)
+		assert.Equal(t, cause, err.cause)
+		assert.Equal(t, desc.AsConfig(), err.descConfig)
 	})
 }
 
@@ -212,9 +198,9 @@ func TestInternalError_Description(t *testing.T) {
 	t.Run("string description", func(t *testing.T) {
 		expect := "abc"
 
-		e := WithDescription(New(""), expect).(*InternalError)
+		err := WithDescription(New(""), expect)
 
-		actual := e.Description(mock.NewNoOpLocalizer())
+		actual := err.Description(mock.NewNoOpLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
@@ -228,16 +214,16 @@ func TestInternalError_Description(t *testing.T) {
 			On(term, expect).
 			Build()
 
-		e := WithDescriptionlt(New(""), term).(*InternalError)
+		err := WithDescriptionlt(New(""), term)
 
-		actual := e.Description(l)
+		actual := err.Description(l)
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("invalid description", func(t *testing.T) {
-		e := WithDescription(New(""), "").(*InternalError)
+		err := WithDescription(New(""), "")
 
-		actual := e.Description(mock.NewNoOpLocalizer())
+		actual := err.Description(mock.NewNoOpLocalizer())
 		assert.NotEmpty(t, actual)
 	})
 }
@@ -260,14 +246,14 @@ func TestInternalError_Handle(t *testing.T) {
 
 	embed := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(expectDesc).
-		Build()
+		MustBuild(ctx.Localizer)
 
 	m.SendEmbed(discord.Message{
 		ChannelID: ctx.ChannelID,
 		Embeds:    []discord.Embed{embed},
 	})
 
-	e := WithDescription(New(""), expectDesc).(Handler)
+	e := WithDescription(New(""), expectDesc)
 
 	err := e.Handle(s, ctx)
 	require.NoError(t, err)

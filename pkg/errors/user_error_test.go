@@ -60,7 +60,7 @@ func TestUserError_Handle(t *testing.T) {
 
 	embed := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(expectDesc).
-		Build()
+		MustBuild(ctx.Localizer)
 
 	m.SendEmbed(discord.Message{
 		ChannelID: ctx.ChannelID,

@@ -18,10 +18,51 @@ func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
 		Title: title,
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithSimpleTitle(title).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleTitlel(t *testing.T) {
+	title := "abc"
+
+	expect := discord.Embed{
+		Title: title,
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", title).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithSimpleTitlel(localization.NewTermConfig("a")).
+		Build(l)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleTitlelt(t *testing.T) {
+	title := "abc"
+
+	expect := discord.Embed{
+		Title: title,
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", title).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithSimpleTitlelt("a").
+		Build(l)
+
+	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -36,10 +77,59 @@ func TestEmbedBuilder_WithTitle(t *testing.T) {
 		URL:   url,
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithTitle(title, url).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithTitlel(t *testing.T) {
+	var (
+		title = "abc"
+		url   = "def"
+	)
+
+	expect := discord.Embed{
+		Title: title,
+		URL:   url,
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", title).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithTitlel(localization.NewTermConfig("a"), url).
+		Build(l)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithTitlelt(t *testing.T) {
+	var (
+		title = "abc"
+		url   = "def"
+	)
+
+	expect := discord.Embed{
+		Title: title,
+		URL:   url,
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", title).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithTitlelt("a", url).
+		Build(l)
+
+	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -50,10 +140,51 @@ func TestEmbedBuilder_WithDescription(t *testing.T) {
 		Description: description,
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithDescription(description).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
+	description := "abc"
+
+	expect := discord.Embed{
+		Description: description,
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", description).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithDescriptionl(localization.NewTermConfig("a")).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
+	description := "abc"
+
+	expect := discord.Embed{
+		Description: description,
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", description).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithDescriptionlt("a").
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -64,10 +195,11 @@ func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 		Timestamp: timestamp,
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithTimestamp(timestamp).
-		Build()
+		Build(nil)
 
+	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -78,10 +210,11 @@ func TestEmbedBuilder_WithColor(t *testing.T) {
 		Color: color,
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithColor(color).
-		Build()
+		Build(nil)
 
+	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -94,10 +227,55 @@ func TestEmbedBuilder_WithSimpleFooter(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithSimpleFooter(text).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleFooterl(t *testing.T) {
+	text := "abc"
+
+	expect := discord.Embed{
+		Footer: &discord.EmbedFooter{
+			Text: text,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", text).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithSimpleFooterl(localization.NewTermConfig("a")).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleFooterlt(t *testing.T) {
+	text := "abc"
+
+	expect := discord.Embed{
+		Footer: &discord.EmbedFooter{
+			Text: text,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", text).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithSimpleFooterlt("a").
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -114,10 +292,63 @@ func TestEmbedBuilder_WithFooter(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithFooter(text, icon).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithFooterl(t *testing.T) {
+	var (
+		text = "abc"
+		icon = "def"
+	)
+
+	expect := discord.Embed{
+		Footer: &discord.EmbedFooter{
+			Text: text,
+			Icon: icon,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", text).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithFooterl(localization.NewTermConfig("a"), icon).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithFooterlt(t *testing.T) {
+	var (
+		text = "abc"
+		icon = "def"
+	)
+
+	expect := discord.Embed{
+		Footer: &discord.EmbedFooter{
+			Text: text,
+			Icon: icon,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", text).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithFooterlt("a", icon).
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -130,10 +361,11 @@ func TestEmbedBuilder_WithImage(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithImage(image).
-		Build()
+		Build(nil)
 
+	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -146,10 +378,11 @@ func TestEmbedBuilder_WithThumbnail(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithThumbnail(thumbnail).
-		Build()
+		Build(nil)
 
+	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -162,10 +395,55 @@ func TestEmbedBuilder_WithSimpleAuthor(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithSimpleAuthor(name).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleAuthorl(t *testing.T) {
+	name := "abc"
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithSimpleAuthorl(localization.NewTermConfig("a")).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
+	name := "abc"
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithSimpleAuthorlt("a").
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -182,10 +460,63 @@ func TestEmbedBuilder_WithSimpleAuthorWithURL(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithSimpleAuthorWithURL(name, url).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleAuthorWithURLl(t *testing.T) {
+	var (
+		name = "abc"
+		url  = "def"
+	)
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+			URL:  url,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithSimpleAuthorWithURLl(localization.NewTermConfig("a"), url).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithSimpleAuthorWithURLlt(t *testing.T) {
+	var (
+		name = "abc"
+		url  = "def"
+	)
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+			URL:  url,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithSimpleAuthorWithURLlt("a", url).
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -202,10 +533,63 @@ func TestEmbedBuilder_WithAuthor(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithAuthor(name, icon).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithAuthorl(t *testing.T) {
+	var (
+		name = "abc"
+		icon = "def"
+	)
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+			Icon: icon,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithAuthorl(localization.NewTermConfig("a"), icon).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithAuthorlt(t *testing.T) {
+	var (
+		name = "abc"
+		icon = "def"
+	)
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+			Icon: icon,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithAuthorlt("a", icon).
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -224,10 +608,67 @@ func TestEmbedBuilder_WithAuthorWithURL(t *testing.T) {
 		},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithAuthorWithURL(name, icon, url).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithAuthorWithURLl(t *testing.T) {
+	var (
+		name = "abc"
+		icon = "def"
+		url  = "ghi"
+	)
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+			Icon: icon,
+			URL:  url,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithAuthorWithURLl(localization.NewTermConfig("a"), icon, url).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithAuthorWithURLlt(t *testing.T) {
+	var (
+		name = "abc"
+		icon = "def"
+		url  = "ghi"
+	)
+
+	expect := discord.Embed{
+		Author: &discord.EmbedAuthor{
+			Name: name,
+			Icon: icon,
+			URL:  url,
+		},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", name).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithAuthorWithURLlt("a", icon, url).
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -242,10 +683,61 @@ func TestEmbedBuilder_WithField(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithField(field.Name, field.Value).
+		Build(nil)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithFieldl(t *testing.T) {
+	field := discord.EmbedField{
+		Name:   "abc",
+		Value:  "def",
+		Inline: false,
+	}
+
+	expect := discord.Embed{
+		Fields: []discord.EmbedField{field},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", field.Name).
+		On("b", field.Value).
 		Build()
 
+	actual, err := NewEmbedBuilder().
+		WithFieldl(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
+		Build(l)
+
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
+func TestEmbedBuilder_WithFieldlt(t *testing.T) {
+	field := discord.EmbedField{
+		Name:   "abc",
+		Value:  "def",
+		Inline: false,
+	}
+
+	expect := discord.Embed{
+		Fields: []discord.EmbedField{field},
+	}
+
+	l := mock.
+		NewLocalizer().
+		On("a", field.Name).
+		On("b", field.Value).
+		Build()
+
+	actual, err := NewEmbedBuilder().
+		WithFieldlt("a", "b").
+		Build(l)
+
+	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
@@ -260,564 +752,15 @@ func TestEmbedBuilder_WithInlinedField(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	actual := NewEmbedBuilder().
+	actual, err := NewEmbedBuilder().
 		WithInlinedField(field.Name, field.Value).
-		Build()
-
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithSimpleTitle(t *testing.T) {
-	title := "abc"
-
-	expect := discord.Embed{
-		Title: title,
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", title).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleTitle(localization.NewTermConfig("a")).
-		Build(l)
+		Build(nil)
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
-func TestLocalizedEmbedBuilder_WithSimpleTitlet(t *testing.T) {
-	title := "abc"
-
-	expect := discord.Embed{
-		Title: title,
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", title).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleTitlet("a").
-		Build(l)
-
-	assert.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithTitle(t *testing.T) {
-	var (
-		title = "abc"
-		url   = "def"
-	)
-
-	expect := discord.Embed{
-		Title: title,
-		URL:   url,
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", title).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithTitle(localization.NewTermConfig("a"), url).
-		Build(l)
-
-	assert.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithTitlet(t *testing.T) {
-	var (
-		title = "abc"
-		url   = "def"
-	)
-
-	expect := discord.Embed{
-		Title: title,
-		URL:   url,
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", title).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithTitlet("a", url).
-		Build(l)
-
-	assert.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithDescription(t *testing.T) {
-	description := "abc"
-
-	expect := discord.Embed{
-		Description: description,
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", description).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithDescription(localization.NewTermConfig("a")).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithDescriptiont(t *testing.T) {
-	description := "abc"
-
-	expect := discord.Embed{
-		Description: description,
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", description).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithDescriptiont("a").
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithTimestamp(t *testing.T) {
-	timestamp := discord.NowTimestamp()
-
-	expect := discord.Embed{
-		Timestamp: timestamp,
-	}
-
-	l := mock.NewLocalizer().Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithTimestamp(timestamp).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithColor(t *testing.T) {
-	var color discord.Color = 123
-
-	expect := discord.Embed{
-		Color: color,
-	}
-
-	l := mock.NewLocalizer().Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithColor(color).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithSimpleFooter(t *testing.T) {
-	text := "abc"
-
-	expect := discord.Embed{
-		Footer: &discord.EmbedFooter{
-			Text: text,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", text).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleFooter(localization.NewTermConfig("a")).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithSimpleFootert(t *testing.T) {
-	text := "abc"
-
-	expect := discord.Embed{
-		Footer: &discord.EmbedFooter{
-			Text: text,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", text).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleFootert("a").
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithFooter(t *testing.T) {
-	var (
-		text = "abc"
-		icon = "def"
-	)
-
-	expect := discord.Embed{
-		Footer: &discord.EmbedFooter{
-			Text: text,
-			Icon: icon,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", text).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithFooter(localization.NewTermConfig("a"), icon).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithFootert(t *testing.T) {
-	var (
-		text = "abc"
-		icon = "def"
-	)
-
-	expect := discord.Embed{
-		Footer: &discord.EmbedFooter{
-			Text: text,
-			Icon: icon,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", text).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithFootert("a", icon).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithImage(t *testing.T) {
-	image := "abc"
-
-	expect := discord.Embed{
-		Image: &discord.EmbedImage{
-			URL: image,
-		},
-	}
-
-	l := mock.NewLocalizer().Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithImage(image).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithThumbnail(t *testing.T) {
-	thumbnail := "abc"
-
-	expect := discord.Embed{
-		Thumbnail: &discord.EmbedThumbnail{
-			URL: thumbnail,
-		},
-	}
-
-	l := mock.NewLocalizer().Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithThumbnail(thumbnail).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithSimpleAuthor(t *testing.T) {
-	name := "abc"
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleAuthor(localization.NewTermConfig("a")).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithSimpleAuthort(t *testing.T) {
-	name := "abc"
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleAuthort("a").
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithSimpleAuthorWithURL(t *testing.T) {
-	var (
-		name = "abc"
-		url  = "def"
-	)
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-			URL:  url,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleAuthorWithURL(localization.NewTermConfig("a"), url).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithSimpleAuthorWithURLt(t *testing.T) {
-	var (
-		name = "abc"
-		url  = "def"
-	)
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-			URL:  url,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithSimpleAuthorWithURLt("a", url).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithAuthor(t *testing.T) {
-	var (
-		name = "abc"
-		icon = "def"
-	)
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-			Icon: icon,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithAuthor(localization.NewTermConfig("a"), icon).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithAuthort(t *testing.T) {
-	var (
-		name = "abc"
-		icon = "def"
-	)
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-			Icon: icon,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithAuthort("a", icon).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithAuthorWithURL(t *testing.T) {
-	var (
-		name = "abc"
-		icon = "def"
-		url  = "ghi"
-	)
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-			Icon: icon,
-			URL:  url,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithAuthorWithURL(localization.NewTermConfig("a"), icon, url).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithAuthorWithURLt(t *testing.T) {
-	var (
-		name = "abc"
-		icon = "def"
-		url  = "ghi"
-	)
-
-	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-			Icon: icon,
-			URL:  url,
-		},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", name).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithAuthorWithURLt("a", icon, url).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithField(t *testing.T) {
-	field := discord.EmbedField{
-		Name:   "abc",
-		Value:  "def",
-		Inline: false,
-	}
-
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", field.Name).
-		On("b", field.Value).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithField(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithFieldt(t *testing.T) {
-	field := discord.EmbedField{
-		Name:   "abc",
-		Value:  "def",
-		Inline: false,
-	}
-
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
-
-	l := mock.
-		NewLocalizer().
-		On("a", field.Name).
-		On("b", field.Value).
-		Build()
-
-	actual, err := NewLocalizedEmbedBuilder().
-		WithFieldt("a", "b").
-		Build(l)
-
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestLocalizedEmbedBuilder_WithInlinedField(t *testing.T) {
+func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -834,15 +777,15 @@ func TestLocalizedEmbedBuilder_WithInlinedField(t *testing.T) {
 		On("b", field.Value).
 		Build()
 
-	actual, err := NewLocalizedEmbedBuilder().
-		WithInlinedField(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
+	actual, err := NewEmbedBuilder().
+		WithInlinedFieldl(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
 		Build(l)
 
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
-func TestLocalizedEmbedBuilder_WithInlinedFieldt(t *testing.T) {
+func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -859,15 +802,92 @@ func TestLocalizedEmbedBuilder_WithInlinedFieldt(t *testing.T) {
 		On("b", field.Value).
 		Build()
 
-	actual, err := NewLocalizedEmbedBuilder().
-		WithInlinedFieldt("a", "b").
+	actual, err := NewEmbedBuilder().
+		WithInlinedFieldlt("a", "b").
 		Build(l)
 
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
-func TestLocalizedEmbedBuilder_withField(t *testing.T) {
+func TestEmbedBuilder_withField(t *testing.T) {
+	t.Run("all filled", func(t *testing.T) {
+		var (
+			name    = "abc"
+			value   = "def"
+			inlined = true
+		)
+
+		expect := &EmbedBuilder{
+			fields: []embedField{
+				{
+					name: &text{
+						string: name,
+					},
+					value: &text{
+						string: value,
+					},
+					inlined: inlined,
+				},
+			},
+		}
+
+		actual := NewEmbedBuilder()
+		actual.withField(name, value, inlined)
+
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("name filled", func(t *testing.T) {
+		var (
+			name    = "abc"
+			inlined = false
+		)
+
+		expect := &EmbedBuilder{
+			fields: []embedField{
+				{
+					name: &text{
+						string: name,
+					},
+					value:   nil,
+					inlined: inlined,
+				},
+			},
+		}
+
+		actual := NewEmbedBuilder()
+		actual.withField(name, "", inlined)
+
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("value filled", func(t *testing.T) {
+		var (
+			value   = "def"
+			inlined = true
+		)
+
+		expect := &EmbedBuilder{
+			fields: []embedField{
+				{
+					name: nil,
+					value: &text{
+						string: value,
+					},
+					inlined: inlined,
+				},
+			},
+		}
+
+		actual := NewEmbedBuilder()
+		actual.withField("", value, inlined)
+
+		assert.Equal(t, expect, actual)
+	})
+}
+
+func TestEmbedBuilder_withFieldl(t *testing.T) {
 	t.Run("all filled", func(t *testing.T) {
 		var (
 			name    = localization.NewTermConfig("abc")
@@ -875,18 +895,22 @@ func TestLocalizedEmbedBuilder_withField(t *testing.T) {
 			inlined = true
 		)
 
-		expect := &LocalizedEmbedBuilder{
-			fields: []localizedField{
+		expect := &EmbedBuilder{
+			fields: []embedField{
 				{
-					name:    &name,
-					value:   &value,
+					name: &text{
+						config: name,
+					},
+					value: &text{
+						config: value,
+					},
 					inlined: inlined,
 				},
 			},
 		}
 
-		actual := NewLocalizedEmbedBuilder()
-		actual.withField(name, value, inlined)
+		actual := NewEmbedBuilder()
+		actual.withFieldl(name, value, inlined)
 
 		assert.Equal(t, expect, actual)
 	})
@@ -897,18 +921,20 @@ func TestLocalizedEmbedBuilder_withField(t *testing.T) {
 			inlined = false
 		)
 
-		expect := &LocalizedEmbedBuilder{
-			fields: []localizedField{
+		expect := &EmbedBuilder{
+			fields: []embedField{
 				{
-					name:    &name,
+					name: &text{
+						config: name,
+					},
 					value:   nil,
 					inlined: inlined,
 				},
 			},
 		}
 
-		actual := NewLocalizedEmbedBuilder()
-		actual.withField(name, localization.Config{}, inlined)
+		actual := NewEmbedBuilder()
+		actual.withFieldl(name, localization.Config{}, inlined)
 
 		assert.Equal(t, expect, actual)
 	})
@@ -919,18 +945,20 @@ func TestLocalizedEmbedBuilder_withField(t *testing.T) {
 			inlined = true
 		)
 
-		expect := &LocalizedEmbedBuilder{
-			fields: []localizedField{
+		expect := &EmbedBuilder{
+			fields: []embedField{
 				{
-					name:    nil,
-					value:   &value,
+					name: nil,
+					value: &text{
+						config: value,
+					},
 					inlined: inlined,
 				},
 			},
 		}
 
-		actual := NewLocalizedEmbedBuilder()
-		actual.withField(localization.Config{}, value, inlined)
+		actual := NewEmbedBuilder()
+		actual.withFieldl(localization.Config{}, value, inlined)
 
 		assert.Equal(t, expect, actual)
 	})

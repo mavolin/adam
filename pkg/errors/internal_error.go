@@ -29,15 +29,15 @@ type InternalError struct {
 }
 
 // WithStack enriches the passed error with a stack trace.
-// If the error is nil or it already has a stack trace, WithStack returns
-// the original error.
+// If the error is nil or it is another Handler, WithStack will return the
+// error as is.
 func WithStack(err error) error {
 	return withStack(err, 1)
 }
 
 // withStack enriches the passed error with a stack trace.
-// If the error is nil or it already has a stack trace, WithStack returns
-// the original error.
+// If the error is nil or it is another Handler, withStack will return the
+// error as is.
 // If however, there is no stack trace, withStack skips the passed amount of
 // frames including withStack itself and saves the callers.
 func withStack(err error, skip int) error {
@@ -68,7 +68,7 @@ func (e *messageError) Unwrap() error { return e.cause }
 // Wrap wraps the passed error with the passed message and enriches it with a
 // stack trace.
 // The returned error will print as '$message: $err.Error()'.
-func Wrap(err error, message string) error {
+func Wrap(err error, message string) *InternalError {
 	if err == nil {
 		return nil
 	}
@@ -87,7 +87,7 @@ func Wrap(err error, message string) error {
 // enriches the new error with a stack trace.
 // The returned error will print as
 // '$fmt.Sprintf(format, args...): $err.Error()'.
-func Wrapf(err error, format string, args ...interface{}) error {
+func Wrapf(err error, format string, args ...interface{}) *InternalError {
 	if err == nil {
 		return nil
 	}
@@ -108,7 +108,7 @@ func Wrapf(err error, format string, args ...interface{}) error {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescription(cause error, description string) error {
+func WithDescription(cause error, description string) *InternalError {
 	if cause == nil {
 		return nil
 	}
@@ -132,7 +132,7 @@ func WithDescription(cause error, description string) error {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionf(cause error, format string, args ...interface{}) error {
+func WithDescriptionf(cause error, format string, args ...interface{}) *InternalError {
 	if cause == nil {
 		return nil
 	}
@@ -156,7 +156,7 @@ func WithDescriptionf(cause error, format string, args ...interface{}) error {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionl(cause error, description localization.Config) error {
+func WithDescriptionl(cause error, description localization.Config) *InternalError {
 	if cause == nil {
 		return nil
 	}
@@ -180,7 +180,7 @@ func WithDescriptionl(cause error, description localization.Config) error {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionlt(cause error, description localization.Term) error {
+func WithDescriptionlt(cause error, description localization.Term) *InternalError {
 	if cause == nil {
 		return nil
 	}
@@ -234,13 +234,10 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 
 	// make sure sentry is even running
 	if eventID != nil {
-		// we can ignore the error, as we have a fallback.
-		footerText, _ := ctx.Localize(errorIDFooter.
+		embed.WithSimpleFooterl(errorIDFooter.
 			WithPlaceholders(errorIDFooterPlaceholders{
 				ErrorID: string(*eventID),
 			}))
-
-		embed.WithSimpleFooter(footerText)
 	}
 
 	_, err := ctx.ReplyEmbedBuilder(embed)

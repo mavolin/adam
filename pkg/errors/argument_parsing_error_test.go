@@ -133,7 +133,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 			Embeds: []discord.Embed{
 				newErrorEmbedBuilder(ctx.Localizer).
 					WithDescription(expectDesc).
-					Build(),
+					MustBuild(ctx.Localizer),
 			},
 		})
 
@@ -166,7 +166,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		embed := newErrorEmbedBuilder(ctx.Localizer).
 			WithDescription(expectDesc).
 			WithField("Reason", expectReason).
-			Build()
+			MustBuild(ctx.Localizer)
 		m.SendEmbed(discord.Message{
 			ChannelID: ctx.ChannelID,
 			Embeds:    []discord.Embed{embed},

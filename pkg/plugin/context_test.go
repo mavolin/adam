@@ -225,7 +225,7 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
-	embed := builder.Build()
+	embed := builder.MustBuild(nil)
 	embed.Type = discord.NormalEmbed
 
 	expect := &discord.Message{
@@ -265,9 +265,9 @@ func TestContext_ReplyLocalizedEmbedBuilder(t *testing.T) {
 	}
 
 	builder := discordutil.
-		NewLocalizedEmbedBuilder().
-		WithSimpleTitlet("abc").
-		WithDescriptiont("def").
+		NewEmbedBuilder().
+		WithSimpleTitlelt("abc").
+		WithDescriptionlt("def").
 		WithColor(discord.DefaultEmbedColor)
 
 	embed, err := builder.Build(l)
@@ -287,7 +287,7 @@ func TestContext_ReplyLocalizedEmbedBuilder(t *testing.T) {
 
 	m.SendEmbed(*expect)
 
-	actual, err := ctx.ReplyLocalizedEmbedBuilder(builder)
+	actual, err := ctx.ReplyEmbedBuilder(builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 
@@ -534,7 +534,7 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
-	embed := builder.Build()
+	embed := builder.MustBuild(nil)
 	embed.Type = discord.NormalEmbed
 
 	var channelID discord.ChannelID = 456
@@ -582,9 +582,9 @@ func TestContext_ReplyLocalizedEmbedBuilderDM(t *testing.T) {
 	}
 
 	builder := discordutil.
-		NewLocalizedEmbedBuilder().
-		WithSimpleTitlet("abc").
-		WithDescriptiont("def").
+		NewEmbedBuilder().
+		WithSimpleTitlelt("abc").
+		WithDescriptionlt("def").
 		WithColor(discord.DefaultEmbedColor)
 
 	embed, err := builder.Build(l)
@@ -610,7 +610,7 @@ func TestContext_ReplyLocalizedEmbedBuilderDM(t *testing.T) {
 	})
 	m.SendEmbed(*expect)
 
-	actual, err := ctx.ReplyLocalizedEmbedBuilderDM(builder)
+	actual, err := ctx.ReplyEmbedBuilderDM(builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 
