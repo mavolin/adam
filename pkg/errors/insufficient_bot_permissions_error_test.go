@@ -13,6 +13,30 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
+func TestNewInsufficientBotPermissionsError(t *testing.T) {
+	t.Run("regular permissions", func(t *testing.T) {
+		perms := discord.PermissionViewChannel | discord.PermissionManageEmojis
+
+		expect := &InsufficientBotPermissionsError{
+			MissingPermissions: perms,
+		}
+
+		actual := NewInsufficientBotPermissionsError(perms)
+
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("regular permissions", func(t *testing.T) {
+		expect := &InsufficientBotPermissionsError{
+			MissingPermissions: discord.PermissionAdministrator,
+		}
+
+		actual := NewInsufficientBotPermissionsError(discord.PermissionViewChannel | discord.PermissionAdministrator)
+
+		assert.Equal(t, expect, actual)
+	})
+}
+
 func TestInsufficientBotPermissionsError_Is(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		var perms discord.Permissions = 123
@@ -31,41 +55,74 @@ func TestInsufficientBotPermissionsError_Is(t *testing.T) {
 	})
 
 	t.Run("different missing permissions", func(t *testing.T) {
-		err1 := NewInsufficientBotPermissionsError(123)
-		err2 := NewInsufficientBotPermissionsError(456)
+		err1 := NewInsufficientBotPermissionsError(discord.PermissionStream)
+		err2 := NewInsufficientBotPermissionsError(discord.PermissionUseVAD)
 
 		assert.False(t, err1.Is(err2))
 	})
 }
 
 func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
-	m, s := state.NewMocker(t)
+	t.Run("single permission", func(t *testing.T) {
+		m, s := state.NewMocker(t)
 
-	ctx := plugin.NewContext(s)
-	ctx.MessageCreateEvent = &state.MessageCreateEvent{
-		MessageCreateEvent: &gateway.MessageCreateEvent{
-			Message: discord.Message{
-				ChannelID: 123,
+		ctx := plugin.NewContext(s)
+		ctx.MessageCreateEvent = &state.MessageCreateEvent{
+			MessageCreateEvent: &gateway.MessageCreateEvent{
+				Message: discord.Message{
+					ChannelID: 123,
+				},
 			},
-		},
-	}
-	ctx.Localizer = mock.NewNoOpLocalizer()
+		}
+		ctx.Localizer = mock.NewNoOpLocalizer()
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
-		WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me the "+
-			"following permissions and try again.").
-		WithField("Missing Permissions", "• Administrator\n• Video").
-		Build()
+		embed := newErrorEmbedBuilder(ctx.Localizer).
+			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me" +
+				" the ``Video`` permission and try again.").
+			MustBuild(ctx.Localizer)
 
-	m.SendEmbed(discord.Message{
-		ChannelID: ctx.ChannelID,
-		Embeds:    []discord.Embed{embed},
+		m.SendEmbed(discord.Message{
+			ChannelID: ctx.ChannelID,
+			Embeds:    []discord.Embed{embed},
+		})
+
+		e := NewInsufficientBotPermissionsError(discord.PermissionStream)
+
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
+
+		m.Eval()
 	})
 
-	e := NewInsufficientBotPermissionsError(discord.PermissionAdministrator | discord.PermissionStream)
+	t.Run("multiple permissions", func(t *testing.T) {
+		m, s := state.NewMocker(t)
 
-	err := e.Handle(s, ctx)
-	require.NoError(t, err)
+		ctx := plugin.NewContext(s)
+		ctx.MessageCreateEvent = &state.MessageCreateEvent{
+			MessageCreateEvent: &gateway.MessageCreateEvent{
+				Message: discord.Message{
+					ChannelID: 123,
+				},
+			},
+		}
+		ctx.Localizer = mock.NewNoOpLocalizer()
 
-	m.Eval()
+		embed := newErrorEmbedBuilder(ctx.Localizer).
+			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me the "+
+				"following permissions and try again.").
+			WithField("Missing Permissions", "• Video\n• View Audit Log").
+			MustBuild(ctx.Localizer)
+
+		m.SendEmbed(discord.Message{
+			ChannelID: ctx.ChannelID,
+			Embeds:    []discord.Embed{embed},
+		})
+
+		e := NewInsufficientBotPermissionsError(discord.PermissionViewAuditLog | discord.PermissionStream)
+
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
+
+		m.Eval()
+	})
 }

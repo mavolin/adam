@@ -108,19 +108,12 @@ func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
 // discordutil.EmbedBuilder and sends it in the channel the command was sent
 // in.
 func (c *Context) ReplyEmbedBuilder(e *discordutil.EmbedBuilder) (*discord.Message, error) {
-	return c.ReplyEmbed(e.Build())
-}
-
-// ReplyLocalizedEmbedBuilder builds the discord.Embed from the passed
-// discordutil.LocalizedEmbedBuilder and sends it in the channel the command
-// was sent  in.
-func (c *Context) ReplyLocalizedEmbedBuilder(e *discordutil.LocalizedEmbedBuilder) (*discord.Message, error) {
-	b, err := e.Build(c.Localizer)
+	embed, err := e.Build(c.Localizer)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.ReplyEmbed(b)
+	return c.ReplyEmbed(embed)
 }
 
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
@@ -162,19 +155,12 @@ func (c *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
 // discordutil.EmbedBuilder and sends it in the channel the command was sent
 // in.
 func (c *Context) ReplyEmbedBuilderDM(e *discordutil.EmbedBuilder) (*discord.Message, error) {
-	return c.ReplyEmbedDM(e.Build())
-}
-
-// ReplyLocalizedEmbedBuilder builds the discord.Embed from the passed
-// discordutil.LocalizedEmbedBuilder and sends it in the channel the command
-// was sent  in.
-func (c *Context) ReplyLocalizedEmbedBuilderDM(e *discordutil.LocalizedEmbedBuilder) (*discord.Message, error) {
-	b, err := e.Build(c.Localizer)
+	embed, err := e.Build(c.Localizer)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.ReplyEmbedDM(b)
+	return c.ReplyEmbedDM(embed)
 }
 
 // ReplyMessage sends the passed api.SendMessageData to the channel the command

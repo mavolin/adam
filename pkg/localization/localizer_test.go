@@ -247,7 +247,7 @@ func TestLocalizer_WithDefaultPlaceholder(t *testing.T) {
 		}
 
 		l := new(Localizer)
-		l.WithDefaultPlaceholder(k, v)
+		l.WithPlaceholder(k, v)
 
 		assert.Equal(t, expect, l.defaultPlaceholders)
 	})
@@ -266,7 +266,7 @@ func TestLocalizer_WithDefaultPlaceholder(t *testing.T) {
 			},
 		}
 
-		l.WithDefaultPlaceholder(k, v)
+		l.WithPlaceholder(k, v)
 
 		assert.Equal(t, expect, l.defaultPlaceholders)
 	})
@@ -284,7 +284,7 @@ func TestLocalizer_WithDefaultPlaceholder(t *testing.T) {
 			},
 		}
 
-		l.WithDefaultPlaceholder(k, v)
+		l.WithPlaceholder(k, v)
 
 		assert.Equal(t, expect, l.defaultPlaceholders)
 	})
@@ -298,7 +298,7 @@ func TestLocalizer_WithDefaultPlaceholders(t *testing.T) {
 		}
 
 		l := new(Localizer)
-		l.WithDefaultPlaceholders(m)
+		l.WithPlaceholders(m)
 
 		assert.Equal(t, m, l.defaultPlaceholders)
 	})
@@ -321,7 +321,7 @@ func TestLocalizer_WithDefaultPlaceholders(t *testing.T) {
 			},
 		}
 
-		l.WithDefaultPlaceholders(m)
+		l.WithPlaceholders(m)
 
 		assert.Equal(t, expect, l.defaultPlaceholders)
 	})
@@ -343,7 +343,7 @@ func TestLocalizer_WithDefaultPlaceholders(t *testing.T) {
 			},
 		}
 
-		l.WithDefaultPlaceholders(m)
+		l.WithPlaceholders(m)
 
 		assert.Equal(t, expect, l.defaultPlaceholders)
 	})

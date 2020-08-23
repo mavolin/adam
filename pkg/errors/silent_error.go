@@ -21,7 +21,7 @@ type SilentError struct {
 }
 
 // Silent creates a new silent error using the passed error as cause.
-func Silent(err error) error {
+func Silent(err error) *SilentError {
 	if err == nil {
 		return nil
 	}
@@ -35,7 +35,7 @@ func Silent(err error) error {
 // WrapSilent wraps the passed error with passed message, enriches the
 // error with a stack trace, and marks the error as log-only.
 // The returned error will print as '$message: $err.Error()'.
-func WrapSilent(err error, message string) error {
+func WrapSilent(err error, message string) *SilentError {
 	if err == nil {
 		return nil
 	}
@@ -53,7 +53,7 @@ func WrapSilent(err error, message string) error {
 // enriches the error with a stack trace, and marks the error as log-only.
 // The returned error will print as
 // '$fmt.Sprintf(format, args...): $err.Error()'.
-func WrapSilentf(err error, format string, args ...interface{}) error {
+func WrapSilentf(err error, format string, args ...interface{}) *SilentError {
 	if err == nil {
 		return nil
 	}

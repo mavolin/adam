@@ -13,17 +13,26 @@ var (
 	defaultRestrictionDesc = localization.NewFallbackConfig("errors.restriction.description.default",
 		"👮 You are not allowed to use this command.")
 
-	insufficientBotPermissionsDesc = localization.NewFallbackConfig("errors.insufficient_bot_permissions.description",
+	insufficientBotPermissionsDescSingle = localization.NewFallbackConfig(
+		"errors.insufficient_bot_permissions.description.single",
+		"It seems as if I don't have sufficient permissions to run this command. Please give me the "+
+			"``{{.missing_permission}}`` permission and try again.")
+	insufficientBotPermissionsDescMulti = localization.NewFallbackConfig(
+		"errors.insufficient_bot_permissions.description.multi",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
 			"permissions and try again.")
-	insufficientBotPermissionMissingPermissionFieldName = localization.NewFallbackConfig(
-		"errors.insufficient_bot_permissions.missing_permission.name", "Missing Permissions")
+	insufficientBotPermissionMissingMissingPermissionsFieldName = localization.NewFallbackConfig(
+		"errors.insufficient_bot_permissions.missing_permissions.name", "Missing Permissions")
 
 	argumentParsingReasonFieldName = localization.NewFallbackConfig("errors.argument_parsing.reason.name", "Reason")
 
 	errorIDFooter = localization.NewFallbackConfig("errors.error_id", "Error-ID: {{.error_id}}")
 )
 
-type errorIDPlaceholders struct {
+type errorIDFooterPlaceholders struct {
 	ErrorID string
+}
+
+type insufficientBotPermissionsDescSinglePlaceholders struct {
+	MissingPermission string
 }

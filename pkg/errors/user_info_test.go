@@ -44,33 +44,73 @@ func TestUserInfo_Description(t *testing.T) {
 }
 
 func TestUserInfo_Handle(t *testing.T) {
-	expectDesc := "abc"
+	t.Run("without fields", func(t *testing.T) {
+		expectDesc := "abc"
 
-	m, s := state.NewMocker(t)
+		m, s := state.NewMocker(t)
 
-	ctx := plugin.NewContext(s)
-	ctx.MessageCreateEvent = &state.MessageCreateEvent{
-		MessageCreateEvent: &gateway.MessageCreateEvent{
-			Message: discord.Message{
-				ChannelID: 123,
+		ctx := plugin.NewContext(s)
+		ctx.MessageCreateEvent = &state.MessageCreateEvent{
+			MessageCreateEvent: &gateway.MessageCreateEvent{
+				Message: discord.Message{
+					ChannelID: 123,
+				},
 			},
-		},
-	}
-	ctx.Localizer = mock.NewNoOpLocalizer()
+		}
+		ctx.Localizer = mock.NewNoOpLocalizer()
 
-	embed := newInfoEmbedBuilder(ctx.Localizer).
-		WithDescription(expectDesc).
-		Build()
+		embed := newInfoEmbedBuilder(ctx.Localizer).
+			WithDescription(expectDesc).
+			MustBuild(ctx.Localizer)
 
-	m.SendEmbed(discord.Message{
-		ChannelID: ctx.ChannelID,
-		Embeds:    []discord.Embed{embed},
+		m.SendEmbed(discord.Message{
+			ChannelID: ctx.ChannelID,
+			Embeds:    []discord.Embed{embed},
+		})
+
+		e := NewUserInfo(expectDesc)
+
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
+
+		m.Eval()
 	})
 
-	e := NewUserInfo(expectDesc)
+	t.Run("with fields", func(t *testing.T) {
+		var (
+			expectDesc       = "abc"
+			expectFieldName  = "def"
+			expectFieldValue = "ghi"
+		)
 
-	err := e.Handle(s, ctx)
-	require.NoError(t, err)
+		m, s := state.NewMocker(t)
 
-	m.Eval()
+		ctx := plugin.NewContext(s)
+		ctx.MessageCreateEvent = &state.MessageCreateEvent{
+			MessageCreateEvent: &gateway.MessageCreateEvent{
+				Message: discord.Message{
+					ChannelID: 123,
+				},
+			},
+		}
+		ctx.Localizer = mock.NewNoOpLocalizer()
+
+		embed := newInfoEmbedBuilder(ctx.Localizer).
+			WithDescription(expectDesc).
+			WithField(expectFieldName, expectFieldValue).
+			MustBuild(ctx.Localizer)
+
+		m.SendEmbed(discord.Message{
+			ChannelID: ctx.ChannelID,
+			Embeds:    []discord.Embed{embed},
+		})
+
+		e := NewUserInfo(expectDesc).
+			WithField(expectFieldName, expectFieldValue)
+
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
+
+		m.Eval()
+	})
 }

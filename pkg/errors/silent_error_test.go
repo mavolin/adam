@@ -17,12 +17,7 @@ func TestSilent(t *testing.T) {
 		cause := New("abc")
 
 		err := Silent(cause)
-
-		assert.IsType(t, new(SilentError), err)
-
-		casted := err.(*SilentError)
-
-		assert.Equal(t, cause, casted.cause)
+		assert.Equal(t, cause, err.cause)
 	})
 }
 
