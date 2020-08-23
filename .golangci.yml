@@ -45,6 +45,8 @@ issues:
         - gosec
         - goconst
         - funlen
+    # utilities for testing
+    - path: /test_utils\.go$
     # there would be no point in splitting this up
     - path: ^pkg/utils/discordutil/embed.go$
       linters:
