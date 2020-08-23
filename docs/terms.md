@@ -16,18 +16,6 @@ Below is a complete list of terms used in adam.
 | `errors.error_id`                                            | Error-ID: {{error_id}}                                       | The footer of an error embed.<br /><br />**Keys:**<br /> - `error_id` - the sentry event id of the error |
 | `info.title`                                                 | Info                                                         | The title of an info message.                                |
 
-
-
-
-## Lists
-
-| **Term**                       | **Default** | **Description**                                              |
-| ------------------------------ | ----------- | ------------------------------------------------------------ |
-| `lang.lists.default_separator` | ,           | The normal list separator, including whitespace. For a list `1, 2 and 3` this would be `, `. |
-| `lang.lists.last_separator`    | ` and `     | The separator used to separate the last element from the element before, including whitespace. For a list `1, 2 and 3` this would be ` and `. |
-
-
-
 ## Permissions
 
 | **Term**                            | **Default**                          |
