@@ -138,12 +138,12 @@ func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) error {
 		return err
 	}
 
-	fieldsEmbed, err := e.fields.Build(ctx.Localizer)
+	fields, err := e.Fields(ctx.Localizer)
 	if err != nil {
 		return err
 	}
 
-	embed.Fields = fieldsEmbed.Fields
+	embed.Fields = fields
 
 	_, err = ctx.ReplyEmbed(embed)
 	return err
