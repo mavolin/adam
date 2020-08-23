@@ -41,27 +41,26 @@ func NewRestrictionErrorlt(description localization.Term) *RestrictionError {
 
 // Description returns the description of the error and localizes it, if
 // possible.
-func (e *RestrictionError) Description(l *localization.Localizer) (desc string) {
+func (e *RestrictionError) Description(l *localization.Localizer) (string, error) {
 	if e.descString != "" {
-		return e.descString
+		return e.descString, nil
 	}
 
-	var err error
-	if desc, err = l.Localize(e.descConfig); err != nil {
-		// we can ignore the error, as there is a fallback
-		desc, _ = l.Localize(defaultRestrictionDesc)
-	}
-
-	return desc
+	return l.Localize(e.descConfig)
 }
 
 func (e *RestrictionError) Error() string { return "user error" }
 
 // Handle sends an error embed with the description of the UserError.
-func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
+func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
+	desc, err := e.Description(ctx.Localizer)
+	if err != nil {
+		return err
+	}
+
 	embed := newErrorEmbedBuilder(ctx.Localizer).
-		WithDescription(e.Description(ctx.Localizer))
+		WithDescription(desc)
 
 	_, err = ctx.ReplyEmbedBuilder(embed)
-	return
+	return err
 }

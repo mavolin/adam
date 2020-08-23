@@ -20,7 +20,8 @@ func TestRestrictionError_Description(t *testing.T) {
 
 		e := NewRestrictionError(expect)
 
-		actual := e.Description(mock.NewNoOpLocalizer())
+		actual, err := e.Description(mock.NewNoOpLocalizer())
+		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -36,15 +37,9 @@ func TestRestrictionError_Description(t *testing.T) {
 
 		e := NewRestrictionErrorlt(term)
 
-		actual := e.Description(l)
+		actual, err := e.Description(l)
+		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("invalid description", func(t *testing.T) {
-		e := NewRestrictionError("")
-
-		actual := e.Description(mock.NewNoOpLocalizer())
-		assert.NotEmpty(t, actual)
 	})
 }
 
