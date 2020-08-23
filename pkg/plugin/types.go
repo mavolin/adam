@@ -3,6 +3,7 @@ package plugin
 import (
 	"time"
 
+	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 )
 
@@ -16,17 +17,31 @@ const (
 	GuildText ChannelType = 1 << iota
 	// GuildNews is the ChannelType of a news channel (5).
 	GuildNews
-	// DM is the ChannelType of a private chat (1).
-	DM
+	// DirectMessage is the ChannelType of a private chat (1).
+	DirectMessage
 
 	// Combinations
 
 	// All is a combination of all ChannelTypes.
-	All = DM | Guild
+	All = DirectMessage | Guild
 	// Guild is a combination of all ChannelTypes used in guilds, i.e.
 	// GuildText and GuildNews.
 	Guild = GuildText | GuildNews
 )
+
+// Has checks if the passed discord.ChannelType is found in the ChannelType.
+func (t ChannelType) Has(target discord.ChannelType) bool {
+	switch target {
+	case discord.GuildText:
+		return t&GuildText == GuildText
+	case discord.DirectMessage:
+		return t&DirectMessage == DirectMessage
+	case discord.GuildNews:
+		return t&GuildNews == GuildNews
+	default:
+		return false
+	}
+}
 
 // RestrictionFunc is the function used to determine if a user is authorized
 // to use a command or module.
