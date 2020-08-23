@@ -13,7 +13,23 @@ func TestSilent(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("not nil", func(t *testing.T) {
+	t.Run("silent error", func(t *testing.T) {
+		expect := Silent(New("abc"))
+
+		actual := Silent(expect)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		expectCause := New("abc")
+
+		cause := WithStack(expectCause)
+
+		actual := Silent(cause)
+		assert.Equal(t, expectCause, actual.cause)
+	})
+
+	t.Run("normal error", func(t *testing.T) {
 		cause := New("abc")
 
 		err := Silent(cause)

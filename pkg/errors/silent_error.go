@@ -21,9 +21,19 @@ type SilentError struct {
 }
 
 // Silent creates a new silent error using the passed error as cause.
+// If the error is already a SilentError, it will be returned as is.
+// Furthermore, if the error is of type InternalError, the cause of the error
+// will be extracted first, before creating a SilentError.
 func Silent(err error) *SilentError {
 	if err == nil {
 		return nil
+	}
+
+	switch typedErr := err.(type) {
+	case *SilentError:
+		return typedErr
+	case *InternalError:
+		err = typedErr.Unwrap()
 	}
 
 	return &SilentError{
