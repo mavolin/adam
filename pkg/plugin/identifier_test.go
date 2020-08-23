@@ -41,6 +41,88 @@ func TestIdentifier_Parent(t *testing.T) {
 	}
 }
 
+func TestIdentifier_IsRoot(t *testing.T) {
+	t.Run("root", func(t *testing.T) {
+		isRoot := Identifier(".").IsRoot()
+		assert.True(t, isRoot)
+	})
+
+	t.Run("not root", func(t *testing.T) {
+		isRoot := Identifier(".mod").IsRoot()
+		assert.False(t, isRoot)
+	})
+}
+
+func TestIdentifier_IsParent(t *testing.T) {
+	testCases := []struct {
+		name       string
+		identifier Identifier
+		target     Identifier
+		expect     bool
+	}{
+		{
+			name:       "parent",
+			identifier: ".mod.ban",
+			target:     ".mod",
+			expect:     true,
+		},
+		{
+			name:       "equal",
+			identifier: ".mod.ban",
+			target:     ".mod.ban",
+			expect:     false,
+		},
+		{
+			name:       "child",
+			identifier: ".mod",
+			target:     ".mod.ban",
+			expect:     false,
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := c.identifier.IsParent(c.target)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func TestIdentifier_IsChild(t *testing.T) {
+	testCases := []struct {
+		name       string
+		identifier Identifier
+		target     Identifier
+		expect     bool
+	}{
+		{
+			name:       "parent",
+			identifier: ".mod.ban",
+			target:     ".mod",
+			expect:     false,
+		},
+		{
+			name:       "equal",
+			identifier: ".mod.ban",
+			target:     ".mod.ban",
+			expect:     false,
+		},
+		{
+			name:       "child",
+			identifier: ".mod",
+			target:     ".mod.ban",
+			expect:     true,
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := c.identifier.IsChild(c.target)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
 func TestIdentifier_AsCommandInvoke(t *testing.T) {
 	testCases := []struct {
 		name   string
@@ -70,16 +152,4 @@ func TestIdentifier_AsCommandInvoke(t *testing.T) {
 			assert.Equal(t, c.expect, actual)
 		})
 	}
-}
-
-func TestIdentifier_IsRoot(t *testing.T) {
-	t.Run("root", func(t *testing.T) {
-		isRoot := Identifier(".").IsRoot()
-		assert.True(t, isRoot)
-	})
-
-	t.Run("not root", func(t *testing.T) {
-		isRoot := Identifier(".mod").IsRoot()
-		assert.False(t, isRoot)
-	})
 }
