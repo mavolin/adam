@@ -5,19 +5,21 @@ import (
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
+
+	"github.com/mavolin/adam/pkg/localization"
 )
 
-// ChannelType is an enum used to specify in which channel types the command
+// ChannelTypes is an enum used to specify in which channel types the command
 // may be executed.
 // It is bit-shifted to allow for combinations of different channel types.
-type ChannelType uint8
+type ChannelTypes uint8
 
 const (
-	// GuildText is the ChannelType of a regular guild text channel (0).
-	GuildText ChannelType = 1 << iota
-	// GuildNews is the ChannelType of a news channel (5).
+	// GuildText is the ChannelTypes of a regular guild text channel (0).
+	GuildText ChannelTypes = 1 << iota
+	// GuildNews is the ChannelTypes of a news channel (5).
 	GuildNews
-	// DirectMessage is the ChannelType of a private chat (1).
+	// DirectMessage is the ChannelTypes of a private chat (1).
 	DirectMessage
 
 	// Combinations
@@ -29,8 +31,8 @@ const (
 	Guild = GuildText | GuildNews
 )
 
-// Has checks if the passed discord.ChannelType is found in the ChannelType.
-func (t ChannelType) Has(target discord.ChannelType) bool {
+// Has checks if the passed discord.ChannelType is found in the ChannelTypes.
+func (t ChannelTypes) Has(target discord.ChannelType) bool {
 	switch target {
 	case discord.GuildText:
 		return t&GuildText == GuildText
@@ -41,6 +43,30 @@ func (t ChannelType) Has(target discord.ChannelType) bool {
 	default:
 		return false
 	}
+}
+
+// Names returns the names of the ChannelTypes or nil if ChannelTypes is 0
+// or invalid.
+func (t ChannelTypes) Names(l *localization.Localizer) (s []string) {
+	if t&GuildText == GuildText {
+		// we can ignore the error, as there is a fallback
+		t, _ := l.Localize(guildTextType)
+		s = append(s, t)
+	}
+
+	if t&GuildNews == GuildNews {
+		// we can ignore the error, as there is a fallback
+		t, _ := l.Localize(guildNewsType)
+		s = append(s, t)
+	}
+
+	if t&DirectMessage == DirectMessage {
+		// we can ignore the error, as there is a fallback
+		t, _ := l.Localize(directMessageType)
+		s = append(s, t)
+	}
+
+	return
 }
 
 // RestrictionFunc is the function used to determine if a user is authorized

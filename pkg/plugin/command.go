@@ -71,8 +71,8 @@ type (
 		//
 		// Setting this overrides ChannelTypes defined by the parent.
 		//
-		// If this 0, the parents ChannelType will be used.
-		GetChannelType() ChannelType
+		// If this 0, the parents ChannelTypes will be used.
+		GetChannelTypes() ChannelTypes
 		// GetBotPermissions gets the permissions the bot needs to execute this
 		// command.
 		//

@@ -37,10 +37,10 @@ type (
 		// If set to true, all submodules and subcommands will be hidden as
 		// well.
 		IsHidden() bool
-		// GetChannelType returns the ChannelType required to use this module.
+		// GetChannelTypes returns the ChannelTypes required to use this module.
 		//
-		// Commands can overwrite this, by setting a custom ChannelType.
-		GetChannelType() ChannelType
+		// Commands can overwrite this, by setting a custom ChannelTypes.
+		GetChannelTypes() ChannelTypes
 		// GetBotPermissions get the permissions needed to use this module.
 		//
 		// Commands can overwrite this, by setting custom BotPermissions.
