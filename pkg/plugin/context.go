@@ -5,7 +5,6 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/getsentry/sentry-go"
 	"github.com/mavolin/disstate/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
@@ -24,9 +23,6 @@ func NewContext(s *state.State) *Context {
 type Context struct {
 	// MessageCreateEvent contains the event data about the invoking message.
 	*state.MessageCreateEvent
-
-	// Hub is the sentry.Hub of the command.
-	Hub *sentry.Hub
 
 	// Localizer is the localizer set to the guilds language.
 	*localization.Localizer

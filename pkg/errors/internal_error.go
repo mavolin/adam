@@ -227,18 +227,8 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 		}).
 		Error("command returned with an error")
 
-	eventID := ctx.Hub.CaptureException(e)
-
 	embed := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(e.Description(ctx.Localizer))
-
-	// make sure sentry is even running
-	if eventID != nil {
-		embed.WithSimpleFooterl(errorIDFooter.
-			WithPlaceholders(errorIDFooterPlaceholders{
-				ErrorID: string(*eventID),
-			}))
-	}
 
 	_, err := ctx.ReplyEmbedBuilder(embed)
 
