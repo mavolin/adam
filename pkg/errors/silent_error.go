@@ -80,7 +80,5 @@ func (e *SilentError) Handle(_ *state.State, ctx *plugin.Context) error {
 		}).
 		Error("command returned with error")
 
-	ctx.Hub.CaptureException(e)
-
 	return nil
 }

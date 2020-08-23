@@ -1,2 +1,2 @@
-// Package erroutil provides utilies to handle errors.
+// Package erroutil provides utilities to handle errors.
 package errorutil

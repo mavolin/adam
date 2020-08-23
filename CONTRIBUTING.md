@@ -42,7 +42,7 @@ We use the following types:
 - docs: changes to the documentation
 - feat: a new feature
 - fix: a bug fix
-- perf: an improvement to perfomance
+- perf: an improvement to performance
 - refactor: a code change that neither fixes a bug nor adds a feature
 - style: a change that does not affect the meaning of the code
 - test: a change to an existing test or a new test

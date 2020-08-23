@@ -6,7 +6,6 @@ import (
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/diamondburned/arikawa/gateway"
-	"github.com/getsentry/sentry-go"
 	"github.com/mavolin/disstate/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -241,7 +240,6 @@ func TestInternalError_Handle(t *testing.T) {
 			},
 		},
 	}
-	ctx.Hub = sentry.NewHub(nil, sentry.NewScope())
 	ctx.Localizer = mock.NewNoOpLocalizer()
 
 	embed := newErrorEmbedBuilder(ctx.Localizer).
