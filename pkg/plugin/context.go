@@ -34,6 +34,9 @@ type Context struct {
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Flags Flags
 
+	// Command is the Command that is being invoked.
+	Command Command
+
 	// CommandIdentifier is the Identifier of the command.
 	CommandIdentifier Identifier
 
@@ -56,6 +59,10 @@ type Context struct {
 	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.
 	Provider
+
+	// ErrorHandler is an embedded interface that provides error handling
+	// capabilities to the command.
+	ErrorHandler
 
 	s *state.State
 }
@@ -190,24 +197,34 @@ type (
 	// Copies are only created on call of one of the methods.
 	Provider interface {
 		// Commands returns a copy of the bot's commands.
-		// Calling Commands will only trigger a copy once, and will return
-		// the same copy for all subsequent calls.
 		Commands() []Command
+		// Command returns the Command with the passed Identifier, or nil if no
+		// such command exists.
+		Command(Identifier) Command
 		// Modules returns a copy of the bot's modules.
-		// Calling Modules will only trigger a copy once, and will return
-		// the same copy for all subsequent calls.
 		Modules() []Module
 
 		// RuntimeCommands returns a copy of the runtime commands in this
 		// guild.
 		// The outer slice represents the individual runtime command providers.
-		// Calling RuntimeCommands will only trigger a copy once, and will
-		// return the same copy for all subsequent calls.
 		RuntimeCommands() ([][]Command, error)
+		// RuntimeCommand returns the runtime command with the passed
+		// Identifier, or nil, nil if no such command exists.
+		RuntimeCommand(Identifier) (Command, error)
 		// RuntimeModules returns a copy of the runtime modules in this guild.
 		// The outer slice represents the individual runtime module providers.
-		// Calling RuntimeModules will only trigger a copy once, and will
-		// returns the same copy for all subsequent calls.
 		RuntimeModules() ([][]Module, error)
+	}
+
+	// ErrorHandler is an embeddable interface used to provide direct error
+	// handling capabilities to a command.
+	// This is useful if an error is encountered, that should be captured
+	// through the bot's error handler, but execution can remain uninterrupted.
+	ErrorHandler interface {
+		// HandleError hands the error to the bot's error handler.
+		HandleError(err interface{})
+		// HandleErroSilent wraps the error using errors.Silent and hands it to
+		// the bot's error handler.
+		HandleErrorSilent(err interface{})
 	}
 )

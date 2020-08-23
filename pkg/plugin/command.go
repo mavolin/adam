@@ -27,15 +27,14 @@ type (
 		//	• localization.Term
 		//	• localization.Config
 		//	• any type implementing Response
+		//	• nil for no response
 		//
 		// Error Handling
 		//
-		// If Invoke returns an error it will be handed to the ErrorHandler
-		// defined in the executing bot.
-		//
-		// As a special case when both return values are != nil, the response
-		// will still be sent, and the error will be handed to the ErrorHandler
-		// as a SilentError.
+		// If Invoke returns an error it will be handed to the error handler
+		// of the bot.
+		// As a special case if both return values are non-nil, both the
+		// response and the error will be handled.
 		//
 		// Panic Handling
 		//
@@ -85,14 +84,15 @@ type (
 		// IsRestricted checks if the user is restricted from using the
 		// command.
 		//
-		// Setting this will override restrictions defined the parent.
+		// Setting this will override restrictions defined by the parent.
 		//
-		// If they are restricted, a errors.RestrictedError should be returned.
+		// If they are restricted, a errors.RestrictionError should be
+		// returned.
 		GetRestrictionFunc() RestrictionFunc
 		// GetThrottling returns the ThrottlingOptions for the command.
 		// If either of the fields in ThrottlingOptions is zero value, the
 		// command won't be throttled.
-		GetThrottling() ThrottlingOptions
+		GetThrottlingOptions() ThrottlingOptions
 	}
 )
 
