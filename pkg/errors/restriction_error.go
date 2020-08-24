@@ -1,14 +1,30 @@
 package errors
 
 import (
+	"github.com/diamondburned/arikawa/api"
+	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
+// DefaultRestrictionError is a restriction error with a default, generic
+// description.
 var DefaultRestrictionError = NewRestrictionErrorl(defaultRestrictionDesc)
 
+// RestrictionError is the error returned if a restriction fails.
+// It contains a description stating the conditions that need to be fulfilled
+// for a command to execute.
+//
+// Besides restrictions, this will also be returned, if a user invokes the
+// command in a channel, that is not specified in the plugin.Meta's
+// ChannelTypes.
+//
+// Note that all mentions except the mention of the message author are
+// suppressed.
+// This allows you to more easily communicate errors with users etc. without
+// any unintended pings.
 type RestrictionError struct {
 	// description of the error, either is set
 	descString string
@@ -61,15 +77,26 @@ func (e *RestrictionError) Is(target error) bool {
 }
 
 // Handle sends an error embed with the description of the UserError.
-func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
+func (e *RestrictionError) Handle(s *state.State, ctx *plugin.Context) error {
 	desc, err := e.Description(ctx.Localizer)
 	if err != nil {
 		return err
 	}
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	builder := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
+	embed, err := builder.Build(ctx.Localizer)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.SendMessageComplex(ctx.ChannelID, api.SendMessageData{
+		Embed: &embed,
+		AllowedMentions: &api.AllowedMentions{
+			Users: []discord.UserID{ctx.Author.ID},
+		},
+	})
+
 	return err
 }

@@ -3,6 +3,7 @@ package errors
 import (
 	"reflect"
 
+	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
@@ -135,7 +136,7 @@ func (i *UserInfo) Is(target error) bool {
 }
 
 // Handle sends an info embed with the description of the UserInfo.
-func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
+func (i *UserInfo) Handle(s *state.State, ctx *plugin.Context) (err error) {
 	desc, err := i.Description(ctx.Localizer)
 	if err != nil {
 		return err
@@ -155,6 +156,12 @@ func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 
 	embed.Fields = fields
 
-	_, err = ctx.ReplyEmbed(embed)
+	_, err = s.SendMessageComplex(ctx.ChannelID, api.SendMessageData{
+		Embed: &embed,
+		AllowedMentions: &api.AllowedMentions{
+			Users: []discord.UserID{ctx.Author.ID},
+		},
+	})
+
 	return err
 }

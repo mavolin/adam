@@ -1,6 +1,8 @@
 package errors
 
 import (
+	"github.com/diamondburned/arikawa/api"
+	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
@@ -18,6 +20,11 @@ import (
 // The reason is optional and is usually filled during parsing.
 // It contains information about why this error occurred, and what can be done
 // to fix it.
+//
+// Note that all mentions except the mention of the message author will be
+// suppressed.
+// This allows you to more easily communicate errors with users etc. without
+// any unintended pings.
 type ArgumentParsingError struct {
 	descString string
 	descConfig localization.Config
@@ -106,22 +113,33 @@ func (e *ArgumentParsingError) Is(target error) bool {
 // Handle send an error embed containing a description of which arg/flag was
 // faulty and an optional reason for the error, in the channel the command
 // was sent in.
-func (e *ArgumentParsingError) Handle(_ *state.State, ctx *plugin.Context) error {
+func (e *ArgumentParsingError) Handle(s *state.State, ctx *plugin.Context) error {
 	desc, err := e.Description(ctx.Localizer)
 	if err != nil {
 		return err
 	}
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	builder := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(desc)
 
 	if reasonVal := e.Reason(ctx.Localizer); reasonVal != "" {
 		// we can ignore the error, as we have a fallback
 		reasonName, _ := ctx.Localize(argumentParsingReasonFieldName)
 
-		embed.WithField(reasonName, reasonVal)
+		builder.WithField(reasonName, reasonVal)
 	}
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
+	embed, err := builder.Build(ctx.Localizer)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.SendMessageComplex(ctx.ChannelID, api.SendMessageData{
+		Embed: &embed,
+		AllowedMentions: &api.AllowedMentions{
+			Users: []discord.UserID{ctx.Author.ID},
+		},
+	})
+
 	return err
 }
