@@ -20,7 +20,7 @@ func Wrap(f plugin.RestrictionFunc) plugin.RestrictionFunc {
 				return err
 			}
 
-			header, _ := ctx.Localize(allMessage)
+			header, _ := ctx.Localize(allMessageHeader)
 
 			return errors.NewRestrictionError(header + "\n\n" + missing)
 		case *anyError:
@@ -29,7 +29,7 @@ func Wrap(f plugin.RestrictionFunc) plugin.RestrictionFunc {
 				return err
 			}
 
-			header, _ := ctx.Localize(anyMessage)
+			header, _ := ctx.Localize(anyMessageHeader)
 
 			return errors.NewRestrictionError(header + "\n\n" + missing)
 		default:

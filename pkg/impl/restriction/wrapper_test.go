@@ -19,14 +19,16 @@ func TestWrap(t *testing.T) {
 		{
 			name: "all error",
 			in:   ALL(errorFunc1, errorFunc2),
-			expect: errors.NewRestrictionError("You need to fulfill all of these requirements:\n\n" +
+			expect: errors.NewRestrictionError("You need to fulfill all of these requirements to execute the" +
+				" command:\n\n" +
 				entryPrefix + "abc\n" +
 				entryPrefix + "def"),
 		},
 		{
 			name: "any error",
 			in:   ANY(errorFunc1, errorFunc2),
-			expect: errors.NewRestrictionError("You need to fulfill at least one of these requirements:\n\n" +
+			expect: errors.NewRestrictionError("You need to fulfill at least one of these requirements to execute" +
+				" the command:\n\n" +
 				entryPrefix + "abc\n" +
 				entryPrefix + "def"),
 		},
