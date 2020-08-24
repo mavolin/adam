@@ -81,7 +81,7 @@ func (e *SilentError) Error() string         { return e.cause.Error() }
 func (e *SilentError) Unwrap() error         { return e.cause }
 func (e *SilentError) StackTrace() []uintptr { return e.stack }
 
-// Handle logs the error and sends it to sentry, if configured.
+// Handle logs the error.
 func (e *SilentError) Handle(_ *state.State, ctx *plugin.Context) error {
 	logstract.
 		WithFields(logstract.Fields{

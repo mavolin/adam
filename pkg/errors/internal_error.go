@@ -218,7 +218,7 @@ func (e *InternalError) Error() string         { return e.cause.Error() }
 func (e *InternalError) Unwrap() error         { return e.cause }
 func (e *InternalError) StackTrace() []uintptr { return e.stack }
 
-// Handle logs the error, and sends it to sentry, if configured.
+// Handle logs the error and sends out an internal error embed.
 func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 	logstract.
 		WithFields(logstract.Fields{
