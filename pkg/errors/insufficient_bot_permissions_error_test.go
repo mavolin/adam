@@ -78,7 +78,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 		embed := newErrorEmbedBuilder(ctx.Localizer).
 			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me" +
-				" the ``Video`` permission and try again.").
+				" the `Video` permission and try again.").
 			MustBuild(ctx.Localizer)
 
 		m.SendEmbed(discord.Message{
