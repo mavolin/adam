@@ -7,8 +7,22 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
+// DefaultRestrictionError is a restriction error with a default, generic
+// description.
 var DefaultRestrictionError = NewRestrictionErrorl(defaultRestrictionDesc)
 
+// RestrictionError is the error returned if a restriction fails.
+// It contains a description stating the conditions that need to be fulfilled
+// for a command to execute.
+//
+// Besides restrictions, this will also be returned, if a user invokes the
+// command in a channel, that is not specified in the plugin.Meta's
+// ChannelTypes.
+//
+// Note that the description might contain mentions, which are intended not
+// to ping anyone, e.g. "You need @role to use this command.".
+// This means you should use allowed mentions if you are custom handling this
+// error and not using an embed, which suppresses mentions by default.
 type RestrictionError struct {
 	// description of the error, either is set
 	descString string
