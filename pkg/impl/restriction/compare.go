@@ -162,7 +162,7 @@ func (e *allError) format(indentLvl int, l *localization.Localizer) (string, err
 	}
 
 	// we can ignore the error, as there is a fallback
-	anyMessage, _ := l.Localize(anyMessage)
+	anyMessage, _ := l.Localize(anyMessageInline)
 
 	for _, m := range e.anys {
 		s += "\n" + indent + entryPrefix + anyMessage + "\n"
@@ -202,7 +202,7 @@ func (e *anyError) format(indentLvl int, l *localization.Localizer) (string, err
 	}
 
 	// we can ignore the error, as there is a fallback
-	allMessage, _ := l.Localize(allMessage)
+	allMessage, _ := l.Localize(allMessageInline)
 
 	for _, m := range e.alls {
 		s += "\n" + indent + entryPrefix + allMessage + "\n"
