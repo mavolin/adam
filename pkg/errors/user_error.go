@@ -1,6 +1,8 @@
 package errors
 
 import (
+	"reflect"
+
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
@@ -123,6 +125,16 @@ func (e *UserError) Fields(l *localization.Localizer) ([]discord.EmbedField, err
 }
 
 func (e *UserError) Error() string { return "user error" }
+
+func (e *UserError) Is(target error) bool {
+	casted, ok := target.(*UserError)
+	if !ok {
+		return false
+	}
+
+	return (e.descString == casted.descString || e.descConfig == casted.descConfig) &&
+		reflect.DeepEqual(e.fields, casted.fields)
+}
 
 // Handle sends an error embed with the description of the UserError.
 func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) error {

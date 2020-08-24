@@ -1,6 +1,8 @@
 package errors
 
 import (
+	"reflect"
+
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
@@ -121,6 +123,16 @@ func (i *UserInfo) Fields(l *localization.Localizer) ([]discord.EmbedField, erro
 }
 
 func (i *UserInfo) Error() string { return "user info" }
+
+func (i *UserInfo) Is(target error) bool {
+	casted, ok := target.(*UserInfo)
+	if !ok {
+		return false
+	}
+
+	return (i.descString == casted.descString || i.descConfig == casted.descConfig) &&
+		reflect.DeepEqual(i.fields, casted.fields)
+}
 
 // Handle sends an info embed with the description of the UserInfo.
 func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
