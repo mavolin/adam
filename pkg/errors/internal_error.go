@@ -3,8 +3,6 @@ package errors
 import (
 	"fmt"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 	"github.com/mavolin/logstract/pkg/logstract"
 
@@ -19,11 +17,6 @@ import (
 // the cause or context of the error, but sends a generalised message.
 // However, using WithDescription, WithDetailsl or WithDetailslt, the default
 // description can be replaced.
-//
-// Note that all mentions except the mention of the message author will be
-// suppressed.
-// This allows you to more easily communicate errors with users etc. without
-// any unintended pings.
 type InternalError struct {
 	// cause is the cause of the error.
 	cause error
@@ -226,7 +219,7 @@ func (e *InternalError) Unwrap() error         { return e.cause }
 func (e *InternalError) StackTrace() []uintptr { return e.stack }
 
 // Handle logs the error and sends out an internal error embed.
-func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) error {
+func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 	logstract.
 		WithFields(logstract.Fields{
 			"cmd_ident": ctx.CommandIdentifier,
@@ -234,20 +227,10 @@ func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) error {
 		}).
 		Error("command returned with an error")
 
-	builder := newErrorEmbedBuilder(ctx.Localizer).
+	embed := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(e.Description(ctx.Localizer))
 
-	embed, err := builder.Build(ctx.Localizer)
-	if err != nil {
-		return err
-	}
-
-	_, err = s.SendMessageComplex(ctx.ChannelID, api.SendMessageData{
-		Embed: &embed,
-		AllowedMentions: &api.AllowedMentions{
-			Users: []discord.UserID{ctx.Author.ID},
-		},
-	})
+	_, err := ctx.ReplyEmbedBuilder(embed)
 
 	return err
 }

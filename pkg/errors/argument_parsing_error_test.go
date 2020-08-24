@@ -3,7 +3,6 @@ package errors
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/pkg/state"
@@ -115,37 +114,32 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 	t.Run("description only", func(t *testing.T) {
 		expectDesc := "abc"
 
+		var channelID discord.ChannelID = 123
+
 		m, s := state.NewMocker(t)
 
 		ctx := plugin.NewContext(s)
 		ctx.MessageCreateEvent = &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
-					ChannelID: 123,
-					Author: discord.User{
-						ID: 456,
-					},
+					ChannelID: channelID,
 				},
 			},
 		}
 		ctx.Localizer = mock.NewNoOpLocalizer()
 
-		embed := newErrorEmbedBuilder(ctx.Localizer).
-			WithDescription(expectDesc).
-			MustBuild(ctx.Localizer)
-
-		m.SendMessageComplex(api.SendMessageData{
-			Embed: &embed,
-			AllowedMentions: &api.AllowedMentions{
-				Users: []discord.UserID{ctx.Author.ID},
+		m.SendEmbed(discord.Message{
+			ChannelID: channelID,
+			Embeds: []discord.Embed{
+				newErrorEmbedBuilder(ctx.Localizer).
+					WithDescription(expectDesc).
+					MustBuild(ctx.Localizer),
 			},
-		}, discord.Message{
-			ChannelID: ctx.ChannelID,
 		})
 
 		e := NewArgumentParsingError(expectDesc)
 
-		err := e.Handle(s, ctx)
+		err := e.Handle(nil, ctx)
 		require.NoError(t, err)
 
 		m.Eval()
@@ -164,9 +158,6 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
 					ChannelID: 123,
-					Author: discord.User{
-						ID: 456,
-					},
 				},
 			},
 		}
@@ -176,14 +167,9 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 			WithDescription(expectDesc).
 			WithField("Reason", expectReason).
 			MustBuild(ctx.Localizer)
-
-		m.SendMessageComplex(api.SendMessageData{
-			Embed: &embed,
-			AllowedMentions: &api.AllowedMentions{
-				Users: []discord.UserID{ctx.Author.ID},
-			},
-		}, discord.Message{
+		m.SendEmbed(discord.Message{
 			ChannelID: ctx.ChannelID,
+			Embeds:    []discord.Embed{embed},
 		})
 
 		e := NewArgumentParsingError(expectDesc).

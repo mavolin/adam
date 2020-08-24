@@ -3,7 +3,6 @@ package errors
 import (
 	"reflect"
 
-	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
@@ -15,11 +14,7 @@ import (
 // UserError is an error on the user-side.
 // The user will reported via a message containing a detailed description of
 // the problem.
-//
-// Note that all mentions except the mention of the message author are
-// suppressed.
-// This allows you to more easily communicate errors with users etc. without
-// any unintended pings.
+// The error won't be logged or captured by sentry.
 type UserError struct {
 	// description of the error, either is set
 	descString string
@@ -142,7 +137,7 @@ func (e *UserError) Is(target error) bool {
 }
 
 // Handle sends an error embed with the description of the UserError.
-func (e *UserError) Handle(s *state.State, ctx *plugin.Context) error {
+func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) error {
 	desc, err := e.Description(ctx.Localizer)
 	if err != nil {
 		return err
@@ -162,12 +157,6 @@ func (e *UserError) Handle(s *state.State, ctx *plugin.Context) error {
 
 	embed.Fields = fields
 
-	_, err = s.SendMessageComplex(ctx.ChannelID, api.SendMessageData{
-		Embed: &embed,
-		AllowedMentions: &api.AllowedMentions{
-			Users: []discord.UserID{ctx.Author.ID},
-		},
-	})
-
+	_, err = ctx.ReplyEmbed(embed)
 	return err
 }

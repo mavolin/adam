@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/pkg/state"
@@ -238,9 +237,6 @@ func TestInternalError_Handle(t *testing.T) {
 		MessageCreateEvent: &gateway.MessageCreateEvent{
 			Message: discord.Message{
 				ChannelID: 123,
-				Author: discord.User{
-					ID: 456,
-				},
 			},
 		},
 	}
@@ -250,13 +246,9 @@ func TestInternalError_Handle(t *testing.T) {
 		WithDescription(expectDesc).
 		MustBuild(ctx.Localizer)
 
-	m.SendMessageComplex(api.SendMessageData{
-		Embed: &embed,
-		AllowedMentions: &api.AllowedMentions{
-			Users: []discord.UserID{ctx.Author.ID},
-		},
-	}, discord.Message{
+	m.SendEmbed(discord.Message{
 		ChannelID: ctx.ChannelID,
+		Embeds:    []discord.Embed{embed},
 	})
 
 	e := WithDescription(New(""), expectDesc)
