@@ -16,8 +16,8 @@ func TestInterfacesToList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		Build()
 
 	actual := InterfacesToList(list, l)
@@ -31,8 +31,8 @@ func TestInterfacesToSortedList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		Build()
 
 	actual := InterfacesToSortedList(list, l)
@@ -46,8 +46,8 @@ func TestStringsToList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		Build()
 
 	actual := StringsToList(list, l)
@@ -61,8 +61,8 @@ func TestStringsToSortedList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		Build()
 
 	actual := StringsToSortedList(list, l)
@@ -80,8 +80,8 @@ func TestConfigsToList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		On("milk", "milk").
 		On("eggs", "eggs").
 		On("orange_juice", "orange juice").
@@ -103,8 +103,8 @@ func TestConfigsToSortedList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		On("milk", "milk").
 		On("eggs", "eggs").
 		On("orange_juice", "orange juice").
@@ -122,8 +122,8 @@ func TestTermsToList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		On("milk", "milk").
 		On("eggs", "eggs").
 		On("orange_juice", "orange juice").
@@ -141,8 +141,8 @@ func TestTermsToSortedList(t *testing.T) {
 
 	l := mock.
 		NewLocalizer().
-		On("lang.lists.default_separator", ", ").
-		On("lang.lists.last_separator", " and ").
+		On("common.lists.default_separator", ", ").
+		On("common.lists.last_separator", " and ").
 		On("milk", "milk").
 		On("eggs", "eggs").
 		On("orange_juice", "orange juice").
