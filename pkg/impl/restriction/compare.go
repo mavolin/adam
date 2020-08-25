@@ -12,7 +12,7 @@ import (
 
 const (
 	// indentMultiplicator defines the amount of whitespaces per indent level.
-	indentMultiplicator = 4
+	indentMultiplicator = 2
 	// entryPrefix is the prefix used in front of every entry.
 	entryPrefix = "• "
 )
@@ -227,8 +227,9 @@ func (e *anyError) Error() string {
 // The first return value is the normal indent, and the second is the indent
 // needed for newlines within an entry.
 func genIndent(indentLvl int) (indent, nlIndent string) {
-	indent = strings.Repeat(" ", indentLvl*indentMultiplicator)
-	nlIndent = strings.Repeat(" ", indentLvl*indentMultiplicator+len(entryPrefix))
+	// use a zero width space to prevent trimming
+	indent = strings.Repeat("　", indentLvl*indentMultiplicator)
+	nlIndent = strings.Repeat("　", indentLvl*indentMultiplicator+len(entryPrefix))
 
 	return
 }
