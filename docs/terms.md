@@ -13,7 +13,6 @@ Below is a complete list of terms used in adam.
 | `errors.insufficient_bot_permissions.description.multi`      | It seems as if I don't have sufficient permissions to run this command. Please give me the following "+    "permissions and try again. | The description of the the insufficient bot permissions error embed, if multiple permissions are missing. |
 | `errors.insufficient_bot_permissions.missing_permissions.name` | Missing Permission                                           | The name of the field containing a list of missing permissions. |
 | `errors.argument_parsing_error.reason.name`                  | Reason                                                       | The name of the field containing the reason for the error.   |
-| `errors.error_id`                                            | Error-ID: {{error_id}}                                       | The footer of an error embed.<br /><br />**Keys:**<br /> - `error_id` - the sentry event id of the error |
 | `info.title`                                                 | Info                                                         | The title of an info message.                                |
 
 ## Permissions
