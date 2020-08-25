@@ -5,8 +5,6 @@ import (
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
-
-	"github.com/mavolin/adam/pkg/localization"
 )
 
 // ChannelTypes is an enum used to specify in which channel types the command
@@ -15,58 +13,35 @@ import (
 type ChannelTypes uint8
 
 const (
-	// GuildText is the ChannelTypes of a regular guild text channel (0).
-	GuildText ChannelTypes = 1 << iota
-	// GuildNews is the ChannelTypes of a news channel (5).
-	GuildNews
-	// DirectMessage is the ChannelTypes of a private chat (1).
-	DirectMessage
+	// GuildTextChannels is the ChannelTypes of a regular guild text channel
+	// (0).
+	GuildTextChannels ChannelTypes = 1 << iota
+	// GuildNewsChannels is the ChannelTypes of a news channel (5).
+	GuildNewsChannels
+	// DirectMessages is the ChannelTypes of a private chat (1).
+	DirectMessages
 
 	// Combinations
 
-	// All is a combination of all ChannelTypes.
-	All = DirectMessage | Guild
-	// Guild is a combination of all ChannelTypes used in guilds, i.e.
-	// GuildText and GuildNews.
-	Guild = GuildText | GuildNews
+	// AllChannels is a combination of all ChannelTypes.
+	AllChannels = DirectMessages | GuildChannels
+	// GuildChannels is a combination of all ChannelTypes used in guilds, i.e.
+	// GuildTextChannels and GuildNewsChannels.
+	GuildChannels = GuildTextChannels | GuildNewsChannels
 )
 
 // Has checks if the passed discord.ChannelType is found in the ChannelTypes.
 func (t ChannelTypes) Has(target discord.ChannelType) bool {
 	switch target {
 	case discord.GuildText:
-		return t&GuildText == GuildText
+		return t&GuildTextChannels == GuildTextChannels
 	case discord.DirectMessage:
-		return t&DirectMessage == DirectMessage
+		return t&DirectMessages == DirectMessages
 	case discord.GuildNews:
-		return t&GuildNews == GuildNews
+		return t&GuildNewsChannels == GuildNewsChannels
 	default:
 		return false
 	}
-}
-
-// Names returns the names of the ChannelTypes or nil if ChannelTypes is 0
-// or invalid.
-func (t ChannelTypes) Names(l *localization.Localizer) (s []string) {
-	if t&GuildText == GuildText {
-		// we can ignore the error, as there is a fallback
-		t, _ := l.Localize(guildTextType)
-		s = append(s, t)
-	}
-
-	if t&GuildNews == GuildNews {
-		// we can ignore the error, as there is a fallback
-		t, _ := l.Localize(guildNewsType)
-		s = append(s, t)
-	}
-
-	if t&DirectMessage == DirectMessage {
-		// we can ignore the error, as there is a fallback
-		t, _ := l.Localize(directMessageType)
-		s = append(s, t)
-	}
-
-	return
 }
 
 // RestrictionFunc is the function used to determine if a user is authorized
