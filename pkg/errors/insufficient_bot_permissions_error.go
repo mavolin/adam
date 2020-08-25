@@ -59,7 +59,7 @@ func (e *InsufficientBotPermissionsError) Description(l *localization.Localizer)
 		// we can ignore this error, as there is a fallback
 		desc, _ = l.Localize(insufficientBotPermissionsDescSingle.
 			WithPlaceholders(insufficientBotPermissionsDescSinglePlaceholders{
-				MissingPermission: "`" + discordutil.EscapeInlineCode(missingNames[0]) + "`",
+				MissingPermission: missingNames[0],
 			}))
 	} else {
 		// we can ignore this error, as there is a fallback
