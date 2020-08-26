@@ -20,8 +20,7 @@ type InsufficientBotPermissionsError struct {
 }
 
 // NewInsufficientBotPermissionError creates a new
-// InsufficientBotPermissionsError with the passed MissingPermissions
-// discord.Permissions.
+// InsufficientBotPermissionsError with the passed missing permissions.
 // If the missing permissions contain discord.PermissionAdministrator, all
 // other permissions will be discarded, as they are included in Administrator.
 func NewInsufficientBotPermissionsError(missing discord.Permissions) *InsufficientBotPermissionsError {
@@ -90,7 +89,7 @@ func (e *InsufficientBotPermissionsError) Is(err error) bool {
 	return e.MissingPermissions == casted.MissingPermissions
 }
 
-// Handle sends an error message stating the MissingPermissions permissions.
+// Handle sends an error message stating the missing permissions.
 func (e *InsufficientBotPermissionsError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 	embed := newErrorEmbedBuilder(ctx.Localizer).
 		WithDescription(e.Description(ctx.Localizer))
