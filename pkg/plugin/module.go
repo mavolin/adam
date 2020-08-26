@@ -43,8 +43,9 @@ type (
 		GetChannelTypes() ChannelTypes
 		// GetBotPermissions get the permissions needed to use this module.
 		//
-		// Commands can overwrite this, by setting custom BotPermissions.
-		GetBotPermissions() discord.Permissions
+		// Commands can overwrite this, by setting their bot permissions to a
+		// non-nil value.
+		GetBotPermissions() *discord.Permissions
 		// IsRestricted checks if the user calling the command is restricted
 		// from using this module.
 		//
