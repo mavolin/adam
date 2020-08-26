@@ -292,11 +292,11 @@ func Test_allError_format(t *testing.T) {
 				},
 			},
 			expect: entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"    " + entryPrefix + "abc\n" +
-				"    " + entryPrefix + "def\n" +
+				"　　" + entryPrefix + "abc\n" +
+				"　　" + entryPrefix + "def\n" +
 				entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"    " + entryPrefix + "ghi\n" +
-				"    " + entryPrefix + "jkl",
+				"　　" + entryPrefix + "ghi\n" +
+				"　　" + entryPrefix + "jkl",
 		},
 		{
 			name: "both",
@@ -323,11 +323,11 @@ func Test_allError_format(t *testing.T) {
 			expect: entryPrefix + "abc\n" +
 				entryPrefix + "def\n" +
 				entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"    " + entryPrefix + "ghi\n" +
-				"    " + entryPrefix + "jkl\n" +
+				"　　" + entryPrefix + "ghi\n" +
+				"　　" + entryPrefix + "jkl\n" +
 				entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"    " + entryPrefix + "mno\n" +
-				"    " + entryPrefix + "pqr",
+				"　　" + entryPrefix + "mno\n" +
+				"　　" + entryPrefix + "pqr",
 		},
 		{
 			name: "any with nested all",
@@ -363,16 +363,16 @@ func Test_allError_format(t *testing.T) {
 				},
 			},
 			expect: entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"    " + entryPrefix + "abc\n" +
-				"    " + entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"        " + entryPrefix + "def\n" +
-				"        " + entryPrefix + "ghi\n" +
-				"        " + entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"            " + entryPrefix + "jkl\n" +
-				"            " + entryPrefix + "mno\n" +
-				"    " + entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"        " + entryPrefix + "pqr\n" +
-				"        " + entryPrefix + "stu",
+				"　　" + entryPrefix + "abc\n" +
+				"　　" + entryPrefix + "You need to fulfill all of these requirements:\n" +
+				"　　　　" + entryPrefix + "def\n" +
+				"　　　　" + entryPrefix + "ghi\n" +
+				"　　　　" + entryPrefix + "You need to fulfill at least one of these requirements:\n" +
+				"　　　　　　" + entryPrefix + "jkl\n" +
+				"　　　　　　" + entryPrefix + "mno\n" +
+				"　　" + entryPrefix + "You need to fulfill all of these requirements:\n" +
+				"　　　　" + entryPrefix + "pqr\n" +
+				"　　　　" + entryPrefix + "stu",
 		},
 	}
 
@@ -421,11 +421,11 @@ func Test_anyError_format(t *testing.T) {
 				},
 			},
 			expect: entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"    " + entryPrefix + "abc\n" +
-				"    " + entryPrefix + "def\n" +
+				"　　" + entryPrefix + "abc\n" +
+				"　　" + entryPrefix + "def\n" +
 				entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"    " + entryPrefix + "ghi\n" +
-				"    " + entryPrefix + "jkl",
+				"　　" + entryPrefix + "ghi\n" +
+				"　　" + entryPrefix + "jkl",
 		},
 		{
 			name: "both",
@@ -452,11 +452,11 @@ func Test_anyError_format(t *testing.T) {
 			expect: entryPrefix + "abc\n" +
 				entryPrefix + "def\n" +
 				entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"    " + entryPrefix + "ghi\n" +
-				"    " + entryPrefix + "jkl\n" +
+				"　　" + entryPrefix + "ghi\n" +
+				"　　" + entryPrefix + "jkl\n" +
 				entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"    " + entryPrefix + "mno\n" +
-				"    " + entryPrefix + "pqr",
+				"　　" + entryPrefix + "mno\n" +
+				"　　" + entryPrefix + "pqr",
 		},
 		{
 			name: "any with nested all",
@@ -492,16 +492,16 @@ func Test_anyError_format(t *testing.T) {
 				},
 			},
 			expect: entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"    " + entryPrefix + "abc\n" +
-				"    " + entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"        " + entryPrefix + "def\n" +
-				"        " + entryPrefix + "ghi\n" +
-				"        " + entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"            " + entryPrefix + "jkl\n" +
-				"            " + entryPrefix + "mno\n" +
-				"    " + entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"        " + entryPrefix + "pqr\n" +
-				"        " + entryPrefix + "stu",
+				"　　" + entryPrefix + "abc\n" +
+				"　　" + entryPrefix + "You need to fulfill at least one of these requirements:\n" +
+				"　　　　" + entryPrefix + "def\n" +
+				"　　　　" + entryPrefix + "ghi\n" +
+				"　　　　" + entryPrefix + "You need to fulfill all of these requirements:\n" +
+				"　　　　　　" + entryPrefix + "jkl\n" +
+				"　　　　　　" + entryPrefix + "mno\n" +
+				"　　" + entryPrefix + "You need to fulfill at least one of these requirements:\n" +
+				"　　　　" + entryPrefix + "pqr\n" +
+				"　　　　" + entryPrefix + "stu",
 		},
 	}
 

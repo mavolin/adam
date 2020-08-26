@@ -1,6 +1,7 @@
 package restriction
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/mavolin/disstate/pkg/state"
@@ -142,6 +143,8 @@ func ANYf(returnError error, funcs ...plugin.RestrictionFunc) plugin.Restriction
 	}
 }
 
+var newlineRegexp = regexp.MustCompile(`\n[^\n]`)
+
 type allError struct {
 	restrictions []*errors.RestrictionError
 	anys         []*anyError
@@ -158,7 +161,9 @@ func (e *allError) format(indentLvl int, l *localization.Localizer) (string, err
 			return "", err
 		}
 
-		s += "\n" + indent + entryPrefix + strings.ReplaceAll(desc, "\n", nlIndent)
+		s += "\n" + indent + entryPrefix + newlineRegexp.ReplaceAllStringFunc(desc, func(s string) string {
+			return "\n" + nlIndent + s[1:]
+		})
 	}
 
 	// we can ignore the error, as there is a fallback
@@ -198,7 +203,9 @@ func (e *anyError) format(indentLvl int, l *localization.Localizer) (string, err
 			return "", err
 		}
 
-		s += "\n" + indent + entryPrefix + strings.ReplaceAll(desc, "\n", nlIndent)
+		s += "\n" + indent + entryPrefix + newlineRegexp.ReplaceAllStringFunc(desc, func(s string) string {
+			return "\n" + nlIndent + s[1:]
+		})
 	}
 
 	// we can ignore the error, as there is a fallback
