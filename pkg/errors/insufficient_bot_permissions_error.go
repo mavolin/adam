@@ -15,6 +15,7 @@ import (
 // InsufficientBotPermissionsError is the error returned if the bot does not
 // have sufficient permissions to execute a command.
 type InsufficientBotPermissionsError struct {
+	// MissingPermissions are the missing permissions.
 	MissingPermissions discord.Permissions
 }
 
