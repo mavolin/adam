@@ -15,13 +15,19 @@ var (
 	errorFuncReturn3 = errors.NewRestrictionError("ghi")
 	errorFuncReturn4 = errors.NewRestrictionError("jkl")
 
-	unexpectedErrorFuncReturn = errors.New("mno")
+	embeddableErrorFuncReturn = &EmbeddableError{
+		EmbeddableVersion: errors.NewRestrictionError("mno"),
+		DefaultVersion:    errors.New("pqr"),
+	}
+
+	unexpectedErrorFuncReturn = errors.New("stu")
 )
 
 func errorFunc1(*state.State, *plugin.Context) error          { return errorFuncReturn1 }
 func errorFunc2(*state.State, *plugin.Context) error          { return errorFuncReturn2 }
 func errorFunc3(*state.State, *plugin.Context) error          { return errorFuncReturn3 }
 func errorFunc4(*state.State, *plugin.Context) error          { return errorFuncReturn4 }
+func embeddableErrorFunc(*state.State, *plugin.Context) error { return embeddableErrorFuncReturn }
 func unexpectedErrorFunc(*state.State, *plugin.Context) error { return unexpectedErrorFuncReturn }
 
 func defaultRestrictionErrorFunc(*state.State, *plugin.Context) error {

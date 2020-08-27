@@ -27,6 +27,11 @@ func TestALL(t *testing.T) {
 			expect: errorFuncReturn1,
 		},
 		{
+			name:   "single embeddable error",
+			funcs:  []plugin.RestrictionFunc{embeddableErrorFunc},
+			expect: embeddableErrorFuncReturn,
+		},
+		{
 			name:   "pass",
 			funcs:  []plugin.RestrictionFunc{nilFunc, nilFunc},
 			expect: nil,
@@ -35,6 +40,11 @@ func TestALL(t *testing.T) {
 			name:   "multiple restriction funcs - single error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, nilFunc},
 			expect: errorFuncReturn1,
+		},
+		{
+			name:   "multiple restriction funcs - single embeddable error",
+			funcs:  []plugin.RestrictionFunc{embeddableErrorFunc, nilFunc},
+			expect: embeddableErrorFuncReturn,
 		},
 		{
 			name:  "multiple restriction funcs - multiple errors",
@@ -151,6 +161,11 @@ func TestANY(t *testing.T) {
 			name:   "single func",
 			funcs:  []plugin.RestrictionFunc{errorFunc1},
 			expect: errorFuncReturn1,
+		},
+		{
+			name:   "single embeddable error",
+			funcs:  []plugin.RestrictionFunc{embeddableErrorFunc},
+			expect: embeddableErrorFuncReturn,
 		},
 		{
 			name:   "nil errors",

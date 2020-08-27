@@ -18,6 +18,14 @@ const (
 	entryPrefix = "• "
 )
 
+type EmbeddableError struct {
+	EmbeddableVersion *errors.RestrictionError
+	DefaultVersion    error
+}
+
+func (e *EmbeddableError) Wrap(*state.State, *plugin.Context) error { return e.DefaultVersion }
+func (e *EmbeddableError) Error() string                            { return e.DefaultVersion.Error() }
+
 func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
@@ -27,6 +35,8 @@ func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 		}
 
 		missing := new(allError)
+
+		var embeddable *EmbeddableError
 
 		for _, f := range funcs {
 			err := f(s, ctx)
@@ -40,6 +50,14 @@ func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 				}
 
 				missing.restrictions = append(missing.restrictions, err)
+			case *EmbeddableError:
+				embeddable = err
+
+				if errors.Is(err.EmbeddableVersion, errors.DefaultRestrictionError) {
+					return err
+				}
+
+				missing.restrictions = append(missing.restrictions, err.EmbeddableVersion)
 			// we can just merge
 			case *allError:
 				missing.restrictions = append(missing.restrictions, err.restrictions...)
@@ -59,6 +77,10 @@ func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 		// check if we have collected only a single error, and return it
 		// directly if so
 		if len(missing.restrictions) == 1 && len(missing.anys) == 0 {
+			if embeddable != nil {
+				return embeddable
+			}
+
 			return missing.restrictions[0]
 			// check if we have an error at all
 		} else if len(missing.restrictions) != 0 || len(missing.anys) != 0 {
@@ -106,6 +128,12 @@ func ANY(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 				}
 
 				missing.restrictions = append(missing.restrictions, err)
+			case *EmbeddableError:
+				if errors.Is(err.EmbeddableVersion, errors.DefaultRestrictionError) {
+					return err
+				}
+
+				missing.restrictions = append(missing.restrictions, err.EmbeddableVersion)
 			// we can just merge
 			case *anyError:
 				missing.restrictions = append(missing.restrictions, err.restrictions...)
@@ -258,7 +286,13 @@ func (e *anyError) Error() string {
 func genIndent(indentLvl int) (indent, nlIndent string) {
 	// use a zero width space to prevent trimming
 	indent = strings.Repeat("　", indentLvl*indentMultiplicator)
-	nlIndent = strings.Repeat("　", indentLvl*indentMultiplicator+len(entryPrefix))
+	nlIndent = strings.Repeat("　", indentLvl*indentMultiplicator)
+
+	if nlIndent == "" {
+		nlIndent += "\u200b"
+	}
+
+	nlIndent += strings.Repeat(" ", len(entryPrefix))
 
 	return
 }
