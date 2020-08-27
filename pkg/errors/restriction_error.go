@@ -63,7 +63,7 @@ func (e *RestrictionError) Description(l *localization.Localizer) (string, error
 	return l.Localize(e.descConfig)
 }
 
-func (e *RestrictionError) Error() string { return "user error" }
+func (e *RestrictionError) Error() string { return "restriction error" }
 
 func (e *RestrictionError) Is(target error) bool {
 	casted, ok := target.(*RestrictionError)
