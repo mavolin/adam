@@ -35,7 +35,7 @@ func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 			case *errors.RestrictionError:
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
-				if err == errors.DefaultRestrictionError {
+				if errors.Is(err, errors.DefaultRestrictionError) {
 					return err
 				}
 
@@ -101,7 +101,7 @@ func ANY(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 			case *errors.RestrictionError:
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
-				if err == errors.DefaultRestrictionError {
+				if errors.Is(err, errors.DefaultRestrictionError) {
 					return err
 				}
 
