@@ -100,7 +100,7 @@ func (e *ArgumentParsingError) Is(target error) bool {
 		return false
 	}
 
-	return e.descString == casted.descString || e.descConfig == casted.descConfig
+	return (e.descString != "" && e.descString == casted.descString) || e.descConfig == casted.descConfig
 }
 
 // Handle send an error embed containing a description of which arg/flag was

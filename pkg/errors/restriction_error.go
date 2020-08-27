@@ -71,7 +71,7 @@ func (e *RestrictionError) Is(target error) bool {
 		return false
 	}
 
-	return e.descString == casted.descString || e.descConfig == casted.descConfig
+	return (e.descString != "" && e.descString == casted.descString) || e.descConfig == casted.descConfig
 }
 
 // Handle sends an error embed with the description of the UserError.
