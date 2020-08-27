@@ -385,6 +385,27 @@ func Test_allError_format(t *testing.T) {
 	}
 }
 
+func Test_allError_Wrap(t *testing.T) {
+	expect := errors.NewRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
+		entryPrefix + "abc\n" +
+		entryPrefix + "def")
+
+	ctx := plugin.NewContext(nil)
+	ctx.Localizer = mock.NewLocalizer().
+		On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+		On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
+		Build()
+
+	err := ALL(errorFunc1, errorFunc2)(nil, ctx)
+
+	require.IsType(t, new(allError), err)
+
+	allErr := err.(*allError)
+
+	actual := allErr.Wrap(nil, ctx)
+	assert.Equal(t, expect, actual)
+}
+
 func Test_anyError_format(t *testing.T) {
 	testCases := []struct {
 		name   string
@@ -512,4 +533,25 @@ func Test_anyError_format(t *testing.T) {
 			assert.Equal(t, c.expect, actual)
 		})
 	}
+}
+
+func Test_anyError_Wrap(t *testing.T) {
+	expect := errors.NewRestrictionError("You need to fulfill at least one of these requirements to execute the command:\n\n" +
+		entryPrefix + "abc\n" +
+		entryPrefix + "def")
+
+	ctx := plugin.NewContext(nil)
+	ctx.Localizer = mock.NewLocalizer().
+		On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
+		On(allMessageInline.Term, allMessageInline.Fallback.Other).
+		Build()
+
+	err := ANY(errorFunc1, errorFunc2)(nil, ctx)
+
+	require.IsType(t, new(anyError), err)
+
+	anyErr := err.(*anyError)
+
+	actual := anyErr.Wrap(nil, ctx)
+	assert.Equal(t, expect, actual)
 }

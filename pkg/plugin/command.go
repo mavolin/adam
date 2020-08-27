@@ -89,6 +89,9 @@ type (
 		//
 		// If they are restricted, a errors.RestrictionError should be
 		// returned.
+		//
+		// If the RestrictionFunc returns an error that implements
+		// RestrictionErrorWrapper, it will be properly wrapped.
 		GetRestrictionFunc() RestrictionFunc
 		// GetThrottling returns the ThrottlingOptions for the command.
 		// If either of the fields in ThrottlingOptions is zero value, the

@@ -50,6 +50,9 @@ type (
 		// from using this module.
 		//
 		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
+		//
+		// If the RestrictionFunc returns an error that implements
+		// RestrictionErrorWrapper, it will be properly wrapped.
 		GetRestrictionFunc() RestrictionFunc
 		// GetThrottling returns the ThrottlingOptions for the module.
 		// This defines how often all commands and submodules in this module

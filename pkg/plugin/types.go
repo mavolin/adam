@@ -59,3 +59,12 @@ type ThrottlingOptions struct {
 	// Duration is the time.Duration where the MaxInvokes level is measured.
 	Duration time.Duration
 }
+
+// RestrictionErrorWrapper is the interface used to wrap errors returned by a
+// RestrictionFunc.
+// If the RestrictionFunc of a plugin returns an error, that implements this,
+// It will call Wrap() to properly wrap the error.
+type RestrictionErrorWrapper interface {
+	// Wrap wraps the error returned by the RestrictionFunc.
+	Wrap(*state.State, *Context) error
+}

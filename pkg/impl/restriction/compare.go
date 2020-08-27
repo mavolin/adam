@@ -183,6 +183,17 @@ func (e *allError) format(indentLvl int, l *localization.Localizer) (string, err
 	return s[1:], nil // strip the first newline
 }
 
+func (e *allError) Wrap(_ *state.State, ctx *plugin.Context) error {
+	missing, err := e.format(0, ctx.Localizer)
+	if err != nil {
+		return err
+	}
+
+	header, _ := ctx.Localize(allMessageHeader)
+
+	return errors.NewRestrictionError(header + "\n\n" + missing)
+}
+
 func (e *allError) Error() string {
 	return "allError"
 }
@@ -223,6 +234,17 @@ func (e *anyError) format(indentLvl int, l *localization.Localizer) (string, err
 	}
 
 	return s[1:], nil // strip the first newline
+}
+
+func (e *anyError) Wrap(_ *state.State, ctx *plugin.Context) error {
+	missing, err := e.format(0, ctx.Localizer)
+	if err != nil {
+		return err
+	}
+
+	header, _ := ctx.Localize(anyMessageHeader)
+
+	return errors.NewRestrictionError(header + "\n\n" + missing)
 }
 
 func (e *anyError) Error() string {
