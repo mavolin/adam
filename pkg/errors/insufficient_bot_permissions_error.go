@@ -42,9 +42,9 @@ func (e *InsufficientBotPermissionsError) IsSinglePermission() bool {
 
 // Description returns the description of the error and localizes it, if
 // possible.
-// Note that if IsSinglePermission returns true, the Description will already contain
-// the missing permissions, which would otherwise needed to be retrieved via
-// PermissionList.
+// Note that if IsSinglePermission returns true, the description will already
+// contain the missing permissions, which otherwise would need to be retrieved
+// via PermissionList.
 func (e *InsufficientBotPermissionsError) Description(l *localization.Localizer) (desc string) {
 	if e.MissingPermissions == 0 {
 		return

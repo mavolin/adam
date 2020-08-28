@@ -20,7 +20,7 @@ var (
 	insufficientBotPermissionsDescMulti = localization.NewFallbackConfig(
 		"errors.insufficient_bot_permissions.description.multi",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
-			"permissions and try again.")
+			"permissions and try again:")
 	insufficientBotPermissionMissingMissingPermissionsFieldName = localization.NewFallbackConfig(
 		"errors.insufficient_bot_permissions.fields.missing_permissions.name",
 		"Missing Permissions")
