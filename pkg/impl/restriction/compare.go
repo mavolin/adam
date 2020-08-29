@@ -18,15 +18,26 @@ const (
 	entryPrefix = "• "
 )
 
+// EmbeddableError is an error with different messages for embedding in a any
+// or all error than when returned directly.
 type EmbeddableError struct {
+	// EmbeddableVersion is the version used when embedded in an any or all
+	// error.
 	EmbeddableVersion *errors.RestrictionError
-	DefaultVersion    error
+	// DefaultVersion is the version returned if the error won't get embedded.
+	DefaultVersion error
 }
 
 func (e *EmbeddableError) Wrap(*state.State, *plugin.Context) error { return e.DefaultVersion }
 func (e *EmbeddableError) Error() string                            { return e.DefaultVersion.Error() }
 
-func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
+// All asserts that all of the passed plugin.RestrictionFuncs return nil.
+// If not, it will create an error containing a list of all missing
+// requirements using the returned errors.
+// For this list to be created, the error must either be of type
+// *errors.RestrictionError or *EmbeddableError, or must be a nested All or
+// Any.
+func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
 			return nil
@@ -40,6 +51,9 @@ func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 
 		for _, f := range funcs {
 			err := f(s, ctx)
+			if err == nil {
+				continue
+			}
 
 			switch err := err.(type) {
 			case *errors.RestrictionError:
@@ -68,9 +82,7 @@ func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 			default:
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
-				if err != nil {
-					return err
-				}
+				return err
 			}
 		}
 
@@ -91,9 +103,9 @@ func ALL(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	}
 }
 
-// ALLf works like ALL, but returns the passed returnError, if one of the
-// plugin.RestrictionFuncs errors.
-func ALLf(returnError error, funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
+// Allf works like All, but returns the passed returnError if one of the
+// plugin.RestrictionFuncs returns an error.
+func Allf(returnError error, funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		for _, f := range funcs {
 			err := f(s, ctx)
@@ -106,7 +118,14 @@ func ALLf(returnError error, funcs ...plugin.RestrictionFunc) plugin.Restriction
 	}
 }
 
-func ANY(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
+// Any asserts that at least one of the passed plugin.RestrictionFuncs returns
+// no error.
+// If not it will return a list of the needed requirements using the returned
+// errors.
+// For this list to be created, the error must either be of type
+// *errors.RestrictionError or *EmbeddableError, or must be a nested All or
+// Any.
+func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
 			return nil
@@ -118,6 +137,9 @@ func ANY(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 
 		for _, f := range funcs {
 			err := f(s, ctx)
+			if err == nil {
+				return nil
+			}
 
 			switch err := err.(type) {
 			case *errors.RestrictionError:
@@ -138,17 +160,13 @@ func ANY(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 			case *anyError:
 				missing.restrictions = append(missing.restrictions, err.restrictions...)
 				missing.alls = append(missing.alls, err.alls...)
-			// there will always be 2 or more func in the error
+			// there will always be 2 or more funcs in the error
 			case *allError:
 				missing.alls = append(missing.alls, err)
 			default:
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
-				if err != nil {
-					return err
-				} else {
-					return nil
-				}
+				return err
 			}
 		}
 
@@ -158,7 +176,9 @@ func ANY(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	}
 }
 
-func ANYf(returnError error, funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
+// Anyf works like Any, but returns the passed returnError if all of the passed
+// plugin.RestrictionFuncs return an error.
+func Anyf(returnError error, funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		for _, f := range funcs {
 			err := f(s, ctx)
@@ -284,11 +304,12 @@ func (e *anyError) Error() string {
 // The first return value is the normal indent, and the second is the indent
 // needed for newlines within an entry.
 func genIndent(indentLvl int) (indent, nlIndent string) {
-	// use a zero width space to prevent trimming
-	indent = strings.Repeat("　", indentLvl*indentMultiplicator)
-	nlIndent = strings.Repeat("　", indentLvl*indentMultiplicator)
+	// use an "ideographic space" for indenting, as discord strips whitespace
+	// on new lines in embeds.
+	indent = strings.Repeat("\u3000", indentLvl*indentMultiplicator)
+	nlIndent = strings.Repeat("\u3000", indentLvl*indentMultiplicator)
 
-	if nlIndent == "" {
+	if nlIndent == "" { // prefix a zero-width whitespace if the indentLvl is 0
 		nlIndent += "\u200b"
 	}
 

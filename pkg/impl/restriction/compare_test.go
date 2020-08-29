@@ -65,33 +65,33 @@ func TestALL(t *testing.T) {
 		},
 		{
 			name:   "nested all - single error",
-			funcs:  []plugin.RestrictionFunc{ALL(errorFunc1, nilFunc)},
+			funcs:  []plugin.RestrictionFunc{All(errorFunc1, nilFunc)},
 			expect: errorFuncReturn1,
 		},
 		{
 			name:  "nested all - multiple errors",
-			funcs: []plugin.RestrictionFunc{ALL(errorFunc1, errorFunc2)},
+			funcs: []plugin.RestrictionFunc{All(errorFunc1, errorFunc2)},
 			expect: &allError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
 			name:  "restriction func and nested all",
-			funcs: []plugin.RestrictionFunc{errorFunc1, ALL(errorFunc2, errorFunc3)},
+			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3)},
 			expect: &allError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2, errorFuncReturn3},
 			},
 		},
 		{
 			name:  "nested any",
-			funcs: []plugin.RestrictionFunc{ANY(errorFunc1, errorFunc2)},
+			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2)},
 			expect: &anyError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
 			name:  "multiple nested anys",
-			funcs: []plugin.RestrictionFunc{ANY(errorFunc1, errorFunc2), ANY(errorFunc3, errorFunc4)},
+			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), Any(errorFunc3, errorFunc4)},
 			expect: &allError{
 				anys: []*anyError{
 					{
@@ -105,7 +105,7 @@ func TestALL(t *testing.T) {
 		},
 		{
 			name:  "restriction func and nested any",
-			funcs: []plugin.RestrictionFunc{errorFunc1, ANY(errorFunc2, errorFunc3)},
+			funcs: []plugin.RestrictionFunc{errorFunc1, Any(errorFunc2, errorFunc3)},
 			expect: &allError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1},
 				anys: []*anyError{
@@ -119,7 +119,7 @@ func TestALL(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			f := ALL(c.funcs...)
+			f := All(c.funcs...)
 
 			actual := f(nil, &plugin.Context{Localizer: mock.NewNoOpLocalizer()})
 			assert.Equal(t, c.expect, actual)
@@ -131,7 +131,7 @@ func TestALLf(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		err := errors.New("abc")
 
-		f := ALLf(err, nilFunc, nilFunc)
+		f := Allf(err, nilFunc, nilFunc)
 
 		actual := f(nil, nil)
 		assert.Nil(t, actual)
@@ -140,7 +140,7 @@ func TestALLf(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		expect := errors.New("abc")
 
-		f := ALLf(expect, errorFunc1, nilFunc)
+		f := Allf(expect, errorFunc1, nilFunc)
 
 		actual := f(nil, nil)
 		assert.Equal(t, expect, actual)
@@ -196,19 +196,19 @@ func TestANY(t *testing.T) {
 		},
 		{
 			name:   "nested all - single error",
-			funcs:  []plugin.RestrictionFunc{ALL(errorFunc1, nilFunc)},
+			funcs:  []plugin.RestrictionFunc{All(errorFunc1, nilFunc)},
 			expect: errorFuncReturn1,
 		},
 		{
 			name:  "nested all - multiple errors",
-			funcs: []plugin.RestrictionFunc{ALL(errorFunc1, errorFunc2)},
+			funcs: []plugin.RestrictionFunc{All(errorFunc1, errorFunc2)},
 			expect: &allError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
 			name:  "restriction func and nested all",
-			funcs: []plugin.RestrictionFunc{errorFunc1, ALL(errorFunc2, errorFunc3)},
+			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3)},
 			expect: &anyError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1},
 				alls: []*allError{
@@ -220,7 +220,7 @@ func TestANY(t *testing.T) {
 		},
 		{
 			name:  "multiple nested anys",
-			funcs: []plugin.RestrictionFunc{ANY(errorFunc1, errorFunc2), ANY(errorFunc3, errorFunc4)},
+			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), Any(errorFunc3, errorFunc4)},
 			expect: &anyError{
 				restrictions: []*errors.RestrictionError{
 					errorFuncReturn1, errorFuncReturn2, errorFuncReturn3, errorFuncReturn4,
@@ -229,7 +229,7 @@ func TestANY(t *testing.T) {
 		},
 		{
 			name:  "restriction func and nested any",
-			funcs: []plugin.RestrictionFunc{errorFunc1, ALL(errorFunc2, errorFunc3, nilFunc)},
+			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3, nilFunc)},
 			expect: &anyError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1},
 				alls: []*allError{
@@ -243,7 +243,7 @@ func TestANY(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			f := ANY(c.funcs...)
+			f := Any(c.funcs...)
 
 			actual := f(nil, &plugin.Context{Localizer: mock.NewNoOpLocalizer()})
 			assert.Equal(t, c.expect, actual)
@@ -255,7 +255,7 @@ func TestANYf(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		err := errors.New("abc")
 
-		f := ANYf(err, nilFunc, errorFunc1)
+		f := Anyf(err, nilFunc, errorFunc1)
 
 		actual := f(nil, nil)
 		assert.Nil(t, actual)
@@ -264,7 +264,7 @@ func TestANYf(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		expect := errors.New("abc")
 
-		f := ANYf(expect, errorFunc1, errorFunc2)
+		f := Anyf(expect, errorFunc1, errorFunc2)
 
 		actual := f(nil, nil)
 		assert.Equal(t, expect, actual)
@@ -411,7 +411,7 @@ func Test_allError_Wrap(t *testing.T) {
 		On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
 		Build()
 
-	err := ALL(errorFunc1, errorFunc2)(nil, ctx)
+	err := All(errorFunc1, errorFunc2)(nil, ctx)
 
 	require.IsType(t, new(allError), err)
 
@@ -561,7 +561,7 @@ func Test_anyError_Wrap(t *testing.T) {
 		On(allMessageInline.Term, allMessageInline.Fallback.Other).
 		Build()
 
-	err := ANY(errorFunc1, errorFunc2)(nil, ctx)
+	err := Any(errorFunc1, errorFunc2)(nil, ctx)
 
 	require.IsType(t, new(anyError), err)
 
