@@ -201,6 +201,9 @@ type (
 		// Command returns the Command with the passed Identifier, or nil if no
 		// such command exists.
 		Command(Identifier) Command
+		// Module returns the Module with the passed Identifier, or nil if no
+		// such module exists.
+		Module(Identifier) Module
 		// Modules returns a copy of the bot's modules.
 		Modules() []Module
 
@@ -208,9 +211,12 @@ type (
 		// guild.
 		// The outer slice represents the individual runtime command providers.
 		RuntimeCommands() ([][]Command, error)
-		// RuntimeCommand returns the runtime command with the passed
-		// Identifier, or nil, nil if no such command exists.
+		// RuntimeCommand returns the first runtime command with the passed
+		// Identifier, or (nil, nil) if no such command exists.
 		RuntimeCommand(Identifier) (Command, error)
+		// RuntimeModule returns the first runtime module with the passed
+		// Identifier, or (nil, nil) if no such module exists.
+		RuntimeModule(Identifier) (Module, error)
 		// RuntimeModules returns a copy of the runtime modules in this guild.
 		// The outer slice represents the individual runtime module providers.
 		RuntimeModules() ([][]Module, error)
