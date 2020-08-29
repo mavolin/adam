@@ -196,25 +196,26 @@ type (
 	//
 	// Copies are only created on call of one of the methods.
 	Provider interface {
-		// Commands returns a copy of the bot's commands.
+		// Commands returns a copy of the bot's top-level commands.
 		Commands() []Command
-		// Command returns the Command with the passed Identifier, or nil if no
-		// such command exists.
+		// Command returns the first Command with the passed Identifier, or nil
+		// if no such command exists.
 		Command(Identifier) Command
-		// Modules returns a copy of the bot's modules.
+		// Modules returns a copy of the bot's top-level modules.
 		Modules() []Module
-		// Module returns the Module with the passed Identifier, or nil if no
-		// such module exists.
+		// Module returns the first Module with the passed Identifier, or nil
+		// if no such module exists.
 		Module(Identifier) Module
 
-		// RuntimeCommands returns a copy of the runtime commands in this
-		// guild.
+		// RuntimeCommands returns a copy of the top-level runtime commands for
+		// this guild.
 		// The outer slice represents the individual runtime command providers.
 		RuntimeCommands() ([][]Command, error)
 		// RuntimeCommand returns the first runtime command with the passed
 		// Identifier, or (nil, nil) if no such command exists.
 		RuntimeCommand(Identifier) (Command, error)
-		// RuntimeModules returns a copy of the runtime modules in this guild.
+		// RuntimeModules returns a copy of the top-level runtime modules for
+		// this guild.
 		// The outer slice represents the individual runtime module providers.
 		RuntimeModules() ([][]Module, error)
 		// RuntimeModule returns the first runtime module with the passed
@@ -229,7 +230,7 @@ type (
 	ErrorHandler interface {
 		// HandleError hands the error to the bot's error handler.
 		HandleError(err interface{})
-		// HandleErroSilent wraps the error using errors.Silent and hands it to
+		// HandleErrorSilent wraps the error using errors.Silent and hands it to
 		// the bot's error handler.
 		HandleErrorSilent(err interface{})
 	}
