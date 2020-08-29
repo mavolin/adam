@@ -22,6 +22,26 @@ func (id Identifier) Parent() Identifier {
 	return id[:i]
 }
 
+// All returns a slice of all parents including root and the identifier itself
+// starting with root.
+func (id Identifier) All() []Identifier {
+	if id.IsRoot() {
+		return []Identifier{"."}
+	}
+
+	parents := make([]Identifier, strings.Count(string(id), ".")+1)
+
+	parent := id
+
+	for i := len(parents) - 1; i >= 0; i-- {
+		parents[i] = parent
+
+		parent = parent.Parent()
+	}
+
+	return parents
+}
+
 // IsRoot checks if the identifier is the root identifier.
 func (id Identifier) IsRoot() bool {
 	return id == "."
@@ -37,12 +57,22 @@ func (id Identifier) IsChild(target Identifier) bool {
 	return target > id && strings.HasPrefix(string(target), string(id))
 }
 
-// AsCommandInvoke returns the identifier as a prefixless command invoke.
+// AsInvoke returns the identifier as a prefixless command invoke.
 //
 // Returns "" if the Identifier is root.
 //
 // Example:
 // 	.mod.ban -> mod ban
-func (id Identifier) AsCommandInvoke() string {
-	return strings.ReplaceAll(string(id)[1:], ".", " ")
+func (id Identifier) AsInvoke() string {
+	return strings.ReplaceAll(string(id[1:]), ".", " ")
+}
+
+// Name returns the name of the plugin or "" if the Identifier is root.
+func (id Identifier) Name() string {
+	if id.IsRoot() {
+		return ""
+	}
+
+	i := strings.LastIndex(string(id), ".")
+	return string(id[i+1:])
 }
