@@ -66,5 +66,9 @@ type ThrottlingOptions struct {
 // It will call Wrap() to properly wrap the error.
 type RestrictionErrorWrapper interface {
 	// Wrap wraps the error returned by the RestrictionFunc.
+	//
+	// If this error is caused by unfulfilled restrictions, it should
+	// automatically decide, whether a errors.RestrictionError or a
+	// errors.FatalRestrictionError is appropriate.
 	Wrap(*state.State, *Context) error
 }
