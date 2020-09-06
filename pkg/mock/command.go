@@ -33,17 +33,17 @@ type CommandMeta struct {
 	ThrottlingOptions plugin.ThrottlingOptions
 }
 
-func (c CommandMeta) GetName() string                                   { return c.Name }
-func (c CommandMeta) GetAliases() []string                              { return c.Aliases }
-func (c CommandMeta) GetArgs() plugin.ArgConfig                         { return c.Args }
-func (c CommandMeta) GetShortDescription(localization.Localizer) string { return c.ShortDescription }
-func (c CommandMeta) GetLongDescription(localization.Localizer) string  { return c.LongDescription }
-func (c CommandMeta) GetExamples(localization.Localizer) []string       { return c.Examples }
-func (c CommandMeta) IsHidden() bool                                    { return c.Hidden }
-func (c CommandMeta) GetChannelTypes() plugin.ChannelTypes              { return c.ChannelTypes }
-func (c CommandMeta) GetBotPermissions() *discord.Permissions           { return c.BotPermissions }
-func (c CommandMeta) GetRestrictionFunc() plugin.RestrictionFunc        { return c.Restrictions }
-func (c CommandMeta) GetThrottlingOptions() plugin.ThrottlingOptions    { return c.ThrottlingOptions }
+func (c CommandMeta) GetName() string                                    { return c.Name }
+func (c CommandMeta) GetAliases() []string                               { return c.Aliases }
+func (c CommandMeta) GetArgs() plugin.ArgConfig                          { return c.Args }
+func (c CommandMeta) GetShortDescription(*localization.Localizer) string { return c.ShortDescription }
+func (c CommandMeta) GetLongDescription(*localization.Localizer) string  { return c.LongDescription }
+func (c CommandMeta) GetExamples(*localization.Localizer) []string       { return c.Examples }
+func (c CommandMeta) IsHidden() bool                                     { return c.Hidden }
+func (c CommandMeta) GetChannelTypes() plugin.ChannelTypes               { return c.ChannelTypes }
+func (c CommandMeta) GetBotPermissions() *discord.Permissions            { return c.BotPermissions }
+func (c CommandMeta) GetRestrictionFunc() plugin.RestrictionFunc         { return c.Restrictions }
+func (c CommandMeta) GetThrottlingOptions() plugin.ThrottlingOptions     { return c.ThrottlingOptions }
 
 type ArgConfig struct {
 	Expect string

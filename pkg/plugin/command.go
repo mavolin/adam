@@ -57,12 +57,12 @@ type (
 		GetArgs() ArgConfig
 		// GetShortDescription returns an optional one-sentence description
 		// of the command.
-		GetShortDescription(l localization.Localizer) string
+		GetShortDescription(l *localization.Localizer) string
 		// GetLongDescription returns an optional long description of the
 		// command.
-		GetLongDescription(l localization.Localizer) string
+		GetLongDescription(l *localization.Localizer) string
 		// GetExamples returns optional example usages of the command.
-		GetExamples(l localization.Localizer) []string
+		GetExamples(l *localization.Localizer) []string
 		// IsHidden specifies whether this command will be hidden in the help
 		// page.
 		IsHidden() bool
