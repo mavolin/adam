@@ -28,9 +28,9 @@ type (
 		GetName() string
 		// GetShortDescription returns an optional one-sentence description of
 		// the module.
-		GetShortDescription(l *localization.Localizer) (string, error)
+		GetShortDescription(l *localization.Localizer) string
 		// GetLongDescription returns an option long description of the module.
-		GetLongDescription(l *localization.Localizer) (string, error)
+		GetLongDescription(l *localization.Localizer) string
 		// IsHidden specifies whether this module will be hidden from the help
 		// page.
 		//
@@ -54,12 +54,12 @@ type (
 		// If the RestrictionFunc returns an error that implements
 		// RestrictionErrorWrapper, it will be properly wrapped.
 		GetRestrictionFunc() RestrictionFunc
-		// GetThrottling returns the ThrottlingOptions for the module.
+		// GetThrottlingOptions returns the ThrottlingOptions for the module.
 		// This defines how often all commands and submodules in this module
 		// together may be used.
 		//
 		// If either of the fields in ThrottlingOptions is zero value, the
 		// module won't be throttled.
-		GetThrottling() ThrottlingOptions
+		GetThrottlingOptions() ThrottlingOptions
 	}
 )
