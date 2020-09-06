@@ -22,24 +22,24 @@ type FatalRestrictionError struct {
 
 // NewFatalRestrictionError creates a new FatalRestrictionError with the passed
 // description.
-func NewFatalRestrictionError(desc string) *RestrictionError {
-	return &RestrictionError{
+func NewFatalRestrictionError(desc string) *FatalRestrictionError {
+	return &FatalRestrictionError{
 		descString: desc,
 	}
 }
 
 // NewFatalRestrictionErrorl creates a new FatalRestrictionError using the message
 // generated from the passed localization.Config as description.
-func NewFatalRestrictionErrorl(description localization.Config) *RestrictionError {
-	return &RestrictionError{
+func NewFatalRestrictionErrorl(description localization.Config) *FatalRestrictionError {
+	return &FatalRestrictionError{
 		descConfig: description,
 	}
 }
 
 // NewFatalRestrictionErrorlt creates a new FatalRestrictionError using the message generated
 // from the passed term as description.
-func NewFatalRestrictionErrorlt(description localization.Term) *RestrictionError {
-	return NewRestrictionErrorl(localization.Config{
+func NewFatalRestrictionErrorlt(description localization.Term) *FatalRestrictionError {
+	return NewFatalRestrictionErrorl(localization.Config{
 		Term: description,
 	})
 }
