@@ -328,7 +328,7 @@ type anyError struct {
 func (e *anyError) format(indentLvl int, l *localization.Localizer) (s string, fatal bool, err error) {
 	indent, nlIndent := genIndent(indentLvl)
 
-	fatal = len(e.fatalRestrictions) > 0
+	fatal = len(e.restrictions) == 0
 
 	for _, m := range e.fatalRestrictions {
 		desc, err := m.Description(l)
@@ -363,8 +363,8 @@ func (e *anyError) format(indentLvl int, l *localization.Localizer) (s string, f
 			return "", false, err
 		}
 
-		if subFatal {
-			fatal = true
+		if !subFatal {
+			fatal = false
 		}
 
 		s += msg

@@ -539,24 +539,47 @@ func Test_allError_format(t *testing.T) {
 }
 
 func Test_allError_Wrap(t *testing.T) {
-	expect := errors.NewRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
-		entryPrefix + "abc\n" +
-		entryPrefix + "def")
+	t.Run("fatal", func(t *testing.T) {
+		expect := errors.NewFatalRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
+			entryPrefix + "mno\n" +
+			entryPrefix + "mno")
 
-	ctx := plugin.NewContext(nil)
-	ctx.Localizer = mock.NewLocalizer(t).
-		On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
-		On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
-		Build()
+		ctx := plugin.NewContext(nil)
+		ctx.Localizer = mock.NewLocalizer(t).
+			On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+			On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
+			Build()
 
-	err := All(errorFunc1, errorFunc2)(nil, ctx)
+		err := All(fatalErrorFunc, fatalErrorFunc)(nil, ctx)
 
-	require.IsType(t, new(allError), err)
+		require.IsType(t, new(allError), err)
 
-	allErr := err.(*allError)
+		allErr := err.(*allError)
 
-	actual := allErr.Wrap(nil, ctx)
-	assert.Equal(t, expect, actual)
+		actual := allErr.Wrap(nil, ctx)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("not fatal", func(t *testing.T) {
+		expect := errors.NewRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
+			entryPrefix + "abc\n" +
+			entryPrefix + "def")
+
+		ctx := plugin.NewContext(nil)
+		ctx.Localizer = mock.NewLocalizer(t).
+			On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+			On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
+			Build()
+
+		err := All(errorFunc1, errorFunc2)(nil, ctx)
+
+		require.IsType(t, new(allError), err)
+
+		allErr := err.(*allError)
+
+		actual := allErr.Wrap(nil, ctx)
+		assert.Equal(t, expect, actual)
+	})
 }
 
 func Test_anyError_format(t *testing.T) {
@@ -594,6 +617,44 @@ func Test_anyError_format(t *testing.T) {
 				entryPrefix + "jkl\n" +
 				entryPrefix + "abc\n" +
 				entryPrefix + "def",
+			fatal: false,
+		},
+		{
+			name: "fatal restrictions",
+			err: anyError{
+				fatalRestrictions: []*errors.FatalRestrictionError{
+					errors.NewFatalRestrictionError("abc"),
+					errors.NewFatalRestrictionError("def"),
+				},
+			},
+			expect: entryPrefix + "abc\n" +
+				entryPrefix + "def",
+			fatal: true,
+		},
+		{
+			name: "fatal alls",
+			err: anyError{
+				alls: []*allError{
+					{
+						fatalRestrictions: []*errors.FatalRestrictionError{
+							errors.NewFatalRestrictionError("abc"),
+							errors.NewFatalRestrictionError("def"),
+						},
+					},
+					{
+						fatalRestrictions: []*errors.FatalRestrictionError{
+							errors.NewFatalRestrictionError("ghi"),
+							errors.NewFatalRestrictionError("jkl"),
+						},
+					},
+				},
+			},
+			expect: entryPrefix + "You need to fulfill all of these requirements:\n" +
+				"　　" + entryPrefix + "abc\n" +
+				"　　" + entryPrefix + "def\n" +
+				entryPrefix + "You need to fulfill all of these requirements:\n" +
+				"　　" + entryPrefix + "ghi\n" +
+				"　　" + entryPrefix + "jkl",
 			fatal: true,
 		},
 		{
@@ -684,7 +745,7 @@ func Test_anyError_format(t *testing.T) {
 				entryPrefix + "You need to fulfill all of these requirements:\n" +
 				"　　" + entryPrefix + "mno\n" +
 				"　　" + entryPrefix + "pqr",
-			fatal: true,
+			fatal: false,
 		},
 		{
 			name: "any with nested all",
@@ -745,22 +806,45 @@ func Test_anyError_format(t *testing.T) {
 }
 
 func Test_anyError_Wrap(t *testing.T) {
-	expect := errors.NewRestrictionError("You need to fulfill at least one of these requirements to execute the command:\n\n" +
-		entryPrefix + "abc\n" +
-		entryPrefix + "def")
+	t.Run("fatal", func(t *testing.T) {
+		expect := errors.NewFatalRestrictionError("You need to fulfill at least one of these requirements to execute the command:\n\n" +
+			entryPrefix + "mno\n" +
+			entryPrefix + "mno")
 
-	ctx := plugin.NewContext(nil)
-	ctx.Localizer = mock.NewLocalizer(t).
-		On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
-		On(allMessageInline.Term, allMessageInline.Fallback.Other).
-		Build()
+		ctx := plugin.NewContext(nil)
+		ctx.Localizer = mock.NewLocalizer(t).
+			On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
+			On(allMessageInline.Term, allMessageInline.Fallback.Other).
+			Build()
 
-	err := Any(errorFunc1, errorFunc2)(nil, ctx)
+		err := Any(fatalErrorFunc, fatalErrorFunc)(nil, ctx)
 
-	require.IsType(t, new(anyError), err)
+		require.IsType(t, new(anyError), err)
 
-	anyErr := err.(*anyError)
+		anyErr := err.(*anyError)
 
-	actual := anyErr.Wrap(nil, ctx)
-	assert.Equal(t, expect, actual)
+		actual := anyErr.Wrap(nil, ctx)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("not fatal", func(t *testing.T) {
+		expect := errors.NewRestrictionError("You need to fulfill at least one of these requirements to execute the command:\n\n" +
+			entryPrefix + "abc\n" +
+			entryPrefix + "def")
+
+		ctx := plugin.NewContext(nil)
+		ctx.Localizer = mock.NewLocalizer(t).
+			On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
+			On(allMessageInline.Term, allMessageInline.Fallback.Other).
+			Build()
+
+		err := Any(errorFunc1, errorFunc2)(nil, ctx)
+
+		require.IsType(t, new(anyError), err)
+
+		anyErr := err.(*anyError)
+
+		actual := anyErr.Wrap(nil, ctx)
+		assert.Equal(t, expect, actual)
+	})
 }
