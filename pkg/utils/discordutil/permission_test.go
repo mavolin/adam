@@ -24,7 +24,7 @@ func TestPermissionNamesl(t *testing.T) {
 	perms := discord.PermissionBanMembers | discord.PermissionViewChannel
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("permissions.ban_members", "Ban Members").
 		On("permissions.view_channel", "View Channel").
 		Build()

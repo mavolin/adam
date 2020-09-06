@@ -17,10 +17,10 @@ func TestNewNoOpLocalizer(t *testing.T) {
 }
 
 func TestLocalizer_Clone(t *testing.T) {
-	l1 := NewLocalizer().
+	l1 := NewLocalizer(t).
 		On("abc", "def")
 
-	l2 := l1.Clone()
+	l2 := l1.Clone(t)
 
 	assert.Equal(t, l1, l2)
 
@@ -45,7 +45,7 @@ func TestLocalizer_Build(t *testing.T) {
 		t.Run("error on", func(t *testing.T) {
 			var term localization.Term = "abc"
 
-			l := NewLocalizer().
+			l := NewLocalizer(t).
 				ErrorOn(term).
 				Build()
 
@@ -58,7 +58,7 @@ func TestLocalizer_Build(t *testing.T) {
 
 			expect := "def"
 
-			l := NewLocalizer().
+			l := NewLocalizer(t).
 				On(term, expect).
 				Build()
 
@@ -69,11 +69,17 @@ func TestLocalizer_Build(t *testing.T) {
 	})
 
 	t.Run("unexpected localization", func(t *testing.T) {
-		l := NewLocalizer().
+		var term localization.Term = "unknown_term"
+
+		tMock := new(testing.T)
+
+		l := NewLocalizer(tMock).
 			Build()
 
-		assert.Panics(t, func() {
-			l.LocalizeTerm("abc")
-		})
+		actualTerm, err := l.LocalizeTerm(term)
+		assert.Equal(t, string(term), actualTerm)
+		assert.Error(t, err)
+
+		assert.True(t, tMock.Failed())
 	})
 }

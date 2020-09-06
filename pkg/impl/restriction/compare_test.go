@@ -406,7 +406,7 @@ func Test_allError_Wrap(t *testing.T) {
 		entryPrefix + "def")
 
 	ctx := plugin.NewContext(nil)
-	ctx.Localizer = mock.NewLocalizer().
+	ctx.Localizer = mock.NewLocalizer(t).
 		On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
 		On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
 		Build()
@@ -556,7 +556,7 @@ func Test_anyError_Wrap(t *testing.T) {
 		entryPrefix + "def")
 
 	ctx := plugin.NewContext(nil)
-	ctx.Localizer = mock.NewLocalizer().
+	ctx.Localizer = mock.NewLocalizer(t).
 		On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
 		On(allMessageInline.Term, allMessageInline.Fallback.Other).
 		Build()

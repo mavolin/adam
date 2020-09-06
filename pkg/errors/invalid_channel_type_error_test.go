@@ -49,7 +49,7 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 			},
 		},
 	}
-	ctx.Localizer = mock.NewLocalizer().
+	ctx.Localizer = mock.NewLocalizer(t).
 		On(errorTitle.Term, "title").
 		On(channelTypeErrorGuild.Term, "guild").
 		Build()
