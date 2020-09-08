@@ -55,8 +55,8 @@ type Context struct {
 	// BotOwnerIDs contains the ids of the bot owners.
 	BotOwnerIDs []discord.UserID
 
-	// Provider is an embedded interface that provides access to the Commands
-	// and Modules of the Bot, as well as the runtime commands and modules
+	// Provider is an embedded interface that provides access to the AllCommandsReturn
+	// and AllModulesReturn of the Bot, as well as the runtime commands and modules
 	// for the guild.
 	Provider
 
@@ -221,13 +221,27 @@ type (
 
 		// Commands returns merged version of AllCommands, as the command
 		// router uses it.
-		Commands() []Command
+		//
+		// Commands will always return valid data, even if error != nil.
+		// However, all runtime commands, whose providers returned an error,
+		// won't be included, and their error will be returned wrapped in a
+		// bot.RuntimePluginProviderError.
+		// If multiple errors occur, a errors.MultiError filled with
+		// bot.RuntimePluginProviderErrors will be returned.
+		Commands() ([]Command, error)
 		// Modules returns a merged version of AllModules, as the command
 		// router uses it.
 		//
 		// Modules may not be the original modules, as they might need to store
 		// data from other modules as well.
-		Modules() []Module
+		//
+		// Modules will always return valid data, even if error != nil.
+		// However, all runtime modules, whose providers returned an error,
+		// won't be included, and their error will be returned wrapped in a
+		// bot.RuntimePluginProviderError.
+		// If multiple errors occur, a errors.MultiError filled with
+		// bot.RuntimePluginProviderErrors will be returned.
+		Modules() ([]Module, error)
 
 		// Command returns the Command with the passed Identifier.
 		//
