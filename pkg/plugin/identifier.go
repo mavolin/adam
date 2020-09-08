@@ -1,10 +1,13 @@
 package plugin
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // Identifier is the unique identifier of a plugin.
 // The root/base is '.'.
-// All plugins are dot-separated, e.g. '.mod.ban'
+// All plugins are dot-separated, e.g. '.mod.ban'.
 type Identifier string
 
 var whitespaceReplacer = regexp.MustCompile(`\s+`)
@@ -21,13 +24,17 @@ func IdentifierFromInvoke(i string) Identifier {
 
 // Parent returns the parent module of the plugin, or '.' if this Identifier
 // already represents root.
+//
+// If the Identifier is invalid, Parent returns an empty string.
 func (id Identifier) Parent() Identifier {
 	if id == "." {
 		return id
 	}
 
 	i := strings.LastIndex(string(id), ".")
-	if i == 0 { // parent is root
+	if i == -1 {
+		return ""
+	} else if i == 0 { // parent is root
 		i = 1
 	}
 
@@ -36,12 +43,19 @@ func (id Identifier) Parent() Identifier {
 
 // All returns a slice of all parents including root and the identifier itself
 // starting with root.
+//
+// If the Identifier is invalid, All returns nil.
 func (id Identifier) All() []Identifier {
 	if id.IsRoot() {
 		return []Identifier{"."}
 	}
 
-	parents := make([]Identifier, strings.Count(string(id), ".")+1)
+	pluginCount := strings.Count(string(id), ".")
+	if pluginCount == 0 {
+		return nil
+	}
+
+	parents := make([]Identifier, pluginCount+1)
 
 	parent := id
 
@@ -71,17 +85,22 @@ func (id Identifier) IsChild(target Identifier) bool {
 
 // AsInvoke returns the identifier as a prefixless command invoke.
 //
-// Returns "" if the Identifier is root.
+// Returns "" if the Identifier is root or invalid.
 //
 // Example:
 // 	.mod.ban -> mod ban
 func (id Identifier) AsInvoke() string {
+	if len(id) == 0 {
+		return ""
+	}
+
 	return strings.ReplaceAll(string(id[1:]), ".", " ")
 }
 
-// Name returns the name of the plugin or "" if the Identifier is root.
+// Name returns the name of the plugin or "" if the Identifier is root or
+// invalid.
 func (id Identifier) Name() string {
-	if id.IsRoot() {
+	if len(id) <= 1 {
 		return ""
 	}
 
