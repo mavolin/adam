@@ -196,31 +196,90 @@ type (
 	//
 	// Copies are only created on call of one of the methods.
 	Provider interface {
-		// Commands returns a copy of the bot's top-level commands.
-		Commands() []Command
-		// Command returns the first Command with the passed Identifier, or nil
-		// if no such command exists.
-		Command(Identifier) Command
-		// Modules returns a copy of the bot's top-level modules.
-		Modules() []Module
-		// Module returns the first Module with the passed Identifier, or nil
-		// if no such module exists.
-		Module(Identifier) Module
+		// AllCommands returns a copy of all top-level commands.
+		// Commands[0] contains the built-in commands of the bot, or is nil if
+		// there are none, all following outer slices contain runtime commands.
+		//
+		// AllCommands will always return valid data, even if error != nil.
+		// However, all runtime commands, whose providers returned an error,
+		// won't be included, and their errors will be returned wrapped in a
+		// bot.RuntimePluginProviderError.
+		// If multiple errors occur, a errors.MultiError filled with
+		// bot.RuntimePluginProviderErrors will be returned.
+		AllCommands() ([][]Command, error)
+		// AllModules returns a copy of all top-level modules.
+		// Modules[0] contains the built-in modules of the bot, or is nil if
+		// there are none, all following outer slices contain runtime commands.
+		//
+		// AllModules will always return valid data, even if error != nil.
+		// However, all runtime modules, whose providers returned an error,
+		// won't be included, and their error will be returned wrapped in a
+		// bot.RuntimePluginProviderError.
+		// If multiple errors occur, a errors.MultiError filled with
+		// bot.RuntimePluginProviderErrors will be returned.
+		AllModules() ([][]Module, error)
 
-		// RuntimeCommands returns a copy of the top-level runtime commands for
-		// this guild.
-		// The outer slice represents the individual runtime command providers.
-		RuntimeCommands() ([][]Command, error)
-		// RuntimeCommand returns the first runtime command with the passed
-		// Identifier, or (nil, nil) if no such command exists.
-		RuntimeCommand(Identifier) (Command, error)
-		// RuntimeModules returns a copy of the top-level runtime modules for
-		// this guild.
-		// The outer slice represents the individual runtime module providers.
-		RuntimeModules() ([][]Module, error)
-		// RuntimeModule returns the first runtime module with the passed
-		// Identifier, or (nil, nil) if no such module exists.
-		RuntimeModule(Identifier) (Module, error)
+		// Commands returns merged version of AllCommands, as the command
+		// router uses it.
+		Commands() []Command
+		// Modules returns a merged version of AllModules, as the command
+		// router uses it.
+		//
+		// Modules may not be the original modules, as they might need to store
+		// data from other modules as well.
+		Modules() []Module
+
+		// Command returns the Command with the passed Identifier.
+		//
+		// Note that Identifiers may only consist of the command's name, not
+		// their alias.
+		//
+		// It will return nil, nil if no command matching the identifier was
+		// found.
+		// An error will only be returned if one of the runtime plugin
+		// providers returns an error, and should therefore be seen as an
+		// indicator that the command may exist, but is unavailable right now.
+		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
+		// If multiple errors occur, the returned error will be of type
+		// errors.MultiError.
+		Command(Identifier) (Command, error)
+		// Module returns the Module with the passed Identifier.
+		//
+		// It will return nil, nil if no module matching the identifier was
+		// found.
+		// An error will only be returned if one of the runtime plugin
+		// providers returns an error, and should therefore be seen as an
+		// indicator that the module may exist, but is unavailable right now.
+		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
+		// If multiple errors occur, the returned error will be of type
+		// errors.MultiError.
+		Module(Identifier) (Module, error)
+
+		// FindCommand returns the Command with the passed invoke.
+		//
+		// Note that Identifiers may only consist of the command's name, not
+		// their alias.
+		//
+		// It will return nil, nil if no command matching the passed invoke was
+		// found.
+		// An error will only be returned if one of the runtime plugin
+		// providers returns an error, and should therefore be seen as an
+		// indicator that the command may exist, but is unavailable right now.
+		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
+		// If multiple errors occur, the returned error will be of type
+		// errors.MultiError.
+		FindCommand(invoke string) (Command, error)
+		// FindModule returns the Module with the passed invoke.
+		//
+		// It will return nil, nil if no module matching the passed invoke was
+		// found.
+		// An error will only be returned if one of the runtime plugin
+		// providers returns an error, and should therefore be seen as an
+		// indicator that the module may exist, but is unavailable right now.
+		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
+		// If multiple errors occur, the returned error will be of type
+		// errors.MultiError.
+		FindModule(invoke string) (Module, error)
 	}
 
 	// ErrorHandler is an embeddable interface used to provide direct error
