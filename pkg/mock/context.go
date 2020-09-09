@@ -267,28 +267,50 @@ func (h *ErrorHandler) ExpectSilentError(err error) *ErrorHandler {
 	return h
 }
 
-func (h *ErrorHandler) HandleError(err interface{}) {
+func (h *ErrorHandler) HandleError(err error) {
 	h.mut.Lock()
 	defer h.mut.Unlock()
 
 	for i, expect := range h.expectErr {
-		if reflect.DeepEqual(expect, err) {
+		if reflect.DeepEqual(err, expect) {
 			h.expectErr = append(h.expectErr[:i], h.expectErr[i+1:]...)
 			return
+		}
+
+		err2 := err
+
+		for uerr, ok := err2.(interface{ Unwrap() error }); ok; uerr, ok = err2.(interface{ Unwrap() error }) {
+			err2 = uerr.Unwrap()
+
+			if reflect.DeepEqual(err2, expect) {
+				h.expectErr = append(h.expectErr[:i], h.expectErr[i+1:]...)
+				return
+			}
 		}
 	}
 
 	panic("unexpected call to plugin.ErrorHandler.HandleError")
 }
 
-func (h *ErrorHandler) HandleErrorSilent(err interface{}) {
+func (h *ErrorHandler) HandleErrorSilent(err error) {
 	h.mut.Lock()
 	defer h.mut.Unlock()
 
 	for i, expect := range h.expectSilent {
-		if reflect.DeepEqual(expect, err) {
+		if reflect.DeepEqual(err, expect) {
 			h.expectSilent = append(h.expectSilent[:i], h.expectSilent[i+1:]...)
 			return
+		}
+
+		err2 := err
+
+		for uerr, ok := err2.(interface{ Unwrap() error }); ok; uerr, ok = err2.(interface{ Unwrap() error }) {
+			err2 = uerr.Unwrap()
+
+			if reflect.DeepEqual(err2, expect) {
+				h.expectErr = append(h.expectSilent[:i], h.expectSilent[i+1:]...)
+				return
+			}
 		}
 	}
 

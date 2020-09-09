@@ -334,9 +334,9 @@ type (
 	// through the bot's error handler, but execution can remain uninterrupted.
 	ErrorHandler interface {
 		// HandleError hands the error to the bot's error handler.
-		HandleError(err interface{})
+		HandleError(err error)
 		// HandleErrorSilent wraps the error using errors.Silent and hands it
 		// to the bot's error handler.
-		HandleErrorSilent(err interface{})
+		HandleErrorSilent(err error)
 	}
 )
