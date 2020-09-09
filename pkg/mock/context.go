@@ -47,7 +47,7 @@ type PluginProvider struct {
 	FindCommandError, FindModuleError error
 }
 
-func (p *PluginProvider) AllCommands() ([]plugin.CommandRepository, error) {
+func (p PluginProvider) AllCommands() ([]plugin.CommandRepository, error) {
 	if p.AllCommandsReturn == nil {
 		return nil, p.AllCommandsError
 	}
@@ -58,7 +58,7 @@ func (p *PluginProvider) AllCommands() ([]plugin.CommandRepository, error) {
 	return cp, p.AllCommandsError
 }
 
-func (p *PluginProvider) AllModules() ([]plugin.ModuleRepository, error) {
+func (p PluginProvider) AllModules() ([]plugin.ModuleRepository, error) {
 	if p.AllModulesReturn == nil {
 		return nil, p.AllModulesError
 	}
@@ -69,7 +69,7 @@ func (p *PluginProvider) AllModules() ([]plugin.ModuleRepository, error) {
 	return cp, p.AllModulesError
 }
 
-func (p *PluginProvider) Commands() ([]plugin.Command, error) {
+func (p PluginProvider) Commands() ([]plugin.Command, error) {
 	var qty int
 
 	for _, r := range p.AllCommandsReturn {
@@ -88,7 +88,7 @@ func (p *PluginProvider) Commands() ([]plugin.Command, error) {
 	return cmds, p.CommandsError
 }
 
-func (p *PluginProvider) Modules() ([]plugin.Module, error) {
+func (p PluginProvider) Modules() ([]plugin.Module, error) {
 	var qty int
 
 	for _, r := range p.AllModulesReturn {
@@ -107,7 +107,7 @@ func (p *PluginProvider) Modules() ([]plugin.Module, error) {
 	return cmds, p.ModulesError
 }
 
-func (p *PluginProvider) Command(id plugin.Identifier) (plugin.Command, error) {
+func (p PluginProvider) Command(id plugin.Identifier) (plugin.Command, error) {
 	all := id.All()
 
 	if len(all) <= 1 { // just root or invalid
@@ -144,7 +144,7 @@ ModFound:
 	return findCommand(mod.Commands(), all[len(all)-1].Name(), false), nil
 }
 
-func (p *PluginProvider) Module(id plugin.Identifier) (plugin.Module, error) {
+func (p PluginProvider) Module(id plugin.Identifier) (plugin.Module, error) {
 	all := id.All()
 
 	if len(all) <= 1 { // just root or invalid
@@ -171,7 +171,7 @@ ModFound:
 	return mod, p.ModuleError
 }
 
-func (p *PluginProvider) FindCommand(invoke string) (plugin.Command, error) {
+func (p PluginProvider) FindCommand(invoke string) (plugin.Command, error) {
 	id := plugin.IdentifierFromInvoke(invoke)
 	all := id.All()[1:]
 
@@ -195,7 +195,7 @@ ModFound:
 	return findCommand(mod.Commands(), all[len(all)-1].Name(), true), p.FindCommandError
 }
 
-func (p *PluginProvider) FindModule(invoke string) (plugin.Module, error) {
+func (p PluginProvider) FindModule(invoke string) (plugin.Module, error) {
 	id := plugin.IdentifierFromInvoke(invoke)
 	all := id.All()[1:]
 
