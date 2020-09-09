@@ -15,7 +15,7 @@ func ChannelTypes(id plugin.Identifier, p plugin.Provider) (plugin.ChannelTypes,
 	all = all[1:] // we don't need root
 
 	cmd, err := p.Command(id)
-	if err != nil {
+	if err != nil || cmd == nil {
 		return 0, err
 	}
 
@@ -28,7 +28,7 @@ func ChannelTypes(id plugin.Identifier, p plugin.Provider) (plugin.ChannelTypes,
 		id := all[i]
 
 		mod, err := p.Module(id)
-		if err != nil {
+		if err != nil || mod == nil {
 			return 0, err
 		}
 
