@@ -22,15 +22,15 @@ type DiscordDataProvider struct {
 	SelfError  error
 }
 
-func (d *DiscordDataProvider) Channel() (*discord.Channel, error) {
+func (d DiscordDataProvider) Channel() (*discord.Channel, error) {
 	return d.ChannelReturn, d.ChannelError
 }
 
-func (d *DiscordDataProvider) Guild() (*discord.Guild, error) {
+func (d DiscordDataProvider) Guild() (*discord.Guild, error) {
 	return d.GuildReturn, d.GuildError
 }
 
-func (d *DiscordDataProvider) Self() (*discord.Member, error) {
+func (d DiscordDataProvider) Self() (*discord.Member, error) {
 	return d.SelfReturn, d.SelfError
 }
 
