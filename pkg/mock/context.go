@@ -116,7 +116,7 @@ func (p *PluginProvider) Command(id plugin.Identifier) (plugin.Command, error) {
 
 	if len(all) == 2 { // top-level command
 		for _, r := range p.AllCommandsReturn {
-			cmd := findCommand(r.Commands, all[1].Name())
+			cmd := findCommand(r.Commands, all[1].Name(), false)
 			if cmd != nil {
 				return cmd, p.CommandError
 			}
@@ -141,7 +141,7 @@ ModFound:
 		mod = findModule(mod.Modules(), id.Name())
 	}
 
-	return findCommand(mod.Commands(), all[len(all)-1].Name()), nil
+	return findCommand(mod.Commands(), all[len(all)-1].Name(), false), nil
 }
 
 func (p *PluginProvider) Module(id plugin.Identifier) (plugin.Module, error) {
@@ -192,7 +192,7 @@ ModFound:
 		mod = findModule(mod.Modules(), id.Name())
 	}
 
-	return findCommand(mod.Commands(), all[len(all)-1].Name()), p.FindCommandError
+	return findCommand(mod.Commands(), all[len(all)-1].Name(), true), p.FindCommandError
 }
 
 func (p *PluginProvider) FindModule(invoke string) (plugin.Module, error) {
@@ -219,15 +219,17 @@ ModFound:
 	return mod, p.FindModuleError
 }
 
-func findCommand(cmds []plugin.Command, name string) plugin.Command {
+func findCommand(cmds []plugin.Command, name string, checkAliases bool) plugin.Command {
 	for _, cmd := range cmds {
 		if cmd.Meta().GetName() == name {
 			return cmd
 		}
 
-		for _, alias := range cmd.Meta().GetAliases() {
-			if alias == name {
-				return cmd
+		if checkAliases {
+			for _, alias := range cmd.Meta().GetAliases() {
+				if alias == name {
+					return cmd
+				}
 			}
 		}
 	}
