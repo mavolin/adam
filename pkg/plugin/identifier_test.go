@@ -6,6 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIdentifierFromInvoke(t *testing.T) {
+	var expect Identifier = ".abc.def.ghi"
+
+	actual := IdentifierFromInvoke("abc def  ghi")
+	assert.Equal(t, expect, actual)
+}
+
 func TestIdentifier_Parent(t *testing.T) {
 	testCases := []struct {
 		name       string
