@@ -31,15 +31,39 @@ var (
 
 	missingRoleError = localization.NewFallbackConfig(
 		"restrictions.roles.errors.missing_role",
-		"You need the {{.role_name}} role to use this command.")
+		"You need the {{.role}} role to use this command.")
 	missingRolesAllError = localization.NewFallbackConfig(
 		"restrictions.roles.errors.missing_roles.all",
 		"You need these roles to use this command:")
 	missingRolesAnyError = localization.NewFallbackConfig(
 		"restrictions.roles.errors.missing_roles.any",
 		"You need at least one of these roles to use this command:")
+
+	blockedChannelErrorSingle = localization.NewFallbackConfig(
+		"restrictions.channels.errors.blocked_channel.single",
+		"You can only use this command in {{.channel}}.")
+	blockedChannelErrorMulti = localization.NewFallbackConfig(
+		"restrictions.channels.errors.blocked_channel.multi",
+		"You must use this command in one of these channels:")
+
+	insufficientUserPermissionsDescSingle = localization.NewFallbackConfig(
+		"errors.insufficient_user_permissions.description.single",
+		`You need the "{{.missing_permission}}" permission to use this command.`)
+	insufficientUserPermissionsDescMulti = localization.NewFallbackConfig(
+		"errors.insufficient_user_permissions.description.multi",
+		"You need these permissions to use this command:")
 )
 
-type missingRoleErrorPlaceholders struct {
-	RoleName string
-}
+type (
+	missingRoleErrorPlaceholders struct {
+		Role string
+	}
+
+	blockedChannelErrorSinglePlaceholders struct {
+		Channel string
+	}
+
+	insufficientUserPermissionsDescSinglePlaceholders struct {
+		MissingPermission string
+	}
+)
