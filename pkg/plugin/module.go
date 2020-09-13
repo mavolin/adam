@@ -48,11 +48,13 @@ type (
 		GetBotPermissions() *discord.Permissions
 		// IsRestricted checks if the user calling the command is restricted
 		// from using this module.
+		// If the bot lacks one ore more permissions command execution will
+		// stop with an errors.InsufficientPermissionsError.
 		//
 		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
 		//
-		// If the RestrictionFunc returns an error that implements
-		// RestrictionErrorWrapper, it will be properly wrapped.
+		// Note that that direct messages may also pass this, if the passed
+		// permissions only require constant.DMPermissions.
 		GetRestrictionFunc() RestrictionFunc
 		// GetThrottlingOptions returns the ThrottlingOptions for the module.
 		// This defines how often all commands and submodules in this module

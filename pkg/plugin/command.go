@@ -75,12 +75,14 @@ type (
 		GetChannelTypes() ChannelTypes
 		// GetBotPermissions gets the permissions the bot needs to execute this
 		// command.
+		// If the bot lacks one ore more permissions command execution will
+		// stop with an errors.InsufficientPermissionsError.
 		//
 		// Setting this to a non-nil value overrides bot permissions defined by
 		// parents.
 		//
-		// If the bot lacks one ore more permissions command execution will
-		// stop with an errors.InsufficientPermissionsError.
+		// Note that that direct messages may also pass this, if the passed
+		// permissions only require constant.DMPermissions.
 		GetBotPermissions() *discord.Permissions
 		// IsRestricted checks if the user is restricted from using the
 		// command.

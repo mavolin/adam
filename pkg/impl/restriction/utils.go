@@ -11,13 +11,6 @@ import (
 //
 // assertChannelTypes will also silently report errors in some cases.
 func assertChannelTypes(ctx *plugin.Context, assertTypes plugin.ChannelTypes, noRemainingError error) error {
-	channelTypes, err := pluginutil.ChannelTypes(ctx.CommandIdentifier, ctx.Provider)
-	if err != nil {
-		return err
-	} else if channelTypes == 0 {
-		return errors.DefaultFatalRestrictionError
-	}
-
 	var has bool
 
 	if assertTypes == plugin.GuildChannels {
@@ -47,6 +40,13 @@ func assertChannelTypes(ctx *plugin.Context, assertTypes plugin.ChannelTypes, no
 	}
 
 	if !has {
+		channelTypes, err := pluginutil.ChannelTypes(ctx.CommandIdentifier, ctx.Provider)
+		if err != nil {
+			return err
+		} else if channelTypes == 0 {
+			return errors.DefaultFatalRestrictionError
+		}
+
 		allowed := channelTypes & assertTypes
 		if allowed == 0 { // no channel types remaining
 			// there is no need to prevent execution, as another restriction
