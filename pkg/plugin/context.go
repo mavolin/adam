@@ -55,8 +55,8 @@ type Context struct {
 	// BotOwnerIDs contains the ids of the bot owners.
 	BotOwnerIDs []discord.UserID
 
-	// Provider is an embedded interface that provides access to the AllCommandsReturn
-	// and AllModulesReturn of the Bot, as well as the runtime commands and modules
+	// Provider is an embedded interface that provides access to the Commands
+	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.
 	Provider
 
