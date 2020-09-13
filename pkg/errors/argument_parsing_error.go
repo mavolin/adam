@@ -94,15 +94,6 @@ func (e *ArgumentParsingError) Reason(l *localization.Localizer) string {
 
 func (e *ArgumentParsingError) Error() string { return "argument parsing error" }
 
-func (e *ArgumentParsingError) Is(target error) bool {
-	casted, ok := target.(*ArgumentParsingError)
-	if !ok {
-		return false
-	}
-
-	return (e.descString != "" && e.descString == casted.descString) || e.descConfig == casted.descConfig
-}
-
 // Handle send an error embed containing a description of which arg/flag was
 // faulty and an optional reason for the error, in the channel the command
 // was sent in.

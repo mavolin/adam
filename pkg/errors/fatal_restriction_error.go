@@ -56,15 +56,6 @@ func (e *FatalRestrictionError) Description(l *localization.Localizer) (string, 
 
 func (e *FatalRestrictionError) Error() string { return "restriction error" }
 
-func (e *FatalRestrictionError) Is(target error) bool {
-	casted, ok := target.(*RestrictionError)
-	if !ok {
-		return false
-	}
-
-	return (e.descString != "" && e.descString == casted.descString) || e.descConfig == casted.descConfig
-}
-
 // Handle sends an error embed with the description of the UserError.
 func (e *FatalRestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
 	desc, err := e.Description(ctx.Localizer)
