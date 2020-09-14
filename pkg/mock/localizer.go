@@ -48,16 +48,19 @@ func NewNoOpLocalizer() *localization.Localizer {
 	return m.Localizer("")
 }
 
+// On adds the passed response for the passed term to the localizer.
 func (l *Localizer) On(term localization.Term, response string) *Localizer {
 	l.on[term] = response
 	return l
 }
 
+// ErrorOn returns an error whenever the passed term is requested.
 func (l *Localizer) ErrorOn(term localization.Term) *Localizer {
 	l.errOn[term] = struct{}{}
 	return l
 }
 
+// Clone creates a copy of the localizer.
 func (l *Localizer) Clone(t *testing.T) *Localizer {
 	on := make(map[localization.Term]string, len(l.on))
 	errOn := make(map[localization.Term]struct{}, len(l.on))
@@ -78,6 +81,7 @@ func (l *Localizer) Clone(t *testing.T) *Localizer {
 	}
 }
 
+// Build build the localizer.
 func (l *Localizer) Build() *localization.Localizer {
 	m := localization.NewManager(func(lang string) localization.LangFunc {
 		return func(term localization.Term, _ map[string]interface{}, _ interface{}) (string, error) {
