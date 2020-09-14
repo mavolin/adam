@@ -34,7 +34,7 @@ func TestEmbedBuilder_WithSimpleTitlel(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", title).
 		Build()
 
@@ -54,7 +54,7 @@ func TestEmbedBuilder_WithSimpleTitlelt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", title).
 		Build()
 
@@ -97,7 +97,7 @@ func TestEmbedBuilder_WithTitlel(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", title).
 		Build()
 
@@ -121,7 +121,7 @@ func TestEmbedBuilder_WithTitlelt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", title).
 		Build()
 
@@ -156,7 +156,7 @@ func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", description).
 		Build()
 
@@ -176,7 +176,7 @@ func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", description).
 		Build()
 
@@ -245,7 +245,7 @@ func TestEmbedBuilder_WithSimpleFooterl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", text).
 		Build()
 
@@ -267,7 +267,7 @@ func TestEmbedBuilder_WithSimpleFooterlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", text).
 		Build()
 
@@ -314,7 +314,7 @@ func TestEmbedBuilder_WithFooterl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", text).
 		Build()
 
@@ -340,7 +340,7 @@ func TestEmbedBuilder_WithFooterlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", text).
 		Build()
 
@@ -413,7 +413,7 @@ func TestEmbedBuilder_WithSimpleAuthorl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -435,7 +435,7 @@ func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -482,7 +482,7 @@ func TestEmbedBuilder_WithSimpleAuthorWithURLl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -508,7 +508,7 @@ func TestEmbedBuilder_WithSimpleAuthorWithURLlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -555,7 +555,7 @@ func TestEmbedBuilder_WithAuthorl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -581,7 +581,7 @@ func TestEmbedBuilder_WithAuthorlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -632,7 +632,7 @@ func TestEmbedBuilder_WithAuthorWithURLl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -660,7 +660,7 @@ func TestEmbedBuilder_WithAuthorWithURLlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", name).
 		Build()
 
@@ -703,7 +703,7 @@ func TestEmbedBuilder_WithFieldl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", field.Name).
 		On("b", field.Value).
 		Build()
@@ -728,7 +728,7 @@ func TestEmbedBuilder_WithFieldlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", field.Name).
 		On("b", field.Value).
 		Build()
@@ -772,7 +772,7 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", field.Name).
 		On("b", field.Value).
 		Build()
@@ -797,7 +797,7 @@ func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
 	}
 
 	l := mock.
-		NewLocalizer().
+		NewLocalizer(t).
 		On("a", field.Name).
 		On("b", field.Value).
 		Build()

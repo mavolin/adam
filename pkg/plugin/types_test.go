@@ -10,28 +10,28 @@ import (
 func TestChannelType_Has(t *testing.T) {
 	successCases := []struct {
 		name        string
-		channelType ChannelType
+		channelType ChannelTypes
 		target      discord.ChannelType
 		expect      bool
 	}{
 		{
 			name:        "all",
-			channelType: All,
+			channelType: AllChannels,
 			target:      discord.GuildText,
 		},
 		{
-			name:        "GuildText",
-			channelType: GuildText,
+			name:        "GuildTextChannels",
+			channelType: GuildTextChannels,
 			target:      discord.GuildText,
 		},
 		{
-			name:        "DirectMessage",
-			channelType: DirectMessage,
+			name:        "DirectMessages",
+			channelType: DirectMessages,
 			target:      discord.DirectMessage,
 		},
 		{
-			name:        "GuildNews",
-			channelType: GuildNews,
+			name:        "GuildNewsChannels",
+			channelType: GuildNewsChannels,
 			target:      discord.GuildNews,
 		},
 	}
@@ -46,7 +46,7 @@ func TestChannelType_Has(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		has := GuildText.Has(discord.DirectMessage)
+		has := GuildTextChannels.Has(discord.DirectMessage)
 		assert.False(t, has)
 	})
 }

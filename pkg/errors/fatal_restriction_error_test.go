@@ -14,11 +14,11 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-func TestRestrictionError_Description(t *testing.T) {
+func TestFatalRestrictionError_Description(t *testing.T) {
 	t.Run("string description", func(t *testing.T) {
 		expect := "abc"
 
-		e := NewRestrictionError(expect)
+		e := NewFatalRestrictionError(expect)
 
 		actual, err := e.Description(mock.NewNoOpLocalizer())
 		require.NoError(t, err)
@@ -35,7 +35,7 @@ func TestRestrictionError_Description(t *testing.T) {
 			On(term, expect).
 			Build()
 
-		e := NewRestrictionErrorlt(term)
+		e := NewFatalRestrictionErrorlt(term)
 
 		actual, err := e.Description(l)
 		require.NoError(t, err)
@@ -43,7 +43,7 @@ func TestRestrictionError_Description(t *testing.T) {
 	})
 }
 
-func TestRestrictionError_Handle(t *testing.T) {
+func TestFatalRestrictionError_Handle(t *testing.T) {
 	expectDesc := "abc"
 
 	m, s := state.NewMocker(t)
@@ -67,7 +67,7 @@ func TestRestrictionError_Handle(t *testing.T) {
 		Embeds:    []discord.Embed{embed},
 	})
 
-	e := NewRestrictionError(expectDesc)
+	e := NewFatalRestrictionError(expectDesc)
 
 	err := e.Handle(s, ctx)
 	require.NoError(t, err)

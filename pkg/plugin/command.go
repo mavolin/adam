@@ -57,12 +57,12 @@ type (
 		GetArgs() ArgConfig
 		// GetShortDescription returns an optional one-sentence description
 		// of the command.
-		GetShortDescription(l localization.Localizer) string
+		GetShortDescription(l *localization.Localizer) string
 		// GetLongDescription returns an optional long description of the
 		// command.
-		GetLongDescription(l localization.Localizer) string
+		GetLongDescription(l *localization.Localizer) string
 		// GetExamples returns optional example usages of the command.
-		GetExamples(l localization.Localizer) []string
+		GetExamples(l *localization.Localizer) []string
 		// IsHidden specifies whether this command will be hidden in the help
 		// page.
 		IsHidden() bool
@@ -71,16 +71,19 @@ type (
 		//
 		// Setting this overrides ChannelTypes defined by the parent.
 		//
-		// If this 0, the parents ChannelType will be used.
-		GetChannelType() ChannelType
+		// If this 0, the parents ChannelTypes will be used.
+		GetChannelTypes() ChannelTypes
 		// GetBotPermissions gets the permissions the bot needs to execute this
 		// command.
-		//
-		// Setting this overrides bot permissions defined by parents.
-		//
 		// If the bot lacks one ore more permissions command execution will
 		// stop with an errors.InsufficientPermissionsError.
-		GetBotPermissions() discord.Permissions
+		//
+		// Setting this to a non-nil value overrides bot permissions defined by
+		// parents.
+		//
+		// Note that that direct messages may also pass this, if the passed
+		// permissions only require constant.DMPermissions.
+		GetBotPermissions() *discord.Permissions
 		// IsRestricted checks if the user is restricted from using the
 		// command.
 		//
@@ -88,8 +91,11 @@ type (
 		//
 		// If they are restricted, a errors.RestrictionError should be
 		// returned.
+		//
+		// If the RestrictionFunc returns an error that implements
+		// RestrictionErrorWrapper, it will be properly wrapped.
 		GetRestrictionFunc() RestrictionFunc
-		// GetThrottling returns the ThrottlingOptions for the command.
+		// GetThrottlingOptions returns the ThrottlingOptions for the command.
 		// If either of the fields in ThrottlingOptions is zero value, the
 		// command won't be throttled.
 		GetThrottlingOptions() ThrottlingOptions

@@ -2,11 +2,16 @@ package mock
 
 import (
 	"errors"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/localization"
 )
 
 type Localizer struct {
+	t *testing.T
+
 	def   string
 	on    map[localization.Term]string
 	errOn map[localization.Term]struct{}
@@ -14,8 +19,19 @@ type Localizer struct {
 
 // NewLocalizer creates a new Localizer.
 // If a term is not found, Localizer will panic.
-func NewLocalizer() *Localizer {
+func NewLocalizer(t *testing.T) *Localizer {
 	return &Localizer{
+		t:     t,
+		on:    make(map[localization.Term]string),
+		errOn: make(map[localization.Term]struct{}),
+	}
+}
+
+// NewLocalizer creates a new Localizer using the passed default.
+// If a term is not found, Localizer will return the default value.
+func NewLocalizerWithDefault(def string) *Localizer {
+	return &Localizer{
+		def:   def,
 		on:    make(map[localization.Term]string),
 		errOn: make(map[localization.Term]struct{}),
 	}
@@ -32,16 +48,6 @@ func NewNoOpLocalizer() *localization.Localizer {
 	return m.Localizer("")
 }
 
-// NewLocalizer creates a new Localizer using the passed default.
-// If a term is not found, Localizer will return the default value.
-func NewLocalizerWithDefault(def string) *Localizer {
-	return &Localizer{
-		def:   def,
-		on:    make(map[localization.Term]string),
-		errOn: make(map[localization.Term]struct{}),
-	}
-}
-
 func (l *Localizer) On(term localization.Term, response string) *Localizer {
 	l.on[term] = response
 	return l
@@ -52,7 +58,7 @@ func (l *Localizer) ErrorOn(term localization.Term) *Localizer {
 	return l
 }
 
-func (l *Localizer) Clone() *Localizer {
+func (l *Localizer) Clone(t *testing.T) *Localizer {
 	on := make(map[localization.Term]string, len(l.on))
 	errOn := make(map[localization.Term]struct{}, len(l.on))
 
@@ -65,6 +71,7 @@ func (l *Localizer) Clone() *Localizer {
 	}
 
 	return &Localizer{
+		t:     t,
 		def:   l.def,
 		on:    on,
 		errOn: errOn,
@@ -85,7 +92,9 @@ func (l *Localizer) Build() *localization.Localizer {
 			}
 
 			if l.def == "" {
-				panic("unexpected localization requested for term " + term)
+				assert.Failf(l.t, "unexpected call to Localize", "unknown term %s", term)
+
+				return string(term), errors.New("unknown term")
 			}
 
 			return l.def, nil

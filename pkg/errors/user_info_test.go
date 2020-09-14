@@ -31,7 +31,7 @@ func TestUserInfo_Description(t *testing.T) {
 		expect := "def"
 
 		l := mock.
-			NewLocalizer().
+			NewLocalizer(t).
 			On(term, expect).
 			Build()
 

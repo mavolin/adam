@@ -8,7 +8,7 @@ import (
 )
 
 // stackTrace attempts to extract the stacktrace from the error.
-// If that does not succeed iw till generate a stack trace.
+// If there is none, it will generate a stack trace.
 func stackTrace(err error, skip int) (stack []uintptr) {
 	if s, ok := err.(stackTracer); ok {
 		stack = s.StackTrace()

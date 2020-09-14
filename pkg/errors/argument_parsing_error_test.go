@@ -62,7 +62,7 @@ func TestArgumentParsingError_Description(t *testing.T) {
 		expect := "def"
 
 		l := mock.
-			NewLocalizer().
+			NewLocalizer(t).
 			On(term, expect).
 			Build()
 
@@ -91,7 +91,7 @@ func TestArgumentParsingError_Reason(t *testing.T) {
 		expect := "def"
 
 		l := mock.
-			NewLocalizer().
+			NewLocalizer(t).
 			On(term, expect).
 			Build()
 

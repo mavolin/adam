@@ -6,6 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIdentifierFromInvoke(t *testing.T) {
+	var expect Identifier = ".abc.def.ghi"
+
+	actual := IdentifierFromInvoke("abc def  ghi")
+	assert.Equal(t, expect, actual)
+}
+
 func TestIdentifier_Parent(t *testing.T) {
 	testCases := []struct {
 		name       string
@@ -37,6 +44,37 @@ func TestIdentifier_Parent(t *testing.T) {
 				actual = actual.Parent()
 				assert.Equal(t, expect, actual, "unexpected identifier returned on level %d", lvl+1)
 			}
+		})
+	}
+}
+
+func TestIdentifier_All(t *testing.T) {
+	testCases := []struct {
+		name       string
+		identifier Identifier
+		expect     []Identifier
+	}{
+		{
+			name:       "root",
+			identifier: ".",
+			expect:     []Identifier{"."},
+		},
+		{
+			name:       "single level",
+			identifier: ".mod",
+			expect:     []Identifier{".", ".mod"},
+		},
+		{
+			name:       "multi level",
+			identifier: ".mod.infr.edit",
+			expect:     []Identifier{".", ".mod", ".mod.infr", ".mod.infr.edit"},
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := c.identifier.All()
+			assert.Equal(t, c.expect, actual)
 		})
 	}
 }
@@ -148,7 +186,38 @@ func TestIdentifier_AsCommandInvoke(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.id.AsCommandInvoke()
+			actual := c.id.AsInvoke()
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func TestIdentifier_Name(t *testing.T) {
+	testCases := []struct {
+		name       string
+		identifier Identifier
+		expect     string
+	}{
+		{
+			name:       "root",
+			identifier: ".",
+			expect:     "",
+		},
+		{
+			name:       "single level",
+			identifier: ".mod",
+			expect:     "mod",
+		},
+		{
+			name:       "multi level",
+			identifier: ".mod.infr.edit",
+			expect:     "edit",
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := c.identifier.Name()
 			assert.Equal(t, c.expect, actual)
 		})
 	}

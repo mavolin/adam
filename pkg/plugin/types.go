@@ -7,37 +7,38 @@ import (
 	"github.com/mavolin/disstate/pkg/state"
 )
 
-// ChannelType is an enum used to specify in which channel types the command
+// ChannelTypes is an enum used to specify in which channel types the command
 // may be executed.
 // It is bit-shifted to allow for combinations of different channel types.
-type ChannelType uint8
+type ChannelTypes uint8
 
 const (
-	// GuildText is the ChannelType of a regular guild text channel (0).
-	GuildText ChannelType = 1 << iota
-	// GuildNews is the ChannelType of a news channel (5).
-	GuildNews
-	// DirectMessage is the ChannelType of a private chat (1).
-	DirectMessage
+	// GuildTextChannels is the ChannelTypes of a regular guild text channel
+	// (0).
+	GuildTextChannels ChannelTypes = 1 << iota
+	// GuildNewsChannels is the ChannelTypes of a news channel (5).
+	GuildNewsChannels
+	// DirectMessages is the ChannelTypes of a private chat (1).
+	DirectMessages
 
 	// Combinations
 
-	// All is a combination of all ChannelTypes.
-	All = DirectMessage | Guild
-	// Guild is a combination of all ChannelTypes used in guilds, i.e.
-	// GuildText and GuildNews.
-	Guild = GuildText | GuildNews
+	// AllChannels is a combination of all ChannelTypes.
+	AllChannels = DirectMessages | GuildChannels
+	// GuildChannels is a combination of all ChannelTypes used in guilds, i.e.
+	// GuildTextChannels and GuildNewsChannels.
+	GuildChannels = GuildTextChannels | GuildNewsChannels
 )
 
-// Has checks if the passed discord.ChannelType is found in the ChannelType.
-func (t ChannelType) Has(target discord.ChannelType) bool {
+// Has checks if the passed discord.ChannelType is found in the ChannelTypes.
+func (t ChannelTypes) Has(target discord.ChannelType) bool {
 	switch target {
 	case discord.GuildText:
-		return t&GuildText == GuildText
+		return t&GuildTextChannels == GuildTextChannels
 	case discord.DirectMessage:
-		return t&DirectMessage == DirectMessage
+		return t&DirectMessages == DirectMessages
 	case discord.GuildNews:
-		return t&GuildNews == GuildNews
+		return t&GuildNewsChannels == GuildNewsChannels
 	default:
 		return false
 	}
@@ -57,4 +58,17 @@ type ThrottlingOptions struct {
 	MaxInvokes uint
 	// Duration is the time.Duration where the MaxInvokes level is measured.
 	Duration time.Duration
+}
+
+// RestrictionErrorWrapper is the interface used to wrap errors returned by a
+// RestrictionFunc.
+// If the RestrictionFunc of a plugin returns an error, that implements this,
+// It will call Wrap() to properly wrap the error.
+type RestrictionErrorWrapper interface {
+	// Wrap wraps the error returned by the RestrictionFunc.
+	//
+	// If this error is caused by unfulfilled restrictions, it should
+	// automatically decide, whether a errors.RestrictionError or a
+	// errors.FatalRestrictionError is appropriate.
+	Wrap(*state.State, *Context) error
 }

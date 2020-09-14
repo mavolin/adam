@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
-	"github.com/mavolin/adam/pkg/mock"
 	"github.com/mavolin/adam/pkg/utils/discordutil"
 )
 
@@ -101,9 +100,9 @@ func TestContext_Replyl(t *testing.T) {
 				},
 			},
 		},
-		Localizer: mock.NewLocalizer().
-			On(term, content).
-			Build(),
+		Localizer: newMockedLocalizer().
+			on(term, content).
+			build(),
 		s: s,
 	}
 
@@ -143,9 +142,9 @@ func TestContext_Replylt(t *testing.T) {
 				},
 			},
 		},
-		Localizer: mock.NewLocalizer().
-			On(term, content).
-			Build(),
+		Localizer: newMockedLocalizer().
+			on(term, content).
+			build(),
 		s: s,
 	}
 
@@ -250,7 +249,7 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 func TestContext_ReplyLocalizedEmbedBuilder(t *testing.T) {
 	m, s := state.NewMocker(t)
 
-	l := mock.NewLocalizerWithDefault("abc").Build()
+	l := newMockedLocalizerWithDefault("abc").build()
 
 	ctx := &Context{
 		MessageCreateEvent: &state.MessageCreateEvent{
@@ -386,9 +385,9 @@ func TestContext_ReplyDMl(t *testing.T) {
 				},
 			},
 		},
-		Localizer: mock.NewLocalizer().
-			On(term, content).
-			Build(),
+		Localizer: newMockedLocalizer().
+			on(term, content).
+			build(),
 		s: s,
 	}
 
@@ -436,9 +435,9 @@ func TestContext_ReplyDMlt(t *testing.T) {
 				},
 			},
 		},
-		Localizer: mock.NewLocalizer().
-			On(term, content).
-			Build(),
+		Localizer: newMockedLocalizer().
+			on(term, content).
+			build(),
 		s: s,
 	}
 
@@ -565,7 +564,7 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 func TestContext_ReplyLocalizedEmbedBuilderDM(t *testing.T) {
 	m, s := state.NewMocker(t)
 
-	l := mock.NewLocalizerWithDefault("abc").Build()
+	l := newMockedLocalizerWithDefault("abc").build()
 
 	ctx := &Context{
 		MessageCreateEvent: &state.MessageCreateEvent{

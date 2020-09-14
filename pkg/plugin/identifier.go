@@ -1,25 +1,71 @@
 package plugin
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // Identifier is the unique identifier of a plugin.
 // The root/base is '.'.
-// All plugins are dot-separated, e.g. '.mod.ban'
+// All plugins are dot-separated, e.g. '.mod.ban'.
 type Identifier string
 
-// Parent returns the parent module of the plugin or '.' if this Identifier
+var whitespaceReplacer = regexp.MustCompile(`\s+`)
+
+// IdentifierFromInvoke creates an Identifier from the passed command or module
+// invoke.
+// It takes into account multiple whitespaces in a row.
+//
+// 		mod  infr edit -> .mod.infr.edit
+func IdentifierFromInvoke(i string) Identifier {
+	id := "." + whitespaceReplacer.ReplaceAllString(i, ".")
+	return Identifier(id)
+}
+
+// Parent returns the parent module of the plugin, or '.' if this Identifier
 // already represents root.
+//
+// If the Identifier is invalid, Parent returns an empty string.
 func (id Identifier) Parent() Identifier {
 	if id == "." {
 		return id
 	}
 
 	i := strings.LastIndex(string(id), ".")
-	if i == 0 { // parent is root
+	if i == -1 {
+		return ""
+	} else if i == 0 { // parent is root
 		i = 1
 	}
 
 	return id[:i]
+}
+
+// All returns a slice of all parents including root and the identifier itself
+// starting with root.
+//
+// If the Identifier is invalid, All returns nil.
+func (id Identifier) All() []Identifier {
+	if id.IsRoot() {
+		return []Identifier{"."}
+	}
+
+	pluginCount := strings.Count(string(id), ".")
+	if pluginCount == 0 {
+		return nil
+	}
+
+	parents := make([]Identifier, pluginCount+1)
+
+	parent := id
+
+	for i := len(parents) - 1; i >= 0; i-- {
+		parents[i] = parent
+
+		parent = parent.Parent()
+	}
+
+	return parents
 }
 
 // IsRoot checks if the identifier is the root identifier.
@@ -37,12 +83,27 @@ func (id Identifier) IsChild(target Identifier) bool {
 	return target > id && strings.HasPrefix(string(target), string(id))
 }
 
-// AsCommandInvoke returns the identifier as a prefixless command invoke.
+// AsInvoke returns the identifier as a prefixless command invoke.
 //
-// Returns "" if the Identifier is root.
+// Returns "" if the Identifier is root or invalid.
 //
 // Example:
 // 	.mod.ban -> mod ban
-func (id Identifier) AsCommandInvoke() string {
-	return strings.ReplaceAll(string(id)[1:], ".", " ")
+func (id Identifier) AsInvoke() string {
+	if len(id) == 0 {
+		return ""
+	}
+
+	return strings.ReplaceAll(string(id[1:]), ".", " ")
+}
+
+// Name returns the name of the plugin or "" if the Identifier is root or
+// invalid.
+func (id Identifier) Name() string {
+	if len(id) <= 1 {
+		return ""
+	}
+
+	i := strings.LastIndex(string(id), ".")
+	return string(id[i+1:])
 }

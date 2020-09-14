@@ -28,34 +28,40 @@ type (
 		GetName() string
 		// GetShortDescription returns an optional one-sentence description of
 		// the module.
-		GetShortDescription(l *localization.Localizer) (string, error)
+		GetShortDescription(l *localization.Localizer) string
 		// GetLongDescription returns an option long description of the module.
-		GetLongDescription(l *localization.Localizer) (string, error)
+		GetLongDescription(l *localization.Localizer) string
 		// IsHidden specifies whether this module will be hidden from the help
 		// page.
 		//
 		// If set to true, all submodules and subcommands will be hidden as
 		// well.
 		IsHidden() bool
-		// GetChannelType returns the ChannelType required to use this module.
+		// GetChannelTypes returns the ChannelTypes required to use this module.
 		//
-		// Commands can overwrite this, by setting a custom ChannelType.
-		GetChannelType() ChannelType
+		// Commands can overwrite this, by setting a custom ChannelTypes.
+		GetChannelTypes() ChannelTypes
 		// GetBotPermissions get the permissions needed to use this module.
 		//
-		// Commands can overwrite this, by setting custom BotPermissions.
-		GetBotPermissions() discord.Permissions
+		// Commands can overwrite this, by setting their bot permissions to a
+		// non-nil value.
+		GetBotPermissions() *discord.Permissions
 		// IsRestricted checks if the user calling the command is restricted
 		// from using this module.
+		// If the bot lacks one ore more permissions command execution will
+		// stop with an errors.InsufficientPermissionsError.
 		//
 		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
+		//
+		// Note that that direct messages may also pass this, if the passed
+		// permissions only require constant.DMPermissions.
 		GetRestrictionFunc() RestrictionFunc
-		// GetThrottling returns the ThrottlingOptions for the module.
+		// GetThrottlingOptions returns the ThrottlingOptions for the module.
 		// This defines how often all commands and submodules in this module
 		// together may be used.
 		//
 		// If either of the fields in ThrottlingOptions is zero value, the
 		// module won't be throttled.
-		GetThrottling() ThrottlingOptions
+		GetThrottlingOptions() ThrottlingOptions
 	}
 )

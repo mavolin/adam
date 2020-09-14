@@ -70,10 +70,16 @@ func NewFallbackConfig(term Term, fallback string) Config {
 // This does not take into account invalid keys.
 func (c Config) IsValid() bool { return c.Term != "" || c.Fallback.Other != "" }
 
-// WithPlaceholders returns a copy of the Config with the passed Placeholders
+// WithPlaceholders returns a copy of the Config with the passed placeholders
 // set.
 func (c Config) WithPlaceholders(placeholders interface{}) Config {
 	c.Placeholders = placeholders
+	return c
+}
+
+// WithPlural returns a copy of the Config with the passed plural set.
+func (c Config) WithPlural(plural interface{}) Config {
+	c.Plural = plural
 	return c
 }
 
