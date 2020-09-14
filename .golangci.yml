@@ -45,15 +45,13 @@ issues:
         - gosec
         - goconst
         - funlen
-    # utilities for testing
-    - path: /test_utils\.go$
     # there would be no point in splitting this up
-    - path: ^pkg/utils/discordutil/embed.go$
+    - path: ^pkg/utils/embedutil/embed.go$
       linters:
         - funlen
       text: ^Function 'Build' is too long \(\d+ > \d+\)$
     # this is required to maintain readability
-    - path: ^pkg/utils/discordutil/terms.go$
+    - path: ^pkg/utils/locutil/permission_terms.go$
       linters:
         - golint
         - stylecheck

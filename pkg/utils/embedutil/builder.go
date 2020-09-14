@@ -1,4 +1,4 @@
-package discordutil
+package embedutil
 
 import (
 	"github.com/diamondburned/arikawa/discord"
@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	// EmbedBuilder is a utility struct used to build embeds.
-	EmbedBuilder struct {
+	// Builder is a utility struct used to build embeds.
+	Builder struct {
 		title       *text
 		description *text
 
@@ -17,55 +17,55 @@ type (
 		timestamp discord.Timestamp
 		color     discord.Color
 
-		footer       *embedFooter
+		footer       *footer
 		imageURL     discord.URL
 		thumbnailURL discord.URL
-		author       *embedAuthor
-		fields       []embedField
+		author       *author
+		fields       []field
 	}
 
-	embedFooter struct {
+	footer struct {
 		text text
 		icon discord.URL
 	}
 
-	embedAuthor struct {
+	author struct {
 		name text
 		icon discord.URL
 		url  discord.URL
 	}
 
-	embedField struct {
+	field struct {
 		name    *text
 		value   *text
 		inlined bool
 	}
 )
 
-// NewLocalizedEmbedBuilder creates a new EmbedBuilder.
-func NewEmbedBuilder() *EmbedBuilder {
-	return new(EmbedBuilder)
+// NewLocalizedEmbedBuilder creates a new Builder.
+func NewBuilder() *Builder {
+	return new(Builder)
 }
 
 // WithSimpleTitle adds a plain title (max. 256 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleTitle(title string) *EmbedBuilder {
+func (b *Builder) WithSimpleTitle(title string) *Builder {
 	b.title = stringText(title)
 	return b
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleTitlel(title localization.Config) *EmbedBuilder {
+func (b *Builder) WithSimpleTitlel(title localization.Config) *Builder {
 	b.title = configText(title)
 	return b
 }
 
 // WithSimpleTitlelt adds a plain title (max. 256 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleTitlelt(title localization.Term) *EmbedBuilder {
+func (b *Builder) WithSimpleTitlelt(title localization.Term) *Builder {
 	return b.WithSimpleTitlel(title.AsConfig())
 }
 
 // WithTitle adds a title (max. 256 characters) with a link to the embed.
-func (b *EmbedBuilder) WithTitle(title string, url discord.URL) *EmbedBuilder {
+func (b *Builder) WithTitle(title string, url discord.URL) *Builder {
 	b.title = stringText(title)
 	b.url = url
 
@@ -73,7 +73,7 @@ func (b *EmbedBuilder) WithTitle(title string, url discord.URL) *EmbedBuilder {
 }
 
 // WithTitlel adds a title (max. 256 characters) with a link to the embed.
-func (b *EmbedBuilder) WithTitlel(title localization.Config, url discord.URL) *EmbedBuilder {
+func (b *Builder) WithTitlel(title localization.Config, url discord.URL) *Builder {
 	b.title = configText(title)
 	b.url = url
 
@@ -81,47 +81,47 @@ func (b *EmbedBuilder) WithTitlel(title localization.Config, url discord.URL) *E
 }
 
 // WithTitlelt adds a title (max. 256 characters) with a link to the embed.
-func (b *EmbedBuilder) WithTitlelt(title localization.Term, url discord.URL) *EmbedBuilder {
+func (b *Builder) WithTitlelt(title localization.Term, url discord.URL) *Builder {
 	return b.WithTitlel(title.AsConfig(), url)
 }
 
 // WithDescription adds a description (max. 2048 characters) to the embed.
-func (b *EmbedBuilder) WithDescription(description string) *EmbedBuilder {
+func (b *Builder) WithDescription(description string) *Builder {
 	b.description = stringText(description)
 	return b
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the embed.
-func (b *EmbedBuilder) WithDescriptionl(description localization.Config) *EmbedBuilder {
+func (b *Builder) WithDescriptionl(description localization.Config) *Builder {
 	b.description = configText(description)
 	return b
 }
 
 // WithDescriptionlt adds a description (max. 2048 characters) to the embed.
-func (b *EmbedBuilder) WithDescriptionlt(description localization.Term) *EmbedBuilder {
+func (b *Builder) WithDescriptionlt(description localization.Term) *Builder {
 	return b.WithDescriptionl(description.AsConfig())
 }
 
 // WithTimestamp adds a discord.Timestamp to the embed.
-func (b *EmbedBuilder) WithTimestamp(timestamp discord.Timestamp) *EmbedBuilder {
+func (b *Builder) WithTimestamp(timestamp discord.Timestamp) *Builder {
 	b.timestamp = timestamp
 	return b
 }
 
 // WithTimestamp adds a timestamp of the current time to the embed.
-func (b *EmbedBuilder) WithTimestampNow() *EmbedBuilder {
+func (b *Builder) WithTimestampNow() *Builder {
 	return b.WithTimestamp(discord.NowTimestamp())
 }
 
 // WithColor sets the color of the embed to the passed discord.Color.
-func (b *EmbedBuilder) WithColor(color discord.Color) *EmbedBuilder {
+func (b *Builder) WithColor(color discord.Color) *Builder {
 	b.color = color
 	return b
 }
 
 // WithSimpleFooter adds a plain footer (max. 2048 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleFooter(text string) *EmbedBuilder {
-	b.footer = &embedFooter{
+func (b *Builder) WithSimpleFooter(text string) *Builder {
+	b.footer = &footer{
 		text: *stringText(text),
 	}
 
@@ -129,8 +129,8 @@ func (b *EmbedBuilder) WithSimpleFooter(text string) *EmbedBuilder {
 }
 
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleFooterl(text localization.Config) *EmbedBuilder {
-	b.footer = &embedFooter{
+func (b *Builder) WithSimpleFooterl(text localization.Config) *Builder {
+	b.footer = &footer{
 		text: *configText(text),
 	}
 
@@ -138,13 +138,13 @@ func (b *EmbedBuilder) WithSimpleFooterl(text localization.Config) *EmbedBuilder
 }
 
 // WithSimpleFooterlt adds a plain footer (max. 2048 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleFooterlt(text localization.Term) *EmbedBuilder {
+func (b *Builder) WithSimpleFooterlt(text localization.Term) *Builder {
 	return b.WithSimpleFooterl(text.AsConfig())
 }
 
 // WithFooter adds a footer (max. 2048 character) with an icon to the embed.
-func (b *EmbedBuilder) WithFooter(text string, icon discord.URL) *EmbedBuilder {
-	b.footer = &embedFooter{
+func (b *Builder) WithFooter(text string, icon discord.URL) *Builder {
+	b.footer = &footer{
 		text: *stringText(text),
 		icon: icon,
 	}
@@ -153,8 +153,8 @@ func (b *EmbedBuilder) WithFooter(text string, icon discord.URL) *EmbedBuilder {
 }
 
 // WithFooterl adds a footer (max. 2048 character) with an icon to the embed.
-func (b *EmbedBuilder) WithFooterl(text localization.Config, icon discord.URL) *EmbedBuilder {
-	b.footer = &embedFooter{
+func (b *Builder) WithFooterl(text localization.Config, icon discord.URL) *Builder {
+	b.footer = &footer{
 		text: *configText(text),
 		icon: icon,
 	}
@@ -163,26 +163,26 @@ func (b *EmbedBuilder) WithFooterl(text localization.Config, icon discord.URL) *
 }
 
 // WithFooterlt adds a footer (max. 2048 character) with an icon to the embed.
-func (b *EmbedBuilder) WithFooterlt(text localization.Term, icon discord.URL) *EmbedBuilder {
+func (b *Builder) WithFooterlt(text localization.Term, icon discord.URL) *Builder {
 	return b.WithFooterl(text.AsConfig(), icon)
 }
 
 // WithImage adds an image to the embed.
-func (b *EmbedBuilder) WithImage(image discord.URL) *EmbedBuilder {
+func (b *Builder) WithImage(image discord.URL) *Builder {
 	b.imageURL = image
 	return b
 }
 
 // WithThumbnail adds a thumbnail to the embed.
-func (b *EmbedBuilder) WithThumbnail(thumbnail discord.URL) *EmbedBuilder {
+func (b *Builder) WithThumbnail(thumbnail discord.URL) *Builder {
 	b.thumbnailURL = thumbnail
 
 	return b
 }
 
 // WithSimpleAuthor adds a plain author (max. 256 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleAuthor(name string) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithSimpleAuthor(name string) *Builder {
+	b.author = &author{
 		name: *stringText(name),
 	}
 
@@ -190,8 +190,8 @@ func (b *EmbedBuilder) WithSimpleAuthor(name string) *EmbedBuilder {
 }
 
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleAuthorl(name localization.Config) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithSimpleAuthorl(name localization.Config) *Builder {
+	b.author = &author{
 		name: *configText(name),
 	}
 
@@ -199,14 +199,14 @@ func (b *EmbedBuilder) WithSimpleAuthorl(name localization.Config) *EmbedBuilder
 }
 
 // WithSimpleAuthorlt adds a plain author (max. 256 characters) to the embed.
-func (b *EmbedBuilder) WithSimpleAuthorlt(name localization.Term) *EmbedBuilder {
+func (b *Builder) WithSimpleAuthorlt(name localization.Term) *Builder {
 	return b.WithSimpleAuthorl(name.AsConfig())
 }
 
 // WithSimpleAuthorWithURL adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *EmbedBuilder) WithSimpleAuthorWithURL(name string, url discord.URL) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithSimpleAuthorWithURL(name string, url discord.URL) *Builder {
+	b.author = &author{
 		name: *stringText(name),
 		url:  url,
 	}
@@ -216,8 +216,8 @@ func (b *EmbedBuilder) WithSimpleAuthorWithURL(name string, url discord.URL) *Em
 
 // WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *EmbedBuilder) WithSimpleAuthorWithURLl(name localization.Config, url discord.URL) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithSimpleAuthorWithURLl(name localization.Config, url discord.URL) *Builder {
+	b.author = &author{
 		name: *configText(name),
 		url:  url,
 	}
@@ -227,13 +227,13 @@ func (b *EmbedBuilder) WithSimpleAuthorWithURLl(name localization.Config, url di
 
 // WithSimpleAuthorWithURLlt adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *EmbedBuilder) WithSimpleAuthorWithURLlt(name localization.Term, url discord.URL) *EmbedBuilder {
+func (b *Builder) WithSimpleAuthorWithURLlt(name localization.Term, url discord.URL) *Builder {
 	return b.WithSimpleAuthorWithURLl(name.AsConfig(), url)
 }
 
 // WithAuthor adds an author (max 256 characters) with an icon to the embed.
-func (b *EmbedBuilder) WithAuthor(name string, icon discord.URL) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithAuthor(name string, icon discord.URL) *Builder {
+	b.author = &author{
 		name: *stringText(name),
 		icon: icon,
 	}
@@ -242,8 +242,8 @@ func (b *EmbedBuilder) WithAuthor(name string, icon discord.URL) *EmbedBuilder {
 }
 
 // WithAuthorl adds an author (max 256 characters) with an icon to the embed.
-func (b *EmbedBuilder) WithAuthorl(name localization.Config, icon discord.URL) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithAuthorl(name localization.Config, icon discord.URL) *Builder {
+	b.author = &author{
 		name: *configText(name),
 		icon: icon,
 	}
@@ -252,14 +252,14 @@ func (b *EmbedBuilder) WithAuthorl(name localization.Config, icon discord.URL) *
 }
 
 // WithAuthorlt adds an author (max 256 characters) with an icon to the embed.
-func (b *EmbedBuilder) WithAuthorlt(name localization.Term, icon discord.URL) *EmbedBuilder {
+func (b *Builder) WithAuthorlt(name localization.Term, icon discord.URL) *Builder {
 	return b.WithAuthorl(name.AsConfig(), icon)
 }
 
 // WithAuthorWithURL adds an author (max 256 characters) with an icon and a URL
 // to the embed.
-func (b *EmbedBuilder) WithAuthorWithURL(name string, icon, url discord.URL) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithAuthorWithURL(name string, icon, url discord.URL) *Builder {
+	b.author = &author{
 		name: *stringText(name),
 		icon: icon,
 		url:  url,
@@ -270,8 +270,8 @@ func (b *EmbedBuilder) WithAuthorWithURL(name string, icon, url discord.URL) *Em
 
 // WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
 // URL to the embed.
-func (b *EmbedBuilder) WithAuthorWithURLl(name localization.Config, icon, url discord.URL) *EmbedBuilder {
-	b.author = &embedAuthor{
+func (b *Builder) WithAuthorWithURLl(name localization.Config, icon, url discord.URL) *Builder {
+	b.author = &author{
 		name: *configText(name),
 		icon: icon,
 		url:  url,
@@ -282,7 +282,7 @@ func (b *EmbedBuilder) WithAuthorWithURLl(name localization.Config, icon, url di
 
 // WithAuthorWithURLlt adds an author (max 256 characters) with an icon and a
 // URL to the embed.
-func (b *EmbedBuilder) WithAuthorWithURLlt(name localization.Term, icon, url discord.URL) *EmbedBuilder {
+func (b *Builder) WithAuthorWithURLlt(name localization.Term, icon, url discord.URL) *Builder {
 	return b.WithAuthorWithURLl(name.AsConfig(), icon, url)
 }
 
@@ -290,7 +290,7 @@ func (b *EmbedBuilder) WithAuthorWithURLlt(name localization.Term, icon, url dis
 // characters) to the embed.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (b *EmbedBuilder) WithField(name, value string) *EmbedBuilder {
+func (b *Builder) WithField(name, value string) *Builder {
 	b.withField(name, value, false)
 	return b
 }
@@ -299,7 +299,7 @@ func (b *EmbedBuilder) WithField(name, value string) *EmbedBuilder {
 // characters) to the embed.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (b *EmbedBuilder) WithFieldl(name, value localization.Config) *EmbedBuilder {
+func (b *Builder) WithFieldl(name, value localization.Config) *Builder {
 	b.withFieldl(name, value, false)
 	return b
 }
@@ -308,7 +308,7 @@ func (b *EmbedBuilder) WithFieldl(name, value localization.Config) *EmbedBuilder
 // characters) to the embed.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (b *EmbedBuilder) WithFieldlt(name, value localization.Term) *EmbedBuilder {
+func (b *Builder) WithFieldlt(name, value localization.Term) *Builder {
 	return b.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
@@ -316,7 +316,7 @@ func (b *EmbedBuilder) WithFieldlt(name, value localization.Term) *EmbedBuilder 
 // max 1024 characters) to the embed.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (b *EmbedBuilder) WithInlinedField(name, value string) *EmbedBuilder {
+func (b *Builder) WithInlinedField(name, value string) *Builder {
 	b.withField(name, value, true)
 	return b
 }
@@ -325,7 +325,7 @@ func (b *EmbedBuilder) WithInlinedField(name, value string) *EmbedBuilder {
 // value: max 1024 characters) to the embed.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (b *EmbedBuilder) WithInlinedFieldl(name, value localization.Config) *EmbedBuilder {
+func (b *Builder) WithInlinedFieldl(name, value localization.Config) *Builder {
 	b.withFieldl(name, value, true)
 	return b
 }
@@ -334,12 +334,12 @@ func (b *EmbedBuilder) WithInlinedFieldl(name, value localization.Config) *Embed
 // value: max 1024 characters) to the embed.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (b *EmbedBuilder) WithInlinedFieldlt(name, value localization.Term) *EmbedBuilder {
+func (b *Builder) WithInlinedFieldlt(name, value localization.Term) *Builder {
 	return b.WithInlinedFieldl(name.AsConfig(), value.AsConfig())
 }
 
-func (b *EmbedBuilder) withField(name, value string, inlined bool) {
-	f := embedField{
+func (b *Builder) withField(name, value string, inlined bool) {
+	f := field{
 		inlined: inlined,
 	}
 
@@ -354,8 +354,8 @@ func (b *EmbedBuilder) withField(name, value string, inlined bool) {
 	b.fields = append(b.fields, f)
 }
 
-func (b *EmbedBuilder) withFieldl(name, value localization.Config, inlined bool) {
-	f := embedField{
+func (b *Builder) withFieldl(name, value localization.Config, inlined bool) {
+	f := field{
 		inlined: inlined,
 	}
 
@@ -370,17 +370,49 @@ func (b *EmbedBuilder) withFieldl(name, value localization.Config, inlined bool)
 	b.fields = append(b.fields, f)
 }
 
+// Clone creates a copy of the Builder.
+func (b *Builder) Clone() *Builder {
+	cp := new(Builder)
+
+	*cp = *b
+
+	cp.title = b.title.clone()
+	cp.description = b.description.clone()
+
+	if b.footer != nil {
+		cp.footer = &footer{
+			text: b.footer.text,
+			icon: b.footer.icon,
+		}
+	}
+
+	if b.author != nil {
+		cp.author = &author{
+			name: b.author.name,
+			icon: b.author.icon,
+			url:  b.author.url,
+		}
+	}
+
+	if b.fields != nil {
+		cp.fields = make([]field, len(b.fields))
+		copy(cp.fields, b.fields)
+	}
+
+	return cp
+}
+
 // Build builds the discord.Embed.
-func (b *EmbedBuilder) Build(l *localization.Localizer) (e discord.Embed, err error) {
+func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) {
 	if b.title != nil {
-		e.Title, err = b.title.localize(l)
+		e.Title, err = b.title.get(l)
 		if err != nil {
 			return
 		}
 	}
 
 	if b.description != nil {
-		e.Description, err = b.description.localize(l)
+		e.Description, err = b.description.get(l)
 		if err != nil {
 			return
 		}
@@ -395,7 +427,7 @@ func (b *EmbedBuilder) Build(l *localization.Localizer) (e discord.Embed, err er
 			Icon: b.footer.icon,
 		}
 
-		e.Footer.Text, err = b.footer.text.localize(l)
+		e.Footer.Text, err = b.footer.text.get(l)
 		if err != nil {
 			return
 		}
@@ -419,7 +451,7 @@ func (b *EmbedBuilder) Build(l *localization.Localizer) (e discord.Embed, err er
 			Icon: b.author.icon,
 		}
 
-		e.Author.Name, err = b.author.name.localize(l)
+		e.Author.Name, err = b.author.name.get(l)
 		if err != nil {
 			return
 		}
@@ -433,7 +465,7 @@ func (b *EmbedBuilder) Build(l *localization.Localizer) (e discord.Embed, err er
 		var name string
 
 		if f.name != nil {
-			name, err = f.name.localize(l)
+			name, err = f.name.get(l)
 			if err != nil {
 				return
 			}
@@ -442,7 +474,7 @@ func (b *EmbedBuilder) Build(l *localization.Localizer) (e discord.Embed, err er
 		var value string
 
 		if f.value != nil {
-			value, err = f.value.localize(l)
+			value, err = f.value.get(l)
 			if err != nil {
 				return
 			}
@@ -459,7 +491,7 @@ func (b *EmbedBuilder) Build(l *localization.Localizer) (e discord.Embed, err er
 }
 
 // MustBuild is the same as Build, but panics if Build returns an error.
-func (b *EmbedBuilder) MustBuild(l *localization.Localizer) discord.Embed {
+func (b *Builder) MustBuild(l *localization.Localizer) discord.Embed {
 	e, err := b.Build(l)
 	if err != nil {
 		panic(err)
@@ -485,7 +517,18 @@ func configText(src localization.Config) *text {
 	}
 }
 
-func (t text) localize(l *localization.Localizer) (s string, err error) {
+func (t *text) clone() *text {
+	if t == nil {
+		return nil
+	}
+
+	return &text{
+		string: t.string,
+		config: t.config,
+	}
+}
+
+func (t text) get(l *localization.Localizer) (s string, err error) {
 	s = t.string
 
 	if s == "" && t.config.IsValid() {

@@ -91,7 +91,7 @@ func (e *InsufficientBotPermissionsError) Is(err error) bool {
 
 // Handle sends an error message stating the missing permissions.
 func (e *InsufficientBotPermissionsError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	embed := ErrorEmbed.Clone().
 		WithDescription(e.Description(ctx.Localizer))
 
 	if !e.IsSinglePermission() {

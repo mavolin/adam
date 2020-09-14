@@ -6,7 +6,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/discordutil"
+	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
 // UserError is an error on the user-side.
@@ -19,7 +19,7 @@ type UserError struct {
 	descConfig localization.Config
 
 	// used just for fields
-	fields *discordutil.EmbedBuilder
+	fields *embedutil.Builder
 }
 
 // NewUserError creates a new UserError with the passed description.
@@ -27,7 +27,7 @@ type UserError struct {
 func NewUserError(desc string) *UserError {
 	return &UserError{
 		descString: desc,
-		fields:     discordutil.NewEmbedBuilder(),
+		fields:     embedutil.NewBuilder(),
 	}
 }
 
@@ -36,7 +36,7 @@ func NewUserError(desc string) *UserError {
 func NewUserErrorl(description localization.Config) *UserError {
 	return &UserError{
 		descConfig: description,
-		fields:     discordutil.NewEmbedBuilder(),
+		fields:     embedutil.NewBuilder(),
 	}
 }
 
@@ -131,7 +131,7 @@ func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) error {
 		return err
 	}
 
-	embed, err := newErrorEmbedBuilder(ctx.Localizer).
+	embed, err := ErrorEmbed.Clone().
 		WithDescription(desc).
 		Build(ctx.Localizer)
 	if err != nil {

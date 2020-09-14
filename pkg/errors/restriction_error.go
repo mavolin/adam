@@ -72,7 +72,7 @@ func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
 		return err
 	}
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
 	_, err = ctx.ReplyEmbedBuilder(embed)

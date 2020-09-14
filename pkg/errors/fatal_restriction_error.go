@@ -63,7 +63,7 @@ func (e *FatalRestrictionError) Handle(_ *state.State, ctx *plugin.Context) erro
 		return err
 	}
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
 	_, err = ctx.ReplyEmbedBuilder(embed)

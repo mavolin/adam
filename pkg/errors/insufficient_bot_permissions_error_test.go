@@ -76,7 +76,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		}
 		ctx.Localizer = mock.NewNoOpLocalizer()
 
-		embed := newErrorEmbedBuilder(ctx.Localizer).
+		embed := ErrorEmbed.Clone().
 			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me" +
 				` the "Video" permission and try again.`).
 			MustBuild(ctx.Localizer)
@@ -107,7 +107,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		}
 		ctx.Localizer = mock.NewNoOpLocalizer()
 
-		embed := newErrorEmbedBuilder(ctx.Localizer).
+		embed := ErrorEmbed.Clone().
 			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me the "+
 				"following permissions and try again:").
 			WithField("Missing Permissions", "• Video\n• View Audit Log").

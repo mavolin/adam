@@ -6,7 +6,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/discordutil"
+	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
 // UserInfo is less sever error on the user-side.
@@ -18,7 +18,7 @@ type UserInfo struct {
 	descString string
 	descConfig localization.Config
 
-	fields *discordutil.EmbedBuilder
+	fields *embedutil.Builder
 }
 
 // NewUserInfo creates a new UserInfo using the passed description.
@@ -26,7 +26,7 @@ type UserInfo struct {
 func NewUserInfo(desc string) *UserInfo {
 	return &UserInfo{
 		descString: desc,
-		fields:     discordutil.NewEmbedBuilder(),
+		fields:     embedutil.NewBuilder(),
 	}
 }
 
@@ -35,7 +35,7 @@ func NewUserInfo(desc string) *UserInfo {
 func NewUserInfol(description localization.Config) *UserInfo {
 	return &UserInfo{
 		descConfig: description,
-		fields:     discordutil.NewEmbedBuilder(),
+		fields:     embedutil.NewBuilder(),
 	}
 }
 
@@ -129,7 +129,7 @@ func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 		return err
 	}
 
-	embed, err := newInfoEmbedBuilder(ctx.Localizer).
+	embed, err := ErrorEmbed.Clone().
 		WithDescription(desc).
 		Build(ctx.Localizer)
 	if err != nil {
