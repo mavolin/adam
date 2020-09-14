@@ -45,8 +45,19 @@ issues:
         - gosec
         - goconst
         - funlen
+    # test utilities might not fulfill all conventions, as they are just used
+    # for testing
+    - path: test_util\.go$
+      linters:
+        - golint
+        - unparam
+    # restriction functions tend to get long/complex
+    - path: ^pkg/impl/restriction/
+      linters:
+        - funlen
+        - gocognit
     # there would be no point in splitting this up
-    - path: ^pkg/utils/embedutil/embed.go$
+    - path: ^pkg/utils/embedutil/builder.go$
       linters:
         - funlen
       text: ^Function 'Build' is too long \(\d+ > \d+\)$

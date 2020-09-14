@@ -14,30 +14,30 @@ import (
 // is used in the passed channel types.
 //
 // assertChannelTypes will also silently report errors in some cases.
-func assertChannelTypes(ctx *plugin.Context, assertTypes plugin.ChannelTypes, noRemainingError error) error {
-	if assertTypes&plugin.AllChannels == plugin.AllChannels {
+func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRemainingError error) error {
+	if allowed&plugin.AllChannels == plugin.AllChannels {
 		return nil
 	}
 
 	if ctx.GuildID == 0 { // we are in a DM
 		// we assert a DM
-		if assertTypes&plugin.DirectMessages == plugin.DirectMessages {
+		if allowed&plugin.DirectMessages == plugin.DirectMessages {
 			return nil
 		}
 		// no DM falls through
 	} else { // we are in a guild
 		// we assert all guild channels
-		if assertTypes&plugin.GuildChannels == plugin.GuildChannels {
+		if allowed&plugin.GuildChannels == plugin.GuildChannels {
 			return nil
 
 			// we assert something other than all guild channels
-		} else if !(assertTypes&plugin.GuildChannels == 0) {
+		} else if !(allowed&plugin.GuildChannels == 0) {
 			c, err := ctx.Channel()
 			if err != nil {
 				return err
 			}
 
-			if assertTypes.Has(c.Type) {
+			if allowed.Has(c.Type) {
 				return nil
 			}
 		}
@@ -49,8 +49,8 @@ func assertChannelTypes(ctx *plugin.Context, assertTypes plugin.ChannelTypes, no
 		return err
 	}
 
-	allowed := channelTypes & assertTypes
-	if allowed == 0 { // no channel types remaining
+	remaining := channelTypes & allowed
+	if remaining == 0 { // no channel types remaining
 		// there is no need to prevent execution, as another restriction
 		// may permit it, still we should capture this
 		ctx.HandleErrorSilent(noRemainingError)
@@ -58,7 +58,15 @@ func assertChannelTypes(ctx *plugin.Context, assertTypes plugin.ChannelTypes, no
 		return errors.DefaultFatalRestrictionError
 	}
 
-	return newInvalidChannelTypeError(allowed, ctx.Localizer, true)
+	fatal := false
+
+	if ctx.GuildID == 0 && remaining&plugin.DirectMessages == 0 {
+		fatal = true
+	} else if ctx.GuildID != 0 && remaining == plugin.DirectMessages {
+		fatal = true
+	}
+
+	return newInvalidChannelTypeError(remaining, ctx.Localizer, fatal)
 }
 
 // canMangeRole checks if the passed member of the passed guild is able to

@@ -25,7 +25,7 @@ type EmbeddableError struct {
 	// error.
 	// This MUST be of type *errors.RestrictionError or
 	// *errors.FatalRestrictionError.
-	EmbeddableVersion error
+	EmbeddableVersion *errors.RestrictionError
 	// DefaultVersion is the version returned if the error won't get embedded.
 	DefaultVersion error
 }
@@ -63,36 +63,21 @@ func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 				// information about what is missing
 				if errors.Is(err, errors.DefaultRestrictionError) {
 					return err
-				}
-
-				missing.restrictions = append(missing.restrictions, err)
-			case *errors.FatalRestrictionError:
-				// there is no need to create a full error message, if we don't have complete
-				// information about what is missing
-				if errors.Is(err, errors.DefaultFatalRestrictionError) {
+				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
 					return err
 				}
 
-				missing.fatalRestrictions = append(missing.fatalRestrictions, err)
+				missing.restrictions = append(missing.restrictions, err)
 			case *EmbeddableError:
 				embeddable = err
 
-				switch emver := err.EmbeddableVersion.(type) {
-				case *errors.RestrictionError:
-					if errors.Is(emver, errors.DefaultRestrictionError) {
-						return err
-					}
-
-					missing.restrictions = append(missing.restrictions, emver)
-				case *errors.FatalRestrictionError:
-					if errors.Is(emver, errors.DefaultFatalRestrictionError) {
-						return err
-					}
-
-					missing.fatalRestrictions = append(missing.fatalRestrictions, emver)
-				default:
-					return errors.DefaultFatalRestrictionError
+				if errors.Is(err.EmbeddableVersion, errors.DefaultRestrictionError) {
+					return err
+				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
+					return err
 				}
+
+				missing.restrictions = append(missing.restrictions, err.EmbeddableVersion)
 
 			// we can just merge
 			case *allError:
@@ -111,24 +96,18 @@ func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 		// check if we have collected only a single error, and return it
 		// directly if so
 		switch {
-		case len(missing.restrictions) == 1 && len(missing.fatalRestrictions) == 0 && len(missing.anys) == 0:
+		case len(missing.restrictions) == 1 && len(missing.anys) == 0:
 			if embeddable != nil { // if it is embeddable, it will be stored here
 				return embeddable
 			}
 
 			return missing.restrictions[0]
-		case len(missing.restrictions) == 0 && len(missing.fatalRestrictions) == 1 && len(missing.anys) == 0:
-			if embeddable != nil {
-				return embeddable
-			}
-
-			return missing.fatalRestrictions[0]
-		case len(missing.restrictions) == 0 && len(missing.fatalRestrictions) == 0 && len(missing.anys) == 1:
+		case len(missing.restrictions) == 0 && len(missing.anys) == 1:
 			return missing.anys[0]
 		}
 
 		// check if we have an error at all
-		if len(missing.restrictions) != 0 || len(missing.fatalRestrictions) != 0 || len(missing.anys) != 0 {
+		if len(missing.restrictions) != 0 || len(missing.anys) != 0 {
 			return missing
 		}
 
@@ -180,34 +159,19 @@ func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 				// information about what is missing
 				if errors.Is(err, errors.DefaultRestrictionError) {
 					return err
-				}
-
-				missing.restrictions = append(missing.restrictions, err)
-			case *errors.FatalRestrictionError:
-				// there is no need to create a full error message, if we don't have complete
-				// information about what is missing
-				if errors.Is(err, errors.DefaultFatalRestrictionError) {
+				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
 					return err
 				}
 
-				missing.fatalRestrictions = append(missing.fatalRestrictions, err)
+				missing.restrictions = append(missing.restrictions, err)
 			case *EmbeddableError:
-				switch emver := err.EmbeddableVersion.(type) {
-				case *errors.RestrictionError:
-					if errors.Is(emver, errors.DefaultRestrictionError) {
-						return err
-					}
-
-					missing.restrictions = append(missing.restrictions, emver)
-				case *errors.FatalRestrictionError:
-					if errors.Is(emver, errors.DefaultFatalRestrictionError) {
-						return err
-					}
-
-					missing.fatalRestrictions = append(missing.fatalRestrictions, emver)
-				default:
-					return errors.DefaultFatalRestrictionError
+				if errors.Is(err.EmbeddableVersion, errors.DefaultRestrictionError) {
+					return err
+				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
+					return err
 				}
+
+				missing.restrictions = append(missing.restrictions, err.EmbeddableVersion)
 			// we can just merge
 			case *anyError:
 				missing.restrictions = append(missing.restrictions, err.restrictions...)
@@ -246,29 +210,21 @@ func Anyf(returnError error, funcs ...plugin.RestrictionFunc) plugin.Restriction
 var newlineRegexp = regexp.MustCompile(`\n[^\n]`)
 
 type allError struct {
-	restrictions      []*errors.RestrictionError
-	fatalRestrictions []*errors.FatalRestrictionError
-	anys              []*anyError
+	restrictions []*errors.RestrictionError
+	anys         []*anyError
 }
 
 func (e *allError) format(indentLvl int, l *localization.Localizer) (s string, fatal bool, err error) {
 	indent, nlIndent := genIndent(indentLvl)
 
-	fatal = len(e.fatalRestrictions) > 0
+	fatal = false
 
-	for _, m := range e.fatalRestrictions {
-		desc, err := m.Description(l)
-		if err != nil {
-			return "", false, err
+	for _, r := range e.restrictions {
+		if r.Fatal {
+			fatal = true
 		}
 
-		s += "\n" + indent + entryPrefix + newlineRegexp.ReplaceAllStringFunc(desc, func(s string) string {
-			return "\n" + nlIndent + s[1:]
-		})
-	}
-
-	for _, m := range e.restrictions {
-		desc, err := m.Description(l)
+		desc, err := r.Description(l)
 		if err != nil {
 			return "", false, err
 		}
@@ -281,10 +237,10 @@ func (e *allError) format(indentLvl int, l *localization.Localizer) (s string, f
 	// we can ignore the error, as there is a fallback
 	anyMessage, _ := l.Localize(anyMessageInline)
 
-	for _, m := range e.anys {
+	for _, a := range e.anys {
 		s += "\n" + indent + entryPrefix + anyMessage + "\n"
 
-		msg, subFatal, err := m.format(indentLvl+1, l)
+		msg, subFatal, err := a.format(indentLvl+1, l)
 		if err != nil {
 			return "", false, err
 		}
@@ -320,29 +276,21 @@ func (e *allError) Error() string {
 }
 
 type anyError struct {
-	restrictions      []*errors.RestrictionError
-	fatalRestrictions []*errors.FatalRestrictionError
-	alls              []*allError
+	restrictions []*errors.RestrictionError
+	alls         []*allError
 }
 
 func (e *anyError) format(indentLvl int, l *localization.Localizer) (s string, fatal bool, err error) {
 	indent, nlIndent := genIndent(indentLvl)
 
-	fatal = len(e.restrictions) == 0
+	fatal = true
 
-	for _, m := range e.fatalRestrictions {
-		desc, err := m.Description(l)
-		if err != nil {
-			return "", false, err
+	for _, r := range e.restrictions {
+		if !r.Fatal {
+			fatal = false
 		}
 
-		s += "\n" + indent + entryPrefix + newlineRegexp.ReplaceAllStringFunc(desc, func(s string) string {
-			return "\n" + nlIndent + s[1:]
-		})
-	}
-
-	for _, m := range e.restrictions {
-		desc, err := m.Description(l)
+		desc, err := r.Description(l)
 		if err != nil {
 			return "", false, err
 		}
@@ -355,10 +303,10 @@ func (e *anyError) format(indentLvl int, l *localization.Localizer) (s string, f
 	// we can ignore the error, as there is a fallback
 	allMessage, _ := l.Localize(allMessageInline)
 
-	for _, m := range e.alls {
+	for _, a := range e.alls {
 		s += "\n" + indent + entryPrefix + allMessage + "\n"
 
-		msg, subFatal, err := m.format(indentLvl+1, l)
+		msg, subFatal, err := a.format(indentLvl+1, l)
 		if err != nil {
 			return "", false, err
 		}

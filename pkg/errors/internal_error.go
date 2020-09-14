@@ -32,7 +32,7 @@ type InternalError struct {
 // If the error is nil or it is another Handler, WithStack will return the
 // error as is.
 func WithStack(err error) error {
-	return withStack(err, 1)
+	return withStack(err)
 }
 
 // withStack enriches the passed error with a stack trace.
@@ -40,7 +40,7 @@ func WithStack(err error) error {
 // error as is.
 // If however, there is no stack trace, withStack skips the passed amount of
 // frames including withStack itself and saves the callers.
-func withStack(err error, skip int) error {
+func withStack(err error) error {
 	if err == nil {
 		return nil
 	}
@@ -51,7 +51,7 @@ func withStack(err error, skip int) error {
 
 	return &InternalError{
 		cause:      err,
-		stack:      stackTrace(err, 1+skip),
+		stack:      stackTrace(err, 2),
 		descConfig: defaultInternalDesc,
 	}
 }

@@ -52,10 +52,8 @@ func TestAll(t *testing.T) {
 			funcs: []plugin.RestrictionFunc{fatalEmbeddableErrorFunc, embeddableErrorFunc},
 			expect: &allError{
 				restrictions: []*errors.RestrictionError{
-					embeddableErrorFuncReturn.EmbeddableVersion.(*errors.RestrictionError),
-				},
-				fatalRestrictions: []*errors.FatalRestrictionError{
-					fatalEmbeddableErrorFuncReturn.EmbeddableVersion.(*errors.FatalRestrictionError),
+					fatalEmbeddableErrorFuncReturn.EmbeddableVersion,
+					embeddableErrorFuncReturn.EmbeddableVersion,
 				},
 			},
 		},
@@ -85,8 +83,7 @@ func TestAll(t *testing.T) {
 			name:  "multiple restriction funcs - multiple fatal errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, fatalErrorFunc},
 			expect: &allError{
-				restrictions:      []*errors.RestrictionError{errorFuncReturn1},
-				fatalRestrictions: []*errors.FatalRestrictionError{fatalErrorFuncReturn},
+				restrictions: []*errors.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
 			},
 		},
 		{
@@ -229,10 +226,8 @@ func TestAny(t *testing.T) {
 			funcs: []plugin.RestrictionFunc{fatalEmbeddableErrorFunc, embeddableErrorFunc},
 			expect: &anyError{
 				restrictions: []*errors.RestrictionError{
-					embeddableErrorFuncReturn.EmbeddableVersion.(*errors.RestrictionError),
-				},
-				fatalRestrictions: []*errors.FatalRestrictionError{
-					fatalEmbeddableErrorFuncReturn.EmbeddableVersion.(*errors.FatalRestrictionError),
+					fatalEmbeddableErrorFuncReturn.EmbeddableVersion,
+					embeddableErrorFuncReturn.EmbeddableVersion,
 				},
 			},
 		},
@@ -257,8 +252,7 @@ func TestAny(t *testing.T) {
 			name:  "multiple restriction funcs - multiple fatal errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, fatalErrorFunc},
 			expect: &anyError{
-				restrictions:      []*errors.RestrictionError{errorFuncReturn1},
-				fatalRestrictions: []*errors.FatalRestrictionError{fatalErrorFuncReturn},
+				restrictions: []*errors.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
 			},
 		},
 		{
@@ -373,24 +367,6 @@ func Test_allError_format(t *testing.T) {
 			fatal: false,
 		},
 		{
-			name: "fatal and non-fatal restrictions",
-			err: allError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
-				},
-				fatalRestrictions: []*errors.FatalRestrictionError{
-					errors.NewFatalRestrictionError("ghi"),
-					errors.NewFatalRestrictionError("jkl"),
-				},
-			},
-			expect: entryPrefix + "ghi\n" +
-				entryPrefix + "jkl\n" +
-				entryPrefix + "abc\n" +
-				entryPrefix + "def",
-			fatal: true,
-		},
-		{
 			name: "only anys",
 			err: allError{
 				anys: []*anyError{
@@ -457,7 +433,7 @@ func Test_allError_format(t *testing.T) {
 				},
 				anys: []*anyError{
 					{
-						fatalRestrictions: []*errors.FatalRestrictionError{
+						restrictions: []*errors.RestrictionError{
 							errors.NewFatalRestrictionError("ghi"),
 							errors.NewFatalRestrictionError("jkl"),
 						},
@@ -540,7 +516,8 @@ func Test_allError_format(t *testing.T) {
 
 func Test_allError_Wrap(t *testing.T) {
 	t.Run("fatal", func(t *testing.T) {
-		expect := errors.NewFatalRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
+		expect := errors.NewFatalRestrictionError("You need to fulfill all of these requirements to execute the " +
+			"command:\n\n" +
 			entryPrefix + "mno\n" +
 			entryPrefix + "mno")
 
@@ -602,27 +579,9 @@ func Test_anyError_format(t *testing.T) {
 			fatal: false,
 		},
 		{
-			name: "fatal and non-fatal restrictions",
-			err: anyError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
-				},
-				fatalRestrictions: []*errors.FatalRestrictionError{
-					errors.NewFatalRestrictionError("ghi"),
-					errors.NewFatalRestrictionError("jkl"),
-				},
-			},
-			expect: entryPrefix + "ghi\n" +
-				entryPrefix + "jkl\n" +
-				entryPrefix + "abc\n" +
-				entryPrefix + "def",
-			fatal: false,
-		},
-		{
 			name: "fatal restrictions",
 			err: anyError{
-				fatalRestrictions: []*errors.FatalRestrictionError{
+				restrictions: []*errors.RestrictionError{
 					errors.NewFatalRestrictionError("abc"),
 					errors.NewFatalRestrictionError("def"),
 				},
@@ -636,13 +595,13 @@ func Test_anyError_format(t *testing.T) {
 			err: anyError{
 				alls: []*allError{
 					{
-						fatalRestrictions: []*errors.FatalRestrictionError{
+						restrictions: []*errors.RestrictionError{
 							errors.NewFatalRestrictionError("abc"),
 							errors.NewFatalRestrictionError("def"),
 						},
 					},
 					{
-						fatalRestrictions: []*errors.FatalRestrictionError{
+						restrictions: []*errors.RestrictionError{
 							errors.NewFatalRestrictionError("ghi"),
 							errors.NewFatalRestrictionError("jkl"),
 						},
@@ -724,7 +683,7 @@ func Test_anyError_format(t *testing.T) {
 				},
 				alls: []*allError{
 					{
-						fatalRestrictions: []*errors.FatalRestrictionError{
+						restrictions: []*errors.RestrictionError{
 							errors.NewFatalRestrictionError("ghi"),
 							errors.NewFatalRestrictionError("jkl"),
 						},
@@ -807,7 +766,8 @@ func Test_anyError_format(t *testing.T) {
 
 func Test_anyError_Wrap(t *testing.T) {
 	t.Run("fatal", func(t *testing.T) {
-		expect := errors.NewFatalRestrictionError("You need to fulfill at least one of these requirements to execute the command:\n\n" +
+		expect := errors.NewFatalRestrictionError("You need to fulfill at least one of these requirements to " +
+			"execute the command:\n\n" +
 			entryPrefix + "mno\n" +
 			entryPrefix + "mno")
 
@@ -828,7 +788,8 @@ func Test_anyError_Wrap(t *testing.T) {
 	})
 
 	t.Run("not fatal", func(t *testing.T) {
-		expect := errors.NewRestrictionError("You need to fulfill at least one of these requirements to execute the command:\n\n" +
+		expect := errors.NewRestrictionError("You need to fulfill at least one of these requirements to execute " +
+			"the command:\n\n" +
 			entryPrefix + "abc\n" +
 			entryPrefix + "def")
 
