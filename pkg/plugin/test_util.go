@@ -1,28 +1,28 @@
 package plugin
 
 import (
+	"errors"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/mavolin/adam/pkg/localization"
 )
 
+// mockLocalizer is a copy of mock.Localizer, used to prevent import cycles.
 type mockLocalizer struct {
+	t *testing.T
+
 	def      string
 	onReturn map[localization.Term]string
+	errOn    map[localization.Term]struct{}
 }
 
-// newMockedLocalizer creates a new mockLocalizer.
-// If a term is not found, mockLocalizer will panic.
-func newMockedLocalizer() *mockLocalizer {
+func newMockedLocalizer(t *testing.T) *mockLocalizer {
 	return &mockLocalizer{
+		t:        t,
 		onReturn: make(map[localization.Term]string),
-	}
-}
-
-// newMockedLocalizer creates a new mockLocalizer using the passed default.
-// If a term is not found, mockLocalizer will return the default value.
-func newMockedLocalizerWithDefault(def string) *mockLocalizer {
-	return &mockLocalizer{
-		def:      def,
-		onReturn: make(map[localization.Term]string),
+		errOn:    make(map[localization.Term]struct{}),
 	}
 }
 
@@ -39,8 +39,15 @@ func (l *mockLocalizer) build() *localization.Localizer {
 				return r, nil
 			}
 
+			_, ok = l.errOn[term]
+			if ok {
+				return r, errors.New("error")
+			}
+
 			if l.def == "" {
-				panic("unexpected localization requested for term " + term)
+				assert.Failf(l.t, "unexpected call to Localize", "unknown term %s", term)
+
+				return string(term), errors.New("unknown term")
 			}
 
 			return l.def, nil
