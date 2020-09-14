@@ -275,3 +275,133 @@ func Test_assertChannelTypes(t *testing.T) {
 		assert.Equal(t, errors.DefaultFatalRestrictionError, actual)
 	})
 }
+
+func Test_canManageRole(t *testing.T) {
+	testCases := []struct {
+		name   string
+		target discord.Role
+		guild  *discord.Guild
+		member *discord.Member
+		expect bool
+	}{
+		{
+			name: "can not manage",
+			target: discord.Role{
+				Position: 2,
+			},
+			guild: &discord.Guild{
+				Roles: []discord.Role{
+					{
+						ID:       123,
+						Position: 1,
+					},
+				},
+			},
+			member: &discord.Member{
+				RoleIDs: []discord.RoleID{123},
+			},
+			expect: false,
+		},
+		{
+			name: "no manage roles permission",
+			target: discord.Role{
+				Position: 1,
+			},
+			guild: &discord.Guild{
+				Roles: []discord.Role{
+					{
+						ID:          123,
+						Position:    2,
+						Permissions: 0,
+					},
+				},
+				OwnerID: 456,
+			},
+			member: &discord.Member{
+				User: discord.User{
+					ID: 789,
+				},
+				RoleIDs: []discord.RoleID{123},
+			},
+			expect: false,
+		},
+		{
+			name: "pass",
+			target: discord.Role{
+				Position: 1,
+			},
+			guild: &discord.Guild{
+				Roles: []discord.Role{
+					{
+						ID:          123,
+						Position:    2,
+						Permissions: discord.PermissionManageRoles,
+					},
+				},
+				OwnerID: 456,
+			},
+			member: &discord.Member{
+				User: discord.User{
+					ID: 789,
+				},
+				RoleIDs: []discord.RoleID{123},
+			},
+			expect: true,
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := canManageRole(c.target, c.guild, c.member)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func Test_insertRoleSorted(t *testing.T) {
+	testCases := []struct {
+		name   string
+		role   discord.Role
+		roles  []discord.Role
+		expect []discord.Role
+	}{
+		{
+			name: "empty roles",
+			role: discord.Role{
+				Position: 3,
+			},
+			roles: nil,
+			expect: []discord.Role{
+				{
+					Position: 3,
+				},
+			},
+		},
+		{
+			name: "roles filled",
+			role: discord.Role{
+				Position: 5,
+			},
+			roles: []discord.Role{
+				{
+					Position: 3,
+				},
+			},
+			expect: []discord.Role{
+				{
+					Position: 3,
+				},
+				{
+					Position: 5,
+				},
+			},
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := insertRoleSorted(c.role, c.roles)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}

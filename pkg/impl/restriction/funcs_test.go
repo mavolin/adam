@@ -350,18 +350,18 @@ func TestUsers(t *testing.T) {
 func TestAllRoles(t *testing.T) {
 	testCases := []struct {
 		name    string
-		roleIDs []discord.RoleID
+		allowed []discord.RoleID
 		ctx     *plugin.Context
 		expect  error
 	}{
 		{
 			name:    "no roles",
-			roleIDs: nil,
+			allowed: nil,
 			expect:  nil,
 		},
 		{
 			name:    "not a guild",
-			roleIDs: []discord.RoleID{123},
+			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -391,7 +391,7 @@ func TestAllRoles(t *testing.T) {
 		},
 		{
 			name:    "none missing",
-			roleIDs: []discord.RoleID{123, 456},
+			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -408,7 +408,7 @@ func TestAllRoles(t *testing.T) {
 		},
 		{
 			name:    "none missing - no roles from guild",
-			roleIDs: []discord.RoleID{123, 456},
+			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -416,7 +416,7 @@ func TestAllRoles(t *testing.T) {
 							GuildID: 789,
 						},
 						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{789},
+							RoleIDs: []discord.RoleID{012},
 						},
 					},
 				},
@@ -430,7 +430,7 @@ func TestAllRoles(t *testing.T) {
 		},
 		{
 			name:    "missing",
-			roleIDs: []discord.RoleID{123, 456},
+			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -438,10 +438,11 @@ func TestAllRoles(t *testing.T) {
 							GuildID: 789,
 						},
 						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{789},
+							RoleIDs: []discord.RoleID{012},
 						},
 					},
 				},
+				Localizer: mock.NewNoOpLocalizer(),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
@@ -452,13 +453,53 @@ func TestAllRoles(t *testing.T) {
 					},
 				},
 			},
-			expect: newAllMissingRolesError([]discord.RoleID{456}, mock.NewNoOpLocalizer()),
+			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
+		},
+		{
+			name:    "missing - can manage",
+			allowed: []discord.RoleID{123, 456},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{012, 345},
+						},
+					},
+				},
+				DiscordDataProvider: mock.DiscordDataProvider{
+					GuildReturn: &discord.Guild{
+						Roles: []discord.Role{
+							{
+								ID:       123,
+								Position: 3,
+							},
+							{
+								ID:       456,
+								Position: 5,
+							},
+							{
+								ID:       012,
+								Position: 6,
+							},
+							{
+								ID:          345,
+								Position:    2,
+								Permissions: discord.PermissionManageRoles,
+							},
+						},
+					},
+				},
+			},
+			expect: nil,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			f := AllRoles(c.roleIDs...)
+			f := AllRoles(c.allowed...)
 
 			actual := f(nil, c.ctx)
 			assert.Equal(t, c.expect, actual)
@@ -466,21 +507,21 @@ func TestAllRoles(t *testing.T) {
 	}
 }
 
-func TestAnyRoles(t *testing.T) {
+func TestMustAllRoles(t *testing.T) {
 	testCases := []struct {
 		name    string
-		roleIDs []discord.RoleID
+		allowed []discord.RoleID
 		ctx     *plugin.Context
 		expect  error
 	}{
 		{
 			name:    "no roles",
-			roleIDs: nil,
+			allowed: nil,
 			expect:  nil,
 		},
 		{
 			name:    "not a guild",
-			roleIDs: []discord.RoleID{123},
+			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -510,7 +551,126 @@ func TestAnyRoles(t *testing.T) {
 		},
 		{
 			name:    "none missing",
-			roleIDs: []discord.RoleID{123, 456},
+			allowed: []discord.RoleID{123, 456},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{123, 456},
+						},
+					},
+				},
+			},
+			expect: nil,
+		},
+		{
+			name:    "none missing - no roles from guild",
+			allowed: []discord.RoleID{123, 456},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{012},
+						},
+					},
+				},
+				DiscordDataProvider: mock.DiscordDataProvider{
+					GuildReturn: &discord.Guild{
+						Roles: []discord.Role{},
+					},
+				},
+			},
+			expect: errors.DefaultFatalRestrictionError,
+		},
+		{
+			name:    "missing",
+			allowed: []discord.RoleID{123, 456},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{012},
+						},
+					},
+				},
+				DiscordDataProvider: mock.DiscordDataProvider{
+					GuildReturn: &discord.Guild{
+						Roles: []discord.Role{
+							{
+								ID: 456,
+							},
+						},
+					},
+				},
+			},
+			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			f := MustAllRoles(c.allowed...)
+
+			actual := f(nil, c.ctx)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func TestAnyRole(t *testing.T) {
+	testCases := []struct {
+		name    string
+		allowed []discord.RoleID
+		ctx     *plugin.Context
+		expect  error
+	}{
+		{
+			name:    "no roles",
+			allowed: nil,
+			expect:  nil,
+		},
+		{
+			name:    "not a guild",
+			allowed: []discord.RoleID{123},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 0,
+						},
+					},
+				},
+				Localizer:         mock.NewNoOpLocalizer(),
+				CommandIdentifier: ".abc",
+				Provider: mock.PluginProvider{
+					AllCommandsReturn: []plugin.CommandRepository{
+						{
+							Commands: []plugin.Command{
+								mock.Command{
+									MetaReturn: mock.CommandMeta{
+										Name:         "abc",
+										ChannelTypes: plugin.AllChannels,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+		},
+		{
+			name:    "none missing",
+			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -527,7 +687,7 @@ func TestAnyRoles(t *testing.T) {
 		},
 		{
 			name:    "none missing from guild",
-			roleIDs: []discord.RoleID{123},
+			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -553,12 +713,150 @@ func TestAnyRoles(t *testing.T) {
 		},
 		{
 			name:    "missing",
-			roleIDs: []discord.RoleID{123, 456},
+			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
 						Message: discord.Message{
 							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{012},
+						},
+					},
+				},
+				DiscordDataProvider: mock.DiscordDataProvider{
+					GuildReturn: &discord.Guild{
+						Roles: []discord.Role{
+							{
+								ID:       456,
+								Position: 1,
+							},
+						},
+					},
+				},
+			},
+			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
+		},
+		{
+			name:    "missing - can manage",
+			allowed: []discord.RoleID{123, 456},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{012, 345},
+						},
+					},
+				},
+				DiscordDataProvider: mock.DiscordDataProvider{
+					GuildReturn: &discord.Guild{
+						Roles: []discord.Role{
+							{
+								ID:       123,
+								Position: 3,
+							},
+							{
+								ID:       456,
+								Position: 5,
+							},
+							{
+								ID:       012,
+								Position: 4,
+							},
+							{
+								ID:          345,
+								Position:    2,
+								Permissions: discord.PermissionManageRoles,
+							},
+						},
+					},
+				},
+			},
+			expect: nil,
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			f := AnyRole(c.allowed...)
+
+			actual := f(nil, c.ctx)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func TestMustAnyRole(t *testing.T) {
+	testCases := []struct {
+		name    string
+		allowed []discord.RoleID
+		ctx     *plugin.Context
+		expect  error
+	}{
+		{
+			name:    "no roles",
+			allowed: nil,
+			expect:  nil,
+		},
+		{
+			name:    "not a guild",
+			allowed: []discord.RoleID{123},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 0,
+						},
+					},
+				},
+				Localizer:         mock.NewNoOpLocalizer(),
+				CommandIdentifier: ".abc",
+				Provider: mock.PluginProvider{
+					AllCommandsReturn: []plugin.CommandRepository{
+						{
+							Commands: []plugin.Command{
+								mock.Command{
+									MetaReturn: mock.CommandMeta{
+										Name:         "abc",
+										ChannelTypes: plugin.AllChannels,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+		},
+		{
+			name:    "none missing",
+			allowed: []discord.RoleID{123, 456},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{456},
+						},
+					},
+				},
+			},
+			expect: nil,
+		},
+		{
+			name:    "none missing from guild",
+			allowed: []discord.RoleID{123},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 456,
 						},
 						Member: &discord.Member{
 							RoleIDs: []discord.RoleID{789},
@@ -569,19 +867,46 @@ func TestAnyRoles(t *testing.T) {
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
 							{
-								ID: 456,
+								ID: 789,
 							},
 						},
 					},
 				},
 			},
-			expect: newAllMissingRolesError([]discord.RoleID{456}, mock.NewNoOpLocalizer()),
+			expect: errors.DefaultFatalRestrictionError,
+		},
+		{
+			name:    "missing",
+			allowed: []discord.RoleID{123, 456},
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 789,
+						},
+						Member: &discord.Member{
+							RoleIDs: []discord.RoleID{012},
+						},
+					},
+				},
+				DiscordDataProvider: mock.DiscordDataProvider{
+					GuildReturn: &discord.Guild{
+						Roles: []discord.Role{
+							{
+								ID:       456,
+								Position: 1,
+							},
+						},
+					},
+				},
+			},
+			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			f := AnyRole(c.roleIDs...)
+			f := MustAnyRole(c.allowed...)
 
 			actual := f(nil, c.ctx)
 			assert.Equal(t, c.expect, actual)

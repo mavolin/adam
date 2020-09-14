@@ -75,13 +75,13 @@ func BotOwner(_ *state.State, ctx *plugin.Context) error {
 // Users creates a plugin.RestrictionFunc that defines a set of users that may
 // use a command.
 // It returns a errors.DefaultRestrictionError if the author isn't one of them.
-func Users(userIDs ...discord.UserID) plugin.RestrictionFunc {
+func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
-		if len(userIDs) == 0 {
+		if len(allowed) == 0 {
 			return nil
 		}
 
-		for _, id := range userIDs {
+		for _, id := range allowed {
 			if id == ctx.Author.ID {
 				return nil
 			}
@@ -91,7 +91,8 @@ func Users(userIDs ...discord.UserID) plugin.RestrictionFunc {
 	}
 }
 
-// AllRoles asserts that the user has all of the passed roles.
+// MustAllRoles asserts that the user has all of the passed roles or is able
+// to assign themself any of the passed roles.
 // You can mix roles from different guilds, roles that aren't available in a
 // guild are ignored.
 // However, the guild the command was invoked in must have at least one of the
@@ -100,9 +101,9 @@ func Users(userIDs ...discord.UserID) plugin.RestrictionFunc {
 // to use the command at all.
 //
 // It fails if the command is used in a direct message.
-func AllRoles(roleIDs ...discord.RoleID) plugin.RestrictionFunc {
+func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
-		if len(roleIDs) == 0 {
+		if len(allowed) == 0 {
 			return nil
 		}
 
@@ -114,13 +115,14 @@ func AllRoles(roleIDs ...discord.RoleID) plugin.RestrictionFunc {
 			}
 		}
 
-		missingIDs := make([]discord.RoleID, 0, len(roleIDs))
+		missingIDs := make([]discord.RoleID, 0, len(allowed))
 
-	RoleIDs:
-		for _, targetID := range roleIDs {
+		// find all missing roles
+	Allowed:
+		for _, targetID := range allowed {
 			for _, id := range ctx.Member.RoleIDs {
 				if targetID == id {
-					continue RoleIDs
+					continue Allowed
 				}
 			}
 
@@ -136,24 +138,22 @@ func AllRoles(roleIDs ...discord.RoleID) plugin.RestrictionFunc {
 			return err
 		}
 
-	MissingIDs:
-		for i := 0; i < len(missingIDs); i++ {
-			id := missingIDs[i]
+		missingRoles := make([]discord.Role, 0, len(missingIDs))
 
-			for _, role := range g.Roles {
-				if role.ID == id {
-					continue MissingIDs
+		// out of the missing roles, find those missing in this guild
+	Missing:
+		for _, id := range missingIDs {
+			for _, r := range g.Roles {
+				if r.ID == id { // role is in the guild
+					missingRoles = insertRoleSorted(r, missingRoles)
+					continue Missing
 				}
 			}
-
-			// role is not in the guild, remove it, but preserve hierarchy
-			missingIDs = append(missingIDs[:i], missingIDs[i+1:]...)
-			i--
 		}
 
-		if len(missingIDs) == 0 { // no roles missing from this guild
+		if len(missingRoles) == 0 { // no roles missing from this guild
 			// check if this guild even has a role in our checklist
-			for _, id := range roleIDs {
+			for _, id := range allowed {
 				for _, r := range g.Roles {
 					if id == r.ID {
 						return nil
@@ -164,29 +164,109 @@ func AllRoles(roleIDs ...discord.RoleID) plugin.RestrictionFunc {
 			return errors.DefaultFatalRestrictionError
 		}
 
-		return newAllMissingRolesError(missingIDs, ctx.Localizer)
+		if canManageRole(missingRoles[len(missingRoles)-1], g, ctx.Member) {
+			return nil
+		}
+
+		return newAllMissingRolesError(missingRoles, ctx.Localizer)
 	}
 }
 
-// AnyRole asserts that the invoking user has at least one of the passed
-// roles.
+// MustAllRoles asserts that the user has all of the passed roles.
+// You can mix roles from different guilds, roles that aren't available in the
+// invoking guild are ignored.
+// However, the guild the command was invoked in must have at least one of the
+// passed roles.
+// This effectively means, that only guilds whose roles are included, are able
+// to use the command at all.
 //
 // It fails if the command is used in a direct message.
-func AnyRole(roleIDs ...discord.RoleID) plugin.RestrictionFunc {
-	return func(s *state.State, ctx *plugin.Context) error {
-		if len(roleIDs) == 0 {
+func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
+	return func(_ *state.State, ctx *plugin.Context) error {
+		if len(allowed) == 0 {
 			return nil
 		}
 
 		if ctx.GuildID == 0 {
 			err := assertChannelTypes(ctx, plugin.GuildChannels,
-				errors.NewWithStack("restriction: invalid assertion AllRoles for DM-only command"))
+				errors.NewWithStack("restriction: invalid assertion MustAllRoles for DM-only command"))
 			if err != nil {
 				return err
 			}
 		}
 
-		for _, targetID := range roleIDs {
+		missingIDs := make([]discord.RoleID, 0, len(allowed))
+
+		// find all missing roles
+	Allowed:
+		for _, targetID := range allowed {
+			for _, id := range ctx.Member.RoleIDs {
+				if targetID == id {
+					continue Allowed
+				}
+			}
+
+			missingIDs = append(missingIDs, targetID)
+		}
+
+		if len(missingIDs) == 0 {
+			return nil
+		}
+
+		g, err := ctx.Guild()
+		if err != nil {
+			return err
+		}
+
+		missingRoles := make([]discord.Role, 0, len(missingIDs))
+
+		// out of the missing roles, find those missing in this guild
+	Missing:
+		for _, id := range missingIDs {
+			for _, r := range g.Roles {
+				if r.ID == id { // role is in the guild
+					missingRoles = insertRoleSorted(r, missingRoles)
+					continue Missing
+				}
+			}
+		}
+
+		if len(missingRoles) == 0 { // no roles missing from this guild
+			// check if this guild even has a role in our checklist
+			for _, id := range allowed {
+				for _, r := range g.Roles {
+					if id == r.ID {
+						return nil
+					}
+				}
+			}
+
+			return errors.DefaultFatalRestrictionError
+		}
+
+		return newAllMissingRolesError(missingRoles, ctx.Localizer)
+	}
+}
+
+// AnyRole asserts that the invoking user has at least one of the passed
+// roles or has the ability to assign one of the passed roles to themself.
+//
+// It fails if the command is used in a direct message.
+func AnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
+	return func(_ *state.State, ctx *plugin.Context) error {
+		if len(allowed) == 0 {
+			return nil
+		}
+
+		if ctx.GuildID == 0 {
+			err := assertChannelTypes(ctx, plugin.GuildChannels,
+				errors.NewWithStack("restriction: invalid assertion MustAllRoles for DM-only command"))
+			if err != nil {
+				return err
+			}
+		}
+
+		for _, targetID := range allowed {
 			for _, id := range ctx.Member.RoleIDs {
 				if targetID == id {
 					return nil
@@ -199,34 +279,89 @@ func AnyRole(roleIDs ...discord.RoleID) plugin.RestrictionFunc {
 			return err
 		}
 
-		missingIDs := make([]discord.RoleID, 0, len(roleIDs))
+		missingRoles := make([]discord.Role, 0, len(allowed))
 
-	RoleIDs:
-		for _, id := range roleIDs {
-			for _, role := range g.Roles {
-				if role.ID == id {
-					missingIDs = append(missingIDs, role.ID)
-					continue RoleIDs
+	Allowed:
+		for _, id := range allowed {
+			for _, r := range g.Roles {
+				if r.ID == id {
+					missingRoles = insertRoleSorted(r, missingRoles)
+					continue Allowed
 				}
 			}
 		}
 
-		if len(missingIDs) == 0 { // none of the roles are from this guild
+		if len(missingRoles) == 0 { // none of the roles are from this guild
 			return errors.DefaultFatalRestrictionError
 		}
 
-		return newAnyMissingRolesError(missingIDs, ctx.Localizer)
+		if canManageRole(missingRoles[0], g, ctx.Member) {
+			return nil
+		}
+
+		return newAnyMissingRolesError(missingRoles, ctx.Localizer)
+	}
+}
+
+// MustAnyRole asserts that the invoking user has at least one of the passed
+// roles.
+//
+// It fails if the command is used in a direct message.
+func MustAnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
+	return func(s *state.State, ctx *plugin.Context) error {
+		if len(allowed) == 0 {
+			return nil
+		}
+
+		if ctx.GuildID == 0 {
+			err := assertChannelTypes(ctx, plugin.GuildChannels,
+				errors.NewWithStack("restriction: invalid assertion MustAllRoles for DM-only command"))
+			if err != nil {
+				return err
+			}
+		}
+
+		for _, targetID := range allowed {
+			for _, id := range ctx.Member.RoleIDs {
+				if targetID == id {
+					return nil
+				}
+			}
+		}
+
+		g, err := ctx.Guild()
+		if err != nil {
+			return err
+		}
+
+		missingRoles := make([]discord.Role, 0, len(allowed))
+
+	Allowed:
+		for _, id := range allowed {
+			for _, r := range g.Roles {
+				if r.ID == id {
+					missingRoles = insertRoleSorted(r, missingRoles)
+					continue Allowed
+				}
+			}
+		}
+
+		if len(missingRoles) == 0 { // none of the roles are from this guild
+			return errors.DefaultFatalRestrictionError
+		}
+
+		return newAnyMissingRolesError(missingRoles, ctx.Localizer)
 	}
 }
 
 // Channels asserts that a command is executed in one of the passed channels.
-func Channels(channelIDs ...discord.ChannelID) plugin.RestrictionFunc {
+func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
-		if len(channelIDs) == 0 {
+		if len(allowed) == 0 {
 			return nil
 		}
 
-		for _, id := range channelIDs {
+		for _, id := range allowed {
 			if id == ctx.ChannelID {
 				return nil
 			}
@@ -246,10 +381,10 @@ func Channels(channelIDs ...discord.ChannelID) plugin.RestrictionFunc {
 			return err
 		}
 
-		missingIDs := make([]discord.ChannelID, 0, len(channelIDs))
+		missingIDs := make([]discord.ChannelID, 0, len(allowed))
 
 	ChannelIDs:
-		for _, targetID := range channelIDs {
+		for _, targetID := range allowed {
 			for _, c := range channels {
 				if c.ID == targetID {
 					overwrites := discord.CalcOverwrites(*g, c, *ctx.Member)
@@ -308,7 +443,7 @@ func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 
 			return assertChannelTypes(ctx, plugin.GuildChannels,
 				errors.NewWithStack("restriction: invalid assertion BotPermissions with guild only permissions for "+
-					"DM-only command"))
+					"DM command"))
 		}
 
 		g, err := ctx.Guild()
