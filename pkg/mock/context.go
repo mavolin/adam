@@ -331,7 +331,7 @@ func (h *ErrorHandler) HandleErrorSilent(err error) {
 			err2 = uerr.Unwrap()
 
 			if reflect.DeepEqual(err2, expect) {
-				h.expectErr = append(h.expectSilent[:i], h.expectSilent[i+1:]...)
+				h.expectSilent = append(h.expectSilent[:i], h.expectSilent[i+1:]...)
 				return
 			}
 		}

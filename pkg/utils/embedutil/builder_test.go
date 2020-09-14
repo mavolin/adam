@@ -1,14 +1,14 @@
-package discordutil
+package embedutil
 
 import (
 	"testing"
+	"time"
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
-	"github.com/mavolin/adam/pkg/mock"
 )
 
 func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
@@ -18,7 +18,7 @@ func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
 		Title: title,
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleTitle(title).
 		Build(nil)
 
@@ -33,12 +33,11 @@ func TestEmbedBuilder_WithSimpleTitlel(t *testing.T) {
 		Title: title,
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", title).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", title).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleTitlel(localization.NewTermConfig("a")).
 		Build(l)
 
@@ -53,12 +52,11 @@ func TestEmbedBuilder_WithSimpleTitlelt(t *testing.T) {
 		Title: title,
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", title).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", title).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleTitlelt("a").
 		Build(l)
 
@@ -77,7 +75,7 @@ func TestEmbedBuilder_WithTitle(t *testing.T) {
 		URL:   url,
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithTitle(title, url).
 		Build(nil)
 
@@ -96,12 +94,11 @@ func TestEmbedBuilder_WithTitlel(t *testing.T) {
 		URL:   url,
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", title).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", title).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithTitlel(localization.NewTermConfig("a"), url).
 		Build(l)
 
@@ -120,12 +117,11 @@ func TestEmbedBuilder_WithTitlelt(t *testing.T) {
 		URL:   url,
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", title).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", title).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithTitlelt("a", url).
 		Build(l)
 
@@ -140,7 +136,7 @@ func TestEmbedBuilder_WithDescription(t *testing.T) {
 		Description: description,
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithDescription(description).
 		Build(nil)
 
@@ -155,12 +151,11 @@ func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 		Description: description,
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", description).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", description).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithDescriptionl(localization.NewTermConfig("a")).
 		Build(l)
 
@@ -175,12 +170,11 @@ func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
 		Description: description,
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", description).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", description).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithDescriptionlt("a").
 		Build(l)
 
@@ -195,7 +189,7 @@ func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 		Timestamp: timestamp,
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithTimestamp(timestamp).
 		Build(nil)
 
@@ -210,7 +204,7 @@ func TestEmbedBuilder_WithColor(t *testing.T) {
 		Color: color,
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithColor(color).
 		Build(nil)
 
@@ -227,7 +221,7 @@ func TestEmbedBuilder_WithSimpleFooter(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleFooter(text).
 		Build(nil)
 
@@ -244,12 +238,11 @@ func TestEmbedBuilder_WithSimpleFooterl(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", text).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", text).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleFooterl(localization.NewTermConfig("a")).
 		Build(l)
 
@@ -266,12 +259,11 @@ func TestEmbedBuilder_WithSimpleFooterlt(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", text).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", text).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleFooterlt("a").
 		Build(l)
 
@@ -292,7 +284,7 @@ func TestEmbedBuilder_WithFooter(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithFooter(text, icon).
 		Build(nil)
 
@@ -313,12 +305,11 @@ func TestEmbedBuilder_WithFooterl(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", text).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", text).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithFooterl(localization.NewTermConfig("a"), icon).
 		Build(l)
 
@@ -339,12 +330,11 @@ func TestEmbedBuilder_WithFooterlt(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", text).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", text).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithFooterlt("a", icon).
 		Build(l)
 
@@ -361,7 +351,7 @@ func TestEmbedBuilder_WithImage(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithImage(image).
 		Build(nil)
 
@@ -378,7 +368,7 @@ func TestEmbedBuilder_WithThumbnail(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithThumbnail(thumbnail).
 		Build(nil)
 
@@ -395,7 +385,7 @@ func TestEmbedBuilder_WithSimpleAuthor(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleAuthor(name).
 		Build(nil)
 
@@ -412,12 +402,11 @@ func TestEmbedBuilder_WithSimpleAuthorl(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleAuthorl(localization.NewTermConfig("a")).
 		Build(l)
 
@@ -434,12 +423,11 @@ func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleAuthorlt("a").
 		Build(l)
 
@@ -460,7 +448,7 @@ func TestEmbedBuilder_WithSimpleAuthorWithURL(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleAuthorWithURL(name, url).
 		Build(nil)
 
@@ -481,12 +469,11 @@ func TestEmbedBuilder_WithSimpleAuthorWithURLl(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleAuthorWithURLl(localization.NewTermConfig("a"), url).
 		Build(l)
 
@@ -507,12 +494,11 @@ func TestEmbedBuilder_WithSimpleAuthorWithURLlt(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithSimpleAuthorWithURLlt("a", url).
 		Build(l)
 
@@ -533,7 +519,7 @@ func TestEmbedBuilder_WithAuthor(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithAuthor(name, icon).
 		Build(nil)
 
@@ -554,12 +540,11 @@ func TestEmbedBuilder_WithAuthorl(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithAuthorl(localization.NewTermConfig("a"), icon).
 		Build(l)
 
@@ -580,12 +565,11 @@ func TestEmbedBuilder_WithAuthorlt(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithAuthorlt("a", icon).
 		Build(l)
 
@@ -608,7 +592,7 @@ func TestEmbedBuilder_WithAuthorWithURL(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithAuthorWithURL(name, icon, url).
 		Build(nil)
 
@@ -631,12 +615,11 @@ func TestEmbedBuilder_WithAuthorWithURLl(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithAuthorWithURLl(localization.NewTermConfig("a"), icon, url).
 		Build(l)
 
@@ -659,12 +642,11 @@ func TestEmbedBuilder_WithAuthorWithURLlt(t *testing.T) {
 		},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", name).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", name).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithAuthorWithURLlt("a", icon, url).
 		Build(l)
 
@@ -683,7 +665,7 @@ func TestEmbedBuilder_WithField(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithField(field.Name, field.Value).
 		Build(nil)
 
@@ -702,13 +684,12 @@ func TestEmbedBuilder_WithFieldl(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", field.Name).
-		On("b", field.Value).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", field.Name).
+		on("b", field.Value).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithFieldl(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
 		Build(l)
 
@@ -727,13 +708,12 @@ func TestEmbedBuilder_WithFieldlt(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", field.Name).
-		On("b", field.Value).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", field.Name).
+		on("b", field.Value).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithFieldlt("a", "b").
 		Build(l)
 
@@ -752,7 +732,7 @@ func TestEmbedBuilder_WithInlinedField(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithInlinedField(field.Name, field.Value).
 		Build(nil)
 
@@ -771,13 +751,12 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", field.Name).
-		On("b", field.Value).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", field.Name).
+		on("b", field.Value).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithInlinedFieldl(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
 		Build(l)
 
@@ -796,13 +775,12 @@ func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
 		Fields: []discord.EmbedField{field},
 	}
 
-	l := mock.
-		NewLocalizer(t).
-		On("a", field.Name).
-		On("b", field.Value).
-		Build()
+	l := newMockedLocalizer(t).
+		on("a", field.Name).
+		on("b", field.Value).
+		build()
 
-	actual, err := NewEmbedBuilder().
+	actual, err := NewBuilder().
 		WithInlinedFieldlt("a", "b").
 		Build(l)
 
@@ -818,8 +796,8 @@ func TestEmbedBuilder_withField(t *testing.T) {
 			inlined = true
 		)
 
-		expect := &EmbedBuilder{
-			fields: []embedField{
+		expect := &Builder{
+			fields: []field{
 				{
 					name: &text{
 						string: name,
@@ -832,7 +810,7 @@ func TestEmbedBuilder_withField(t *testing.T) {
 			},
 		}
 
-		actual := NewEmbedBuilder()
+		actual := NewBuilder()
 		actual.withField(name, value, inlined)
 
 		assert.Equal(t, expect, actual)
@@ -844,8 +822,8 @@ func TestEmbedBuilder_withField(t *testing.T) {
 			inlined = false
 		)
 
-		expect := &EmbedBuilder{
-			fields: []embedField{
+		expect := &Builder{
+			fields: []field{
 				{
 					name: &text{
 						string: name,
@@ -856,7 +834,7 @@ func TestEmbedBuilder_withField(t *testing.T) {
 			},
 		}
 
-		actual := NewEmbedBuilder()
+		actual := NewBuilder()
 		actual.withField(name, "", inlined)
 
 		assert.Equal(t, expect, actual)
@@ -868,8 +846,8 @@ func TestEmbedBuilder_withField(t *testing.T) {
 			inlined = true
 		)
 
-		expect := &EmbedBuilder{
-			fields: []embedField{
+		expect := &Builder{
+			fields: []field{
 				{
 					name: nil,
 					value: &text{
@@ -880,7 +858,7 @@ func TestEmbedBuilder_withField(t *testing.T) {
 			},
 		}
 
-		actual := NewEmbedBuilder()
+		actual := NewBuilder()
 		actual.withField("", value, inlined)
 
 		assert.Equal(t, expect, actual)
@@ -895,8 +873,8 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 			inlined = true
 		)
 
-		expect := &EmbedBuilder{
-			fields: []embedField{
+		expect := &Builder{
+			fields: []field{
 				{
 					name: &text{
 						config: name,
@@ -909,7 +887,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 			},
 		}
 
-		actual := NewEmbedBuilder()
+		actual := NewBuilder()
 		actual.withFieldl(name, value, inlined)
 
 		assert.Equal(t, expect, actual)
@@ -921,8 +899,8 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 			inlined = false
 		)
 
-		expect := &EmbedBuilder{
-			fields: []embedField{
+		expect := &Builder{
+			fields: []field{
 				{
 					name: &text{
 						config: name,
@@ -933,7 +911,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 			},
 		}
 
-		actual := NewEmbedBuilder()
+		actual := NewBuilder()
 		actual.withFieldl(name, localization.Config{}, inlined)
 
 		assert.Equal(t, expect, actual)
@@ -945,8 +923,8 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 			inlined = true
 		)
 
-		expect := &EmbedBuilder{
-			fields: []embedField{
+		expect := &Builder{
+			fields: []field{
 				{
 					name: nil,
 					value: &text{
@@ -957,9 +935,51 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 			},
 		}
 
-		actual := NewEmbedBuilder()
+		actual := NewBuilder()
 		actual.withFieldl(localization.Config{}, value, inlined)
 
 		assert.Equal(t, expect, actual)
 	})
+}
+
+func TestBuilder_Clone(t *testing.T) {
+	expectA := NewBuilder().
+		WithTitle("abc", "def").
+		WithDescription("ghi").
+		WithTimestamp(discord.NewTimestamp(time.Unix(0, 0))).
+		WithColor(123).
+		WithFooter("jkl", "mno").
+		WithImage("pqr").
+		WithThumbnail("stu").
+		WithAuthorWithURL("vwx", "yza", "bcd").
+		WithField("efg", "hij")
+
+	a := NewBuilder().
+		WithTitle("abc", "def").
+		WithDescription("ghi").
+		WithTimestamp(discord.NewTimestamp(time.Unix(0, 0))).
+		WithColor(123).
+		WithFooter("jkl", "mno").
+		WithImage("pqr").
+		WithThumbnail("stu").
+		WithAuthorWithURL("vwx", "yza", "bcd").
+		WithField("efg", "hij")
+
+	b := a.Clone()
+
+	assert.Equal(t, a, b)
+
+	b.
+		WithTitle("cba", "fed").
+		WithDescription("ihg").
+		WithTimestamp(discord.NowTimestamp()).
+		WithColor(123).
+		WithFooter("lkj", "onm").
+		WithImage("rqp").
+		WithThumbnail("uts").
+		WithAuthorWithURL("xwv", "azy", "dcb").
+		WithField("gfe", "jih")
+
+	assert.NotEqual(t, a, b)
+	assert.Equal(t, expectA, a)
 }

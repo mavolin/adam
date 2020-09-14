@@ -54,7 +54,7 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 		On(channelTypeErrorGuild.Term, "guild").
 		Build()
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	embed := ErrorEmbed.Clone().
 		WithDescriptionl(channelTypeErrorGuild).
 		MustBuild(ctx.Localizer)
 

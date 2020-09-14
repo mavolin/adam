@@ -15,10 +15,10 @@ import (
 
 func Test_assertChannelTypes(t *testing.T) {
 	testCases := []struct {
-		name        string
-		ctx         *plugin.Context
-		assertTypes plugin.ChannelTypes
-		expect      error
+		name    string
+		ctx     *plugin.Context
+		allowed plugin.ChannelTypes
+		expect  error
 	}{
 		{
 			name: "pass guild channels",
@@ -46,8 +46,8 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			assertTypes: plugin.GuildChannels,
-			expect:      nil,
+			allowed: plugin.GuildChannels,
+			expect:  nil,
 		},
 		{
 			name: "fail guild channels",
@@ -76,8 +76,8 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			assertTypes: plugin.GuildChannels,
-			expect:      newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), true),
+			allowed: plugin.GuildChannels,
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), true),
 		},
 		{
 			name: "pass direct messages",
@@ -105,8 +105,8 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			assertTypes: plugin.DirectMessages,
-			expect:      nil,
+			allowed: plugin.DirectMessages,
+			expect:  nil,
 		},
 		{
 			name: "fail direct messages",
@@ -135,8 +135,8 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			assertTypes: plugin.DirectMessages,
-			expect:      newInvalidChannelTypeError(plugin.DirectMessages, mock.NewNoOpLocalizer(), true),
+			allowed: plugin.DirectMessages,
+			expect:  newInvalidChannelTypeError(plugin.DirectMessages, mock.NewNoOpLocalizer(), true),
 		},
 		{
 			name: "all channels",
@@ -164,8 +164,8 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			assertTypes: plugin.AllChannels,
-			expect:      nil,
+			allowed: plugin.AllChannels,
+			expect:  nil,
 		},
 		{
 			name: "pass guild text",
@@ -198,11 +198,11 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			assertTypes: plugin.GuildTextChannels,
-			expect:      nil,
+			allowed: plugin.GuildTextChannels,
+			expect:  nil,
 		},
 		{
-			name: "fail guild text",
+			name: "fail guild text - fatal",
 			ctx: &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -228,14 +228,49 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			assertTypes: plugin.GuildTextChannels,
-			expect:      newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), true),
+			allowed: plugin.GuildTextChannels,
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), true),
+		},
+		{
+			name: "fail guild text - not fatal",
+			ctx: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 123,
+						},
+					},
+				},
+				Localizer:         mock.NewNoOpLocalizer(),
+				CommandIdentifier: ".abc",
+				Provider: mock.PluginProvider{
+					AllCommandsReturn: []plugin.CommandRepository{
+						{
+							Commands: []plugin.Command{
+								mock.Command{
+									MetaReturn: mock.CommandMeta{
+										Name:         "abc",
+										ChannelTypes: plugin.GuildChannels,
+									},
+								},
+							},
+						},
+					},
+				},
+				DiscordDataProvider: mock.DiscordDataProvider{
+					ChannelReturn: &discord.Channel{
+						Type: discord.GuildNews,
+					},
+				},
+			},
+			allowed: plugin.GuildTextChannels,
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), false),
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := assertChannelTypes(c.ctx, c.assertTypes, nil)
+			actual := assertChannelTypes(c.ctx, c.allowed, nil)
 			assert.Equal(t, c.expect, actual)
 		})
 	}

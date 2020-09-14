@@ -14,14 +14,14 @@ func New(text string) error { return errors.New(text) }
 // stack trace of the caller chain.
 // Each call to NewWithStack returns a distinct error value even if the text is
 // identical.
-func NewWithStack(text string) error { return withStack(New(text), 1) }
+func NewWithStack(text string) error { return withStack(New(text)) }
 
 // NewWithStackf returns an error that formats as the given text and stores the
 // stack trace of the caller chain.
 // Each call to NewWithStackf returns a distinct error value even if the text
 // is identical.
 func NewWithStackf(format string, args ...interface{}) error {
-	return withStack(New(fmt.Sprintf(format, args...)), 1)
+	return withStack(New(fmt.Sprintf(format, args...)))
 }
 
 // Unwrap returns the result of calling the Unwrap method on err, if err's

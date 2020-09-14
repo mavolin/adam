@@ -103,7 +103,7 @@ func (e *ArgumentParsingError) Handle(_ *state.State, ctx *plugin.Context) error
 		return err
 	}
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
 	if reasonVal := e.Reason(ctx.Localizer); reasonVal != "" {

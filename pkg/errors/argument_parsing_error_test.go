@@ -131,7 +131,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		m.SendEmbed(discord.Message{
 			ChannelID: channelID,
 			Embeds: []discord.Embed{
-				newErrorEmbedBuilder(ctx.Localizer).
+				ErrorEmbed.Clone().
 					WithDescription(expectDesc).
 					MustBuild(ctx.Localizer),
 			},
@@ -163,7 +163,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		}
 		ctx.Localizer = mock.NewNoOpLocalizer()
 
-		embed := newErrorEmbedBuilder(ctx.Localizer).
+		embed := ErrorEmbed.Clone().
 			WithDescription(expectDesc).
 			WithField("Reason", expectReason).
 			MustBuild(ctx.Localizer)

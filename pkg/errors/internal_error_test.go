@@ -242,7 +242,7 @@ func TestInternalError_Handle(t *testing.T) {
 	}
 	ctx.Localizer = mock.NewNoOpLocalizer()
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	embed := ErrorEmbed.Clone().
 		WithDescription(expectDesc).
 		MustBuild(ctx.Localizer)
 

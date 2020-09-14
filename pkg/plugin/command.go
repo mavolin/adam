@@ -22,7 +22,7 @@ type (
 		// 	• float32, float64
 		//	• string
 		//	• discord.Embed
-		//	• discordutil.EmbedBuilder
+		//	• *embedutil.Builder
 		//	• api.SendMessageData
 		//	• localization.Term
 		//	• localization.Config

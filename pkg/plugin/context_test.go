@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
-	"github.com/mavolin/adam/pkg/utils/discordutil"
+	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
 func TestContext_IsBotOwner(t *testing.T) {
@@ -100,7 +100,7 @@ func TestContext_Replyl(t *testing.T) {
 				},
 			},
 		},
-		Localizer: newMockedLocalizer().
+		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
 		s: s,
@@ -142,7 +142,7 @@ func TestContext_Replylt(t *testing.T) {
 				},
 			},
 		},
-		Localizer: newMockedLocalizer().
+		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
 		s: s,
@@ -218,60 +218,13 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 		s: s,
 	}
 
-	builder := discordutil.
-		NewEmbedBuilder().
+	builder := embedutil.
+		NewBuilder().
 		WithSimpleTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
 	embed := builder.MustBuild(nil)
-	embed.Type = discord.NormalEmbed
-
-	expect := &discord.Message{
-		ID: 123,
-		Author: discord.User{
-			ID: 456,
-		},
-		ChannelID: ctx.ChannelID,
-		Content:   "abc",
-		Embeds:    []discord.Embed{embed},
-	}
-
-	m.SendEmbed(*expect)
-
-	actual, err := ctx.ReplyEmbedBuilder(builder)
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-
-	m.Eval()
-}
-
-func TestContext_ReplyLocalizedEmbedBuilder(t *testing.T) {
-	m, s := state.NewMocker(t)
-
-	l := newMockedLocalizerWithDefault("abc").build()
-
-	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
-		Localizer: l,
-		s:         s,
-	}
-
-	builder := discordutil.
-		NewEmbedBuilder().
-		WithSimpleTitlelt("abc").
-		WithDescriptionlt("def").
-		WithColor(discord.DefaultEmbedColor)
-
-	embed, err := builder.Build(l)
-	require.NoError(t, err)
-
 	embed.Type = discord.NormalEmbed
 
 	expect := &discord.Message{
@@ -385,7 +338,7 @@ func TestContext_ReplyDMl(t *testing.T) {
 				},
 			},
 		},
-		Localizer: newMockedLocalizer().
+		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
 		s: s,
@@ -435,7 +388,7 @@ func TestContext_ReplyDMlt(t *testing.T) {
 				},
 			},
 		},
-		Localizer: newMockedLocalizer().
+		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
 		s: s,
@@ -527,68 +480,13 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 		s: s,
 	}
 
-	builder := discordutil.
-		NewEmbedBuilder().
+	builder := embedutil.
+		NewBuilder().
 		WithSimpleTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
 	embed := builder.MustBuild(nil)
-	embed.Type = discord.NormalEmbed
-
-	var channelID discord.ChannelID = 456
-
-	expect := &discord.Message{
-		ID: 789,
-		Author: discord.User{
-			ID: 123,
-		},
-		ChannelID: channelID,
-		Content:   "abc",
-		Embeds:    []discord.Embed{embed},
-	}
-
-	m.CreatePrivateChannel(discord.Channel{
-		ID:           channelID,
-		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
-	})
-	m.SendEmbed(*expect)
-
-	actual, err := ctx.ReplyEmbedBuilderDM(builder)
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-
-	m.Eval()
-}
-
-func TestContext_ReplyLocalizedEmbedBuilderDM(t *testing.T) {
-	m, s := state.NewMocker(t)
-
-	l := newMockedLocalizerWithDefault("abc").build()
-
-	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					Author: discord.User{
-						ID: 123,
-					},
-				},
-			},
-		},
-		Localizer: l,
-		s:         s,
-	}
-
-	builder := discordutil.
-		NewEmbedBuilder().
-		WithSimpleTitlelt("abc").
-		WithDescriptionlt("def").
-		WithColor(discord.DefaultEmbedColor)
-
-	embed, err := builder.Build(l)
-	require.NoError(t, err)
-
 	embed.Type = discord.NormalEmbed
 
 	var channelID discord.ChannelID = 456

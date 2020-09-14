@@ -25,12 +25,12 @@ func Append(err1, err2 error) error {
 			return append(err1Typed, err2Typed...)
 		}
 
-		return append(err1Typed, withStack(err2, 1))
+		return append(err1Typed, withStack(err2))
 	} else if err, ok := err2.(multiError); ok {
-		return append(multiError{withStack(err1, 1)}, err...)
+		return append(multiError{withStack(err1)}, err...)
 	}
 
-	return multiError{withStack(err1, 1), withStack(err2, 1)}
+	return multiError{withStack(err1), withStack(err2)}
 }
 
 // AppendSilent creates an error consisting of the passed errors.
@@ -98,7 +98,7 @@ func Combine(errs ...error) error {
 		if sub, ok := err.(multiError); ok {
 			merr = append(merr, sub...)
 		} else {
-			merr = append(merr, withStack(err, 1))
+			merr = append(merr, withStack(err))
 		}
 
 	}

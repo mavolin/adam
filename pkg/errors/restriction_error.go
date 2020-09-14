@@ -7,9 +7,14 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// DefaultRestrictionError is a restriction error with a default, generic
-// description.
-var DefaultRestrictionError = NewRestrictionErrorl(defaultRestrictionDesc)
+var (
+	// DefaultRestrictionError is a restriction error with a default, generic
+	// description.
+	DefaultRestrictionError = NewRestrictionErrorl(defaultRestrictionDesc)
+	// DefaultFatalRestrictionError is a restriction error with a default,
+	// generic description and Fatal set to true.
+	DefaultFatalRestrictionError = NewFatalRestrictionErrorl(defaultRestrictionDesc)
+)
 
 // RestrictionError is the error returned if a restriction fails.
 // It contains a description stating the conditions that need to be fulfilled
@@ -27,6 +32,10 @@ type RestrictionError struct {
 	// description of the error, either is set
 	descString string
 	descConfig localization.Config
+
+	// Fatal defines if the RestrictionError is fatal.
+	// Fatal errors won't be shown in the help message.
+	Fatal bool
 }
 
 // NewRestrictionError creates a new RestrictionError with the passed
@@ -45,12 +54,34 @@ func NewRestrictionErrorl(description localization.Config) *RestrictionError {
 	}
 }
 
-// NewRestrictionErrorlt creates a new RestrictionError using the message generated
-// from the passed term as description.
+// NewRestrictionErrorlt creates a new RestrictionError using the message
+// generated from the passed term as description.
 func NewRestrictionErrorlt(description localization.Term) *RestrictionError {
-	return NewRestrictionErrorl(localization.Config{
-		Term: description,
-	})
+	return NewRestrictionErrorl(description.AsConfig())
+}
+
+// NewFatalRestrictionError creates a new fatal RestrictionError with the
+// passed description.
+func NewFatalRestrictionError(desc string) *RestrictionError {
+	return &RestrictionError{
+		descString: desc,
+		Fatal:      true,
+	}
+}
+
+// NewFatalRestrictionErrorl creates a new fatal RestrictionError using the
+// message generated from the passed localization.Config as description.
+func NewFatalRestrictionErrorl(description localization.Config) *RestrictionError {
+	return &RestrictionError{
+		descConfig: description,
+		Fatal:      true,
+	}
+}
+
+// NewFatalRestrictionErrorlt creates a new fatal RestrictionError using the
+// message generated from the passed term as description.
+func NewFatalRestrictionErrorlt(description localization.Term) *RestrictionError {
+	return NewFatalRestrictionErrorl(description.AsConfig())
 }
 
 // Description returns the description of the error and localizes it, if
@@ -72,7 +103,7 @@ func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
 		return err
 	}
 
-	embed := newErrorEmbedBuilder(ctx.Localizer).
+	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
 	_, err = ctx.ReplyEmbedBuilder(embed)
