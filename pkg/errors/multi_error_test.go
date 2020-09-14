@@ -271,10 +271,14 @@ func TestMultiError_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NewLocalizer(t).
+			On(internalErrorTitle.Term, "abc").
+			On(defaultInternalDesc.Term, "def").
+			Build()
 
 		embed := ErrorEmbed.Clone().
-			WithDescriptionl(defaultInternalDesc).
+			WithSimpleTitlelt(internalErrorTitle.Term).
+			WithDescriptionlt(defaultInternalDesc.Term).
 			MustBuild(ctx.Localizer)
 
 		m.SendEmbed(discord.Message{

@@ -228,6 +228,7 @@ func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 		Error("command returned with an error")
 
 	embed := ErrorEmbed.Clone().
+		WithSimpleTitlel(internalErrorTitle).
 		WithDescription(e.Description(ctx.Localizer))
 
 	_, err := ctx.ReplyEmbedBuilder(embed)
