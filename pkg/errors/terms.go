@@ -6,6 +6,7 @@ var (
 	errorTitle = localization.NewFallbackConfig("error.title", "Error")
 	infoTitle  = localization.NewFallbackConfig("info.title", "Info")
 
+	internalErrorTitle  = localization.NewFallbackConfig("errors.internal.title", "Internal Error")
 	defaultInternalDesc = localization.NewFallbackConfig("errors.internal.description.default",
 		"Oh no! Something went wrong and I couldn't finish executing your command. I've informed my team and they'll "+
 			"get on fixing the bug asap.")
