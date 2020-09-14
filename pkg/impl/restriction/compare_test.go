@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/mock"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestAll(t *testing.T) {

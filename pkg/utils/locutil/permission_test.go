@@ -6,7 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mavolin/adam/pkg/mock"
+	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestPermissionNames(t *testing.T) {

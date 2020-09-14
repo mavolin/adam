@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
-	"github.com/mavolin/adam/pkg/mock"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestUserError_Description(t *testing.T) {
