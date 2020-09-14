@@ -1,4 +1,4 @@
-package discordutil
+package locutil
 
 import (
 	"testing"

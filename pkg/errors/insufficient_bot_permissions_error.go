@@ -9,7 +9,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/discordutil"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // InsufficientBotPermissionsError is the error returned if the bot does not
@@ -51,7 +51,7 @@ func (e *InsufficientBotPermissionsError) Description(l *localization.Localizer)
 	}
 
 	if e.IsSinglePermission() {
-		missingNames := discordutil.PermissionNamesl(e.MissingPermissions, l)
+		missingNames := locutil.PermissionNamesl(e.MissingPermissions, l)
 		if len(missingNames) == 0 {
 			return ""
 		}
@@ -72,7 +72,7 @@ func (e *InsufficientBotPermissionsError) Description(l *localization.Localizer)
 // PermissionList returns a written bullet point list of the missing
 // permissions, as used if multiple permissions are missing.
 func (e *InsufficientBotPermissionsError) PermissionList(l *localization.Localizer) string {
-	permNames := discordutil.PermissionNamesl(e.MissingPermissions, l)
+	permNames := locutil.PermissionNamesl(e.MissingPermissions, l)
 	return "• " + strings.Join(permNames, "\n• ")
 }
 
