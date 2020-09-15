@@ -12,6 +12,13 @@ import (
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
+// ErrInsufficientSendPermissions is an informational error that signals
+// that a message wasn't sent, because the bot lacks permissions.
+// This error should not be handled.
+var ErrInsufficientSendPermissions = &noHandlingError{
+	s: "insufficient permissions to send message",
+}
+
 // NewContext creates a new Context using the passed state.State.
 // All other fields must be set manually.
 func NewContext(s *state.State) *Context {
@@ -66,6 +73,11 @@ type Context struct {
 	ErrorHandler
 
 	s *state.State
+
+	dmID discord.ChannelID
+
+	guildReplies []discord.MessageID
+	dmReplies    []discord.MessageID
 }
 
 // IsBotOwner checks if the invoking user is a bot owner.
@@ -82,7 +94,9 @@ func (c *Context) IsBotOwner() bool {
 // Reply replies with the passed message in the channel the command was
 // originally sent in.
 func (c *Context) Reply(content string) (*discord.Message, error) {
-	return c.s.SendText(c.ChannelID, content)
+	return c.ReplyMessage(api.SendMessageData{
+		Content: content,
+	})
 }
 
 // Replyl replies with the message translated from the passed
@@ -105,7 +119,9 @@ func (c *Context) Replylt(term localization.Term) (*discord.Message, error) {
 // ReplyEmbed replies with the passed discord.Embed in the channel the command
 // was originally sent in.
 func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
-	return c.s.SendEmbed(c.ChannelID, e)
+	return c.ReplyMessage(api.SendMessageData{
+		Embed: &e,
+	})
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed
@@ -123,13 +139,35 @@ func (c *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, err
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	return c.s.SendMessageComplex(c.ChannelID, data)
+	perms, err := c.SelfPermissions()
+	if err != nil {
+		return nil, err
+	}
+
+	if !perms.Has(discord.PermissionSendMessages) {
+		return nil, ErrInsufficientSendPermissions
+	}
+
+	msg, err := c.s.SendMessageComplex(c.ChannelID, data)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.GuildID == 0 {
+		c.dmReplies = append(c.dmReplies, msg.ID)
+	} else {
+		c.guildReplies = append(c.guildReplies, msg.ID)
+	}
+
+	return msg, nil
 }
 
 // ReplyDM replies with the passed message in tin a direct message to the
 // invoking user.
 func (c *Context) ReplyDM(content string) (*discord.Message, error) {
-	return c.ReplyMessageDM(api.SendMessageData{Content: content})
+	return c.ReplyMessageDM(api.SendMessageData{
+		Content: content,
+	})
 }
 
 // ReplyDMl replies with the message translated from the passed
@@ -152,7 +190,9 @@ func (c *Context) ReplyDMlt(term localization.Term) (*discord.Message, error) {
 // ReplyEmbedDM replies with the passed discord.Embed in a direct message
 // to the invoking user.
 func (c *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
-	return c.ReplyMessageDM(api.SendMessageData{Embed: &e})
+	return c.ReplyMessageDM(api.SendMessageData{
+		Embed: &e,
+	})
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed embedutil.Builder
@@ -169,12 +209,74 @@ func (c *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, e
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
 // the invoking user.
 func (c *Context) ReplyMessageDM(data api.SendMessageData) (*discord.Message, error) {
-	channel, err := c.s.CreatePrivateChannel(c.Author.ID)
+	if !c.dmID.IsValid() {
+		ch, err := c.s.CreatePrivateChannel(c.Author.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		c.dmID = ch.ID
+	}
+
+	msg, err := c.s.SendMessageComplex(c.dmID, data)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.s.SendMessageComplex(channel.ID, data)
+	c.dmReplies = append(c.dmReplies, msg.ID)
+
+	return msg, nil
+}
+
+// DeleteDMReplies deletes all replies sent to the invoking user in a private
+// channel during the execution of the command.
+//
+// Note that only those messages sent via the Context will be deleted.
+func (c *Context) DeleteDMReplies() error {
+	if len(c.dmReplies) == 0 {
+		return nil
+	}
+
+	err := c.s.DeleteMessages(c.dmID, c.dmReplies)
+	if err != nil {
+		return err
+	}
+
+	c.dmReplies = nil
+
+	return nil
+}
+
+// DeleteGuildReplies deletes all replies sent to the invoking user in a guild.
+// during the execution of the command.
+//
+// Note that only those messages sent via the Context will be deleted.
+func (c *Context) DeleteGuildReplies() error {
+	if len(c.guildReplies) == 0 {
+		return nil
+	}
+
+	err := c.s.DeleteMessages(c.ChannelID, c.guildReplies)
+	if err != nil {
+		return err
+	}
+
+	c.guildReplies = nil
+
+	return nil
+}
+
+// DeleteAllReplies deletes all replies sent to the invoking user, during the
+// execution of the command.
+//
+// Note that only those messages sent via the Context will be deleted.
+func (c *Context) DeleteAllReplies() error {
+	err := c.DeleteGuildReplies()
+	if err != nil {
+		return err
+	}
+
+	return c.DeleteDMReplies()
 }
 
 // DeleteInvoke deletes the invoking message.
@@ -192,55 +294,52 @@ func (c *Context) DeleteInvokeInBackground() {
 	}()
 }
 
-// HasSelfPermission checks if the bot has the passed permissions.
+// SelfPermissions checks if the bot has the passed permissions.
 // If this command is executed in a direct message, constant.DMPermissions will
-// be used as the available permissions.
-func (c *Context) HasSelfPermission(check discord.Permissions) (bool, error) {
+// be returned instead.
+func (c *Context) SelfPermissions() (discord.Permissions, error) {
 	if c.GuildID == 0 {
-		return constant.DMPermissions.Has(check), nil
+		return constant.DMPermissions, nil
 	}
 
 	g, err := c.Guild()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
 	ch, err := c.Channel()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
 	s, err := c.Self()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	perms := discord.CalcOverwrites(*g, *ch, *s)
-
-	return perms.Has(check), nil
+	return discord.CalcOverwrites(*g, *ch, *s), nil
 }
 
-// HasUserPermission checks if the invoking user has the passed permissions.
+// UserPermissions returns the permissions of the invoking user in this
+// channel.
 // If this command is executed in a direct message, constant.DMPermissions will
-// be used as the available permissions.
-func (c *Context) HasUserPermission(check discord.Permissions) (bool, error) {
+// be returned instead.
+func (c *Context) UserPermissions() (discord.Permissions, error) {
 	if c.GuildID == 0 {
-		return constant.DMPermissions.Has(check), nil
+		return constant.DMPermissions, nil
 	}
 
 	g, err := c.Guild()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
 	ch, err := c.Channel()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	perms := discord.CalcOverwrites(*g, *ch, *c.Member)
-
-	return perms.Has(check), nil
+	return discord.CalcOverwrites(*g, *ch, *c.Member), nil
 }
 
 type (
