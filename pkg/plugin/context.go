@@ -195,12 +195,13 @@ type (
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
 	DiscordDataProvider interface {
-		// Channel returns the channel the
+		// Channel returns the channel the message was sent in.
 		Channel() (*discord.Channel, error)
 		// Guild returns the guild the message was sent in.
 		// If this happened in a private channel, Guild will return nil, nil.
 		Guild() (*discord.Guild, error)
-		// Self returns the bot member, if this happened guild.
+		// Self returns the bot as a member, if the command was invoked in a
+		// guild.
 		// If this happened in a private channel, Self will return nil, nil.
 		Self() (*discord.Member, error)
 	}
