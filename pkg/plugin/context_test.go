@@ -557,6 +557,68 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 	m.Eval()
 }
 
+func TestContext_DeleteDMReplies(t *testing.T) {
+	t.Run("no replies", func(t *testing.T) {
+		ctx := &Context{
+			dmReplies: nil,
+		}
+
+		err := ctx.DeleteDMReplies()
+		assert.Nil(t, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		m, s := state.NewMocker(t)
+
+		ctx := &Context{
+			s:         s,
+			dmID:      123,
+			dmReplies: []discord.MessageID{456, 789},
+		}
+
+		m.DeleteMessages(ctx.dmID, ctx.dmReplies)
+
+		err := ctx.DeleteDMReplies()
+		assert.NoError(t, err)
+
+		m.Eval()
+	})
+}
+
+func TestContext_DeleteGuildReplies(t *testing.T) {
+	t.Run("no replies", func(t *testing.T) {
+		ctx := &Context{
+			guildReplies: nil,
+		}
+
+		err := ctx.DeleteGuildReplies()
+		assert.Nil(t, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		m, s := state.NewMocker(t)
+
+		ctx := &Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: 123,
+					},
+				},
+			},
+			s:            s,
+			guildReplies: []discord.MessageID{456, 789},
+		}
+
+		m.DeleteMessages(ctx.ChannelID, ctx.guildReplies)
+
+		err := ctx.DeleteGuildReplies()
+		assert.NoError(t, err)
+
+		m.Eval()
+	})
+}
+
 func TestContext_DeleteInvoke(t *testing.T) {
 	m, s := state.NewMocker(t)
 
