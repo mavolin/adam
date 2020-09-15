@@ -45,6 +45,7 @@ issues:
         - gosec
         - goconst
         - funlen
+        - maligned
     # test utilities might not fulfill all conventions, as they are just used
     # for testing
     - path: test_util\.go$

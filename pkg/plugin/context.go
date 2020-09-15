@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
+	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
@@ -191,16 +192,68 @@ func (c *Context) DeleteInvokeInBackground() {
 	}()
 }
 
+// HasSelfPermission checks if the bot has the passed permissions.
+// If this command is executed in a direct message, constant.DMPermissions will
+// be used as the available permissions.
+func (c *Context) HasSelfPermission(check discord.Permissions) (bool, error) {
+	if c.GuildID == 0 {
+		return constant.DMPermissions.Has(check), nil
+	}
+
+	g, err := c.Guild()
+	if err != nil {
+		return false, err
+	}
+
+	ch, err := c.Channel()
+	if err != nil {
+		return false, err
+	}
+
+	s, err := c.Self()
+	if err != nil {
+		return false, err
+	}
+
+	perms := discord.CalcOverwrites(*g, *ch, *s)
+
+	return perms.Has(check), nil
+}
+
+// HasUserPermission checks if the invoking user has the passed permissions.
+// If this command is executed in a direct message, constant.DMPermissions will
+// be used as the available permissions.
+func (c *Context) HasUserPermission(check discord.Permissions) (bool, error) {
+	if c.GuildID == 0 {
+		return constant.DMPermissions.Has(check), nil
+	}
+
+	g, err := c.Guild()
+	if err != nil {
+		return false, err
+	}
+
+	ch, err := c.Channel()
+	if err != nil {
+		return false, err
+	}
+
+	perms := discord.CalcOverwrites(*g, *ch, *c.Member)
+
+	return perms.Has(check), nil
+}
+
 type (
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
 	DiscordDataProvider interface {
-		// Channel returns the channel the
+		// Channel returns the channel the message was sent in.
 		Channel() (*discord.Channel, error)
 		// Guild returns the guild the message was sent in.
 		// If this happened in a private channel, Guild will return nil, nil.
 		Guild() (*discord.Guild, error)
-		// Self returns the bot member, if this happened guild.
+		// Self returns the bot as a member, if the command was invoked in a
+		// guild.
 		// If this happened in a private channel, Self will return nil, nil.
 		Self() (*discord.Member, error)
 	}
