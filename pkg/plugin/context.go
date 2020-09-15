@@ -176,6 +176,21 @@ func (c *Context) ReplyMessageDM(data api.SendMessageData) (*discord.Message, er
 	return c.s.SendMessageComplex(channel.ID, data)
 }
 
+// DeleteInvoke deletes the invoking message.
+func (c *Context) DeleteInvoke() error { return c.s.DeleteMessage(c.ChannelID, c.ID) }
+
+// DeleteInvokeInBackground deletes the invoking message in a separate
+// goroutine.
+// If it encounters an error, it will pass it to Context.HandleErrorSilent.
+func (c *Context) DeleteInvokeInBackground() {
+	go func() {
+		err := c.DeleteInvoke()
+		if err != nil {
+			c.HandleErrorSilent(err)
+		}
+	}()
+}
+
 type (
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
