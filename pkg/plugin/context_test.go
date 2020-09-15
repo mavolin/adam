@@ -555,3 +555,24 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 
 	m.Eval()
 }
+
+func TestContext_DeleteInvoke(t *testing.T) {
+	m, s := state.NewMocker(t)
+
+	ctx := NewContext(s)
+	ctx.MessageCreateEvent = &state.MessageCreateEvent{
+		MessageCreateEvent: &gateway.MessageCreateEvent{
+			Message: discord.Message{
+				ID:        123,
+				ChannelID: 456,
+			},
+		},
+	}
+
+	m.DeleteMessage(ctx.ChannelID, ctx.ID)
+
+	err := ctx.DeleteInvoke()
+	assert.NoError(t, err)
+
+	m.Eval()
+}
