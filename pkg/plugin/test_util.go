@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/localization"
@@ -55,4 +56,29 @@ func (l *mockLocalizer) build() *localization.Localizer {
 	})
 
 	return m.Localizer("")
+}
+
+// mockDiscordDataProvider is a copy of mock.DiscordDataProvider to prevent
+// import cycles.
+type mockDiscordDataProvider struct {
+	ChannelReturn *discord.Channel
+	ChannelError  error
+
+	GuildReturn *discord.Guild
+	GuildError  error
+
+	SelfReturn *discord.Member
+	SelfError  error
+}
+
+func (d mockDiscordDataProvider) Channel() (*discord.Channel, error) {
+	return d.ChannelReturn, d.ChannelError
+}
+
+func (d mockDiscordDataProvider) Guild() (*discord.Guild, error) {
+	return d.GuildReturn, d.GuildError
+}
+
+func (d mockDiscordDataProvider) Self() (*discord.Member, error) {
+	return d.SelfReturn, d.SelfError
 }

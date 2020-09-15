@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 
+	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
@@ -189,6 +190,57 @@ func (c *Context) DeleteInvokeInBackground() {
 			c.HandleErrorSilent(err)
 		}
 	}()
+}
+
+// HasSelfPermission checks if the bot has the passed permissions.
+// If this command is executed in a direct message, constant.DMPermissions will
+// be used as the available permissions.
+func (c *Context) HasSelfPermission(check discord.Permissions) (bool, error) {
+	if c.GuildID == 0 {
+		return constant.DMPermissions.Has(check), nil
+	}
+
+	g, err := c.Guild()
+	if err != nil {
+		return false, err
+	}
+
+	ch, err := c.Channel()
+	if err != nil {
+		return false, err
+	}
+
+	s, err := c.Self()
+	if err != nil {
+		return false, err
+	}
+
+	perms := discord.CalcOverwrites(*g, *ch, *s)
+
+	return perms.Has(check), nil
+}
+
+// HasUserPermission checks if the invoking user has the passed permissions.
+// If this command is executed in a direct message, constant.DMPermissions will
+// be used as the available permissions.
+func (c *Context) HasUserPermission(check discord.Permissions) (bool, error) {
+	if c.GuildID == 0 {
+		return constant.DMPermissions.Has(check), nil
+	}
+
+	g, err := c.Guild()
+	if err != nil {
+		return false, err
+	}
+
+	ch, err := c.Channel()
+	if err != nil {
+		return false, err
+	}
+
+	perms := discord.CalcOverwrites(*g, *ch, *c.Member)
+
+	return perms.Has(check), nil
 }
 
 type (
