@@ -192,55 +192,52 @@ func (c *Context) DeleteInvokeInBackground() {
 	}()
 }
 
-// HasSelfPermission checks if the bot has the passed permissions.
+// SelfPermissions checks if the bot has the passed permissions.
 // If this command is executed in a direct message, constant.DMPermissions will
-// be used as the available permissions.
-func (c *Context) HasSelfPermission(check discord.Permissions) (bool, error) {
+// be returned instead.
+func (c *Context) SelfPermissions() (discord.Permissions, error) {
 	if c.GuildID == 0 {
-		return constant.DMPermissions.Has(check), nil
+		return constant.DMPermissions, nil
 	}
 
 	g, err := c.Guild()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
 	ch, err := c.Channel()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
 	s, err := c.Self()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	perms := discord.CalcOverwrites(*g, *ch, *s)
-
-	return perms.Has(check), nil
+	return discord.CalcOverwrites(*g, *ch, *s), nil
 }
 
-// HasUserPermission checks if the invoking user has the passed permissions.
+// UserPermissions returns the permissions of the invoking user in this
+// channel.
 // If this command is executed in a direct message, constant.DMPermissions will
-// be used as the available permissions.
-func (c *Context) HasUserPermission(check discord.Permissions) (bool, error) {
+// be returned instead.
+func (c *Context) UserPermissions() (discord.Permissions, error) {
 	if c.GuildID == 0 {
-		return constant.DMPermissions.Has(check), nil
+		return constant.DMPermissions, nil
 	}
 
 	g, err := c.Guild()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
 	ch, err := c.Channel()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	perms := discord.CalcOverwrites(*g, *ch, *c.Member)
-
-	return perms.Has(check), nil
+	return discord.CalcOverwrites(*g, *ch, *c.Member), nil
 }
 
 type (

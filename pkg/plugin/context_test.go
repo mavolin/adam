@@ -578,186 +578,104 @@ func TestContext_DeleteInvoke(t *testing.T) {
 	m.Eval()
 }
 
-func TestContext_HasSelfPermission(t *testing.T) {
-	testCases := []struct {
-		name    string
-		check   discord.Permissions
-		dm      bool
-		guild   *discord.Guild
-		channel *discord.Channel
-		self    *discord.Member
-		expect  bool
-	}{
-		{
-			name:    "pass dm",
-			check:   constant.DMPermissions,
-			dm:      true,
-			guild:   nil,
-			channel: nil,
-			self:    nil,
-			expect:  true,
-		},
-		{
-			name:    "fail dm",
-			check:   constant.DMPermissions + 1,
-			dm:      true,
-			guild:   nil,
-			channel: nil,
-			self:    nil,
-			expect:  false,
-		},
-		{
-			name:  "pass guild",
-			check: discord.PermissionAdministrator,
-			dm:    false,
-			guild: &discord.Guild{
-				OwnerID: 123,
-				Roles: []discord.Role{
-					{
-						ID:          456,
-						Permissions: discord.PermissionAdministrator,
+func TestContext_SelfPermissions(t *testing.T) {
+	t.Run("dm", func(t *testing.T) {
+		ctx := &Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						GuildID: 0,
 					},
 				},
 			},
-			channel: &discord.Channel{},
-			self: &discord.Member{
-				RoleIDs: []discord.RoleID{456},
-			},
-			expect: true,
-		},
-		{
-			name:  "fail guild",
-			check: discord.PermissionAdministrator,
-			dm:    false,
-			guild: &discord.Guild{
-				OwnerID: 123,
-				Roles: []discord.Role{
-					{
-						ID:          456,
-						Permissions: discord.PermissionViewChannel,
+		}
+
+		actual, err := ctx.SelfPermissions()
+		require.NoError(t, err)
+		assert.Equal(t, constant.DMPermissions, actual)
+	})
+
+	t.Run("guild", func(t *testing.T) {
+		expect := discord.PermissionViewChannel | discord.PermissionAddReactions
+
+		ctx := &Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						GuildID: 123,
 					},
 				},
 			},
-			channel: &discord.Channel{},
-			self: &discord.Member{
-				RoleIDs: []discord.RoleID{456},
+			DiscordDataProvider: mockDiscordDataProvider{
+				GuildReturn: &discord.Guild{
+					OwnerID: 123,
+					Roles: []discord.Role{
+						{
+							ID:          456,
+							Permissions: expect,
+						},
+					},
+				},
+				ChannelReturn: new(discord.Channel),
+				SelfReturn: &discord.Member{
+					RoleIDs: []discord.RoleID{456},
+				},
 			},
-			expect: false,
-		},
-	}
+		}
 
-	for _, c := range testCases {
-		t.Run(c.name, func(t *testing.T) {
-			ctx := &Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: new(gateway.MessageCreateEvent),
-				},
-				DiscordDataProvider: mockDiscordDataProvider{
-					GuildReturn:   c.guild,
-					ChannelReturn: c.channel,
-					SelfReturn:    c.self,
-				},
-			}
-
-			if !c.dm {
-				ctx.GuildID = 123
-			}
-
-			actual, err := ctx.HasSelfPermission(c.check)
-			require.NoError(t, err)
-			assert.Equal(t, c.expect, actual)
-		})
-	}
+		actual, err := ctx.SelfPermissions()
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+	})
 }
 
-func TestContext_HasUserPermission(t *testing.T) {
-	testCases := []struct {
-		name    string
-		check   discord.Permissions
-		dm      bool
-		guild   *discord.Guild
-		channel *discord.Channel
-		member  *discord.Member
-		expect  bool
-	}{
-		{
-			name:    "pass dm",
-			check:   constant.DMPermissions,
-			dm:      true,
-			guild:   nil,
-			channel: nil,
-			member:  nil,
-			expect:  true,
-		},
-		{
-			name:    "fail dm",
-			check:   constant.DMPermissions + 1,
-			dm:      true,
-			guild:   nil,
-			channel: nil,
-			member:  nil,
-			expect:  false,
-		},
-		{
-			name:  "pass guild",
-			check: discord.PermissionAdministrator,
-			dm:    false,
-			guild: &discord.Guild{
-				OwnerID: 123,
-				Roles: []discord.Role{
-					{
-						ID:          456,
-						Permissions: discord.PermissionAdministrator,
+func TestContext_UserPermissions(t *testing.T) {
+	t.Run("dm", func(t *testing.T) {
+		ctx := &Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						GuildID: 0,
 					},
 				},
 			},
-			channel: &discord.Channel{},
-			member: &discord.Member{
-				RoleIDs: []discord.RoleID{456},
-			},
-			expect: true,
-		},
-		{
-			name:  "fail guild",
-			check: discord.PermissionAdministrator,
-			dm:    false,
-			guild: &discord.Guild{
-				OwnerID: 123,
-				Roles: []discord.Role{
-					{
-						ID:          456,
-						Permissions: discord.PermissionViewChannel,
+		}
+
+		actual, err := ctx.UserPermissions()
+		require.NoError(t, err)
+		assert.Equal(t, constant.DMPermissions, actual)
+	})
+
+	t.Run("guild", func(t *testing.T) {
+		expect := discord.PermissionViewChannel | discord.PermissionAddReactions
+
+		ctx := &Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						GuildID: 123,
+					},
+					Member: &discord.Member{
+						RoleIDs: []discord.RoleID{456},
 					},
 				},
 			},
-			channel: &discord.Channel{},
-			member: &discord.Member{
-				RoleIDs: []discord.RoleID{456},
+			DiscordDataProvider: mockDiscordDataProvider{
+				GuildReturn: &discord.Guild{
+					OwnerID: 123,
+					Roles: []discord.Role{
+						{
+							ID:          456,
+							Permissions: expect,
+						},
+					},
+				},
+				ChannelReturn: new(discord.Channel),
 			},
-			expect: false,
-		},
-	}
+		}
 
-	for _, c := range testCases {
-		t.Run(c.name, func(t *testing.T) {
-			ctx := &Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: new(gateway.MessageCreateEvent),
-				},
-				DiscordDataProvider: mockDiscordDataProvider{
-					GuildReturn:   c.guild,
-					ChannelReturn: c.channel,
-				},
-			}
-
-			if !c.dm {
-				ctx.GuildID = 123
-				ctx.Member = c.member
-			}
-
-			actual, err := ctx.HasUserPermission(c.check)
-			require.NoError(t, err)
-			assert.Equal(t, c.expect, actual)
-		})
-	}
+		actual, err := ctx.UserPermissions()
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+	})
 }
