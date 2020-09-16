@@ -24,7 +24,6 @@ func AttachState(s *state.State, ctx *plugin.Context) *plugin.Context {
 	cp.DiscordDataProvider = ctx.DiscordDataProvider
 	cp.Prefix = ctx.Prefix
 	cp.Location = ctx.Location
-	cp.HelpCommandIdentifier = ctx.HelpCommandIdentifier
 	cp.BotOwnerIDs = ctx.BotOwnerIDs
 	cp.Provider = ctx.Provider
 	cp.ErrorHandler = ctx.ErrorHandler
