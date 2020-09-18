@@ -243,12 +243,12 @@ ModFound:
 
 func findCommand(cmds []plugin.Command, name string, checkAliases bool) plugin.Command {
 	for _, cmd := range cmds {
-		if cmd.Meta().GetName() == name {
+		if cmd.GetName() == name {
 			return cmd
 		}
 
 		if checkAliases {
-			for _, alias := range cmd.Meta().GetAliases() {
+			for _, alias := range cmd.GetAliases() {
 				if alias == name {
 					return cmd
 				}
@@ -261,7 +261,7 @@ func findCommand(cmds []plugin.Command, name string, checkAliases bool) plugin.C
 
 func findModule(mods []plugin.Module, name string) plugin.Module {
 	for _, mod := range mods {
-		if mod.Meta().GetName() == name {
+		if mod.GetName() == name {
 			return mod
 		}
 	}

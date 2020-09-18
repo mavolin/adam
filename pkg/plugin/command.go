@@ -12,8 +12,7 @@ type (
 	//
 	// Defaults for simple commands can be found in impl/command.
 	Command interface {
-		// Meta returns the meta data of the command.
-		Meta() CommandMeta
+		CommandMeta
 		// Invoke calls the command.
 		//
 		// Possible first return values are

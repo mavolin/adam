@@ -32,7 +32,7 @@ func (c ModuleMeta) GetName() string                                    { return
 func (c ModuleMeta) GetShortDescription(*localization.Localizer) string { return c.ShortDescription }
 func (c ModuleMeta) GetLongDescription(*localization.Localizer) string  { return c.LongDescription }
 func (c ModuleMeta) IsHidden() bool                                     { return c.Hidden }
-func (c ModuleMeta) GetChannelTypes() plugin.ChannelTypes               { return c.ChannelTypes }
-func (c ModuleMeta) GetBotPermissions() *discord.Permissions            { return c.BotPermissions }
-func (c ModuleMeta) GetRestrictionFunc() plugin.RestrictionFunc         { return c.Restrictions }
+func (c ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes        { return c.ChannelTypes }
+func (c ModuleMeta) GetDefaultBotPermissions() *discord.Permissions     { return c.BotPermissions }
+func (c ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc  { return c.Restrictions }
 func (c ModuleMeta) GetThrottlingOptions() plugin.ThrottlingOptions     { return c.ThrottlingOptions }

@@ -11,8 +11,7 @@ type (
 	//
 	// A default for a simple module can be found in impl/module.
 	Module interface {
-		// GetMeta returns the meta information of the module.
-		Meta() ModuleMeta
+		ModuleMeta
 
 		// Commands returns the subcommands of the module.
 		Commands() []Command
