@@ -30,20 +30,8 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.GuildChannels,
-									},
-								},
-							},
-						},
-					},
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.GuildChannels,
 				},
 			},
 			allowed: plugin.GuildChannels,
@@ -59,21 +47,9 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer:         mock.NewNoOpLocalizer(),
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.GuildTextChannels,
-									},
-								},
-							},
-						},
-					},
+				Localizer: mock.NewNoOpLocalizer(),
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.GuildTextChannels,
 				},
 			},
 			allowed: plugin.GuildChannels,
@@ -89,20 +65,8 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.DirectMessages,
-									},
-								},
-							},
-						},
-					},
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.DirectMessages,
 				},
 			},
 			allowed: plugin.DirectMessages,
@@ -118,21 +82,9 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer:         mock.NewNoOpLocalizer(),
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.AllChannels,
-									},
-								},
-							},
-						},
-					},
+				Localizer: mock.NewNoOpLocalizer(),
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
 			allowed: plugin.DirectMessages,
@@ -148,20 +100,8 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.DirectMessages,
-									},
-								},
-							},
-						},
-					},
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.DirectMessages,
 				},
 			},
 			allowed: plugin.AllChannels,
@@ -177,20 +117,8 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.AllChannels,
-									},
-								},
-							},
-						},
-					},
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.AllChannels,
 				},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{
@@ -211,21 +139,9 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer:         mock.NewNoOpLocalizer(),
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.GuildChannels,
-									},
-								},
-							},
-						},
-					},
+				Localizer: mock.NewNoOpLocalizer(),
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.GuildChannels,
 				},
 			},
 			allowed: plugin.GuildTextChannels,
@@ -241,21 +157,9 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer:         mock.NewNoOpLocalizer(),
-				CommandIdentifier: ".abc",
-				Provider: mock.PluginProvider{
-					AllCommandsReturn: []plugin.CommandRepository{
-						{
-							Commands: []plugin.Command{
-								mock.Command{
-									MetaReturn: mock.CommandMeta{
-										Name:         "abc",
-										ChannelTypes: plugin.GuildChannels,
-									},
-								},
-							},
-						},
-					},
+				Localizer: mock.NewNoOpLocalizer(),
+				Command: mock.RegisteredCommand{
+					ChannelTypesReturn: plugin.GuildChannels,
 				},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{
@@ -286,21 +190,9 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			Localizer:         mock.NewNoOpLocalizer(),
-			CommandIdentifier: ".abc",
-			Provider: mock.PluginProvider{
-				AllCommandsReturn: []plugin.CommandRepository{
-					{
-						Commands: []plugin.Command{
-							mock.Command{
-								MetaReturn: mock.CommandMeta{
-									Name:         "abc",
-									ChannelTypes: plugin.GuildChannels,
-								},
-							},
-						},
-					},
-				},
+			Localizer: mock.NewNoOpLocalizer(),
+			Command: mock.RegisteredCommand{
+				ChannelTypesReturn: plugin.GuildChannels,
 			},
 			ErrorHandler: mock.NewErrorHandler().
 				ExpectSilentError(noRemainingError),

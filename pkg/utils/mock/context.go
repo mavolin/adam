@@ -2,6 +2,7 @@ package mock
 
 import (
 	"reflect"
+	"strings"
 	"sync"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -59,6 +60,9 @@ func (d DiscordDataProvider) Self() (*discord.Member, error) {
 // PluginProvider is a mock for a plugin.Provider.
 // For simplicity, this plugin.Provider won't merge modules, so you should make
 // sure that only one Repository has a module with a given name.
+// Additionally, RegisteredCommands will always assume the settings of their
+// direct command aquivalent, this means no checks on parents will be
+// performed.
 type PluginProvider struct {
 	AllCommandsReturn []plugin.CommandRepository
 	AllModulesReturn  []plugin.ModuleRepository
@@ -91,46 +95,59 @@ func (p PluginProvider) AllModules() ([]plugin.ModuleRepository, error) {
 	return cp, p.AllModulesError
 }
 
-func (p PluginProvider) Commands() ([]plugin.Command, error) {
+func (p PluginProvider) Commands() ([]plugin.RegisteredCommand, error) {
 	var qty int
 
 	for _, r := range p.AllCommandsReturn {
 		qty += len(r.Commands)
 	}
 
-	cmds := make([]plugin.Command, 0, qty)
-
-	i := 0
+	cmds := make([]plugin.RegisteredCommand, 0, qty)
 
 	for _, r := range p.AllCommandsReturn {
-		copy(cmds[i:i+len(r.Commands)], r.Commands)
-		i = len(r.Commands)
+		cmds = append(cmds, asRegisteredCommands(r.Commands, nil)...)
 	}
 
 	return cmds, p.CommandsError
 }
 
-func (p PluginProvider) Modules() ([]plugin.Module, error) {
+func (p PluginProvider) Modules() ([]plugin.RegisteredModule, error) {
 	var qty int
 
 	for _, r := range p.AllModulesReturn {
 		qty += len(r.Modules)
 	}
 
-	cmds := make([]plugin.Module, 0, qty)
-
-	i := 0
+	mods := make([]plugin.RegisteredModule, 0, qty)
 
 	for _, r := range p.AllModulesReturn {
-		copy(cmds[i:i+len(r.Modules)], r.Modules)
-		i = len(r.Modules)
+		mods = append(mods, asRegisteredModules(r.Modules)...)
 	}
 
-	return cmds, p.ModulesError
+	return mods, p.ModulesError
 }
 
-func (p PluginProvider) Command(id plugin.Identifier) (plugin.Command, error) {
-	all := id.All()
+func (p PluginProvider) Command(id plugin.Identifier) (plugin.RegisteredCommand, error) {
+	cmd, err := p.FindCommand(id.AsInvoke())
+	if err != nil {
+		return cmd, p.CommandError
+	}
+
+	return cmd, p.CommandError
+}
+
+func (p PluginProvider) Module(id plugin.Identifier) (plugin.RegisteredModule, error) {
+	mod, err := p.FindModule(id.AsInvoke())
+	if err != nil {
+		return mod, p.ModuleError
+	}
+
+	return mod, p.ModuleError
+}
+
+func (p PluginProvider) FindCommand(invoke string) (plugin.RegisteredCommand, error) {
+	id := plugin.IdentifierFromInvoke(invoke)
+	all := id.All()[1:]
 
 	if len(all) <= 1 { // just root or invalid
 		return nil, p.CommandError
@@ -140,7 +157,7 @@ func (p PluginProvider) Command(id plugin.Identifier) (plugin.Command, error) {
 		for _, r := range p.AllCommandsReturn {
 			cmd := findCommand(r.Commands, all[1].Name(), false)
 			if cmd != nil {
-				return cmd, p.CommandError
+				return asRegisteredCommand(cmd, nil), p.CommandError
 			}
 		}
 
@@ -159,18 +176,20 @@ func (p PluginProvider) Command(id plugin.Identifier) (plugin.Command, error) {
 	return nil, p.CommandError
 
 ModFound:
-	for _, id := range all[2 : len(all)-1] {
-		mod = findModule(mod.Modules(), id.Name())
-	}
+	rmod := asRegisteredModule(mod)
 
-	return findCommand(mod.Commands(), all[len(all)-1].Name(), false), nil
+	cmdID := all[len(all)-1][1:]
+	cmdID = cmdID[strings.Index(string(cmdID), ".")+1:]
+
+	return rmod.FindCommand(cmdID.AsInvoke()), nil
 }
 
-func (p PluginProvider) Module(id plugin.Identifier) (plugin.Module, error) {
-	all := id.All()
+func (p PluginProvider) FindModule(invoke string) (plugin.RegisteredModule, error) {
+	id := plugin.IdentifierFromInvoke(invoke)
+	all := id.All()[1:]
 
 	if len(all) <= 1 { // just root or invalid
-		return nil, p.ModuleError
+		return nil, p.FindModuleError
 	}
 
 	var mod plugin.Module
@@ -182,91 +201,19 @@ func (p PluginProvider) Module(id plugin.Identifier) (plugin.Module, error) {
 		}
 	}
 
-	return nil, p.ModuleError
-
-ModFound:
-
-	for _, id := range all[2:] {
-		mod = findModule(mod.Modules(), id.Name())
-	}
-
-	return mod, p.ModuleError
-}
-
-func (p PluginProvider) FindCommand(invoke string) (plugin.Command, error) {
-	id := plugin.IdentifierFromInvoke(invoke)
-	all := id.All()[1:]
-
-	var mod plugin.Module
-
-	for _, r := range p.AllModulesReturn {
-		mod = findModule(r.Modules, all[0].Name())
-		if mod != nil {
-			goto ModFound
-		}
-	}
-
-	return nil, p.FindCommandError
-
-ModFound:
-
-	for _, id := range all[1 : len(all)-1] {
-		mod = findModule(mod.Modules(), id.Name())
-	}
-
-	return findCommand(mod.Commands(), all[len(all)-1].Name(), true), p.FindCommandError
-}
-
-func (p PluginProvider) FindModule(invoke string) (plugin.Module, error) {
-	id := plugin.IdentifierFromInvoke(invoke)
-	all := id.All()[1:]
-
-	var mod plugin.Module
-
-	for _, r := range p.AllModulesReturn {
-		mod = findModule(r.Modules, all[0].Name())
-		if mod != nil {
-			goto ModFound
-		}
-	}
-
 	return nil, p.FindModuleError
 
 ModFound:
+	rmod := asRegisteredModule(mod)
 
-	for _, id := range all[1:] {
-		mod = findModule(mod.Modules(), id.Name())
+	if len(all) == 2 { // top-level module
+		return rmod, p.FindModuleError
 	}
 
-	return mod, p.FindModuleError
-}
+	modID := all[len(all)-1][1:]
+	modID = modID[strings.Index(string(modID), ".")+1:]
 
-func findCommand(cmds []plugin.Command, name string, checkAliases bool) plugin.Command {
-	for _, cmd := range cmds {
-		if cmd.GetName() == name {
-			return cmd
-		}
-
-		if checkAliases {
-			for _, alias := range cmd.GetAliases() {
-				if alias == name {
-					return cmd
-				}
-			}
-		}
-	}
-
-	return nil
-}
-
-func findModule(mods []plugin.Module, name string) plugin.Module {
-	for _, mod := range mods {
-		if mod.GetName() == name {
-			return mod
-		}
-	}
-
-	return nil
+	return rmod.FindModule(modID.AsInvoke()), p.FindModuleError
 }
 
 type ErrorHandler struct {
