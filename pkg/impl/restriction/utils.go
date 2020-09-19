@@ -7,7 +7,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/pluginutil"
 )
 
 // assertChannelTypes asserts that the command with the passed context
@@ -44,10 +43,7 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRema
 		// not all guild types falls through
 	}
 
-	channelTypes, err := pluginutil.ChannelTypes(ctx.CommandIdentifier, ctx.Provider)
-	if err != nil {
-		return err
-	}
+	channelTypes := ctx.Command.ChannelTypes()
 
 	remaining := channelTypes & allowed
 	if remaining == 0 { // no channel types remaining

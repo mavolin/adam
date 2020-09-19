@@ -9,14 +9,64 @@ import (
 )
 
 type Command struct {
-	MetaReturn plugin.CommandMeta
+	plugin.CommandMeta
 	InvokeFunc func(*state.State, *plugin.Context) (interface{}, error)
 }
 
-func (c Command) Meta() plugin.CommandMeta { return c.MetaReturn }
-
 func (c Command) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
 	return c.InvokeFunc(s, ctx)
+}
+
+type RegisteredCommand struct {
+	ParentReturn plugin.RegisteredModule
+	ParentError  error
+
+	IdentifierReturn        plugin.Identifier
+	NameReturn              string
+	AliasesReturn           []string
+	ArgsReturn              plugin.ArgConfig
+	ShortDescriptionReturn  string
+	LongDescriptionReturn   string
+	ExamplesReturn          []string
+	IsHiddenReturn          bool
+	ChannelTypesReturn      plugin.ChannelTypes
+	BotPermissionsReturn    discord.Permissions
+	IsRestrictedReturn      error
+	ThrottlingOptionsReturn plugin.ThrottlingOptions
+	InvokeFunc              func(s *state.State, ctx *plugin.Context) (interface{}, error)
+}
+
+func (r RegisteredCommand) Parent() (plugin.RegisteredModule, error) {
+	return r.ParentReturn, r.ParentError
+}
+
+func (r RegisteredCommand) Identifier() plugin.Identifier { return r.IdentifierReturn }
+func (r RegisteredCommand) Name() string                  { return r.NameReturn }
+func (r RegisteredCommand) Aliases() []string             { return r.AliasesReturn }
+func (r RegisteredCommand) Args() plugin.ArgConfig        { return r.ArgsReturn }
+
+func (r RegisteredCommand) ShortDescription(*localization.Localizer) string {
+	return r.ShortDescriptionReturn
+}
+func (r RegisteredCommand) LongDescription(*localization.Localizer) string {
+	return r.LongDescriptionReturn
+}
+
+func (r RegisteredCommand) Examples(*localization.Localizer) []string { return r.ExamplesReturn }
+func (r RegisteredCommand) IsHidden() bool                            { return r.IsHiddenReturn }
+func (r RegisteredCommand) ChannelTypes() plugin.ChannelTypes         { return r.ChannelTypesReturn }
+func (r RegisteredCommand) BotPermissions() discord.Permissions       { return r.BotPermissionsReturn }
+
+func (r RegisteredCommand) IsRestricted(*state.State, *plugin.Context) error {
+	return r.IsRestrictedReturn
+}
+
+func (r RegisteredCommand) ThrottlingOptions() plugin.ThrottlingOptions {
+	return r.ThrottlingOptionsReturn
+}
+
+func (r RegisteredCommand) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
+	return r.InvokeFunc(s, ctx)
 }
 
 type CommandMeta struct {

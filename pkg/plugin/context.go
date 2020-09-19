@@ -42,8 +42,8 @@ type Context struct {
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Flags Flags
 
-	// Command is the Command that is being invoked.
-	Command Command
+	// Command is the RegisteredCommand that is being invoked.
+	Command RegisteredCommand
 
 	// CommandIdentifier is the Identifier of the command.
 	CommandIdentifier Identifier
@@ -391,28 +391,24 @@ type (
 		// iteration.
 		//
 		// Commands will always return valid data, even if error != nil.
-		// However, all runtime commands, whose providers returned an error,
-		// won't be included, and their error will be returned wrapped in a
+		// However, all runtime plugin providers that returned an error won't
+		// be included, and their error will be returned wrapped in a
 		// bot.RuntimePluginProviderError.
 		// If multiple errors occur, a errors.MultiError filled with
 		// bot.RuntimePluginProviderErrors will be returned.
-		Commands() ([]Command, error)
+		Commands() ([]RegisteredCommand, error)
 		// Modules returns a merged version of AllModules, as the command
 		// router uses it.
 		//
-		// Some Modules might not be the original module but a wrapper, since
-		// runtime modules might extend this module and merging becomes
-		// necessary.
-		//
 		// Modules will always return valid data, even if error != nil.
-		// However, all runtime modules, whose providers returned an error,
-		// won't be included, and their error will be returned wrapped in a
+		// However, all runtime plugin providers that returned an error won't
+		// be included, and their error will be returned wrapped in a
 		// bot.RuntimePluginProviderError.
 		// If multiple errors occur, a errors.MultiError filled with
 		// bot.RuntimePluginProviderErrors will be returned.
-		Modules() ([]Module, error)
+		Modules() ([]RegisteredModule, error)
 
-		// Command returns the Command with the passed Identifier.
+		// Command returns the RegisteredCommand with the passed Identifier.
 		//
 		// Note that Identifiers may only consist of the command's name, not
 		// their alias.
@@ -426,11 +422,8 @@ type (
 		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
 		// If multiple errors occur, the returned error will be of type
 		// errors.MultiError.
-		Command(Identifier) (Command, error)
-		// Module returns the Module with the passed Identifier.
-		//
-		// This might not be the original module but a wrapper, since runtime
-		// modules might extend this module and merging becomes necessary.
+		Command(Identifier) (RegisteredCommand, error)
+		// Module returns the RegisteredModule with the passed Identifier.
 		//
 		// It will return nil, nil if no module matching the identifier was
 		// found.
@@ -440,9 +433,9 @@ type (
 		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
 		// If multiple errors occur, the returned error will be of type
 		// errors.MultiError.
-		Module(Identifier) (Module, error)
+		Module(Identifier) (RegisteredModule, error)
 
-		// FindCommand returns the Command with the passed invoke.
+		// FindCommand returns the RegisteredCommand with the passed invoke.
 		//
 		// Note that Identifiers may only consist of the command's name, not
 		// their alias.
@@ -455,11 +448,8 @@ type (
 		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
 		// If multiple errors occur, the returned error will be of type
 		// errors.MultiError.
-		FindCommand(invoke string) (Command, error)
-		// FindModule returns the Module with the passed invoke.
-		//
-		// This might not be the original module but a wrapper, since runtime
-		// modules might extend this module and merging becomes necessary.
+		FindCommand(invoke string) (RegisteredCommand, error)
+		// FindModule returns the RegisteredModule with the passed invoke.
 		//
 		// It will return nil, nil if no module matching the passed invoke was
 		// found.
@@ -469,7 +459,7 @@ type (
 		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
 		// If multiple errors occur, the returned error will be of type
 		// errors.MultiError.
-		FindModule(invoke string) (Module, error)
+		FindModule(invoke string) (RegisteredModule, error)
 	}
 
 	// ModuleRepository is the struct returned by Provider.AllModules.

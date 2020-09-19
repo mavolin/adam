@@ -12,8 +12,8 @@ type (
 	//
 	// Defaults for simple commands can be found in impl/command.
 	Command interface {
-		// Meta returns the meta data of the command.
-		Meta() CommandMeta
+		CommandMeta
+
 		// Invoke calls the command.
 		//
 		// Possible first return values are
@@ -99,6 +99,68 @@ type (
 		// If either of the fields in ThrottlingOptions is zero value, the
 		// command won't be throttled.
 		GetThrottlingOptions() ThrottlingOptions
+	}
+
+	// RegisteredCommand is the abstraction of a command as returned by a
+	// Provider.
+	// In contrast to the regular command abstraction, RegisteredCommand will
+	// return data that takes into account it's parents settings.
+	RegisteredCommand interface {
+		// Parent returns the parent of this command.
+		// It will return nil, nil, if this command is top-level.
+		//
+		// In any other case will always return valid data, even if error !=
+		// nil.
+		// It is also  guaranteed that the original parent of the command, i.e.
+		// the module that provides this command is included, if there is one.
+		//
+		// However, all runtime plugin providers that returned an error won't
+		// be included, and their error will be returned wrapped in a
+		// bot.RuntimePluginProviderError.
+		// If multiple errors occur, a errors.MultiError filled with
+		// bot.RuntimePluginProviderErrors will be returned.
+		Parent() (RegisteredModule, error)
+		// Identifier returns the identifier of the command.
+		Identifier() Identifier
+
+		// Name returns the name of the command.
+		Name() string
+		// Aliases returns the optional aliases of the command.
+		Aliases() []string
+		// Args returns the argument configuration of the command.
+		//
+		// If this is nil, the command accepts no arguments.
+		Args() ArgConfig
+		// ShortDescription returns an optional one-sentence description of the
+		// command.
+		ShortDescription(l *localization.Localizer) string
+		// LongDescription returns an optional thorough description of the
+		// command.
+		LongDescription(l *localization.Localizer) string
+		// Examples returns optional examples for the command.
+		Examples(l *localization.Localizer) []string
+		// IsHidden specifies whether to show this command in the help.
+		IsHidden() bool
+		// ChannelTypes returns the ChannelTypes this command can be run in.
+		//
+		// If the command itself did not define some, ChannelTypes will return
+		// the ChannelTypes of the closest parent that has defaults defined.
+		ChannelTypes() ChannelTypes
+		// BotPermissions returns the permissions this command needs to
+		// execute.
+		// If the command itself did not define some, BotPermissions will
+		// return the permissions of the closest parent that has a default
+		// defined.
+		BotPermissions() discord.Permissions
+		// IsRestricted returns whether or not this command is restricted.
+		IsRestricted(*state.State, *Context) error
+		// ThrottlingOptions returns the ThrottlingOptions of this command.
+		// These will also include those of all parents that defined some.
+		ThrottlingOptions() ThrottlingOptions
+
+		// Invoke invokes the command.
+		// See Command.Invoke for more details.
+		Invoke(*state.State, *Context) (interface{}, error)
 	}
 )
 
