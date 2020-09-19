@@ -29,14 +29,14 @@ type InternalError struct {
 }
 
 // WithStack enriches the passed error with a stack trace.
-// If the error is nil or it is another Handler, WithStack will return the
+// If the error is nil or it is another Interface, WithStack will return the
 // error as is.
 func WithStack(err error) error {
 	return withStack(err)
 }
 
 // withStack enriches the passed error with a stack trace.
-// If the error is nil or it is another Handler, withStack will return the
+// If the error is nil or it is another Interface, withStack will return the
 // error as is.
 // If however, there is no stack trace, withStack skips the passed amount of
 // frames including withStack itself and saves the callers.
@@ -45,7 +45,7 @@ func withStack(err error) error {
 		return nil
 	}
 
-	if _, ok := err.(Handler); ok {
+	if _, ok := err.(Interface); ok {
 		return err
 	}
 

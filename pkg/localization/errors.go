@@ -44,13 +44,17 @@ func (e *NoTranslationGeneratedError) Is(target error) bool {
 	return e.Term == casted.Term
 }
 
-// stackError is a copies of errors.InternalError to prevent an import cycle.
+// stackError is a copy of errors.InternalError to prevent an import cycle.
 type stackError struct {
 	cause error
 	s     errorutil.Stack
 }
 
-func withStack(err error) *stackError {
+func withStack(err error) error {
+	if err == nil {
+		return nil
+	}
+
 	return &stackError{
 		cause: err,
 		s:     errorutil.GenerateStackTrace(1),

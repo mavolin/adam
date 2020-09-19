@@ -373,7 +373,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 
 		channels, err := s.Channels(ctx.GuildID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		g, err := ctx.Guild()
