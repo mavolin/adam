@@ -95,7 +95,7 @@ func TestUserInfo_Handle(t *testing.T) {
 		}
 		ctx.Localizer = mock.NoOpLocalizer
 
-		embed := ErrorEmbed.Clone().
+		embed := InfoEmbed.Clone().
 			WithDescription(expectDesc).
 			WithField(expectFieldName, expectFieldValue).
 			MustBuild(ctx.Localizer)
