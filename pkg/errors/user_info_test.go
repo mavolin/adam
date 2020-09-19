@@ -20,7 +20,7 @@ func TestUserInfo_Description(t *testing.T) {
 
 		e := NewUserInfo(expect)
 
-		actual, err := e.Description(mock.NewNoOpLocalizer())
+		actual, err := e.Description(mock.NoOpLocalizer)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
@@ -57,9 +57,9 @@ func TestUserInfo_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
-		embed := ErrorEmbed.Clone().
+		embed := InfoEmbed.Clone().
 			WithDescription(expectDesc).
 			MustBuild(ctx.Localizer)
 
@@ -93,9 +93,9 @@ func TestUserInfo_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
-		embed := ErrorEmbed.Clone().
+		embed := InfoEmbed.Clone().
 			WithDescription(expectDesc).
 			WithField(expectFieldName, expectFieldValue).
 			MustBuild(ctx.Localizer)

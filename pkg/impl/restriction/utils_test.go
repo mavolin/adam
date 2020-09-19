@@ -47,13 +47,13 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.GuildTextChannels,
 				},
 			},
 			allowed: plugin.GuildChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), true),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name: "pass direct messages",
@@ -82,13 +82,13 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
 			allowed: plugin.DirectMessages,
-			expect:  newInvalidChannelTypeError(plugin.DirectMessages, mock.NewNoOpLocalizer(), true),
+			expect:  newInvalidChannelTypeError(plugin.DirectMessages, mock.NoOpLocalizer, true),
 		},
 		{
 			name: "all channels",
@@ -139,13 +139,13 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.GuildChannels,
 				},
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), true),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name: "fail guild text - not fatal",
@@ -157,7 +157,7 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.GuildChannels,
 				},
@@ -168,7 +168,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				},
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NewNoOpLocalizer(), false),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, false),
 		},
 	}
 
@@ -190,7 +190,7 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 			},
-			Localizer: mock.NewNoOpLocalizer(),
+			Localizer: mock.NoOpLocalizer,
 			Command: mock.RegisteredCommand{
 				ChannelTypesReturn: plugin.GuildChannels,
 			},

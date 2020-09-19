@@ -105,7 +105,7 @@ func TestArgumentParsingError_Reason(t *testing.T) {
 	t.Run("no reason", func(t *testing.T) {
 		e := NewArgumentParsingError("")
 
-		actual := e.Reason(mock.NewNoOpLocalizer())
+		actual := e.Reason(mock.NoOpLocalizer)
 		assert.Empty(t, actual)
 	})
 }
@@ -126,7 +126,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
 		m.SendEmbed(discord.Message{
 			ChannelID: channelID,
@@ -161,7 +161,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription(expectDesc).

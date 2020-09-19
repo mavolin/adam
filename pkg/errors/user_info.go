@@ -129,7 +129,7 @@ func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 		return err
 	}
 
-	embed, err := ErrorEmbed.Clone().
+	embed, err := InfoEmbed.Clone().
 		WithDescription(desc).
 		Build(ctx.Localizer)
 	if err != nil {

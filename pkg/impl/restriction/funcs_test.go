@@ -29,12 +29,12 @@ func TestNSFW(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name: "nsfw",
@@ -104,12 +104,12 @@ func TestGuildOwner(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name: "is owner",
@@ -124,7 +124,7 @@ func TestGuildOwner(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
@@ -149,7 +149,7 @@ func TestGuildOwner(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
@@ -298,12 +298,12 @@ func TestAllRoles(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name:    "none missing",
@@ -358,7 +358,7 @@ func TestAllRoles(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
@@ -369,7 +369,7 @@ func TestAllRoles(t *testing.T) {
 					},
 				},
 			},
-			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
+			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
 		},
 		{
 			name:    "missing - can manage",
@@ -446,12 +446,12 @@ func TestMustAllRoles(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name:    "none missing",
@@ -516,7 +516,7 @@ func TestMustAllRoles(t *testing.T) {
 					},
 				},
 			},
-			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
+			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
 		},
 	}
 
@@ -553,12 +553,12 @@ func TestAnyRole(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name:    "none missing",
@@ -628,7 +628,7 @@ func TestAnyRole(t *testing.T) {
 					},
 				},
 			},
-			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
+			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
 		},
 		{
 			name:    "missing - can manage",
@@ -705,12 +705,12 @@ func TestMustAnyRole(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name:    "none missing",
@@ -780,7 +780,7 @@ func TestMustAnyRole(t *testing.T) {
 					},
 				},
 			},
-			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NewNoOpLocalizer()),
+			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
 		},
 	}
 
@@ -868,7 +868,7 @@ func TestChannels(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						ID: 345,
@@ -881,7 +881,7 @@ func TestChannels(t *testing.T) {
 					},
 				},
 			},
-			expect: newChannelsError([]discord.ChannelID{456}, mock.NewNoOpLocalizer()),
+			expect: newChannelsError([]discord.ChannelID{456}, mock.NoOpLocalizer),
 		},
 		{
 			name:       "prohibited - allowed channels not in guild",
@@ -972,12 +972,12 @@ func TestBotPermissions(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name:  "pass guild",
@@ -1021,7 +1021,7 @@ func TestBotPermissions(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
@@ -1044,7 +1044,7 @@ func TestBotPermissions(t *testing.T) {
 				},
 			},
 			expect: newInsufficientBotPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
-				mock.NewNoOpLocalizer()),
+				mock.NoOpLocalizer),
 		},
 	}
 
@@ -1095,12 +1095,12 @@ func TestUserPermissions(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NewNoOpLocalizer(), true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
 		{
 			name:  "pass guild",
@@ -1149,7 +1149,7 @@ func TestUserPermissions(t *testing.T) {
 						},
 					},
 				},
-				Localizer: mock.NewNoOpLocalizer(),
+				Localizer: mock.NoOpLocalizer,
 				Command: mock.RegisteredCommand{
 					ChannelTypesReturn: plugin.AllChannels,
 				},
@@ -1167,7 +1167,7 @@ func TestUserPermissions(t *testing.T) {
 				},
 			},
 			expect: newInsufficientUserPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
-				mock.NewNoOpLocalizer()),
+				mock.NoOpLocalizer),
 		},
 	}
 

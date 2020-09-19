@@ -9,13 +9,6 @@ import (
 	"github.com/mavolin/adam/pkg/localization"
 )
 
-func TestNewNoOpLocalizer(t *testing.T) {
-	l := NewNoOpLocalizer()
-
-	_, err := l.LocalizeTerm("abc")
-	assert.Error(t, err)
-}
-
 func TestLocalizer_Clone(t *testing.T) {
 	l1 := NewLocalizer(t).
 		On("abc", "def")
