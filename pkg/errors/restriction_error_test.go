@@ -20,7 +20,7 @@ func TestRestrictionError_Description(t *testing.T) {
 
 		e := NewRestrictionError(expect)
 
-		actual, err := e.Description(mock.NewNoOpLocalizer())
+		actual, err := e.Description(mock.NoOpLocalizer)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
@@ -56,7 +56,7 @@ func TestRestrictionError_Handle(t *testing.T) {
 			},
 		},
 	}
-	ctx.Localizer = mock.NewNoOpLocalizer()
+	ctx.Localizer = mock.NoOpLocalizer
 
 	embed := ErrorEmbed.Clone().
 		WithDescription(expectDesc).

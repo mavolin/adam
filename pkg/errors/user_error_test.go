@@ -20,7 +20,7 @@ func TestUserError_Description(t *testing.T) {
 
 		e := NewUserError(expect)
 
-		actual, err := e.Description(mock.NewNoOpLocalizer())
+		actual, err := e.Description(mock.NoOpLocalizer)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
@@ -57,7 +57,7 @@ func TestUserError_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription(expectDesc).
@@ -93,7 +93,7 @@ func TestUserError_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription(expectDesc).

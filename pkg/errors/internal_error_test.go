@@ -199,7 +199,7 @@ func TestInternalError_Description(t *testing.T) {
 
 		err := WithDescription(New(""), expect)
 
-		actual := err.Description(mock.NewNoOpLocalizer())
+		actual := err.Description(mock.NoOpLocalizer)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -222,7 +222,7 @@ func TestInternalError_Description(t *testing.T) {
 	t.Run("invalid description", func(t *testing.T) {
 		err := WithDescription(New(""), "")
 
-		actual := err.Description(mock.NewNoOpLocalizer())
+		actual := err.Description(mock.NoOpLocalizer)
 		assert.NotEmpty(t, actual)
 	})
 }

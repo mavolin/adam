@@ -74,7 +74,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me" +
@@ -105,7 +105,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 				},
 			},
 		}
-		ctx.Localizer = mock.NewNoOpLocalizer()
+		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me the "+

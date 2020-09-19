@@ -159,7 +159,7 @@ func TestAll(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			f := All(c.funcs...)
 
-			actual := f(nil, &plugin.Context{Localizer: mock.NewNoOpLocalizer()})
+			actual := f(nil, &plugin.Context{Localizer: mock.NoOpLocalizer})
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -321,7 +321,7 @@ func TestAny(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			f := Any(c.funcs...)
 
-			actual := f(nil, &plugin.Context{Localizer: mock.NewNoOpLocalizer()})
+			actual := f(nil, &plugin.Context{Localizer: mock.NoOpLocalizer})
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -506,7 +506,7 @@ func Test_allError_format(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual, fatal, err := c.err.format(0, mock.NewNoOpLocalizer())
+			actual, fatal, err := c.err.format(0, mock.NoOpLocalizer)
 			require.NoError(t, err)
 			assert.Equal(t, c.fatal, fatal)
 			assert.Equal(t, c.expect, actual)
@@ -756,7 +756,7 @@ func Test_anyError_format(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual, fatal, err := c.err.format(0, mock.NewNoOpLocalizer())
+			actual, fatal, err := c.err.format(0, mock.NoOpLocalizer)
 			require.NoError(t, err)
 			assert.Equal(t, c.fatal, fatal)
 			assert.Equal(t, c.expect, actual)

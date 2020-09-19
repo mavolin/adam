@@ -9,6 +9,13 @@ import (
 	"github.com/mavolin/adam/pkg/localization"
 )
 
+// NoOpLocalizer is a localizer that only returns errors.
+var NoOpLocalizer = localization.NewManager(func(lang string) localization.LangFunc {
+	return func(_ localization.Term, _ map[string]interface{}, _ interface{}) (string, error) {
+		return "", errors.New("error")
+	}
+}).Localizer("")
+
 type Localizer struct {
 	t *testing.T
 
@@ -35,17 +42,6 @@ func NewLocalizerWithDefault(def string) *Localizer {
 		on:    make(map[localization.Term]string),
 		errOn: make(map[localization.Term]struct{}),
 	}
-}
-
-// NewNoOpLocalizer returns a localization.Localizer that returns only errors.
-func NewNoOpLocalizer() *localization.Localizer {
-	m := localization.NewManager(func(lang string) localization.LangFunc {
-		return func(_ localization.Term, _ map[string]interface{}, _ interface{}) (string, error) {
-			return "", errors.New("error")
-		}
-	})
-
-	return m.Localizer("")
 }
 
 // On adds the passed response for the passed term to the localizer.
