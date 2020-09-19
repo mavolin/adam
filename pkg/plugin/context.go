@@ -95,6 +95,7 @@ func (c *Context) Reply(content string) (*discord.Message, error) {
 	return c.ReplyMessage(api.SendMessageData{
 		Content: content,
 	})
+
 }
 
 // Replyl replies with the message translated from the passed
@@ -148,7 +149,7 @@ func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, erro
 
 	msg, err := c.s.SendMessageComplex(c.ChannelID, data)
 	if err != nil {
-		return nil, err
+		return nil, withStack(err)
 	}
 
 	if c.GuildID == 0 {
@@ -218,7 +219,7 @@ func (c *Context) ReplyMessageDM(data api.SendMessageData) (*discord.Message, er
 
 	msg, err := c.s.SendMessageComplex(c.dmID, data)
 	if err != nil {
-		return nil, err
+		return nil, withStack(err)
 	}
 
 	c.dmReplies = append(c.dmReplies, msg.ID)
@@ -237,7 +238,7 @@ func (c *Context) DeleteDMReplies() error {
 
 	err := c.s.DeleteMessages(c.dmID, c.dmReplies)
 	if err != nil {
-		return err
+		return withStack(err)
 	}
 
 	c.dmReplies = nil
@@ -256,7 +257,7 @@ func (c *Context) DeleteGuildReplies() error {
 
 	err := c.s.DeleteMessages(c.ChannelID, c.guildReplies)
 	if err != nil {
-		return err
+		return withStack(err)
 	}
 
 	c.guildReplies = nil
@@ -278,7 +279,7 @@ func (c *Context) DeleteAllReplies() error {
 }
 
 // DeleteInvoke deletes the invoking message.
-func (c *Context) DeleteInvoke() error { return c.s.DeleteMessage(c.ChannelID, c.ID) }
+func (c *Context) DeleteInvoke() error { return withStack(c.s.DeleteMessage(c.ChannelID, c.ID)) }
 
 // DeleteInvokeInBackground deletes the invoking message in a separate
 // goroutine.

@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	// indentMultiplicator defines the amount of whitespaces per indent level.
-	indentMultiplicator = 2
+	// indentMultiplier defines the amount of whitespaces per indent level.
+	indentMultiplier = 2
 	// entryPrefix is the prefix used in front of every entry.
 	entryPrefix = "• "
 )
@@ -348,8 +348,8 @@ func (e *anyError) Error() string {
 func genIndent(indentLvl int) (indent, nlIndent string) {
 	// use an "ideographic space" for indenting, as discord strips whitespace
 	// on new lines in embeds.
-	indent = strings.Repeat("\u3000", indentLvl*indentMultiplicator)
-	nlIndent = strings.Repeat("\u3000", indentLvl*indentMultiplicator)
+	indent = strings.Repeat("\u3000", indentLvl*indentMultiplier)
+	nlIndent = strings.Repeat("\u3000", indentLvl*indentMultiplier)
 
 	if nlIndent == "" { // prefix a zero-width whitespace if the indentLvl is 0
 		nlIndent += "\u200b"
