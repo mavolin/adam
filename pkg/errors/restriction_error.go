@@ -96,7 +96,7 @@ func (e *RestrictionError) Description(l *localization.Localizer) (string, error
 
 func (e *RestrictionError) Error() string { return "restriction error" }
 
-// Handle sends an error embed with the description of the UserError.
+// Handle sends an error embed with the description of the ThrottlingError.
 func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
 	desc, err := e.Description(ctx.Localizer)
 	if err != nil {
