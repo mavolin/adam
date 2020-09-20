@@ -33,6 +33,21 @@ var (
 		},
 	}
 
+	memberErrorSecond = localization.Config{
+		Term: "throttling.member.second",
+		Fallback: localization.Fallback{
+			One:   "You can use this command again in this guild in one second.",
+			Other: "You can use this command again in this guild in {{.seconds}} seconds.",
+		},
+	}
+	memberErrorMinute = localization.Config{
+		Term: "throttling.member.minute",
+		Fallback: localization.Fallback{
+			One:   "You can use this command again in this guild in one minute.",
+			Other: "You can use this command again in this guild in {{.minutes}} minutes.",
+		},
+	}
+
 	userErrorSecond = localization.Config{
 		Term: "throttling.user.second",
 		Fallback: localization.Fallback{
