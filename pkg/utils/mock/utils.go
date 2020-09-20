@@ -89,7 +89,6 @@ type registeredModule struct {
 	shortDescFunc func(l *localization.Localizer) string
 	longDescFunc  func(l *localization.Localizer) string
 	isHidden      bool
-	throttler     plugin.Throttler
 	cmds          []plugin.RegisteredCommand
 	mods          []plugin.RegisteredModule
 }
@@ -106,8 +105,7 @@ func (r registeredModule) LongDescription(l *localization.Localizer) string {
 	return r.longDescFunc(l)
 }
 
-func (r registeredModule) IsHidden() bool              { return r.isHidden }
-func (r registeredModule) Throttler() plugin.Throttler { return r.throttler }
+func (r registeredModule) IsHidden() bool { return r.isHidden }
 
 func (r registeredModule) Commands() []plugin.RegisteredCommand {
 	cp := make([]plugin.RegisteredCommand, len(r.cmds))
@@ -191,7 +189,6 @@ func asRegisteredModule(src plugin.Module) plugin.RegisteredModule {
 		shortDescFunc: src.GetShortDescription,
 		longDescFunc:  src.GetLongDescription,
 		isHidden:      src.IsHidden(),
-		throttler:     src.GetThrottler(),
 		mods:          asRegisteredModules(src.Modules()),
 	}
 
