@@ -53,6 +53,8 @@ type (
 		// stop with an errors.InsufficientPermissionsError.
 		//
 		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
+		// To remove a RestrictionFunc defined by a parent without defining a
+		// new one use restriction.None.
 		//
 		// Note that that direct messages may also pass this, if the passed
 		// permissions only require constant.DMPermissions.
