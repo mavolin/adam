@@ -3,6 +3,21 @@ package throttling
 import "github.com/mavolin/adam/pkg/localization"
 
 var (
+	channelErrorSecond = localization.Config{
+		Term: "throttling.channel.second",
+		Fallback: localization.Fallback{
+			One:   "This command can be used again in this channel in one second.",
+			Other: "This command can be used again in this channel in {{.seconds}} seconds.",
+		},
+	}
+	channelErrorMinute = localization.Config{
+		Term: "throttling.channel.minute",
+		Fallback: localization.Fallback{
+			One:   "This command can be used again in this channel in one minute.",
+			Other: "This command can be used again in this channel in {{.minutes}} minutes.",
+		},
+	}
+
 	userErrorSecond = localization.Config{
 		Term: "throttling.user.second",
 		Fallback: localization.Fallback{
