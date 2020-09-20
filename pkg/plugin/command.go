@@ -84,7 +84,7 @@ type (
 		// Note that that direct messages may also pass this, if the passed
 		// permissions only require constant.DMPermissions.
 		GetBotPermissions() *discord.Permissions
-		// IsRestricted checks if the user is restricted from using the
+		// GetRestrictionFunc checks if the user is restricted from using the
 		// command.
 		//
 		// Setting this will override restrictions defined by the parent.
@@ -95,10 +95,12 @@ type (
 		// If the RestrictionFunc returns an error that implements
 		// RestrictionErrorWrapper, it will be properly wrapped.
 		GetRestrictionFunc() RestrictionFunc
-		// GetThrottlingOptions returns the ThrottlingOptions for the command.
-		// If either of the fields in ThrottlingOptions is zero value, the
-		// command won't be throttled.
-		GetThrottlingOptions() ThrottlingOptions
+		// GetThrottler returns the Throttler for the command.
+		//
+		// Setting this will override the Throttler defined by the parent.
+		// To remove a Throttler defined by a parent without defining a new
+		// one use throttling.None.
+		GetThrottler() Throttler
 	}
 
 	// RegisteredCommand is the abstraction of a command as returned by a
@@ -154,9 +156,11 @@ type (
 		BotPermissions() discord.Permissions
 		// IsRestricted returns whether or not this command is restricted.
 		IsRestricted(*state.State, *Context) error
-		// ThrottlingOptions returns the ThrottlingOptions of this command.
-		// These will also include those of all parents that defined some.
-		ThrottlingOptions() ThrottlingOptions
+		// Throttler returns the Throttler of this command.
+		//
+		// If the command itself did not define one, Throttler will return the
+		// Throttler of the closest parent.
+		Throttler() Throttler
 
 		// Invoke invokes the command.
 		// See Command.Invoke for more details.

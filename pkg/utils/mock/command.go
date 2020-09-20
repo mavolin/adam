@@ -21,19 +21,19 @@ type RegisteredCommand struct {
 	ParentReturn plugin.RegisteredModule
 	ParentError  error
 
-	IdentifierReturn        plugin.Identifier
-	NameReturn              string
-	AliasesReturn           []string
-	ArgsReturn              plugin.ArgConfig
-	ShortDescriptionReturn  string
-	LongDescriptionReturn   string
-	ExamplesReturn          []string
-	IsHiddenReturn          bool
-	ChannelTypesReturn      plugin.ChannelTypes
-	BotPermissionsReturn    discord.Permissions
-	IsRestrictedReturn      error
-	ThrottlingOptionsReturn plugin.ThrottlingOptions
-	InvokeFunc              func(s *state.State, ctx *plugin.Context) (interface{}, error)
+	IdentifierReturn       plugin.Identifier
+	NameReturn             string
+	AliasesReturn          []string
+	ArgsReturn             plugin.ArgConfig
+	ShortDescriptionReturn string
+	LongDescriptionReturn  string
+	ExamplesReturn         []string
+	IsHiddenReturn         bool
+	ChannelTypesReturn     plugin.ChannelTypes
+	BotPermissionsReturn   discord.Permissions
+	IsRestrictedReturn     error
+	ThrottlerReturn        plugin.Throttler
+	InvokeFunc             func(s *state.State, ctx *plugin.Context) (interface{}, error)
 }
 
 func (r RegisteredCommand) Parent() (plugin.RegisteredModule, error) {
@@ -61,26 +61,24 @@ func (r RegisteredCommand) IsRestricted(*state.State, *plugin.Context) error {
 	return r.IsRestrictedReturn
 }
 
-func (r RegisteredCommand) ThrottlingOptions() plugin.ThrottlingOptions {
-	return r.ThrottlingOptionsReturn
-}
+func (r RegisteredCommand) Throttler() plugin.Throttler { return r.ThrottlerReturn }
 
 func (r RegisteredCommand) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
 	return r.InvokeFunc(s, ctx)
 }
 
 type CommandMeta struct {
-	Name              string
-	Aliases           []string
-	Args              ArgConfig
-	ShortDescription  string
-	LongDescription   string
-	Examples          []string
-	Hidden            bool
-	ChannelTypes      plugin.ChannelTypes
-	BotPermissions    *discord.Permissions
-	Restrictions      plugin.RestrictionFunc
-	ThrottlingOptions plugin.ThrottlingOptions
+	Name             string
+	Aliases          []string
+	Args             ArgConfig
+	ShortDescription string
+	LongDescription  string
+	Examples         []string
+	Hidden           bool
+	ChannelTypes     plugin.ChannelTypes
+	BotPermissions   *discord.Permissions
+	Restrictions     plugin.RestrictionFunc
+	Throttler        plugin.Throttler
 }
 
 func (c CommandMeta) GetName() string                                    { return c.Name }
@@ -93,7 +91,7 @@ func (c CommandMeta) IsHidden() bool                                     { retur
 func (c CommandMeta) GetChannelTypes() plugin.ChannelTypes               { return c.ChannelTypes }
 func (c CommandMeta) GetBotPermissions() *discord.Permissions            { return c.BotPermissions }
 func (c CommandMeta) GetRestrictionFunc() plugin.RestrictionFunc         { return c.Restrictions }
-func (c CommandMeta) GetThrottlingOptions() plugin.ThrottlingOptions     { return c.ThrottlingOptions }
+func (c CommandMeta) GetThrottler() plugin.Throttler                     { return c.Throttler }
 
 type ArgConfig struct {
 	Expect string

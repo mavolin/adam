@@ -21,14 +21,14 @@ type RegisteredModule struct {
 	ParentReturn plugin.RegisteredModule
 	ParentError  error
 
-	IdentifierReturn        plugin.Identifier
-	NameReturn              string
-	ShortDescriptionReturn  string
-	LongDescriptionReturn   string
-	IsHiddenReturn          bool
-	ThrottlingOptionsReturn plugin.ThrottlingOptions
-	CommandsReturn          []plugin.RegisteredCommand
-	ModulesReturn           []plugin.RegisteredModule
+	IdentifierReturn       plugin.Identifier
+	NameReturn             string
+	ShortDescriptionReturn string
+	LongDescriptionReturn  string
+	IsHiddenReturn         bool
+	ThrottlerReturn        plugin.Throttler
+	CommandsReturn         []plugin.RegisteredCommand
+	ModulesReturn          []plugin.RegisteredModule
 }
 
 func (r RegisteredModule) Parent() (plugin.RegisteredModule, error) {
@@ -46,11 +46,8 @@ func (r RegisteredModule) LongDescription(*localization.Localizer) string {
 	return r.LongDescriptionReturn
 }
 
-func (r RegisteredModule) IsHidden() bool { return r.IsHiddenReturn }
-
-func (r RegisteredModule) ThrottlingOptions() plugin.ThrottlingOptions {
-	return r.ThrottlingOptionsReturn
-}
+func (r RegisteredModule) IsHidden() bool              { return r.IsHiddenReturn }
+func (r RegisteredModule) Throttler() plugin.Throttler { return r.ThrottlerReturn }
 
 func (r RegisteredModule) Commands() []plugin.RegisteredCommand {
 	cp := make([]plugin.RegisteredCommand, len(r.CommandsReturn))
@@ -134,7 +131,7 @@ type ModuleMeta struct {
 	ChannelTypes      plugin.ChannelTypes
 	BotPermissions    *discord.Permissions
 	Restrictions      plugin.RestrictionFunc
-	ThrottlingOptions plugin.ThrottlingOptions
+	ThrottlingOptions plugin.Throttler
 }
 
 func (c ModuleMeta) GetName() string                                    { return c.Name }
@@ -144,4 +141,4 @@ func (c ModuleMeta) IsHidden() bool                                     { return
 func (c ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes        { return c.ChannelTypes }
 func (c ModuleMeta) GetDefaultBotPermissions() *discord.Permissions     { return c.BotPermissions }
 func (c ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc  { return c.Restrictions }
-func (c ModuleMeta) GetThrottlingOptions() plugin.ThrottlingOptions     { return c.ThrottlingOptions }
+func (c ModuleMeta) GetThrottler() plugin.Throttler                     { return c.ThrottlingOptions }
