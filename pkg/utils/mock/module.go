@@ -8,12 +8,11 @@ import (
 )
 
 type Module struct {
-	MetaReturn     plugin.ModuleMeta
+	plugin.ModuleMeta
 	CommandsReturn []plugin.Command
 	ModulesReturn  []plugin.Module
 }
 
-func (c Module) Meta() plugin.ModuleMeta    { return c.MetaReturn }
 func (c Module) Commands() []plugin.Command { return c.CommandsReturn }
 func (c Module) Modules() []plugin.Module   { return c.ModulesReturn }
 
@@ -21,14 +20,13 @@ type RegisteredModule struct {
 	ParentReturn plugin.RegisteredModule
 	ParentError  error
 
-	IdentifierReturn        plugin.Identifier
-	NameReturn              string
-	ShortDescriptionReturn  string
-	LongDescriptionReturn   string
-	IsHiddenReturn          bool
-	ThrottlingOptionsReturn plugin.ThrottlingOptions
-	CommandsReturn          []plugin.RegisteredCommand
-	ModulesReturn           []plugin.RegisteredModule
+	IdentifierReturn       plugin.Identifier
+	NameReturn             string
+	ShortDescriptionReturn string
+	LongDescriptionReturn  string
+	IsHiddenReturn         bool
+	CommandsReturn         []plugin.RegisteredCommand
+	ModulesReturn          []plugin.RegisteredModule
 }
 
 func (r RegisteredModule) Parent() (plugin.RegisteredModule, error) {
@@ -47,10 +45,6 @@ func (r RegisteredModule) LongDescription(*localization.Localizer) string {
 }
 
 func (r RegisteredModule) IsHidden() bool { return r.IsHiddenReturn }
-
-func (r RegisteredModule) ThrottlingOptions() plugin.ThrottlingOptions {
-	return r.ThrottlingOptionsReturn
-}
 
 func (r RegisteredModule) Commands() []plugin.RegisteredCommand {
 	cp := make([]plugin.RegisteredCommand, len(r.CommandsReturn))
@@ -127,21 +121,21 @@ Identifiers:
 }
 
 type ModuleMeta struct {
-	Name              string
-	ShortDescription  string
-	LongDescription   string
-	Hidden            bool
-	ChannelTypes      plugin.ChannelTypes
-	BotPermissions    *discord.Permissions
-	Restrictions      plugin.RestrictionFunc
-	ThrottlingOptions plugin.ThrottlingOptions
+	Name                  string
+	ShortDescription      string
+	LongDescription       string
+	Hidden                bool
+	DefaultChannelTypes   plugin.ChannelTypes
+	DefaultBotPermissions *discord.Permissions
+	DefaultRestrictions   plugin.RestrictionFunc
+	DefaultThrottler      plugin.Throttler
 }
 
 func (c ModuleMeta) GetName() string                                    { return c.Name }
 func (c ModuleMeta) GetShortDescription(*localization.Localizer) string { return c.ShortDescription }
 func (c ModuleMeta) GetLongDescription(*localization.Localizer) string  { return c.LongDescription }
 func (c ModuleMeta) IsHidden() bool                                     { return c.Hidden }
-func (c ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes        { return c.ChannelTypes }
-func (c ModuleMeta) GetDefaultBotPermissions() *discord.Permissions     { return c.BotPermissions }
-func (c ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc  { return c.Restrictions }
-func (c ModuleMeta) GetThrottlingOptions() plugin.ThrottlingOptions     { return c.ThrottlingOptions }
+func (c ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes        { return c.DefaultChannelTypes }
+func (c ModuleMeta) GetDefaultBotPermissions() *discord.Permissions     { return c.DefaultBotPermissions }
+func (c ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc  { return c.DefaultRestrictions }
+func (c ModuleMeta) GetDefaultThrottler() plugin.Throttler              { return c.DefaultThrottler }

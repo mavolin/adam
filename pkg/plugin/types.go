@@ -1,8 +1,6 @@
 package plugin
 
 import (
-	"time"
-
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/pkg/state"
 )
@@ -44,31 +42,38 @@ func (t ChannelTypes) Has(target discord.ChannelType) bool {
 	}
 }
 
-// RestrictionFunc is the function used to determine if a user is authorized
-// to use a command or module.
-//
-// Implementations can be found in impl/restriction.
-type RestrictionFunc func(s *state.State, ctx *Context) error
-
-// ThrottlingOptions is used to create cooldowns for commands.
-// Throttling is applied on a per-user basis.
-type ThrottlingOptions struct {
-	// MaxInvokes specifies the inclusive maximum amount of invokes within
-	// the given Timeframe
-	MaxInvokes uint
-	// Duration is the time.Duration where the MaxInvokes level is measured.
-	Duration time.Duration
-}
-
-// RestrictionErrorWrapper is the interface used to wrap errors returned by a
-// RestrictionFunc.
-// If the RestrictionFunc of a plugin returns an error, that implements this,
-// It will call Wrap() to properly wrap the error.
-type RestrictionErrorWrapper interface {
-	// Wrap wraps the error returned by the RestrictionFunc.
+type (
+	// RestrictionFunc is the function used to determine if a user is authorized
+	// to use a command or module.
 	//
-	// If this error is caused by unfulfilled restrictions, it should
-	// automatically decide, whether a errors.RestrictionError or a
-	// errors.FatalRestrictionError is appropriate.
-	Wrap(*state.State, *Context) error
+	// Implementations can be found in impl/restriction.
+	RestrictionFunc func(s *state.State, ctx *Context) error
+
+	// RestrictionErrorWrapper is the interface used to wrap errors returned by a
+	// RestrictionFunc.
+	// If the RestrictionFunc of a plugin returns an error, that implements this,
+	// It will call Wrap() to properly wrap the error.
+	RestrictionErrorWrapper interface {
+		// Wrap wraps the error returned by the RestrictionFunc.
+		//
+		// If this error is caused by unfulfilled restrictions, it should
+		// automatically decide, whether a errors.RestrictionError or a
+		// errors.FatalRestrictionError is appropriate.
+		Wrap(*state.State, *Context) error
+	}
+)
+
+// Throttler is used to create cooldowns for commands.
+//
+// Implementations can be found in impl/throttling.
+type Throttler interface {
+	// Check checks if the command may be executed and increments the counter
+	// if so.
+	// It returns not nil, nil if the command may be executed and nil, not-nil
+	// if the command is throttled.
+	// The returned error should be of type errors.ThrottlingError.
+	//
+	// The returned function will be called, if the command exits with an
+	// error and that error is not ignored as defined via the bots Options.
+	Check(ctx *Context) (func(), error)
 }

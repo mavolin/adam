@@ -9,20 +9,20 @@ import (
 )
 
 type registeredCommand struct {
-	parent            plugin.RegisteredModule
-	ident             plugin.Identifier
-	name              string
-	aliases           []string
-	args              plugin.ArgConfig
-	shortDescFunc     func(l *localization.Localizer) string
-	longDescFunc      func(l *localization.Localizer) string
-	examplesFunc      func(l *localization.Localizer) []string
-	isHidden          bool
-	channelTypes      plugin.ChannelTypes
-	botPerms          discord.Permissions
-	restrictionFunc   plugin.RestrictionFunc
-	throttlingOptions plugin.ThrottlingOptions
-	invokeFunc        func(s *state.State, ctx *plugin.Context) (interface{}, error)
+	parent          plugin.RegisteredModule
+	ident           plugin.Identifier
+	name            string
+	aliases         []string
+	args            plugin.ArgConfig
+	shortDescFunc   func(l *localization.Localizer) string
+	longDescFunc    func(l *localization.Localizer) string
+	examplesFunc    func(l *localization.Localizer) []string
+	isHidden        bool
+	channelTypes    plugin.ChannelTypes
+	botPerms        discord.Permissions
+	restrictionFunc plugin.RestrictionFunc
+	throttler       plugin.Throttler
+	invokeFunc      func(s *state.State, ctx *plugin.Context) (interface{}, error)
 }
 
 func (r registeredCommand) Parent() (plugin.RegisteredModule, error) { return r.parent, nil }
@@ -48,9 +48,7 @@ func (r registeredCommand) IsRestricted(s *state.State, ctx *plugin.Context) err
 	return r.restrictionFunc(s, ctx)
 }
 
-func (r registeredCommand) ThrottlingOptions() plugin.ThrottlingOptions {
-	return r.throttlingOptions
-}
+func (r registeredCommand) Throttler() plugin.Throttler { return r.throttler }
 
 func (r registeredCommand) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
 	return r.invokeFunc(s, ctx)
@@ -85,15 +83,14 @@ func findModule(mods []plugin.Module, name string) plugin.Module {
 }
 
 type registeredModule struct {
-	parent            plugin.RegisteredModule
-	ident             plugin.Identifier
-	name              string
-	shortDescFunc     func(l *localization.Localizer) string
-	longDescFunc      func(l *localization.Localizer) string
-	isHidden          bool
-	throttlingOptions plugin.ThrottlingOptions
-	cmds              []plugin.RegisteredCommand
-	mods              []plugin.RegisteredModule
+	parent        plugin.RegisteredModule
+	ident         plugin.Identifier
+	name          string
+	shortDescFunc func(l *localization.Localizer) string
+	longDescFunc  func(l *localization.Localizer) string
+	isHidden      bool
+	cmds          []plugin.RegisteredCommand
+	mods          []plugin.RegisteredModule
 }
 
 func (r registeredModule) Parent() (plugin.RegisteredModule, error) { return r.parent, nil }
@@ -109,10 +106,6 @@ func (r registeredModule) LongDescription(l *localization.Localizer) string {
 }
 
 func (r registeredModule) IsHidden() bool { return r.isHidden }
-
-func (r registeredModule) ThrottlingOptions() plugin.ThrottlingOptions {
-	return r.throttlingOptions
-}
 
 func (r registeredModule) Commands() []plugin.RegisteredCommand {
 	cp := make([]plugin.RegisteredCommand, len(r.cmds))
@@ -190,14 +183,13 @@ Identifiers:
 
 func asRegisteredModule(src plugin.Module) plugin.RegisteredModule {
 	rmod := &registeredModule{
-		parent:            nil,
-		ident:             "." + plugin.Identifier(src.GetName()),
-		name:              src.GetName(),
-		shortDescFunc:     src.GetShortDescription,
-		longDescFunc:      src.GetLongDescription,
-		isHidden:          src.IsHidden(),
-		throttlingOptions: src.GetThrottlingOptions(),
-		mods:              asRegisteredModules(src.Modules()),
+		parent:        nil,
+		ident:         "." + plugin.Identifier(src.GetName()),
+		name:          src.GetName(),
+		shortDescFunc: src.GetShortDescription,
+		longDescFunc:  src.GetLongDescription,
+		isHidden:      src.IsHidden(),
+		mods:          asRegisteredModules(src.Modules()),
 	}
 
 	rmod.cmds = asRegisteredCommands(src.Commands(), rmod)
@@ -217,20 +209,20 @@ func asRegisteredModules(src []plugin.Module) []plugin.RegisteredModule {
 
 func asRegisteredCommand(src plugin.Command, parent plugin.RegisteredModule) plugin.RegisteredCommand {
 	return &registeredCommand{
-		parent:            parent,
-		ident:             "." + plugin.Identifier(src.GetName()),
-		name:              src.GetName(),
-		aliases:           src.GetAliases(),
-		args:              src.GetArgs(),
-		shortDescFunc:     src.GetShortDescription,
-		longDescFunc:      src.GetLongDescription,
-		examplesFunc:      src.GetExamples,
-		isHidden:          src.IsHidden(),
-		channelTypes:      src.GetChannelTypes(),
-		botPerms:          *src.GetBotPermissions(),
-		restrictionFunc:   src.GetRestrictionFunc(),
-		throttlingOptions: src.GetThrottlingOptions(),
-		invokeFunc:        src.Invoke,
+		parent:          parent,
+		ident:           "." + plugin.Identifier(src.GetName()),
+		name:            src.GetName(),
+		aliases:         src.GetAliases(),
+		args:            src.GetArgs(),
+		shortDescFunc:   src.GetShortDescription,
+		longDescFunc:    src.GetLongDescription,
+		examplesFunc:    src.GetExamples,
+		isHidden:        src.IsHidden(),
+		channelTypes:    src.GetChannelTypes(),
+		botPerms:        *src.GetBotPermissions(),
+		restrictionFunc: src.GetRestrictionFunc(),
+		throttler:       src.GetThrottler(),
+		invokeFunc:      src.Invoke,
 	}
 }
 

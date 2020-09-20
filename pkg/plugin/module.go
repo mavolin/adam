@@ -57,13 +57,15 @@ type (
 		// Note that that direct messages may also pass this, if the passed
 		// permissions only require constant.DMPermissions.
 		GetDefaultRestrictionFunc() RestrictionFunc
-		// GetThrottlingOptions returns the ThrottlingOptions for the module.
-		// This defines how often all commands and submodules in this module
-		// together may be used.
+		// GetDefaultThrottler returns the Throttler for the module.
+		// The throttler is used for all subcommands and submodules of the
+		// module.
+		// However, a command or module can overwrite this, by setting its own
+		// Throttler.
 		//
-		// If either of the fields in ThrottlingOptions is zero value, the
-		// module won't be throttled.
-		GetThrottlingOptions() ThrottlingOptions
+		// To remove a Throttler defined by a parent without defining a new
+		// one use throttling.None.
+		GetDefaultThrottler() Throttler
 	}
 
 	// RegisteredModule is the abstraction of a module as returned by a
@@ -99,8 +101,6 @@ type (
 		// IsHidden specifies whether this module and all it's submodules and
 		// commands should be hidden from help messages.
 		IsHidden() bool
-		// ThrottlingOptions returns the ThrottlingOptions of the command.
-		ThrottlingOptions() ThrottlingOptions
 
 		// Commands returns the subcommands of the module.
 		Commands() []RegisteredCommand
