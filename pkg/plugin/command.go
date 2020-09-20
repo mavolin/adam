@@ -88,6 +88,8 @@ type (
 		// command.
 		//
 		// Setting this will override restrictions defined by the parent.
+		// To remove a RestrictionFunc defined by a parent without defining a
+		// new one use restriction.None.
 		//
 		// If they are restricted, a errors.RestrictionError should be
 		// returned.
