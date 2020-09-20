@@ -50,17 +50,18 @@ func Test_genError(t *testing.T) {
 
 			acutal := genError(c.duration, secondConfig, minuteConfig)
 
-			if c.expectSeconds > 0 {
+			switch {
+			case c.expectSeconds > 0:
 				assert.Equal(t, errors.NewThrottlingErrorl(secondConfig.
 					WithPlaceholders(secondPlaceholders{
 						Seconds: c.expectSeconds,
 					})), acutal)
-			} else if c.expectMinutes > 0 {
+			case c.expectMinutes > 0:
 				assert.Equal(t, errors.NewThrottlingErrorl(minuteConfig.
 					WithPlaceholders(minutePlaceholders{
 						Minutes: c.expectMinutes,
 					})), acutal)
-			} else {
+			default:
 				assert.Nil(t, acutal)
 			}
 		})
