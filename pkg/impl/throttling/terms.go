@@ -18,6 +18,21 @@ var (
 		},
 	}
 
+	guildErrorSecond = localization.Config{
+		Term: "throttling.guild.second",
+		Fallback: localization.Fallback{
+			One:   "This command can be used again in this server in one second.",
+			Other: "This command can be used again in this server in {{.seconds}} seconds.",
+		},
+	}
+	guildErrorMinute = localization.Config{
+		Term: "throttling.guild.minute",
+		Fallback: localization.Fallback{
+			One:   "This command can be used again in this server in one minute.",
+			Other: "This command can be used again in this server in {{.minutes}} minutes.",
+		},
+	}
+
 	userErrorSecond = localization.Config{
 		Term: "throttling.user.second",
 		Fallback: localization.Fallback{
