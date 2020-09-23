@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
@@ -799,12 +800,8 @@ func TestEmbedBuilder_withField(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name: &text{
-						string: name,
-					},
-					value: &text{
-						string: value,
-					},
+					name:    locutil.NewStaticText(name),
+					value:   locutil.NewStaticText(value),
 					inlined: inlined,
 				},
 			},
@@ -825,10 +822,7 @@ func TestEmbedBuilder_withField(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name: &text{
-						string: name,
-					},
-					value:   nil,
+					name:    locutil.NewStaticText(name),
 					inlined: inlined,
 				},
 			},
@@ -849,10 +843,7 @@ func TestEmbedBuilder_withField(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name: nil,
-					value: &text{
-						string: value,
-					},
+					value:   locutil.NewStaticText(value),
 					inlined: inlined,
 				},
 			},
@@ -876,12 +867,8 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name: &text{
-						config: name,
-					},
-					value: &text{
-						config: value,
-					},
+					name:    locutil.NewLocalizedText(name),
+					value:   locutil.NewLocalizedText(value),
 					inlined: inlined,
 				},
 			},
@@ -902,10 +889,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name: &text{
-						config: name,
-					},
-					value:   nil,
+					name:    locutil.NewLocalizedText(name),
 					inlined: inlined,
 				},
 			},
@@ -926,10 +910,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name: nil,
-					value: &text{
-						config: value,
-					},
+					value:   locutil.NewLocalizedText(value),
 					inlined: inlined,
 				},
 			},

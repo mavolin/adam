@@ -11,6 +11,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
@@ -21,8 +22,8 @@ func TestArgumentParsingError_WithReason(t *testing.T) {
 	err2 := err1.WithReason(reason)
 
 	assert.NotEqual(t, err1, err2)
-	assert.Equal(t, reason, err2.reasonString)
-	assert.Equal(t, err1.descString, err2.descString)
+	assert.Equal(t, locutil.NewStaticText(reason), err2.reason)
+	assert.Equal(t, err1.desc, err2.desc)
 }
 
 func TestArgumentParsingError_WithReasonl(t *testing.T) {
@@ -31,8 +32,8 @@ func TestArgumentParsingError_WithReasonl(t *testing.T) {
 	err1 := NewArgumentParsingError("abc")
 	err2 := err1.WithReasonl(reason)
 
-	assert.NotEqual(t, err1, err2.reasonConfig)
-	assert.Equal(t, err1.descString, err2.descString)
+	assert.NotEqual(t, err1.reason, err2.reason)
+	assert.Equal(t, err1.desc, err2.desc)
 }
 
 func TestArgumentParsingError_WithReasonlt(t *testing.T) {
@@ -41,8 +42,8 @@ func TestArgumentParsingError_WithReasonlt(t *testing.T) {
 	err1 := NewArgumentParsingError("abc")
 	err2 := err1.WithReasonlt(reason.Term)
 
-	assert.NotEqual(t, err1, err2.reasonConfig)
-	assert.Equal(t, err1.descString, err2.descString)
+	assert.NotEqual(t, err1.reason, err2.reason)
+	assert.Equal(t, err1.desc, err2.desc)
 }
 
 func TestArgumentParsingError_Description(t *testing.T) {
