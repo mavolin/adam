@@ -24,6 +24,12 @@ type InformationalError struct {
 	s string
 }
 
+// NewInformationalError creates a new InformationalError with the passed
+// error message.
+func NewInformationalError(s string) *InformationalError {
+	return &InformationalError{s: s}
+}
+
 func (e *InformationalError) Error() string                              { return e.s }
 func (e *InformationalError) Is(err error) bool                          { return e == err }
 func (e *InformationalError) Handle(*state.State, *plugin.Context) error { return nil }
