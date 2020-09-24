@@ -1,7 +1,7 @@
 package restriction
 
 import (
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )
