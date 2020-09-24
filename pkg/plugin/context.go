@@ -61,6 +61,17 @@ type Context struct {
 	// BotOwnerIDs contains the ids of the bot owners.
 	BotOwnerIDs []discord.UserID
 
+	// ResponseMiddlewares contains the middlewares that should be used when
+	// awaiting a response.
+	// These following types are permitted:
+	//		• func(*state.State, interface{})
+	//		• func(*state.State, interface{}) error
+	//		• func(*state.State, *state.Base)
+	//		• func(*state.State, *state.Base) error
+	//		• func(*state.State, *state.MessageCreateEvent)
+	//		• func(*state.State, *state.MessageCreateEvent) error
+	ResponseMiddlewares []interface{}
+
 	// Provider is an embedded interface that provides access to the Commands
 	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.

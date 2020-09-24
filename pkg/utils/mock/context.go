@@ -13,6 +13,7 @@ import (
 
 // AttachState is a utility function that attaches a state.State to a
 // plugin.Context.
+// Responses won't be copied.
 func AttachState(s *state.State, ctx *plugin.Context) *plugin.Context {
 	cp := plugin.NewContext(s)
 
@@ -26,6 +27,7 @@ func AttachState(s *state.State, ctx *plugin.Context) *plugin.Context {
 	cp.Prefix = ctx.Prefix
 	cp.Location = ctx.Location
 	cp.BotOwnerIDs = ctx.BotOwnerIDs
+	cp.ResponseMiddlewares = ctx.ResponseMiddlewares
 	cp.Provider = ctx.Provider
 	cp.ErrorHandler = ctx.ErrorHandler
 
