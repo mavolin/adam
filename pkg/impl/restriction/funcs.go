@@ -446,22 +446,10 @@ func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 					"DM command"))
 		}
 
-		g, err := ctx.Guild()
+		actual, err := ctx.SelfPermissions()
 		if err != nil {
 			return err
 		}
-
-		c, err := ctx.Channel()
-		if err != nil {
-			return err
-		}
-
-		s, err := ctx.Self()
-		if err != nil {
-			return err
-		}
-
-		actual := discord.CalcOverwrites(*g, *c, *s)
 
 		missing := (actual & required) ^ required
 		if missing == 0 {
@@ -492,17 +480,10 @@ func UserPermissions(perms discord.Permissions) plugin.RestrictionFunc {
 					"DM-only command"))
 		}
 
-		g, err := ctx.Guild()
+		actual, err := ctx.UserPermissions()
 		if err != nil {
 			return err
 		}
-
-		c, err := ctx.Channel()
-		if err != nil {
-			return err
-		}
-
-		actual := discord.CalcOverwrites(*g, *c, *ctx.Member)
 
 		missing := (actual & perms) ^ perms
 		if missing == 0 {
