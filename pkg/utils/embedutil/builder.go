@@ -4,13 +4,14 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 
 	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 type (
 	// Builder is a utility struct used to build embeds.
 	Builder struct {
-		title       *text
-		description *text
+		title       locutil.Text
+		description locutil.Text
 
 		url discord.URL
 
@@ -25,19 +26,19 @@ type (
 	}
 
 	footer struct {
-		text text
+		text locutil.Text
 		icon discord.URL
 	}
 
 	author struct {
-		name text
+		name locutil.Text
 		icon discord.URL
 		url  discord.URL
 	}
 
 	field struct {
-		name    *text
-		value   *text
+		name    locutil.Text
+		value   locutil.Text
 		inlined bool
 	}
 )
@@ -49,13 +50,13 @@ func NewBuilder() *Builder {
 
 // WithSimpleTitle adds a plain title (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleTitle(title string) *Builder {
-	b.title = stringText(title)
+	b.title = locutil.NewStaticText(title)
 	return b
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleTitlel(title localization.Config) *Builder {
-	b.title = configText(title)
+	b.title = locutil.NewLocalizedText(title)
 	return b
 }
 
@@ -66,7 +67,7 @@ func (b *Builder) WithSimpleTitlelt(title localization.Term) *Builder {
 
 // WithTitle adds a title (max. 256 characters) with a link to the embed.
 func (b *Builder) WithTitle(title string, url discord.URL) *Builder {
-	b.title = stringText(title)
+	b.title = locutil.NewStaticText(title)
 	b.url = url
 
 	return b
@@ -74,7 +75,7 @@ func (b *Builder) WithTitle(title string, url discord.URL) *Builder {
 
 // WithTitlel adds a title (max. 256 characters) with a link to the embed.
 func (b *Builder) WithTitlel(title localization.Config, url discord.URL) *Builder {
-	b.title = configText(title)
+	b.title = locutil.NewLocalizedText(title)
 	b.url = url
 
 	return b
@@ -87,13 +88,13 @@ func (b *Builder) WithTitlelt(title localization.Term, url discord.URL) *Builder
 
 // WithDescription adds a description (max. 2048 characters) to the embed.
 func (b *Builder) WithDescription(description string) *Builder {
-	b.description = stringText(description)
+	b.description = locutil.NewStaticText(description)
 	return b
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the embed.
 func (b *Builder) WithDescriptionl(description localization.Config) *Builder {
-	b.description = configText(description)
+	b.description = locutil.NewLocalizedText(description)
 	return b
 }
 
@@ -122,7 +123,7 @@ func (b *Builder) WithColor(color discord.Color) *Builder {
 // WithSimpleFooter adds a plain footer (max. 2048 characters) to the embed.
 func (b *Builder) WithSimpleFooter(text string) *Builder {
 	b.footer = &footer{
-		text: *stringText(text),
+		text: locutil.NewStaticText(text),
 	}
 
 	return b
@@ -131,7 +132,7 @@ func (b *Builder) WithSimpleFooter(text string) *Builder {
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the embed.
 func (b *Builder) WithSimpleFooterl(text localization.Config) *Builder {
 	b.footer = &footer{
-		text: *configText(text),
+		text: locutil.NewLocalizedText(text),
 	}
 
 	return b
@@ -145,7 +146,7 @@ func (b *Builder) WithSimpleFooterlt(text localization.Term) *Builder {
 // WithFooter adds a footer (max. 2048 character) with an icon to the embed.
 func (b *Builder) WithFooter(text string, icon discord.URL) *Builder {
 	b.footer = &footer{
-		text: *stringText(text),
+		text: locutil.NewStaticText(text),
 		icon: icon,
 	}
 
@@ -155,7 +156,7 @@ func (b *Builder) WithFooter(text string, icon discord.URL) *Builder {
 // WithFooterl adds a footer (max. 2048 character) with an icon to the embed.
 func (b *Builder) WithFooterl(text localization.Config, icon discord.URL) *Builder {
 	b.footer = &footer{
-		text: *configText(text),
+		text: locutil.NewLocalizedText(text),
 		icon: icon,
 	}
 
@@ -183,7 +184,7 @@ func (b *Builder) WithThumbnail(thumbnail discord.URL) *Builder {
 // WithSimpleAuthor adds a plain author (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleAuthor(name string) *Builder {
 	b.author = &author{
-		name: *stringText(name),
+		name: locutil.NewStaticText(name),
 	}
 
 	return b
@@ -192,7 +193,7 @@ func (b *Builder) WithSimpleAuthor(name string) *Builder {
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleAuthorl(name localization.Config) *Builder {
 	b.author = &author{
-		name: *configText(name),
+		name: locutil.NewLocalizedText(name),
 	}
 
 	return b
@@ -207,7 +208,7 @@ func (b *Builder) WithSimpleAuthorlt(name localization.Term) *Builder {
 // the embed.
 func (b *Builder) WithSimpleAuthorWithURL(name string, url discord.URL) *Builder {
 	b.author = &author{
-		name: *stringText(name),
+		name: locutil.NewStaticText(name),
 		url:  url,
 	}
 
@@ -218,7 +219,7 @@ func (b *Builder) WithSimpleAuthorWithURL(name string, url discord.URL) *Builder
 // the embed.
 func (b *Builder) WithSimpleAuthorWithURLl(name localization.Config, url discord.URL) *Builder {
 	b.author = &author{
-		name: *configText(name),
+		name: locutil.NewLocalizedText(name),
 		url:  url,
 	}
 
@@ -234,7 +235,7 @@ func (b *Builder) WithSimpleAuthorWithURLlt(name localization.Term, url discord.
 // WithAuthor adds an author (max 256 characters) with an icon to the embed.
 func (b *Builder) WithAuthor(name string, icon discord.URL) *Builder {
 	b.author = &author{
-		name: *stringText(name),
+		name: locutil.NewStaticText(name),
 		icon: icon,
 	}
 
@@ -244,7 +245,7 @@ func (b *Builder) WithAuthor(name string, icon discord.URL) *Builder {
 // WithAuthorl adds an author (max 256 characters) with an icon to the embed.
 func (b *Builder) WithAuthorl(name localization.Config, icon discord.URL) *Builder {
 	b.author = &author{
-		name: *configText(name),
+		name: locutil.NewLocalizedText(name),
 		icon: icon,
 	}
 
@@ -260,7 +261,7 @@ func (b *Builder) WithAuthorlt(name localization.Term, icon discord.URL) *Builde
 // to the embed.
 func (b *Builder) WithAuthorWithURL(name string, icon, url discord.URL) *Builder {
 	b.author = &author{
-		name: *stringText(name),
+		name: locutil.NewStaticText(name),
 		icon: icon,
 		url:  url,
 	}
@@ -272,7 +273,7 @@ func (b *Builder) WithAuthorWithURL(name string, icon, url discord.URL) *Builder
 // URL to the embed.
 func (b *Builder) WithAuthorWithURLl(name localization.Config, icon, url discord.URL) *Builder {
 	b.author = &author{
-		name: *configText(name),
+		name: locutil.NewLocalizedText(name),
 		icon: icon,
 		url:  url,
 	}
@@ -343,13 +344,8 @@ func (b *Builder) withField(name, value string, inlined bool) {
 		inlined: inlined,
 	}
 
-	if name != "" {
-		f.name = stringText(name)
-	}
-
-	if value != "" {
-		f.value = stringText(value)
-	}
+	f.name = locutil.NewStaticText(name)
+	f.value = locutil.NewStaticText(value)
 
 	b.fields = append(b.fields, f)
 }
@@ -359,13 +355,8 @@ func (b *Builder) withFieldl(name, value localization.Config, inlined bool) {
 		inlined: inlined,
 	}
 
-	if name.IsValid() {
-		f.name = configText(name)
-	}
-
-	if value.IsValid() {
-		f.value = configText(value)
-	}
+	f.name = locutil.NewLocalizedText(name)
+	f.value = locutil.NewLocalizedText(value)
 
 	b.fields = append(b.fields, f)
 }
@@ -376,8 +367,8 @@ func (b *Builder) Clone() *Builder {
 
 	*cp = *b
 
-	cp.title = b.title.clone()
-	cp.description = b.description.clone()
+	cp.title = b.title
+	cp.description = b.description
 
 	if b.footer != nil {
 		cp.footer = &footer{
@@ -404,15 +395,15 @@ func (b *Builder) Clone() *Builder {
 
 // Build builds the discord.Embed.
 func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) {
-	if b.title != nil {
-		e.Title, err = b.title.get(l)
+	if !b.title.IsEmpty() {
+		e.Title, err = b.title.Get(l)
 		if err != nil {
 			return
 		}
 	}
 
-	if b.description != nil {
-		e.Description, err = b.description.get(l)
+	if !b.description.IsEmpty() {
+		e.Description, err = b.description.Get(l)
 		if err != nil {
 			return
 		}
@@ -427,7 +418,7 @@ func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) 
 			Icon: b.footer.icon,
 		}
 
-		e.Footer.Text, err = b.footer.text.get(l)
+		e.Footer.Text, err = b.footer.text.Get(l)
 		if err != nil {
 			return
 		}
@@ -451,7 +442,7 @@ func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) 
 			Icon: b.author.icon,
 		}
 
-		e.Author.Name, err = b.author.name.get(l)
+		e.Author.Name, err = b.author.name.Get(l)
 		if err != nil {
 			return
 		}
@@ -464,8 +455,8 @@ func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) 
 	for i, f := range b.fields {
 		var name string
 
-		if f.name != nil {
-			name, err = f.name.get(l)
+		if !f.name.IsEmpty() {
+			name, err = f.name.Get(l)
 			if err != nil {
 				return
 			}
@@ -473,8 +464,8 @@ func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) 
 
 		var value string
 
-		if f.value != nil {
-			value, err = f.value.get(l)
+		if !f.value.IsEmpty() {
+			value, err = f.value.Get(l)
 			if err != nil {
 				return
 			}
@@ -498,42 +489,4 @@ func (b *Builder) MustBuild(l *localization.Localizer) discord.Embed {
 	}
 
 	return e
-}
-
-type text struct {
-	string string
-	config localization.Config
-}
-
-func stringText(src string) *text {
-	return &text{
-		string: src,
-	}
-}
-
-func configText(src localization.Config) *text {
-	return &text{
-		config: src,
-	}
-}
-
-func (t *text) clone() *text {
-	if t == nil {
-		return nil
-	}
-
-	return &text{
-		string: t.string,
-		config: t.config,
-	}
-}
-
-func (t text) get(l *localization.Localizer) (s string, err error) {
-	s = t.string
-
-	if s == "" && t.config.IsValid() {
-		return l.Localize(t.config)
-	}
-
-	return
 }

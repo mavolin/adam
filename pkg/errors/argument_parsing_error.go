@@ -1,10 +1,11 @@
 package errors
 
 import (
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // ArgumentParsingError is the error used if the arguments or flags a user
@@ -19,11 +20,8 @@ import (
 // It contains information about why this error occurred, and what can be done
 // to fix it.
 type ArgumentParsingError struct {
-	descString string
-	descConfig localization.Config
-
-	reasonString string
-	reasonConfig localization.Config
+	desc   locutil.Text
+	reason locutil.Text
 }
 
 // NewArgumentParsingError returns a new ArgumentParsingError with the passed
@@ -31,7 +29,7 @@ type ArgumentParsingError struct {
 // The description mustn't be empty for this error to be handled properly.
 func NewArgumentParsingError(description string) *ArgumentParsingError {
 	return &ArgumentParsingError{
-		descString: description,
+		desc: locutil.NewStaticText(description),
 	}
 }
 
@@ -39,7 +37,7 @@ func NewArgumentParsingError(description string) *ArgumentParsingError {
 // localization.Config to generate a description.
 func NewArgumentParsingErrorl(description localization.Config) *ArgumentParsingError {
 	return &ArgumentParsingError{
-		descConfig: description,
+		desc: locutil.NewLocalizedText(description),
 	}
 }
 
@@ -51,13 +49,13 @@ func NewArgumentParsingErrorlt(description localization.Term) *ArgumentParsingEr
 
 // WithReason creates a copy of the error and adds the passed reason to it.
 func (e ArgumentParsingError) WithReason(reason string) *ArgumentParsingError {
-	e.reasonString = reason
+	e.reason = locutil.NewStaticText(reason)
 	return &e
 }
 
 // WithReasonl creates a copy of the error and adds the passed reason to it.
 func (e ArgumentParsingError) WithReasonl(reason localization.Config) *ArgumentParsingError {
-	e.reasonConfig = reason
+	e.reason = locutil.NewLocalizedText(reason)
 	return &e
 }
 
@@ -69,22 +67,14 @@ func (e ArgumentParsingError) WithReasonlt(reason localization.Term) *ArgumentPa
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *ArgumentParsingError) Description(l *localization.Localizer) (string, error) {
-	if e.descString != "" {
-		return e.descString, nil
-	}
-
-	return l.Localize(e.descConfig)
+	return e.desc.Get(l)
 }
 
 // Reason returns the reason of the error and to localizes it, if
 // possible.
 // If there is no description, an empty string will be returned.
 func (e *ArgumentParsingError) Reason(l *localization.Localizer) string {
-	if e.reasonString != "" {
-		return e.reasonString
-	}
-
-	reason, err := l.Localize(e.reasonConfig)
+	reason, err := e.reason.Get(l)
 	if err != nil { // we have no reason
 		return ""
 	}

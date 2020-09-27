@@ -1,10 +1,11 @@
 package errors
 
 import (
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 var (
@@ -29,9 +30,8 @@ var (
 // This means you should use allowed mentions if you are custom handling this
 // error and not using an embed, which suppresses mentions by default.
 type RestrictionError struct {
-	// description of the error, either is set
-	descString string
-	descConfig localization.Config
+	// description of the error
+	desc locutil.Text
 
 	// Fatal defines if the RestrictionError is fatal.
 	// Fatal errors won't be shown in the help message.
@@ -40,9 +40,9 @@ type RestrictionError struct {
 
 // NewRestrictionError creates a new RestrictionError with the passed
 // description.
-func NewRestrictionError(desc string) *RestrictionError {
+func NewRestrictionError(description string) *RestrictionError {
 	return &RestrictionError{
-		descString: desc,
+		desc: locutil.NewStaticText(description),
 	}
 }
 
@@ -50,7 +50,7 @@ func NewRestrictionError(desc string) *RestrictionError {
 // generated from the passed localization.Config as description.
 func NewRestrictionErrorl(description localization.Config) *RestrictionError {
 	return &RestrictionError{
-		descConfig: description,
+		desc: locutil.NewLocalizedText(description),
 	}
 }
 
@@ -62,10 +62,10 @@ func NewRestrictionErrorlt(description localization.Term) *RestrictionError {
 
 // NewFatalRestrictionError creates a new fatal RestrictionError with the
 // passed description.
-func NewFatalRestrictionError(desc string) *RestrictionError {
+func NewFatalRestrictionError(description string) *RestrictionError {
 	return &RestrictionError{
-		descString: desc,
-		Fatal:      true,
+		desc:  locutil.NewStaticText(description),
+		Fatal: true,
 	}
 }
 
@@ -73,8 +73,8 @@ func NewFatalRestrictionError(desc string) *RestrictionError {
 // message generated from the passed localization.Config as description.
 func NewFatalRestrictionErrorl(description localization.Config) *RestrictionError {
 	return &RestrictionError{
-		descConfig: description,
-		Fatal:      true,
+		desc:  locutil.NewLocalizedText(description),
+		Fatal: true,
 	}
 }
 
@@ -87,11 +87,7 @@ func NewFatalRestrictionErrorlt(description localization.Term) *RestrictionError
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *RestrictionError) Description(l *localization.Localizer) (string, error) {
-	if e.descString != "" {
-		return e.descString, nil
-	}
-
-	return l.Localize(e.descConfig)
+	return e.desc.Get(l)
 }
 
 func (e *RestrictionError) Error() string { return "restriction error" }

@@ -5,8 +5,6 @@ import (
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestPermissionNames(t *testing.T) {
@@ -23,11 +21,10 @@ func TestPermissionNamesl(t *testing.T) {
 
 	perms := discord.PermissionBanMembers | discord.PermissionViewChannel
 
-	l := mock.
-		NewLocalizer(t).
-		On("permissions.ban_members", "Ban Members").
-		On("permissions.view_channel", "View Channel").
-		Build()
+	l := newMockedLocalizer(t).
+		on("permissions.ban_members", "Ban Members").
+		on("permissions.view_channel", "View Channel").
+		build()
 
 	actual := PermissionNamesl(perms, l)
 	assert.Equal(t, expect, actual)

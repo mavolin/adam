@@ -2,11 +2,12 @@ package errors
 
 import (
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // UserError is an error on the user-side.
@@ -14,9 +15,8 @@ import (
 // the problem.
 // The error won't be logged or captured by sentry.
 type UserError struct {
-	// description of the error, either is set
-	descString string
-	descConfig localization.Config
+	// description of the error
+	desc locutil.Text
 
 	// used just for fields
 	fields *embedutil.Builder
@@ -24,10 +24,10 @@ type UserError struct {
 
 // NewUserError creates a new UserError with the passed description.
 // The description mustn't be empty for this error to be handled properly.
-func NewUserError(desc string) *UserError {
+func NewUserError(description string) *UserError {
 	return &UserError{
-		descString: desc,
-		fields:     embedutil.NewBuilder(),
+		desc:   locutil.NewStaticText(description),
+		fields: embedutil.NewBuilder(),
 	}
 }
 
@@ -35,8 +35,8 @@ func NewUserError(desc string) *UserError {
 // passed localization.Config as description.
 func NewUserErrorl(description localization.Config) *UserError {
 	return &UserError{
-		descConfig: description,
-		fields:     embedutil.NewBuilder(),
+		desc:   locutil.NewLocalizedText(description),
+		fields: embedutil.NewBuilder(),
 	}
 }
 
@@ -103,11 +103,7 @@ func (e *UserError) WithInlinedFieldlt(name, value localization.Term) *UserError
 // Name or value may be empty, in which case the field won't have a name or
 // value.
 func (e *UserError) Description(l *localization.Localizer) (string, error) {
-	if e.descString != "" {
-		return e.descString, nil
-	}
-
-	return l.Localize(e.descConfig)
+	return e.desc.Get(l)
 }
 
 // Fields returns the discord.EmbedFields of the UserError.

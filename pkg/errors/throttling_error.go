@@ -1,26 +1,26 @@
 package errors
 
 import (
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // ThrottlingError is the error returned if a command gets throttled.
 // It contains a description about when the command will become available
 // again.
 type ThrottlingError struct {
-	// description of the error, either is set
-	descString string
-	descConfig localization.Config
+	// description of the error
+	desc locutil.Text
 }
 
 // NewThrottlingError creates a new ThrottlingError with the passed
 // description.
-func NewThrottlingError(desc string) *ThrottlingError {
+func NewThrottlingError(description string) *ThrottlingError {
 	return &ThrottlingError{
-		descString: desc,
+		desc: locutil.NewStaticText(description),
 	}
 }
 
@@ -28,7 +28,7 @@ func NewThrottlingError(desc string) *ThrottlingError {
 // generated from the passed localization.Config as description.
 func NewThrottlingErrorl(description localization.Config) *ThrottlingError {
 	return &ThrottlingError{
-		descConfig: description,
+		desc: locutil.NewLocalizedText(description),
 	}
 }
 
@@ -41,11 +41,7 @@ func NewThrottlingErrorlt(description localization.Term) *ThrottlingError {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *ThrottlingError) Description(l *localization.Localizer) (string, error) {
-	if e.descString != "" {
-		return e.descString, nil
-	}
-
-	return l.Localize(e.descConfig)
+	return e.desc.Get(l)
 }
 
 func (e *ThrottlingError) Error() string { return "throttling error" }

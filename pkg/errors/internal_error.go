@@ -3,12 +3,13 @@ package errors
 import (
 	"fmt"
 
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // InternalError represents a non-user triggered error, that is reported to
@@ -23,9 +24,8 @@ type InternalError struct {
 	// stack contains information about the callers.
 	stack errorutil.Stack
 
-	// description of the error, either is set
-	descString string
-	descConfig localization.Config
+	// description of the error
+	desc locutil.Text
 }
 
 // WithStack enriches the passed error with a stack trace.
@@ -50,9 +50,9 @@ func withStack(err error) error {
 	}
 
 	return &InternalError{
-		cause:      err,
-		stack:      stackTrace(err, 2),
-		descConfig: defaultInternalDesc,
+		cause: err,
+		stack: stackTrace(err, 2),
+		desc:  locutil.NewLocalizedText(defaultInternalDesc),
 	}
 }
 
@@ -78,8 +78,8 @@ func Wrap(err error, message string) *InternalError {
 			msg:   message,
 			cause: err,
 		},
-		stack:      stackTrace(err, 1),
-		descConfig: defaultInternalDesc,
+		stack: stackTrace(err, 1),
+		desc:  locutil.NewLocalizedText(defaultInternalDesc),
 	}
 }
 
@@ -97,8 +97,8 @@ func Wrapf(err error, format string, args ...interface{}) *InternalError {
 			msg:   fmt.Sprintf(format, args...),
 			cause: err,
 		},
-		stack:      stackTrace(err, 1),
-		descConfig: defaultInternalDesc,
+		stack: stackTrace(err, 1),
+		desc:  locutil.NewLocalizedText(defaultInternalDesc),
 	}
 }
 
@@ -114,15 +114,14 @@ func WithDescription(cause error, description string) *InternalError {
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.descConfig = localization.Config{}
-		ie.descString = description
+		ie.desc = locutil.NewStaticText(description)
 		return ie
 	}
 
 	return &InternalError{
-		cause:      cause,
-		stack:      stackTrace(cause, 1),
-		descString: description,
+		cause: cause,
+		stack: stackTrace(cause, 1),
+		desc:  locutil.NewStaticText(description),
 	}
 }
 
@@ -138,15 +137,14 @@ func WithDescriptionf(cause error, format string, args ...interface{}) *Internal
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.descConfig = localization.Config{}
-		ie.descString = fmt.Sprintf(format, args...)
+		ie.desc = locutil.NewStaticText(fmt.Sprintf(format, args...))
 		return ie
 	}
 
 	return &InternalError{
-		cause:      cause,
-		stack:      stackTrace(cause, 1),
-		descString: fmt.Sprintf(format, args...),
+		cause: cause,
+		stack: stackTrace(cause, 1),
+		desc:  locutil.NewStaticText(fmt.Sprintf(format, args...)),
 	}
 }
 
@@ -162,15 +160,14 @@ func WithDescriptionl(cause error, description localization.Config) *InternalErr
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.descConfig = description
-		ie.descString = ""
+		ie.desc = locutil.NewLocalizedText(description)
 		return ie
 	}
 
 	return &InternalError{
-		cause:      cause,
-		stack:      stackTrace(cause, 1),
-		descConfig: description,
+		cause: cause,
+		stack: stackTrace(cause, 1),
+		desc:  locutil.NewLocalizedText(description),
 	}
 }
 
@@ -186,31 +183,28 @@ func WithDescriptionlt(cause error, description localization.Term) *InternalErro
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.descConfig = description.AsConfig()
-		ie.descString = ""
+		ie.desc = locutil.NewLocalizedText(description.AsConfig())
 		return ie
 	}
 
 	return &InternalError{
-		cause:      cause,
-		stack:      stackTrace(cause, 1),
-		descConfig: description.AsConfig(),
+		cause: cause,
+		stack: stackTrace(cause, 1),
+		desc:  locutil.NewLocalizedText(description.AsConfig()),
 	}
 }
 
 // Description returns the description of the error and localizes it, if
 // possible.
-func (e *InternalError) Description(l *localization.Localizer) (desc string) {
-	if e.descString != "" {
-		return e.descString
+func (e *InternalError) Description(l *localization.Localizer) string {
+	if !e.desc.IsEmpty() {
+		desc, err := e.desc.Get(l)
+		if err == nil {
+			return desc
+		}
 	}
 
-	var err error
-	if desc, err = l.Localize(e.descConfig); err != nil {
-		// we can ignore the error, as there is a fallback
-		desc, _ = l.Localize(defaultInternalDesc)
-	}
-
+	desc, _ := l.Localize(defaultInternalDesc)
 	return desc
 }
 

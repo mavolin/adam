@@ -2,11 +2,12 @@ package errors
 
 import (
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // UserInfo is less sever error on the user-side.
@@ -14,19 +15,18 @@ import (
 // description of the problem.
 // It won't be logged or captured by sentry.
 type UserInfo struct {
-	// description of the info, either is set
-	descString string
-	descConfig localization.Config
+	// description of the info
+	desc locutil.Text
 
 	fields *embedutil.Builder
 }
 
 // NewUserInfo creates a new UserInfo using the passed description.
 // The description mustn't be empty for this error to be handled properly.
-func NewUserInfo(desc string) *UserInfo {
+func NewUserInfo(description string) *UserInfo {
 	return &UserInfo{
-		descString: desc,
-		fields:     embedutil.NewBuilder(),
+		desc:   locutil.NewStaticText(description),
+		fields: embedutil.NewBuilder(),
 	}
 }
 
@@ -34,8 +34,8 @@ func NewUserInfo(desc string) *UserInfo {
 // passed localization.Config.
 func NewUserInfol(description localization.Config) *UserInfo {
 	return &UserInfo{
-		descConfig: description,
-		fields:     embedutil.NewBuilder(),
+		desc:   locutil.NewLocalizedText(description),
+		fields: embedutil.NewBuilder(),
 	}
 }
 
@@ -101,11 +101,7 @@ func (i *UserInfo) WithInlinedFieldlt(name, value localization.Term) *UserInfo {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (i *UserInfo) Description(l *localization.Localizer) (string, error) {
-	if i.descString != "" {
-		return i.descString, nil
-	}
-
-	return l.Localize(i.descConfig)
+	return i.desc.Get(l)
 }
 
 // Fields returns the discord.EmbedFields of the UserInfo.
