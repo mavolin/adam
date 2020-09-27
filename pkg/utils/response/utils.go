@@ -40,14 +40,11 @@ func invokeMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares 
 
 // sendResult blocks until it can send a result or the passed context.Context
 // gets canceled.
-func sendResult(result chan<- interface{}, ctx context.Context, val interface{}) bool {
+func sendResult(ctx context.Context, result chan<- interface{}, val interface{}) {
 	select {
 	case <-ctx.Done():
-		return true
 	case result <- val:
 	}
-
-	return false
 }
 
 func handleErr(err error) error {

@@ -46,7 +46,7 @@ func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
 
 	result := make(chan interface{})
 
-	awaitCleanup, err := w.handleMessages(result, ctx)
+	awaitCleanup, err := w.handleMessages(ctx, result)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
 	defer awaitCleanup()
 
 	if !w.noAutoReact && len(w.cancelReactions) > 0 {
-		reactCleanup, err := w.handleCancelReactions(result, ctx)
+		reactCleanup, err := w.handleCancelReactions(ctx, result)
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +62,7 @@ func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
 		defer reactCleanup()
 	}
 
-	w.watchTimeout(timeout, w.timeExtensions, result, ctx)
+	w.watchTimeout(ctx, timeout, w.timeExtensions, result)
 
 	r := <-result
 
@@ -76,14 +76,14 @@ func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
 	}
 }
 
-func (w *Waiter) handleMessages(result chan<- interface{}, ctx context.Context) (func(), error) {
+func (w *Waiter) handleMessages(ctx context.Context, result chan<- interface{}) (func(), error) {
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageCreateEvent) {
 		if e.ChannelID != w.ctx.ChannelID || e.Author.ID != w.ctx.Author.ID { // not the message we are waiting for
 			return
 		}
 
 		if err := invokeMiddlewares(s, e, w.middlewares); err != nil {
-			sendResult(result, ctx, err)
+			sendResult(ctx, result, err)
 			return
 		}
 
@@ -95,22 +95,19 @@ func (w *Waiter) handleMessages(result chan<- interface{}, ctx context.Context) 
 				continue
 			}
 
-			if w.caseSensitive && k == e.Content {
-				sendResult(result, ctx, Canceled)
-				return
-			} else if !w.caseSensitive && strings.ToLower(k) == strings.ToLower(e.Content) {
-				sendResult(result, ctx, Canceled)
+			if (w.caseSensitive && k == e.Content) || (!w.caseSensitive && strings.EqualFold(k, e.Content)) {
+				sendResult(ctx, result, Canceled)
 				return
 			}
 		}
 
-		sendResult(result, ctx, &e.Message)
+		sendResult(ctx, result, &e.Message)
 	})
 
 	return rm, errors.WithStack(err)
 }
 
-func (w *Waiter) handleCancelReactions(result chan<- interface{}, ctx context.Context) (func(), error) {
+func (w *Waiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
 	for _, r := range w.cancelReactions {
 		if err := w.state.React(w.ctx.ChannelID, r.messageID, r.reaction); err != nil {
 			w.ctx.HandleErrorSilent(err)
@@ -147,7 +144,7 @@ func (w *Waiter) handleCancelReactions(result chan<- interface{}, ctx context.Co
 }
 
 func (w *Waiter) watchTimeout(
-	timeout time.Duration, timeExtensions int, result chan<- interface{}, ctx context.Context,
+	ctx context.Context, timeout time.Duration, timeExtensions int, result chan<- interface{},
 ) {
 	t := time.NewTimer(timeout)
 
@@ -165,7 +162,7 @@ func (w *Waiter) watchTimeout(
 					WithPlaceholders(timeoutInfoPlaceholders{
 						ResponseUserMention: w.ctx.Author.Mention(),
 					}))
-				sendResult(result, ctx, err)
+				sendResult(ctx, result, err)
 				return
 			}
 
@@ -174,7 +171,7 @@ func (w *Waiter) watchTimeout(
 			}
 
 			if err := w.askForTimeExtension(ctx); err != nil {
-				sendResult(result, ctx, err)
+				sendResult(ctx, result, err)
 				return
 			}
 			// else if err == nil: the user passed time extension check or the context was canceled
