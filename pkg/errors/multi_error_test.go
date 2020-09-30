@@ -3,14 +3,8 @@ package errors
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
-	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestAppend(t *testing.T) {
@@ -248,47 +242,4 @@ func TestRetrieveErrors(t *testing.T) {
 			assert.Equal(t, c.expect, actual)
 		})
 	}
-}
-
-func TestMultiError_Handle(t *testing.T) {
-	t.Run("no internal errors", func(t *testing.T) {
-		merr := multiError{New("abc"), New("def")}
-
-		err := merr.Handle(nil, new(plugin.Context))
-		assert.NoError(t, err)
-	})
-
-	t.Run("multiple internal errors", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-
-		merr := multiError{NewWithStack("abc"), NewWithStack("def")}
-
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		}
-		ctx.Localizer = mock.NewLocalizer(t).
-			On(internalErrorTitle.Term, "abc").
-			On(defaultInternalDesc.Term, "def").
-			Build()
-
-		embed := ErrorEmbed.Clone().
-			WithSimpleTitlelt(internalErrorTitle.Term).
-			WithDescriptionlt(defaultInternalDesc.Term).
-			MustBuild(ctx.Localizer)
-
-		m.SendEmbed(discord.Message{
-			ChannelID: ctx.ChannelID,
-			Embeds:    []discord.Embed{embed},
-		})
-
-		err := merr.Handle(s, ctx)
-		assert.NoError(t, err)
-
-		m.Eval()
-	})
 }

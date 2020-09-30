@@ -144,28 +144,26 @@ func (merr multiError) Error() (s string) {
 	return
 }
 
-// Handle handles the passed errors.
-// If one of them is an InternalError, i.e. if at least one error was not added
-// silently, it will call handle on that.
+// Handle iterates over the errors and calls the context's error handler on
+// every one.
+// If one of the errors is an InternalError, i.e. if at least one error was not
+// added silently, it will be handled as such.
 // All other errors will be handled as a SilentError.
-func (merr multiError) Handle(s *state.State, ctx *plugin.Context) (herr error) {
+func (merr multiError) Handle(s *state.State, ctx *plugin.Context) error {
 	internal := false
 
 	for _, err := range merr {
 		if !internal {
-			if ierr, ok := err.(*InternalError); ok {
-				herr = Append(herr, ierr.Handle(s, ctx))
+			if _, ok := err.(*InternalError); ok {
+				ctx.HandleError(err)
 
 				internal = true
-
 				continue
 			}
 		}
 
-		serr := Silent(err)
-
-		herr = Append(herr, serr.Handle(s, ctx))
+		ctx.HandleErrorSilent(err)
 	}
 
-	return herr
+	return nil
 }
