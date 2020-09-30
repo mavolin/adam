@@ -45,9 +45,6 @@ type Context struct {
 	// Command is the RegisteredCommand that is being invoked.
 	Command RegisteredCommand
 
-	// CommandIdentifier is the Identifier of the command.
-	CommandIdentifier Identifier
-
 	// DiscordDataProvider is an embedded interface that provides additional
 	// data fetched from Discord's API.
 	DiscordDataProvider

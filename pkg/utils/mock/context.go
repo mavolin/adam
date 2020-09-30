@@ -22,7 +22,6 @@ func AttachState(s *state.State, ctx *plugin.Context) *plugin.Context {
 	cp.Args = ctx.Args
 	cp.Flags = ctx.Flags
 	cp.Command = ctx.Command
-	cp.CommandIdentifier = ctx.CommandIdentifier
 	cp.DiscordDataProvider = ctx.DiscordDataProvider
 	cp.Prefix = ctx.Prefix
 	cp.Location = ctx.Location
@@ -66,47 +65,35 @@ func (d DiscordDataProvider) Self() (*discord.Member, error) {
 // direct command aquivalent, this means no checks on parents will be
 // performed.
 type PluginProvider struct {
-	AllCommandsReturn []plugin.CommandRepository
-	AllModulesReturn  []plugin.ModuleRepository
+	PluginRepositoriesReturn []plugin.Repository
 
-	AllCommandsError, AllModulesError error
+	PluginRepositoriesError           error
 	CommandsError, ModulesError       error
 	CommandError, ModuleError         error
 	FindCommandError, FindModuleError error
 }
 
-func (p PluginProvider) AllCommands() ([]plugin.CommandRepository, error) {
-	if p.AllCommandsReturn == nil {
-		return nil, p.AllCommandsError
+func (p PluginProvider) PluginRepositories() ([]plugin.Repository, error) {
+	if p.PluginRepositoriesReturn == nil {
+		return nil, p.PluginRepositoriesError
 	}
 
-	cp := make([]plugin.CommandRepository, len(p.AllCommandsReturn))
-	copy(cp, p.AllCommandsReturn)
+	cp := make([]plugin.Repository, len(p.PluginRepositoriesReturn))
+	copy(cp, p.PluginRepositoriesReturn)
 
-	return cp, p.AllCommandsError
-}
-
-func (p PluginProvider) AllModules() ([]plugin.ModuleRepository, error) {
-	if p.AllModulesReturn == nil {
-		return nil, p.AllModulesError
-	}
-
-	cp := make([]plugin.ModuleRepository, len(p.AllModulesReturn))
-	copy(cp, p.AllModulesReturn)
-
-	return cp, p.AllModulesError
+	return cp, p.PluginRepositoriesError
 }
 
 func (p PluginProvider) Commands() ([]plugin.RegisteredCommand, error) {
 	var qty int
 
-	for _, r := range p.AllCommandsReturn {
+	for _, r := range p.PluginRepositoriesReturn {
 		qty += len(r.Commands)
 	}
 
 	cmds := make([]plugin.RegisteredCommand, 0, qty)
 
-	for _, r := range p.AllCommandsReturn {
+	for _, r := range p.PluginRepositoriesReturn {
 		cmds = append(cmds, asRegisteredCommands(r.Commands, nil)...)
 	}
 
@@ -116,13 +103,13 @@ func (p PluginProvider) Commands() ([]plugin.RegisteredCommand, error) {
 func (p PluginProvider) Modules() ([]plugin.RegisteredModule, error) {
 	var qty int
 
-	for _, r := range p.AllModulesReturn {
+	for _, r := range p.PluginRepositoriesReturn {
 		qty += len(r.Modules)
 	}
 
 	mods := make([]plugin.RegisteredModule, 0, qty)
 
-	for _, r := range p.AllModulesReturn {
+	for _, r := range p.PluginRepositoriesReturn {
 		mods = append(mods, asRegisteredModules(r.Modules)...)
 	}
 
@@ -156,7 +143,7 @@ func (p PluginProvider) FindCommand(invoke string) (plugin.RegisteredCommand, er
 	}
 
 	if len(all) == 2 { // top-level command
-		for _, r := range p.AllCommandsReturn {
+		for _, r := range p.PluginRepositoriesReturn {
 			cmd := findCommand(r.Commands, all[1].Name(), false)
 			if cmd != nil {
 				return asRegisteredCommand(cmd, nil), p.CommandError
@@ -168,7 +155,7 @@ func (p PluginProvider) FindCommand(invoke string) (plugin.RegisteredCommand, er
 
 	var mod plugin.Module
 
-	for _, r := range p.AllModulesReturn {
+	for _, r := range p.PluginRepositoriesReturn {
 		mod = findModule(r.Modules, all[1].Name())
 		if mod != nil {
 			goto ModFound
@@ -196,7 +183,7 @@ func (p PluginProvider) FindModule(invoke string) (plugin.RegisteredModule, erro
 
 	var mod plugin.Module
 
-	for _, r := range p.AllModulesReturn {
+	for _, r := range p.PluginRepositoriesReturn {
 		mod = findModule(r.Modules, all[1].Name())
 		if mod != nil {
 			goto ModFound
