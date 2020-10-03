@@ -82,12 +82,12 @@ func (id Identifier) NumParents() int {
 
 // IsParent checks if the passed Identifier is a parent of this identifier.
 func (id Identifier) IsParent(target Identifier) bool {
-	return strings.HasPrefix(string(id), string(target))
+	return len(id) > len(target) && strings.HasPrefix(string(id), string(target))
 }
 
 // IsChild checks if the passed Identifier is a child of this identifier.
 func (id Identifier) IsChild(target Identifier) bool {
-	return strings.HasPrefix(string(target), string(id))
+	return len(id) < len(target) && strings.HasPrefix(string(target), string(id))
 }
 
 // AsInvoke returns the identifier as a prefixless command invoke.
