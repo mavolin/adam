@@ -42,8 +42,8 @@ type Context struct {
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Flags Flags
 
-	// Command is the RegisteredCommand that is being invoked.
-	Command RegisteredCommand
+	// InvokedCommand is the RegisteredCommand that is being invoked.
+	InvokedCommand *RegisteredCommand
 
 	// DiscordDataProvider is an embedded interface that provides additional
 	// data fetched from Discord's API.

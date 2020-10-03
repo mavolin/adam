@@ -21,7 +21,7 @@ func AttachState(s *state.State, ctx *plugin.Context) *plugin.Context {
 	cp.Localizer = ctx.Localizer
 	cp.Args = ctx.Args
 	cp.Flags = ctx.Flags
-	cp.Command = ctx.Command
+	cp.InvokedCommand = ctx.InvokedCommand
 	cp.DiscordDataProvider = ctx.DiscordDataProvider
 	cp.Prefix = ctx.Prefix
 	cp.Location = ctx.Location
