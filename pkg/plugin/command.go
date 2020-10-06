@@ -51,7 +51,7 @@ type (
 		GetName() string
 		// GetAliases returns the optional aliases of the command.
 		GetAliases() []string
-		// GetShortDescription returns an optional one-sentence description
+		// GetShortDescription returns an optional short description
 		// of the command.
 		GetShortDescription(l *i18n.Localizer) string
 		// GetLongDescription returns an optional long description of the
