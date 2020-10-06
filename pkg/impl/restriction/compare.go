@@ -7,7 +7,7 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -214,7 +214,7 @@ type allError struct {
 	anys         []*anyError
 }
 
-func (e *allError) format(indentLvl int, l *localization.Localizer) (s string, fatal bool, err error) {
+func (e *allError) format(indentLvl int, l *i18n.Localizer) (s string, fatal bool, err error) {
 	indent, nlIndent := genIndent(indentLvl)
 
 	fatal = false
@@ -280,7 +280,7 @@ type anyError struct {
 	alls         []*allError
 }
 
-func (e *anyError) format(indentLvl int, l *localization.Localizer) (s string, fatal bool, err error) {
+func (e *anyError) format(indentLvl int, l *i18n.Localizer) (s string, fatal bool, err error) {
 	indent, nlIndent := genIndent(indentLvl)
 
 	fatal = true

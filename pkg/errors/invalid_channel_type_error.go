@@ -3,7 +3,7 @@ package errors
 import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -24,7 +24,7 @@ func NewInvalidChannelTypeError(allowed plugin.ChannelTypes) *InvalidChannelType
 
 // Description returns the description containing the types of channels this
 // command may be used in.
-func (e *InvalidChannelTypeError) Description(l *localization.Localizer) (desc string) {
+func (e *InvalidChannelTypeError) Description(l *i18n.Localizer) (desc string) {
 	switch {
 	// ----- singles -----
 	case e.AllowedChannelTypes == plugin.GuildTextChannels:

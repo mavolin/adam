@@ -3,7 +3,7 @@ package locutil
 import (
 	. "github.com/diamondburned/arikawa/discord"
 
-	. "github.com/mavolin/adam/pkg/localization"
+	. "github.com/mavolin/adam/pkg/i18n"
 )
 
 var permissionConfigs = map[Permissions]Config{

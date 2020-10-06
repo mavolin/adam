@@ -1,4 +1,4 @@
-package localization
+package i18n
 
 import (
 	"errors"
@@ -119,8 +119,8 @@ func TestConfig_placeholdersToMap(t *testing.T) {
 		{
 			name: "struct tags",
 			placeholders: struct {
-				Field1 string `localization:"wow_a_custom_name"`
-				Field2 bool   `localization:"so_many_possibilities"`
+				Field1 string `i18n:"wow_a_custom_name"`
+				Field2 bool   `i18n:"so_many_possibilities"`
 				Field3 int
 			}{
 				Field1: "abc",

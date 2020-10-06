@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 type (
@@ -383,7 +383,7 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d C
 
 // ShortDescription returns an optional one-sentence description of the
 // module.
-func (m *RegisteredModule) ShortDescription(l *localization.Localizer) string {
+func (m *RegisteredModule) ShortDescription(l *i18n.Localizer) string {
 	for _, mod := range m.Sources {
 		parent := mod.Modules[len(mod.Modules)-1]
 
@@ -397,7 +397,7 @@ func (m *RegisteredModule) ShortDescription(l *localization.Localizer) string {
 
 // LongDescription returns an option thorough description of the
 // module.
-func (m *RegisteredModule) LongDescription(l *localization.Localizer) string {
+func (m *RegisteredModule) LongDescription(l *i18n.Localizer) string {
 	for _, mod := range m.Sources {
 		parent := mod.Modules[len(mod.Modules)-1]
 

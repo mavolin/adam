@@ -1,12 +1,12 @@
 package locutil
 
-import "github.com/mavolin/adam/pkg/localization"
+import "github.com/mavolin/adam/pkg/i18n"
 
 // Text is an optionally localizable text.
 // It can either be static, or be defined using a Config.
 type Text struct {
 	string string
-	config localization.Config
+	config i18n.Config
 }
 
 // NewStaticText returns a new static unlocalized Text.
@@ -17,7 +17,7 @@ func NewStaticText(src string) Text {
 }
 
 // NewLocalizedText returns a localized Text.
-func NewLocalizedText(src localization.Config) Text {
+func NewLocalizedText(src i18n.Config) Text {
 	return Text{
 		config: src,
 	}
@@ -29,7 +29,7 @@ func (t Text) IsEmpty() bool {
 }
 
 // Get retrieves the value of the Text and localizes it, if possible.
-func (t Text) Get(l *localization.Localizer) (string, error) {
+func (t Text) Get(l *i18n.Localizer) (string, error) {
 	if t.string != "" {
 		return t.string, nil
 	} else if t.config.IsValid() {

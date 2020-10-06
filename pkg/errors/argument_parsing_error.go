@@ -3,7 +3,7 @@ package errors
 import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
@@ -34,8 +34,8 @@ func NewArgumentParsingError(description string) *ArgumentParsingError {
 }
 
 // NewArgumentParsingErrorl returns a new ArgumentParsingError using the passed
-// localization.Config to generate a description.
-func NewArgumentParsingErrorl(description localization.Config) *ArgumentParsingError {
+// i18n.Config to generate a description.
+func NewArgumentParsingErrorl(description i18n.Config) *ArgumentParsingError {
 	return &ArgumentParsingError{
 		desc: locutil.NewLocalizedText(description),
 	}
@@ -43,7 +43,7 @@ func NewArgumentParsingErrorl(description localization.Config) *ArgumentParsingE
 
 // NewArgumentParsingErrorlt returns a new ArgumentParsingError using the
 // passed term to generate a description.
-func NewArgumentParsingErrorlt(description localization.Term) *ArgumentParsingError {
+func NewArgumentParsingErrorlt(description i18n.Term) *ArgumentParsingError {
 	return NewArgumentParsingErrorl(description.AsConfig())
 }
 
@@ -54,26 +54,26 @@ func (e ArgumentParsingError) WithReason(reason string) *ArgumentParsingError {
 }
 
 // WithReasonl creates a copy of the error and adds the passed reason to it.
-func (e ArgumentParsingError) WithReasonl(reason localization.Config) *ArgumentParsingError {
+func (e ArgumentParsingError) WithReasonl(reason i18n.Config) *ArgumentParsingError {
 	e.reason = locutil.NewLocalizedText(reason)
 	return &e
 }
 
 // WithReasonlt creates a copy of the error and adds the passed reason to it.
-func (e ArgumentParsingError) WithReasonlt(reason localization.Term) *ArgumentParsingError {
+func (e ArgumentParsingError) WithReasonlt(reason i18n.Term) *ArgumentParsingError {
 	return e.WithReasonl(reason.AsConfig())
 }
 
 // Description returns the description of the error and localizes it, if
 // possible.
-func (e *ArgumentParsingError) Description(l *localization.Localizer) (string, error) {
+func (e *ArgumentParsingError) Description(l *i18n.Localizer) (string, error) {
 	return e.desc.Get(l)
 }
 
 // Reason returns the reason of the error and to localizes it, if
 // possible.
 // If there is no description, an empty string will be returned.
-func (e *ArgumentParsingError) Reason(l *localization.Localizer) string {
+func (e *ArgumentParsingError) Reason(l *i18n.Localizer) string {
 	reason, err := e.reason.Get(l)
 	if err != nil { // we have no reason
 		return ""

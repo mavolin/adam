@@ -3,7 +3,7 @@ package embedutil
 import (
 	"github.com/diamondburned/arikawa/discord"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
@@ -55,13 +55,13 @@ func (b *Builder) WithSimpleTitle(title string) *Builder {
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the embed.
-func (b *Builder) WithSimpleTitlel(title localization.Config) *Builder {
+func (b *Builder) WithSimpleTitlel(title i18n.Config) *Builder {
 	b.title = locutil.NewLocalizedText(title)
 	return b
 }
 
 // WithSimpleTitlelt adds a plain title (max. 256 characters) to the embed.
-func (b *Builder) WithSimpleTitlelt(title localization.Term) *Builder {
+func (b *Builder) WithSimpleTitlelt(title i18n.Term) *Builder {
 	return b.WithSimpleTitlel(title.AsConfig())
 }
 
@@ -74,7 +74,7 @@ func (b *Builder) WithTitle(title string, url discord.URL) *Builder {
 }
 
 // WithTitlel adds a title (max. 256 characters) with a link to the embed.
-func (b *Builder) WithTitlel(title localization.Config, url discord.URL) *Builder {
+func (b *Builder) WithTitlel(title i18n.Config, url discord.URL) *Builder {
 	b.title = locutil.NewLocalizedText(title)
 	b.url = url
 
@@ -82,7 +82,7 @@ func (b *Builder) WithTitlel(title localization.Config, url discord.URL) *Builde
 }
 
 // WithTitlelt adds a title (max. 256 characters) with a link to the embed.
-func (b *Builder) WithTitlelt(title localization.Term, url discord.URL) *Builder {
+func (b *Builder) WithTitlelt(title i18n.Term, url discord.URL) *Builder {
 	return b.WithTitlel(title.AsConfig(), url)
 }
 
@@ -93,13 +93,13 @@ func (b *Builder) WithDescription(description string) *Builder {
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the embed.
-func (b *Builder) WithDescriptionl(description localization.Config) *Builder {
+func (b *Builder) WithDescriptionl(description i18n.Config) *Builder {
 	b.description = locutil.NewLocalizedText(description)
 	return b
 }
 
 // WithDescriptionlt adds a description (max. 2048 characters) to the embed.
-func (b *Builder) WithDescriptionlt(description localization.Term) *Builder {
+func (b *Builder) WithDescriptionlt(description i18n.Term) *Builder {
 	return b.WithDescriptionl(description.AsConfig())
 }
 
@@ -130,7 +130,7 @@ func (b *Builder) WithSimpleFooter(text string) *Builder {
 }
 
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the embed.
-func (b *Builder) WithSimpleFooterl(text localization.Config) *Builder {
+func (b *Builder) WithSimpleFooterl(text i18n.Config) *Builder {
 	b.footer = &footer{
 		text: locutil.NewLocalizedText(text),
 	}
@@ -139,7 +139,7 @@ func (b *Builder) WithSimpleFooterl(text localization.Config) *Builder {
 }
 
 // WithSimpleFooterlt adds a plain footer (max. 2048 characters) to the embed.
-func (b *Builder) WithSimpleFooterlt(text localization.Term) *Builder {
+func (b *Builder) WithSimpleFooterlt(text i18n.Term) *Builder {
 	return b.WithSimpleFooterl(text.AsConfig())
 }
 
@@ -154,7 +154,7 @@ func (b *Builder) WithFooter(text string, icon discord.URL) *Builder {
 }
 
 // WithFooterl adds a footer (max. 2048 character) with an icon to the embed.
-func (b *Builder) WithFooterl(text localization.Config, icon discord.URL) *Builder {
+func (b *Builder) WithFooterl(text i18n.Config, icon discord.URL) *Builder {
 	b.footer = &footer{
 		text: locutil.NewLocalizedText(text),
 		icon: icon,
@@ -164,7 +164,7 @@ func (b *Builder) WithFooterl(text localization.Config, icon discord.URL) *Build
 }
 
 // WithFooterlt adds a footer (max. 2048 character) with an icon to the embed.
-func (b *Builder) WithFooterlt(text localization.Term, icon discord.URL) *Builder {
+func (b *Builder) WithFooterlt(text i18n.Term, icon discord.URL) *Builder {
 	return b.WithFooterl(text.AsConfig(), icon)
 }
 
@@ -191,7 +191,7 @@ func (b *Builder) WithSimpleAuthor(name string) *Builder {
 }
 
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the embed.
-func (b *Builder) WithSimpleAuthorl(name localization.Config) *Builder {
+func (b *Builder) WithSimpleAuthorl(name i18n.Config) *Builder {
 	b.author = &author{
 		name: locutil.NewLocalizedText(name),
 	}
@@ -200,7 +200,7 @@ func (b *Builder) WithSimpleAuthorl(name localization.Config) *Builder {
 }
 
 // WithSimpleAuthorlt adds a plain author (max. 256 characters) to the embed.
-func (b *Builder) WithSimpleAuthorlt(name localization.Term) *Builder {
+func (b *Builder) WithSimpleAuthorlt(name i18n.Term) *Builder {
 	return b.WithSimpleAuthorl(name.AsConfig())
 }
 
@@ -217,7 +217,7 @@ func (b *Builder) WithSimpleAuthorWithURL(name string, url discord.URL) *Builder
 
 // WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *Builder) WithSimpleAuthorWithURLl(name localization.Config, url discord.URL) *Builder {
+func (b *Builder) WithSimpleAuthorWithURLl(name i18n.Config, url discord.URL) *Builder {
 	b.author = &author{
 		name: locutil.NewLocalizedText(name),
 		url:  url,
@@ -228,7 +228,7 @@ func (b *Builder) WithSimpleAuthorWithURLl(name localization.Config, url discord
 
 // WithSimpleAuthorWithURLlt adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *Builder) WithSimpleAuthorWithURLlt(name localization.Term, url discord.URL) *Builder {
+func (b *Builder) WithSimpleAuthorWithURLlt(name i18n.Term, url discord.URL) *Builder {
 	return b.WithSimpleAuthorWithURLl(name.AsConfig(), url)
 }
 
@@ -243,7 +243,7 @@ func (b *Builder) WithAuthor(name string, icon discord.URL) *Builder {
 }
 
 // WithAuthorl adds an author (max 256 characters) with an icon to the embed.
-func (b *Builder) WithAuthorl(name localization.Config, icon discord.URL) *Builder {
+func (b *Builder) WithAuthorl(name i18n.Config, icon discord.URL) *Builder {
 	b.author = &author{
 		name: locutil.NewLocalizedText(name),
 		icon: icon,
@@ -253,7 +253,7 @@ func (b *Builder) WithAuthorl(name localization.Config, icon discord.URL) *Build
 }
 
 // WithAuthorlt adds an author (max 256 characters) with an icon to the embed.
-func (b *Builder) WithAuthorlt(name localization.Term, icon discord.URL) *Builder {
+func (b *Builder) WithAuthorlt(name i18n.Term, icon discord.URL) *Builder {
 	return b.WithAuthorl(name.AsConfig(), icon)
 }
 
@@ -271,7 +271,7 @@ func (b *Builder) WithAuthorWithURL(name string, icon, url discord.URL) *Builder
 
 // WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
 // URL to the embed.
-func (b *Builder) WithAuthorWithURLl(name localization.Config, icon, url discord.URL) *Builder {
+func (b *Builder) WithAuthorWithURLl(name i18n.Config, icon, url discord.URL) *Builder {
 	b.author = &author{
 		name: locutil.NewLocalizedText(name),
 		icon: icon,
@@ -283,7 +283,7 @@ func (b *Builder) WithAuthorWithURLl(name localization.Config, icon, url discord
 
 // WithAuthorWithURLlt adds an author (max 256 characters) with an icon and a
 // URL to the embed.
-func (b *Builder) WithAuthorWithURLlt(name localization.Term, icon, url discord.URL) *Builder {
+func (b *Builder) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *Builder {
 	return b.WithAuthorWithURLl(name.AsConfig(), icon, url)
 }
 
@@ -300,7 +300,7 @@ func (b *Builder) WithField(name, value string) *Builder {
 // characters) to the embed.
 // providerName or value may be empty, in which case the field won't have a name or
 // value.
-func (b *Builder) WithFieldl(name, value localization.Config) *Builder {
+func (b *Builder) WithFieldl(name, value i18n.Config) *Builder {
 	b.withFieldl(name, value, false)
 	return b
 }
@@ -309,7 +309,7 @@ func (b *Builder) WithFieldl(name, value localization.Config) *Builder {
 // characters) to the embed.
 // providerName or value may be empty, in which case the field won't have a name or
 // value.
-func (b *Builder) WithFieldlt(name, value localization.Term) *Builder {
+func (b *Builder) WithFieldlt(name, value i18n.Term) *Builder {
 	return b.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
@@ -326,7 +326,7 @@ func (b *Builder) WithInlinedField(name, value string) *Builder {
 // value: max 1024 characters) to the embed.
 // providerName or value may be empty, in which case the field won't have a name or
 // value.
-func (b *Builder) WithInlinedFieldl(name, value localization.Config) *Builder {
+func (b *Builder) WithInlinedFieldl(name, value i18n.Config) *Builder {
 	b.withFieldl(name, value, true)
 	return b
 }
@@ -335,7 +335,7 @@ func (b *Builder) WithInlinedFieldl(name, value localization.Config) *Builder {
 // value: max 1024 characters) to the embed.
 // providerName or value may be empty, in which case the field won't have a name or
 // value.
-func (b *Builder) WithInlinedFieldlt(name, value localization.Term) *Builder {
+func (b *Builder) WithInlinedFieldlt(name, value i18n.Term) *Builder {
 	return b.WithInlinedFieldl(name.AsConfig(), value.AsConfig())
 }
 
@@ -350,7 +350,7 @@ func (b *Builder) withField(name, value string, inlined bool) {
 	b.fields = append(b.fields, f)
 }
 
-func (b *Builder) withFieldl(name, value localization.Config, inlined bool) {
+func (b *Builder) withFieldl(name, value i18n.Config, inlined bool) {
 	f := field{
 		inlined: inlined,
 	}
@@ -394,7 +394,7 @@ func (b *Builder) Clone() *Builder {
 }
 
 // Build builds the discord.Embed.
-func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) {
+func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	if !b.title.IsEmpty() {
 		e.Title, err = b.title.Get(l)
 		if err != nil {
@@ -482,7 +482,7 @@ func (b *Builder) Build(l *localization.Localizer) (e discord.Embed, err error) 
 }
 
 // MustBuild is the same as Build, but panics if Build returns an error.
-func (b *Builder) MustBuild(l *localization.Localizer) discord.Embed {
+func (b *Builder) MustBuild(l *i18n.Localizer) discord.Embed {
 	e, err := b.Build(l)
 	if err != nil {
 		panic(err)

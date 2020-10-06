@@ -6,7 +6,7 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
@@ -153,14 +153,14 @@ func (w *Waiter) WithCancelKeyword(keyword string) *Waiter {
 
 // WithCancelKeywordk adds the passed keyword to the cancel keywords.
 // If the user filtered for writes this keyword Await will return Canceled.
-func (w *Waiter) WithCancelKeywordl(keyword localization.Config) *Waiter {
+func (w *Waiter) WithCancelKeywordl(keyword i18n.Config) *Waiter {
 	w.cancelKeywords = append(w.cancelKeywords, locutil.NewLocalizedText(keyword))
 	return w
 }
 
 // WithCancelKeywordlt adds the passed keyword to the cancel keywords.
 // If the user filtered for writes this keyword Await will return Canceled.
-func (w *Waiter) WithCancelKeywordlt(keyword localization.Term) *Waiter {
+func (w *Waiter) WithCancelKeywordlt(keyword i18n.Term) *Waiter {
 	return w.WithCancelKeywordl(keyword.AsConfig())
 }
 

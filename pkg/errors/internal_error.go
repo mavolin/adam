@@ -7,7 +7,7 @@ import (
 	"github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/internal/errorutil"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
@@ -154,7 +154,7 @@ func WithDescriptionf(cause error, format string, args ...interface{}) *Internal
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionl(cause error, description localization.Config) *InternalError {
+func WithDescriptionl(cause error, description i18n.Config) *InternalError {
 	if cause == nil {
 		return nil
 	}
@@ -177,7 +177,7 @@ func WithDescriptionl(cause error, description localization.Config) *InternalErr
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionlt(cause error, description localization.Term) *InternalError {
+func WithDescriptionlt(cause error, description i18n.Term) *InternalError {
 	if cause == nil {
 		return nil
 	}
@@ -196,7 +196,7 @@ func WithDescriptionlt(cause error, description localization.Term) *InternalErro
 
 // Description returns the description of the error and localizes it, if
 // possible.
-func (e *InternalError) Description(l *localization.Localizer) string {
+func (e *InternalError) Description(l *i18n.Localizer) string {
 	if !e.desc.IsEmpty() {
 		desc, err := e.desc.Get(l)
 		if err == nil {

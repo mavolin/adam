@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/internal/constant"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
@@ -89,8 +89,8 @@ func TestContext_Replyl(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
-		term    localization.Term = "abc"
-		content                   = "def"
+		term    i18n.Term = "abc"
+		content           = "def"
 	)
 
 	ctx := &Context{
@@ -118,7 +118,7 @@ func TestContext_Replyl(t *testing.T) {
 
 	m.SendText(*expect)
 
-	actual, err := ctx.Replyl(localization.Config{
+	actual, err := ctx.Replyl(i18n.Config{
 		Term: term,
 	})
 	require.NoError(t, err)
@@ -131,8 +131,8 @@ func TestContext_Replylt(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
-		term    localization.Term = "abc"
-		content                   = "def"
+		term    i18n.Term = "abc"
+		content           = "def"
 	)
 
 	ctx := &Context{
@@ -325,8 +325,8 @@ func TestContext_ReplyDMl(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
-		term    localization.Term = "abc"
-		content                   = "def"
+		term    i18n.Term = "abc"
+		content           = "def"
 	)
 
 	ctx := &Context{
@@ -362,7 +362,7 @@ func TestContext_ReplyDMl(t *testing.T) {
 	})
 	m.SendText(*expect)
 
-	actual, err := ctx.ReplyDMl(localization.Config{
+	actual, err := ctx.ReplyDMl(i18n.Config{
 		Term: term,
 	})
 	require.NoError(t, err)
@@ -375,8 +375,8 @@ func TestContext_ReplyDMlt(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
-		term    localization.Term = "abc"
-		content                   = "def"
+		term    i18n.Term = "abc"
+		content           = "def"
 	)
 
 	ctx := &Context{

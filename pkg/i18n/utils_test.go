@@ -1,4 +1,4 @@
-package localization
+package i18n
 
 import (
 	"reflect"

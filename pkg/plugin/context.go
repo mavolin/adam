@@ -8,7 +8,7 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/internal/constant"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
@@ -33,7 +33,7 @@ type Context struct {
 	*state.MessageCreateEvent
 
 	// Localizer is the localizer set to the guilds language.
-	*localization.Localizer
+	*i18n.Localizer
 
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
@@ -107,8 +107,8 @@ func (c *Context) Reply(content string) (*discord.Message, error) {
 }
 
 // Replyl replies with the message translated from the passed
-// localization.Config in the channel the command was originally sent in.
-func (c *Context) Replyl(cfg localization.Config) (*discord.Message, error) {
+// i18n.Config in the channel the command was originally sent in.
+func (c *Context) Replyl(cfg i18n.Config) (*discord.Message, error) {
 	s, err := c.Localizer.Localize(cfg)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (c *Context) Replyl(cfg localization.Config) (*discord.Message, error) {
 
 // Replylt replies with the message translated from the passed term in the
 // channel the command was originally sent in.
-func (c *Context) Replylt(term localization.Term) (*discord.Message, error) {
+func (c *Context) Replylt(term i18n.Term) (*discord.Message, error) {
 	return c.Replyl(term.AsConfig())
 }
 
@@ -178,8 +178,8 @@ func (c *Context) ReplyDM(content string) (*discord.Message, error) {
 }
 
 // ReplyDMl replies with the message translated from the passed
-// localization.Config in a direct message to the invoking user.
-func (c *Context) ReplyDMl(cfg localization.Config) (*discord.Message, error) {
+// i18n.Config in a direct message to the invoking user.
+func (c *Context) ReplyDMl(cfg i18n.Config) (*discord.Message, error) {
 	s, err := c.Localizer.Localize(cfg)
 	if err != nil {
 		return nil, err
@@ -190,7 +190,7 @@ func (c *Context) ReplyDMl(cfg localization.Config) (*discord.Message, error) {
 
 // Replylt replies with the message translated from the passed term in a direct
 // message to the invoking user.
-func (c *Context) ReplyDMlt(term localization.Term) (*discord.Message, error) {
+func (c *Context) ReplyDMlt(term i18n.Term) (*discord.Message, error) {
 	return c.ReplyDMl(term.AsConfig())
 }
 

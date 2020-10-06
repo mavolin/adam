@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 // NoOpLocalizer is a localizer that only returns errors.
-var NoOpLocalizer = localization.NewManager(func(lang string) localization.LangFunc {
-	return func(_ localization.Term, _ map[string]interface{}, _ interface{}) (string, error) {
+var NoOpLocalizer = i18n.NewManager(func(lang string) i18n.LangFunc {
+	return func(_ i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
 		return "", errors.New("error")
 	}
 }).Localizer("")
@@ -20,8 +20,8 @@ type Localizer struct {
 	t *testing.T
 
 	def   string
-	on    map[localization.Term]string
-	errOn map[localization.Term]struct{}
+	on    map[i18n.Term]string
+	errOn map[i18n.Term]struct{}
 }
 
 // NewLocalizer creates a new Localizer.
@@ -29,8 +29,8 @@ type Localizer struct {
 func NewLocalizer(t *testing.T) *Localizer {
 	return &Localizer{
 		t:     t,
-		on:    make(map[localization.Term]string),
-		errOn: make(map[localization.Term]struct{}),
+		on:    make(map[i18n.Term]string),
+		errOn: make(map[i18n.Term]struct{}),
 	}
 }
 
@@ -39,27 +39,27 @@ func NewLocalizer(t *testing.T) *Localizer {
 func NewLocalizerWithDefault(def string) *Localizer {
 	return &Localizer{
 		def:   def,
-		on:    make(map[localization.Term]string),
-		errOn: make(map[localization.Term]struct{}),
+		on:    make(map[i18n.Term]string),
+		errOn: make(map[i18n.Term]struct{}),
 	}
 }
 
 // On adds the passed response for the passed term to the localizer.
-func (l *Localizer) On(term localization.Term, response string) *Localizer {
+func (l *Localizer) On(term i18n.Term, response string) *Localizer {
 	l.on[term] = response
 	return l
 }
 
 // ErrorOn returns an error whenever the passed term is requested.
-func (l *Localizer) ErrorOn(term localization.Term) *Localizer {
+func (l *Localizer) ErrorOn(term i18n.Term) *Localizer {
 	l.errOn[term] = struct{}{}
 	return l
 }
 
 // Clone creates a copy of the localizer.
 func (l *Localizer) Clone(t *testing.T) *Localizer {
-	on := make(map[localization.Term]string, len(l.on))
-	errOn := make(map[localization.Term]struct{}, len(l.on))
+	on := make(map[i18n.Term]string, len(l.on))
+	errOn := make(map[i18n.Term]struct{}, len(l.on))
 
 	for k, v := range l.on {
 		on[k] = v
@@ -78,9 +78,9 @@ func (l *Localizer) Clone(t *testing.T) *Localizer {
 }
 
 // Build build the localizer.
-func (l *Localizer) Build() *localization.Localizer {
-	m := localization.NewManager(func(lang string) localization.LangFunc {
-		return func(term localization.Term, _ map[string]interface{}, _ interface{}) (string, error) {
+func (l *Localizer) Build() *i18n.Localizer {
+	m := i18n.NewManager(func(lang string) i18n.LangFunc {
+		return func(term i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
 			r, ok := l.on[term]
 			if ok {
 				return r, nil

@@ -3,7 +3,7 @@ package plugin
 import (
 	"github.com/diamondburned/arikawa/discord"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 type (
@@ -27,9 +27,9 @@ type (
 		GetName() string
 		// GetShortDescription returns an optional one-sentence description of
 		// the module.
-		GetShortDescription(l *localization.Localizer) string
+		GetShortDescription(l *i18n.Localizer) string
 		// GetLongDescription returns an option long description of the module.
-		GetLongDescription(l *localization.Localizer) string
+		GetLongDescription(l *i18n.Localizer) string
 
 		// IsHidden specifies whether this module will be hidden from the help
 		// page.

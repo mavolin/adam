@@ -1,4 +1,4 @@
-package localization
+package i18n
 
 // Manager manages the distribution of Localizers.
 type Manager struct {

@@ -4,7 +4,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
@@ -27,8 +27,8 @@ func NewUserInfo(description string) *UserInfo {
 }
 
 // NewUserInfol creates a new UserInfo using the message generated from the
-// passed localization.Config.
-func NewUserInfol(description localization.Config) *UserInfo {
+// passed i18n.Config.
+func NewUserInfol(description i18n.Config) *UserInfo {
 	return &UserInfo{
 		embed: InfoEmbed.Clone().
 			WithDescriptionl(description),
@@ -37,7 +37,7 @@ func NewUserInfol(description localization.Config) *UserInfo {
 
 // NewUserInfolt creates a new UserInfo using the message generated from the
 // passed term.
-func NewUserInfolt(description localization.Term) *UserInfo {
+func NewUserInfolt(description i18n.Term) *UserInfo {
 	return NewUserInfol(description.AsConfig())
 }
 
@@ -48,13 +48,13 @@ func (i *UserInfo) WithSimpleTitle(title string) *UserInfo {
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleTitlel(title localization.Config) *UserInfo {
+func (i *UserInfo) WithSimpleTitlel(title i18n.Config) *UserInfo {
 	i.embed.WithSimpleTitlel(title)
 	return i
 }
 
 // WithSimpleTitlelt adds a plain title (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleTitlelt(title localization.Term) *UserInfo {
+func (i *UserInfo) WithSimpleTitlelt(title i18n.Term) *UserInfo {
 	return i.WithSimpleTitlel(title.AsConfig())
 }
 
@@ -65,13 +65,13 @@ func (i *UserInfo) WithTitle(title string, url discord.URL) *UserInfo {
 }
 
 // WithTitlel adds a title (max. 256 characters) with a link to the UserInfo.
-func (i *UserInfo) WithTitlel(title localization.Config, url discord.URL) *UserInfo {
+func (i *UserInfo) WithTitlel(title i18n.Config, url discord.URL) *UserInfo {
 	i.embed.WithTitlel(title, url)
 	return i
 }
 
 // WithTitlelt adds a title (max. 256 characters) with a link to the UserInfo.
-func (i *UserInfo) WithTitlelt(title localization.Term, url discord.URL) *UserInfo {
+func (i *UserInfo) WithTitlelt(title i18n.Term, url discord.URL) *UserInfo {
 	return i.WithTitlel(title.AsConfig(), url)
 }
 
@@ -82,13 +82,13 @@ func (i *UserInfo) WithDescription(description string) *UserInfo {
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithDescriptionl(description localization.Config) *UserInfo {
+func (i *UserInfo) WithDescriptionl(description i18n.Config) *UserInfo {
 	i.embed.WithDescriptionl(description)
 	return i
 }
 
 // WithDescriptionlt adds a description (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithDescriptionlt(description localization.Term) *UserInfo {
+func (i *UserInfo) WithDescriptionlt(description i18n.Term) *UserInfo {
 	return i.WithDescriptionl(description.AsConfig())
 }
 
@@ -116,13 +116,13 @@ func (i *UserInfo) WithSimpleFooter(text string) *UserInfo {
 }
 
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleFooterl(text localization.Config) *UserInfo {
+func (i *UserInfo) WithSimpleFooterl(text i18n.Config) *UserInfo {
 	i.embed.WithSimpleFooterl(text)
 	return i
 }
 
 // WithSimpleFooterlt adds a plain footer (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleFooterlt(text localization.Term) *UserInfo {
+func (i *UserInfo) WithSimpleFooterlt(text i18n.Term) *UserInfo {
 	return i.WithSimpleFooterl(text.AsConfig())
 }
 
@@ -133,13 +133,13 @@ func (i *UserInfo) WithFooter(text string, icon discord.URL) *UserInfo {
 }
 
 // WithFooterl adds a footer (max. 2048 character) with an icon to the UserInfo.
-func (i *UserInfo) WithFooterl(text localization.Config, icon discord.URL) *UserInfo {
+func (i *UserInfo) WithFooterl(text i18n.Config, icon discord.URL) *UserInfo {
 	i.embed.WithFooterl(text, icon)
 	return i
 }
 
 // WithFooterlt adds a footer (max. 2048 character) with an icon to the UserInfo.
-func (i *UserInfo) WithFooterlt(text localization.Term, icon discord.URL) *UserInfo {
+func (i *UserInfo) WithFooterlt(text i18n.Term, icon discord.URL) *UserInfo {
 	return i.WithFooterl(text.AsConfig(), icon)
 }
 
@@ -162,13 +162,13 @@ func (i *UserInfo) WithSimpleAuthor(name string) *UserInfo {
 }
 
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleAuthorl(name localization.Config) *UserInfo {
+func (i *UserInfo) WithSimpleAuthorl(name i18n.Config) *UserInfo {
 	i.embed.WithSimpleAuthorl(name)
 	return i
 }
 
 // WithSimpleAuthorlt adds a plain author (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleAuthorlt(name localization.Term) *UserInfo {
+func (i *UserInfo) WithSimpleAuthorlt(name i18n.Term) *UserInfo {
 	return i.WithSimpleAuthorl(name.AsConfig())
 }
 
@@ -181,14 +181,14 @@ func (i *UserInfo) WithSimpleAuthorWithURL(name string, url discord.URL) *UserIn
 
 // WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
 // the embed.
-func (i *UserInfo) WithSimpleAuthorWithURLl(name localization.Config, url discord.URL) *UserInfo {
+func (i *UserInfo) WithSimpleAuthorWithURLl(name i18n.Config, url discord.URL) *UserInfo {
 	i.embed.WithSimpleAuthorWithURLl(name, url)
 	return i
 }
 
 // WithSimpleAuthorWithURLlt adds an author (max. 256 character) with a URL to
 // the embed.
-func (i *UserInfo) WithSimpleAuthorWithURLlt(name localization.Term, url discord.URL) *UserInfo {
+func (i *UserInfo) WithSimpleAuthorWithURLlt(name i18n.Term, url discord.URL) *UserInfo {
 	return i.WithSimpleAuthorWithURLl(name.AsConfig(), url)
 }
 
@@ -199,13 +199,13 @@ func (i *UserInfo) WithAuthor(name string, icon discord.URL) *UserInfo {
 }
 
 // WithAuthorl adds an author (max 256 characters) with an icon to the UserInfo.
-func (i *UserInfo) WithAuthorl(name localization.Config, icon discord.URL) *UserInfo {
+func (i *UserInfo) WithAuthorl(name i18n.Config, icon discord.URL) *UserInfo {
 	i.embed.WithAuthorl(name, icon)
 	return i
 }
 
 // WithAuthorlt adds an author (max 256 characters) with an icon to the UserInfo.
-func (i *UserInfo) WithAuthorlt(name localization.Term, icon discord.URL) *UserInfo {
+func (i *UserInfo) WithAuthorlt(name i18n.Term, icon discord.URL) *UserInfo {
 	return i.WithAuthorl(name.AsConfig(), icon)
 }
 
@@ -218,14 +218,14 @@ func (i *UserInfo) WithAuthorWithURL(name string, icon, url discord.URL) *UserIn
 
 // WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
 // URL to the UserInfo.
-func (i *UserInfo) WithAuthorWithURLl(name localization.Config, icon, url discord.URL) *UserInfo {
+func (i *UserInfo) WithAuthorWithURLl(name i18n.Config, icon, url discord.URL) *UserInfo {
 	i.embed.WithAuthorWithURLl(name, icon, url)
 	return i
 }
 
 // WithAuthorWithURLlt adds an author (max 256 characters) with an icon and a
 // URL to the UserInfo.
-func (i *UserInfo) WithAuthorWithURLlt(name localization.Term, icon, url discord.URL) *UserInfo {
+func (i *UserInfo) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *UserInfo {
 	return i.WithAuthorWithURLl(name.AsConfig(), icon, url)
 }
 
@@ -243,7 +243,7 @@ func (i *UserInfo) WithField(name, value string) *UserInfo {
 // UserInfo to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (i *UserInfo) WithFieldl(name, value localization.Config) *UserInfo {
+func (i *UserInfo) WithFieldl(name, value i18n.Config) *UserInfo {
 	i.embed.WithFieldl(name, value)
 	return i
 }
@@ -252,7 +252,7 @@ func (i *UserInfo) WithFieldl(name, value localization.Config) *UserInfo {
 // the UserInfo to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (i *UserInfo) WithFieldlt(name, value localization.Term) *UserInfo {
+func (i *UserInfo) WithFieldlt(name, value i18n.Term) *UserInfo {
 	return i.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
@@ -269,7 +269,7 @@ func (i *UserInfo) WithInlinedField(name, value string) *UserInfo {
 // pointer to the UserInfo to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (i *UserInfo) WithInlinedFieldl(name, value localization.Config) *UserInfo {
+func (i *UserInfo) WithInlinedFieldl(name, value i18n.Config) *UserInfo {
 	i.embed.WithInlinedFieldl(name, value)
 	return i
 }
@@ -278,12 +278,12 @@ func (i *UserInfo) WithInlinedFieldl(name, value localization.Config) *UserInfo 
 // pointer to the UserInfo to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (i *UserInfo) WithInlinedFieldlt(name, value localization.Term) *UserInfo {
+func (i *UserInfo) WithInlinedFieldlt(name, value i18n.Term) *UserInfo {
 	return i.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
 // Embed returns the embed of the UserInfo.
-func (i *UserInfo) Embed(l *localization.Localizer) (discord.Embed, error) {
+func (i *UserInfo) Embed(l *i18n.Localizer) (discord.Embed, error) {
 	return i.embed.Build(l)
 }
 

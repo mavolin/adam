@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 func Test_genError(t *testing.T) {
@@ -45,8 +45,8 @@ func Test_genError(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			secondConfig := localization.NewTermConfig("second")
-			minuteConfig := localization.NewTermConfig("minute")
+			secondConfig := i18n.NewTermConfig("second")
+			minuteConfig := i18n.NewTermConfig("minute")
 
 			acutal := genError(c.duration, secondConfig, minuteConfig)
 
