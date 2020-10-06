@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
@@ -39,7 +39,7 @@ func TestEmbedBuilder_WithSimpleTitlel(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithSimpleTitlel(localization.NewTermConfig("a")).
+		WithSimpleTitlel(i18n.NewTermConfig("a")).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -100,7 +100,7 @@ func TestEmbedBuilder_WithTitlel(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithTitlel(localization.NewTermConfig("a"), url).
+		WithTitlel(i18n.NewTermConfig("a"), url).
 		Build(l)
 
 	assert.NoError(t, err)
@@ -157,7 +157,7 @@ func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithDescriptionl(localization.NewTermConfig("a")).
+		WithDescriptionl(i18n.NewTermConfig("a")).
 		Build(l)
 
 	require.NoError(t, err)
@@ -244,7 +244,7 @@ func TestEmbedBuilder_WithSimpleFooterl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithSimpleFooterl(localization.NewTermConfig("a")).
+		WithSimpleFooterl(i18n.NewTermConfig("a")).
 		Build(l)
 
 	require.NoError(t, err)
@@ -311,7 +311,7 @@ func TestEmbedBuilder_WithFooterl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithFooterl(localization.NewTermConfig("a"), icon).
+		WithFooterl(i18n.NewTermConfig("a"), icon).
 		Build(l)
 
 	require.NoError(t, err)
@@ -408,7 +408,7 @@ func TestEmbedBuilder_WithSimpleAuthorl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithSimpleAuthorl(localization.NewTermConfig("a")).
+		WithSimpleAuthorl(i18n.NewTermConfig("a")).
 		Build(l)
 
 	require.NoError(t, err)
@@ -475,7 +475,7 @@ func TestEmbedBuilder_WithSimpleAuthorWithURLl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithSimpleAuthorWithURLl(localization.NewTermConfig("a"), url).
+		WithSimpleAuthorWithURLl(i18n.NewTermConfig("a"), url).
 		Build(l)
 
 	require.NoError(t, err)
@@ -546,7 +546,7 @@ func TestEmbedBuilder_WithAuthorl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithAuthorl(localization.NewTermConfig("a"), icon).
+		WithAuthorl(i18n.NewTermConfig("a"), icon).
 		Build(l)
 
 	require.NoError(t, err)
@@ -621,7 +621,7 @@ func TestEmbedBuilder_WithAuthorWithURLl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithAuthorWithURLl(localization.NewTermConfig("a"), icon, url).
+		WithAuthorWithURLl(i18n.NewTermConfig("a"), icon, url).
 		Build(l)
 
 	require.NoError(t, err)
@@ -691,7 +691,7 @@ func TestEmbedBuilder_WithFieldl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithFieldl(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
+		WithFieldl(i18n.NewTermConfig("a"), i18n.NewTermConfig("b")).
 		Build(l)
 
 	require.NoError(t, err)
@@ -758,7 +758,7 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 		build()
 
 	actual, err := NewBuilder().
-		WithInlinedFieldl(localization.NewTermConfig("a"), localization.NewTermConfig("b")).
+		WithInlinedFieldl(i18n.NewTermConfig("a"), i18n.NewTermConfig("b")).
 		Build(l)
 
 	require.NoError(t, err)
@@ -859,8 +859,8 @@ func TestEmbedBuilder_withField(t *testing.T) {
 func TestEmbedBuilder_withFieldl(t *testing.T) {
 	t.Run("all filled", func(t *testing.T) {
 		var (
-			name    = localization.NewTermConfig("abc")
-			value   = localization.NewTermConfig("def")
+			name    = i18n.NewTermConfig("abc")
+			value   = i18n.NewTermConfig("def")
 			inlined = true
 		)
 
@@ -882,7 +882,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 
 	t.Run("name filled", func(t *testing.T) {
 		var (
-			name    = localization.NewTermConfig("abc")
+			name    = i18n.NewTermConfig("abc")
 			inlined = false
 		)
 
@@ -896,14 +896,14 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		}
 
 		actual := NewBuilder()
-		actual.withFieldl(name, localization.Config{}, inlined)
+		actual.withFieldl(name, i18n.Config{}, inlined)
 
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("value filled", func(t *testing.T) {
 		var (
-			value   = localization.NewTermConfig("def")
+			value   = i18n.NewTermConfig("def")
 			inlined = true
 		)
 
@@ -917,7 +917,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		}
 
 		actual := NewBuilder()
-		actual.withFieldl(localization.Config{}, value, inlined)
+		actual.withFieldl(i18n.Config{}, value, inlined)
 
 		assert.Equal(t, expect, actual)
 	})

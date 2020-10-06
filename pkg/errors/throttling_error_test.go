@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -26,7 +26,7 @@ func TestThrottlingError_Description(t *testing.T) {
 	})
 
 	t.Run("localized description", func(t *testing.T) {
-		var term localization.Term = "abc"
+		var term i18n.Term = "abc"
 
 		expect := "def"
 

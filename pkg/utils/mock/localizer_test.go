@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 func TestLocalizer_Clone(t *testing.T) {
@@ -34,9 +34,9 @@ func TestLocalizer_Build(t *testing.T) {
 		assert.Equal(t, expect, actual)
 	})
 
-	t.Run("expected localization", func(t *testing.T) {
+	t.Run("expected i18n", func(t *testing.T) {
 		t.Run("error on", func(t *testing.T) {
-			var term localization.Term = "abc"
+			var term i18n.Term = "abc"
 
 			l := NewLocalizer(t).
 				ErrorOn(term).
@@ -47,7 +47,7 @@ func TestLocalizer_Build(t *testing.T) {
 		})
 
 		t.Run("on", func(t *testing.T) {
-			var term localization.Term = "abc"
+			var term i18n.Term = "abc"
 
 			expect := "def"
 
@@ -61,8 +61,8 @@ func TestLocalizer_Build(t *testing.T) {
 		})
 	})
 
-	t.Run("unexpected localization", func(t *testing.T) {
-		var term localization.Term = "unknown_term"
+	t.Run("unexpected i18n", func(t *testing.T) {
+		var term i18n.Term = "unknown_term"
 
 		tMock := new(testing.T)
 

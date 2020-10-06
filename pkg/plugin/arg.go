@@ -7,7 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 type (
@@ -29,7 +29,7 @@ type (
 	ArgsInfoer interface {
 		// Info returns localized information about the arguments and flags of
 		// a command.
-		Info(l *localization.Localizer) ([]ArgsInfo, error)
+		Info(l *i18n.Localizer) ([]ArgsInfo, error)
 	}
 
 	// ArgsInfo contains localized information about a command's arguments.

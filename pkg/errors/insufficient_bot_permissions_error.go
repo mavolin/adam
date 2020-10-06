@@ -7,7 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
@@ -45,7 +45,7 @@ func (e *InsufficientBotPermissionsError) IsSinglePermission() bool {
 // Note that if IsSinglePermission returns true, the description will already
 // contain the missing permissions, which otherwise would need to be retrieved
 // via PermissionList.
-func (e *InsufficientBotPermissionsError) Description(l *localization.Localizer) (desc string) {
+func (e *InsufficientBotPermissionsError) Description(l *i18n.Localizer) (desc string) {
 	if e.MissingPermissions == 0 {
 		return
 	}
@@ -71,7 +71,7 @@ func (e *InsufficientBotPermissionsError) Description(l *localization.Localizer)
 
 // PermissionList returns a written bullet point list of the missing
 // permissions, as used if multiple permissions are missing.
-func (e *InsufficientBotPermissionsError) PermissionList(l *localization.Localizer) string {
+func (e *InsufficientBotPermissionsError) PermissionList(l *i18n.Localizer) string {
 	permNames := locutil.PermissionNamesl(e.MissingPermissions, l)
 	return "• " + strings.Join(permNames, "\n• ")
 }

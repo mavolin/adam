@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 // mockLocalizer is a copy of mock.Localizer, used to prevent import cycles.
@@ -14,26 +14,26 @@ type mockLocalizer struct {
 	t *testing.T
 
 	def      string
-	onReturn map[localization.Term]string
-	errOn    map[localization.Term]struct{}
+	onReturn map[i18n.Term]string
+	errOn    map[i18n.Term]struct{}
 }
 
 func newMockedLocalizer(t *testing.T) *mockLocalizer {
 	return &mockLocalizer{
 		t:        t,
-		onReturn: make(map[localization.Term]string),
-		errOn:    make(map[localization.Term]struct{}),
+		onReturn: make(map[i18n.Term]string),
+		errOn:    make(map[i18n.Term]struct{}),
 	}
 }
 
-func (l *mockLocalizer) on(term localization.Term, response string) *mockLocalizer {
+func (l *mockLocalizer) on(term i18n.Term, response string) *mockLocalizer {
 	l.onReturn[term] = response
 	return l
 }
 
-func (l *mockLocalizer) build() *localization.Localizer {
-	m := localization.NewManager(func(lang string) localization.LangFunc {
-		return func(term localization.Term, _ map[string]interface{}, _ interface{}) (string, error) {
+func (l *mockLocalizer) build() *i18n.Localizer {
+	m := i18n.NewManager(func(lang string) i18n.LangFunc {
+		return func(term i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
 			r, ok := l.onReturn[term]
 			if ok {
 				return r, nil

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 func TestText_IsEmpty(t *testing.T) {
@@ -27,7 +27,7 @@ func TestText_IsEmpty(t *testing.T) {
 		},
 		{
 			name:   "config",
-			text:   NewLocalizedText(localization.NewTermConfig("abc")),
+			text:   NewLocalizedText(i18n.NewTermConfig("abc")),
 			expect: false,
 		},
 	}
@@ -54,7 +54,7 @@ func TestText_Get(t *testing.T) {
 	t.Run("localized", func(t *testing.T) {
 		expect := "abc"
 
-		var term localization.Term = "def"
+		var term i18n.Term = "def"
 
 		text := NewLocalizedText(term.AsConfig())
 

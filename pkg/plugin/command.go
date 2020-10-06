@@ -4,7 +4,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 type (
@@ -24,8 +24,8 @@ type (
 		//	• discord.Embed
 		//	• *embedutil.Builder
 		//	• api.SendMessageData
-		//	• localization.Term
-		//	• localization.Config
+		//	• i18n.Term
+		//	• i18n.Config
 		//	• any type implementing Response
 		//	• nil for no response
 		//
@@ -53,12 +53,12 @@ type (
 		GetAliases() []string
 		// GetShortDescription returns an optional one-sentence description
 		// of the command.
-		GetShortDescription(l *localization.Localizer) string
+		GetShortDescription(l *i18n.Localizer) string
 		// GetLongDescription returns an optional long description of the
 		// command.
-		GetLongDescription(l *localization.Localizer) string
+		GetLongDescription(l *i18n.Localizer) string
 		// GetExamples returns optional example usages of the command.
-		GetExamples(l *localization.Localizer) []string
+		GetExamples(l *i18n.Localizer) []string
 
 		// GetArgs returns the ArgConfig of the command.
 		//

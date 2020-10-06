@@ -4,7 +4,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
@@ -27,8 +27,8 @@ func NewUserError(description string) *UserError {
 }
 
 // NewUserErrorl creates a new UserError using the message generated from the
-// passed localization.Config as description.
-func NewUserErrorl(description localization.Config) *UserError {
+// passed i18n.Config as description.
+func NewUserErrorl(description i18n.Config) *UserError {
 	return &UserError{
 		embed: ErrorEmbed.Clone().
 			WithDescriptionl(description),
@@ -37,7 +37,7 @@ func NewUserErrorl(description localization.Config) *UserError {
 
 // NewUserErrorlt creates a new UserError using the message generated from the
 // passed term as description.
-func NewUserErrorlt(description localization.Term) *UserError {
+func NewUserErrorlt(description i18n.Term) *UserError {
 	return NewUserErrorl(description.AsConfig())
 }
 
@@ -48,13 +48,13 @@ func (e *UserError) WithSimpleTitle(title string) *UserError {
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the error.
-func (e *UserError) WithSimpleTitlel(title localization.Config) *UserError {
+func (e *UserError) WithSimpleTitlel(title i18n.Config) *UserError {
 	e.embed.WithSimpleTitlel(title)
 	return e
 }
 
 // WithSimpleTitlelt adds a plain title (max. 256 characters) to the error.
-func (e *UserError) WithSimpleTitlelt(title localization.Term) *UserError {
+func (e *UserError) WithSimpleTitlelt(title i18n.Term) *UserError {
 	return e.WithSimpleTitlel(title.AsConfig())
 }
 
@@ -65,13 +65,13 @@ func (e *UserError) WithTitle(title string, url discord.URL) *UserError {
 }
 
 // WithTitlel adds a title (max. 256 characters) with a link to the error.
-func (e *UserError) WithTitlel(title localization.Config, url discord.URL) *UserError {
+func (e *UserError) WithTitlel(title i18n.Config, url discord.URL) *UserError {
 	e.embed.WithTitlel(title, url)
 	return e
 }
 
 // WithTitlelt adds a title (max. 256 characters) with a link to the error.
-func (e *UserError) WithTitlelt(title localization.Term, url discord.URL) *UserError {
+func (e *UserError) WithTitlelt(title i18n.Term, url discord.URL) *UserError {
 	return e.WithTitlel(title.AsConfig(), url)
 }
 
@@ -82,13 +82,13 @@ func (e *UserError) WithDescription(description string) *UserError {
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the error.
-func (e *UserError) WithDescriptionl(description localization.Config) *UserError {
+func (e *UserError) WithDescriptionl(description i18n.Config) *UserError {
 	e.embed.WithDescriptionl(description)
 	return e
 }
 
 // WithDescriptionlt adds a description (max. 2048 characters) to the error.
-func (e *UserError) WithDescriptionlt(description localization.Term) *UserError {
+func (e *UserError) WithDescriptionlt(description i18n.Term) *UserError {
 	return e.WithDescriptionl(description.AsConfig())
 }
 
@@ -116,13 +116,13 @@ func (e *UserError) WithSimpleFooter(text string) *UserError {
 }
 
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the error.
-func (e *UserError) WithSimpleFooterl(text localization.Config) *UserError {
+func (e *UserError) WithSimpleFooterl(text i18n.Config) *UserError {
 	e.embed.WithSimpleFooterl(text)
 	return e
 }
 
 // WithSimpleFooterlt adds a plain footer (max. 2048 characters) to the error.
-func (e *UserError) WithSimpleFooterlt(text localization.Term) *UserError {
+func (e *UserError) WithSimpleFooterlt(text i18n.Term) *UserError {
 	return e.WithSimpleFooterl(text.AsConfig())
 }
 
@@ -133,13 +133,13 @@ func (e *UserError) WithFooter(text string, icon discord.URL) *UserError {
 }
 
 // WithFooterl adds a footer (max. 2048 character) with an icon to the error.
-func (e *UserError) WithFooterl(text localization.Config, icon discord.URL) *UserError {
+func (e *UserError) WithFooterl(text i18n.Config, icon discord.URL) *UserError {
 	e.embed.WithFooterl(text, icon)
 	return e
 }
 
 // WithFooterlt adds a footer (max. 2048 character) with an icon to the error.
-func (e *UserError) WithFooterlt(text localization.Term, icon discord.URL) *UserError {
+func (e *UserError) WithFooterlt(text i18n.Term, icon discord.URL) *UserError {
 	return e.WithFooterl(text.AsConfig(), icon)
 }
 
@@ -162,13 +162,13 @@ func (e *UserError) WithSimpleAuthor(name string) *UserError {
 }
 
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the error.
-func (e *UserError) WithSimpleAuthorl(name localization.Config) *UserError {
+func (e *UserError) WithSimpleAuthorl(name i18n.Config) *UserError {
 	e.embed.WithSimpleAuthorl(name)
 	return e
 }
 
 // WithSimpleAuthorlt adds a plain author (max. 256 characters) to the error.
-func (e *UserError) WithSimpleAuthorlt(name localization.Term) *UserError {
+func (e *UserError) WithSimpleAuthorlt(name i18n.Term) *UserError {
 	return e.WithSimpleAuthorl(name.AsConfig())
 }
 
@@ -181,14 +181,14 @@ func (e *UserError) WithSimpleAuthorWithURL(name string, url discord.URL) *UserE
 
 // WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
 // the embed.
-func (e *UserError) WithSimpleAuthorWithURLl(name localization.Config, url discord.URL) *UserError {
+func (e *UserError) WithSimpleAuthorWithURLl(name i18n.Config, url discord.URL) *UserError {
 	e.embed.WithSimpleAuthorWithURLl(name, url)
 	return e
 }
 
 // WithSimpleAuthorWithURLlt adds an author (max. 256 character) with a URL to
 // the embed.
-func (e *UserError) WithSimpleAuthorWithURLlt(name localization.Term, url discord.URL) *UserError {
+func (e *UserError) WithSimpleAuthorWithURLlt(name i18n.Term, url discord.URL) *UserError {
 	return e.WithSimpleAuthorWithURLl(name.AsConfig(), url)
 }
 
@@ -199,13 +199,13 @@ func (e *UserError) WithAuthor(name string, icon discord.URL) *UserError {
 }
 
 // WithAuthorl adds an author (max 256 characters) with an icon to the error.
-func (e *UserError) WithAuthorl(name localization.Config, icon discord.URL) *UserError {
+func (e *UserError) WithAuthorl(name i18n.Config, icon discord.URL) *UserError {
 	e.embed.WithAuthorl(name, icon)
 	return e
 }
 
 // WithAuthorlt adds an author (max 256 characters) with an icon to the error.
-func (e *UserError) WithAuthorlt(name localization.Term, icon discord.URL) *UserError {
+func (e *UserError) WithAuthorlt(name i18n.Term, icon discord.URL) *UserError {
 	return e.WithAuthorl(name.AsConfig(), icon)
 }
 
@@ -218,14 +218,14 @@ func (e *UserError) WithAuthorWithURL(name string, icon, url discord.URL) *UserE
 
 // WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
 // URL to the error.
-func (e *UserError) WithAuthorWithURLl(name localization.Config, icon, url discord.URL) *UserError {
+func (e *UserError) WithAuthorWithURLl(name i18n.Config, icon, url discord.URL) *UserError {
 	e.embed.WithAuthorWithURLl(name, icon, url)
 	return e
 }
 
 // WithAuthorWithURLlt adds an author (max 256 characters) with an icon and a
 // URL to the error.
-func (e *UserError) WithAuthorWithURLlt(name localization.Term, icon, url discord.URL) *UserError {
+func (e *UserError) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *UserError {
 	return e.WithAuthorWithURLl(name.AsConfig(), icon, url)
 }
 
@@ -242,7 +242,7 @@ func (e *UserError) WithField(name, value string) *UserError {
 // UserError to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (e *UserError) WithFieldl(name, value localization.Config) *UserError {
+func (e *UserError) WithFieldl(name, value i18n.Config) *UserError {
 	e.embed.WithFieldl(name, value)
 	return e
 }
@@ -251,7 +251,7 @@ func (e *UserError) WithFieldl(name, value localization.Config) *UserError {
 // UserError to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (e *UserError) WithFieldlt(name, value localization.Term) *UserError {
+func (e *UserError) WithFieldlt(name, value i18n.Term) *UserError {
 	return e.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
@@ -268,7 +268,7 @@ func (e *UserError) WithInlinedField(name, value string) *UserError {
 // to the UserError to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (e *UserError) WithInlinedFieldl(name, value localization.Config) *UserError {
+func (e *UserError) WithInlinedFieldl(name, value i18n.Config) *UserError {
 	e.embed.WithInlinedFieldl(name, value)
 	return e
 }
@@ -277,12 +277,12 @@ func (e *UserError) WithInlinedFieldl(name, value localization.Config) *UserErro
 // pointer to the UserError to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (e *UserError) WithInlinedFieldlt(name, value localization.Term) *UserError {
+func (e *UserError) WithInlinedFieldlt(name, value i18n.Term) *UserError {
 	return e.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
 // Embed returns the embed of the UserError.
-func (e *UserError) Embed(l *localization.Localizer) (discord.Embed, error) {
+func (e *UserError) Embed(l *i18n.Localizer) (discord.Embed, error) {
 	return e.embed.Build(l)
 }
 

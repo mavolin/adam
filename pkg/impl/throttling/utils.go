@@ -4,15 +4,15 @@ import (
 	"time"
 
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 // genError generates a errors.ThrottlingError using one of the two passed
-// localization.Configs, based on the value of the passed time.Duration.
+// i18n.Configs, based on the value of the passed time.Duration.
 // Any duration less or equal to 90 seconds will displayed using seconds.
 // Otherwise the minuteConfig will be used.
 func genError(
-	d time.Duration, secondConfig localization.Config, minuteConfig localization.Config,
+	d time.Duration, secondConfig i18n.Config, minuteConfig i18n.Config,
 ) *errors.ThrottlingError {
 	d = d.Round(time.Second)
 

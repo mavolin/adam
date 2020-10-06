@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -138,14 +138,14 @@ func TestWithDescriptionf(t *testing.T) {
 
 func TestWithDescriptionl(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
-		err := WithDescriptionl(nil, localization.Config{})
+		err := WithDescriptionl(nil, i18n.Config{})
 		assert.Nil(t, err)
 	})
 
 	t.Run("internal error", func(t *testing.T) {
 		var (
 			cause = new(InternalError)
-			desc  = localization.NewTermConfig("abc")
+			desc  = i18n.NewTermConfig("abc")
 		)
 
 		err := WithDescriptionl(cause, desc)
@@ -156,7 +156,7 @@ func TestWithDescriptionl(t *testing.T) {
 	t.Run("normal error", func(t *testing.T) {
 		var (
 			cause = New("abc")
-			desc  = localization.NewTermConfig("def")
+			desc  = i18n.NewTermConfig("def")
 		)
 
 		err := WithDescriptionl(cause, desc)
@@ -173,8 +173,8 @@ func TestWithDescriptionlt(t *testing.T) {
 
 	t.Run("internal error", func(t *testing.T) {
 		var (
-			cause                   = new(InternalError)
-			desc  localization.Term = "abc"
+			cause           = new(InternalError)
+			desc  i18n.Term = "abc"
 		)
 
 		err := WithDescriptionlt(cause, desc)
@@ -184,8 +184,8 @@ func TestWithDescriptionlt(t *testing.T) {
 
 	t.Run("normal error", func(t *testing.T) {
 		var (
-			cause                   = New("abc")
-			desc  localization.Term = "def"
+			cause           = New("abc")
+			desc  i18n.Term = "def"
 		)
 
 		err := WithDescriptionlt(cause, desc)
@@ -205,7 +205,7 @@ func TestInternalError_Description(t *testing.T) {
 	})
 
 	t.Run("localized description", func(t *testing.T) {
-		var term localization.Term = "abc"
+		var term i18n.Term = "abc"
 
 		expect := "def"
 

@@ -1,4 +1,4 @@
-package localization
+package i18n
 
 import (
 	"errors"
@@ -35,7 +35,7 @@ type Config struct {
 	// If you use a struct the Localizer will to convert the
 	// name of the fields to snake_case.
 	// However, if you want to use a custom name for the keys, you
-	// can use the `localization:"myname"` struct tag.
+	// can use the `i18n:"myname"` struct tag.
 	Placeholders interface{}
 	// Plural is a number or a string containing such, that is used to
 	// identify if the message should be pluralized or not.
@@ -113,7 +113,7 @@ func (c Config) placeholdersToMap() (map[string]interface{}, error) {
 			continue
 		}
 
-		key := tv.Tag.Get("localization")
+		key := tv.Tag.Get("i18n")
 
 		if key == "" {
 			key = strcase.ToSnake(tv.Name)
@@ -236,7 +236,7 @@ func (l *Localizer) Localize(c Config) (s string, err error) {
 }
 
 // LocalizeTerm is a short for
-//		l.Localize(localization.Config{
+//		l.Localize(i18n.Config{
 //			NewTermConfig: term,
 //		})
 func (l *Localizer) LocalizeTerm(term Term) (string, error) { return l.Localize(NewTermConfig(term)) }

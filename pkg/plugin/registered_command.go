@@ -6,7 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
 // RegisteredCommand is the abstraction of a command as returned by a Provider.
@@ -196,18 +196,18 @@ func (c *RegisteredCommand) Parent() *RegisteredModule {
 
 // ShortDescription returns an optional one-sentence description of the
 // command.
-func (c *RegisteredCommand) ShortDescription(l *localization.Localizer) string {
+func (c *RegisteredCommand) ShortDescription(l *i18n.Localizer) string {
 	return c.Source.GetShortDescription(l)
 }
 
 // LongDescription returns an optional thorough description of the
 // command.
-func (c *RegisteredCommand) LongDescription(l *localization.Localizer) string {
+func (c *RegisteredCommand) LongDescription(l *i18n.Localizer) string {
 	return c.Source.GetLongDescription(l)
 }
 
 // Examples returns optional examples for the command.
-func (c *RegisteredCommand) Examples(l *localization.Localizer) []string {
+func (c *RegisteredCommand) Examples(l *i18n.Localizer) []string {
 	return c.Source.GetExamples(l)
 }
 

@@ -4,14 +4,14 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // newInvalidChannelTypeError returns a new errors.RestrictionError wrapping
 // an errors.InvalidChannelTypeError.
-func newInvalidChannelTypeError(allowed plugin.ChannelTypes, l *localization.Localizer, fatal bool) error {
+func newInvalidChannelTypeError(allowed plugin.ChannelTypes, l *i18n.Localizer, fatal bool) error {
 	err := errors.NewInvalidChannelTypeError(allowed)
 	desc := err.Description(l)
 
@@ -25,7 +25,7 @@ func newInvalidChannelTypeError(allowed plugin.ChannelTypes, l *localization.Loc
 // newAllMissingRolesError creates a new error containing an
 // error message for missing roles.
 // The name field of the roles must be set.
-func newAllMissingRolesError(missing []discord.Role, l *localization.Localizer) error {
+func newAllMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	if len(missing) == 0 {
 		return nil
 	} else if len(missing) == 1 {
@@ -60,7 +60,7 @@ func newAllMissingRolesError(missing []discord.Role, l *localization.Localizer) 
 // newAnyMissingRolesError creates a new error containing an
 // error message for missing roles.
 // The name field of the roles must be set.
-func newAnyMissingRolesError(missing []discord.Role, l *localization.Localizer) error {
+func newAnyMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	if len(missing) == 0 {
 		return nil
 	} else if len(missing) == 1 {
@@ -95,7 +95,7 @@ func newAnyMissingRolesError(missing []discord.Role, l *localization.Localizer) 
 // newChannelsError creates a new error containing an error
 // message containing the allowed channels.
 // The name field of the channels must be set.
-func newChannelsError(allowed []discord.ChannelID, l *localization.Localizer) error {
+func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 	if len(allowed) == 0 {
 		return nil
 	} else if len(allowed) == 1 {
@@ -130,7 +130,7 @@ func newChannelsError(allowed []discord.ChannelID, l *localization.Localizer) er
 
 // newInsufficientBotPermissions creates a new error containing the missing
 // bot permissions
-func newInsufficientBotPermissionsError(missing discord.Permissions, l *localization.Localizer) error {
+func newInsufficientBotPermissionsError(missing discord.Permissions, l *i18n.Localizer) error {
 	if missing == 0 {
 		return nil
 	}
@@ -161,7 +161,7 @@ func newInsufficientBotPermissionsError(missing discord.Permissions, l *localiza
 
 // newInsufficientUserPermissionsError returns a new error containing the
 // missing permissions.
-func newInsufficientUserPermissionsError(missing discord.Permissions, l *localization.Localizer) error {
+func newInsufficientUserPermissionsError(missing discord.Permissions, l *i18n.Localizer) error {
 	if missing == 0 {
 		return nil
 	}

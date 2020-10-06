@@ -3,7 +3,7 @@ package errors
 import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
@@ -47,8 +47,8 @@ func NewRestrictionError(description string) *RestrictionError {
 }
 
 // NewRestrictionErrorl creates a new RestrictionError using the message
-// generated from the passed localization.Config as description.
-func NewRestrictionErrorl(description localization.Config) *RestrictionError {
+// generated from the passed i18n.Config as description.
+func NewRestrictionErrorl(description i18n.Config) *RestrictionError {
 	return &RestrictionError{
 		desc: locutil.NewLocalizedText(description),
 	}
@@ -56,7 +56,7 @@ func NewRestrictionErrorl(description localization.Config) *RestrictionError {
 
 // NewRestrictionErrorlt creates a new RestrictionError using the message
 // generated from the passed term as description.
-func NewRestrictionErrorlt(description localization.Term) *RestrictionError {
+func NewRestrictionErrorlt(description i18n.Term) *RestrictionError {
 	return NewRestrictionErrorl(description.AsConfig())
 }
 
@@ -70,8 +70,8 @@ func NewFatalRestrictionError(description string) *RestrictionError {
 }
 
 // NewFatalRestrictionErrorl creates a new fatal RestrictionError using the
-// message generated from the passed localization.Config as description.
-func NewFatalRestrictionErrorl(description localization.Config) *RestrictionError {
+// message generated from the passed i18n.Config as description.
+func NewFatalRestrictionErrorl(description i18n.Config) *RestrictionError {
 	return &RestrictionError{
 		desc:  locutil.NewLocalizedText(description),
 		Fatal: true,
@@ -80,13 +80,13 @@ func NewFatalRestrictionErrorl(description localization.Config) *RestrictionErro
 
 // NewFatalRestrictionErrorlt creates a new fatal RestrictionError using the
 // message generated from the passed term as description.
-func NewFatalRestrictionErrorlt(description localization.Term) *RestrictionError {
+func NewFatalRestrictionErrorlt(description i18n.Term) *RestrictionError {
 	return NewFatalRestrictionErrorl(description.AsConfig())
 }
 
 // Description returns the description of the error and localizes it, if
 // possible.
-func (e *RestrictionError) Description(l *localization.Localizer) (string, error) {
+func (e *RestrictionError) Description(l *i18n.Localizer) (string, error) {
 	return e.desc.Get(l)
 }
 

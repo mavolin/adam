@@ -3,7 +3,7 @@ package errors
 import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/pkg/localization"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/locutil"
 )
@@ -25,8 +25,8 @@ func NewThrottlingError(description string) *ThrottlingError {
 }
 
 // NewThrottlingErrorl creates a new ThrottlingError using the message
-// generated from the passed localization.Config as description.
-func NewThrottlingErrorl(description localization.Config) *ThrottlingError {
+// generated from the passed i18n.Config as description.
+func NewThrottlingErrorl(description i18n.Config) *ThrottlingError {
 	return &ThrottlingError{
 		desc: locutil.NewLocalizedText(description),
 	}
@@ -34,13 +34,13 @@ func NewThrottlingErrorl(description localization.Config) *ThrottlingError {
 
 // NewThrottlingErrorlt creates a new ThrottlingError using the message
 // generated from the passed term as description.
-func NewThrottlingErrorlt(description localization.Term) *ThrottlingError {
+func NewThrottlingErrorlt(description i18n.Term) *ThrottlingError {
 	return NewThrottlingErrorl(description.AsConfig())
 }
 
 // Description returns the description of the error and localizes it, if
 // possible.
-func (e *ThrottlingError) Description(l *localization.Localizer) (string, error) {
+func (e *ThrottlingError) Description(l *i18n.Localizer) (string, error) {
 	return e.desc.Get(l)
 }
 

@@ -1,4 +1,4 @@
-package localization
+package i18n
 
 type (
 	// Func is the func used to retrieve a LangFunc, used to create

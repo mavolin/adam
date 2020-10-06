@@ -1,52 +1,52 @@
 package errors
 
-import "github.com/mavolin/adam/pkg/localization"
+import "github.com/mavolin/adam/pkg/i18n"
 
 var (
-	errorTitle = localization.NewFallbackConfig("error.title", "Error")
-	infoTitle  = localization.NewFallbackConfig("info.title", "Info")
+	errorTitle = i18n.NewFallbackConfig("error.title", "Error")
+	infoTitle  = i18n.NewFallbackConfig("info.title", "Info")
 
-	internalErrorTitle  = localization.NewFallbackConfig("errors.internal.title", "Internal Error")
-	defaultInternalDesc = localization.NewFallbackConfig("errors.internal.description.default",
+	internalErrorTitle  = i18n.NewFallbackConfig("errors.internal.title", "Internal Error")
+	defaultInternalDesc = i18n.NewFallbackConfig("errors.internal.description.default",
 		"Oh no! Something went wrong and I couldn't finish executing your command. I've informed my team and they'll "+
 			"get on fixing the bug asap.")
 
-	defaultRestrictionDesc = localization.NewFallbackConfig("errors.restriction.description.default",
+	defaultRestrictionDesc = i18n.NewFallbackConfig("errors.restriction.description.default",
 		"👮 You are not allowed to use this command.")
 
-	insufficientBotPermissionsDescSingle = localization.NewFallbackConfig(
+	insufficientBotPermissionsDescSingle = i18n.NewFallbackConfig(
 		"errors.insufficient_bot_permissions.description.single",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the "+
 			`"{{.missing_permission}}" permission and try again.`)
-	insufficientBotPermissionsDescMulti = localization.NewFallbackConfig(
+	insufficientBotPermissionsDescMulti = i18n.NewFallbackConfig(
 		"errors.insufficient_bot_permissions.description.multi",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
 			"permissions and try again:")
-	insufficientBotPermissionMissingMissingPermissionsFieldName = localization.NewFallbackConfig(
+	insufficientBotPermissionMissingMissingPermissionsFieldName = i18n.NewFallbackConfig(
 		"errors.insufficient_bot_permissions.fields.missing_permissions.name",
 		"Missing Permissions")
 
-	argumentParsingReasonFieldName = localization.NewFallbackConfig("errors.argument_parsing.reason.name", "Reason")
+	argumentParsingReasonFieldName = i18n.NewFallbackConfig("errors.argument_parsing.reason.name", "Reason")
 
-	channelTypeErrorGuildText = localization.NewFallbackConfig(
+	channelTypeErrorGuildText = i18n.NewFallbackConfig(
 		"errors.channel_type.description.guild_text",
 		"You must use this command in a regular text channel.")
-	channelTypeErrorGuildNews = localization.NewFallbackConfig(
+	channelTypeErrorGuildNews = i18n.NewFallbackConfig(
 		"errors.channel_types.description.guild_news.",
 		"You must use this command in an announcement channel.")
-	channelTypeErrorDirectMessage = localization.NewFallbackConfig(
+	channelTypeErrorDirectMessage = i18n.NewFallbackConfig(
 		"errors.channel_types.description.direct_message.",
 		"You must use this command in a direct message.")
-	channelTypeErrorGuild = localization.NewFallbackConfig(
+	channelTypeErrorGuild = i18n.NewFallbackConfig(
 		"errors.channel_types.description.guild.",
 		"You must use this command in a server.")
-	channelTypeErrorDirectMessageAndGuildText = localization.NewFallbackConfig(
+	channelTypeErrorDirectMessageAndGuildText = i18n.NewFallbackConfig(
 		"errors.channel_types.description.direct_message_and_guild_text.",
 		"You must use this command in a direct message or a regular text channel.")
-	channelTypeErrorDirectMessageAndGuildNews = localization.NewFallbackConfig(
+	channelTypeErrorDirectMessageAndGuildNews = i18n.NewFallbackConfig(
 		"errors.channel_types.description.direct_message_and_guild_news.",
 		"You must use this command in a direct message or a announcement channel.")
-	channelTypeErrorFallback = localization.NewFallbackConfig(
+	channelTypeErrorFallback = i18n.NewFallbackConfig(
 		"errors.channel_type.description.fallback",
 		"Ypu can't use this command in this type of channel.")
 )
