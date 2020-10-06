@@ -30,9 +30,11 @@ func TestNSFW(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -46,9 +48,11 @@ func TestNSFW(t *testing.T) {
 						},
 					},
 				},
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.DirectMessages,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.DirectMessages,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{
 						NSFW: true,
@@ -67,9 +71,11 @@ func TestNSFW(t *testing.T) {
 						},
 					},
 				},
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.DirectMessages,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.DirectMessages,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{
 						NSFW: false,
@@ -105,9 +111,11 @@ func TestGuildOwner(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -125,9 +133,11 @@ func TestGuildOwner(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						OwnerID: 456,
@@ -150,9 +160,11 @@ func TestGuildOwner(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						OwnerID: 789,
@@ -299,9 +311,11 @@ func TestAllRoles(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -447,9 +461,11 @@ func TestMustAllRoles(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -554,9 +570,11 @@ func TestAnyRole(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -706,9 +724,11 @@ func TestMustAnyRole(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -973,9 +993,11 @@ func TestBotPermissions(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -1022,9 +1044,11 @@ func TestBotPermissions(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						ID: 123,
@@ -1096,9 +1120,11 @@ func TestUserPermissions(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
 		},
@@ -1150,9 +1176,11 @@ func TestUserPermissions(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						ID: 123,

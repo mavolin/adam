@@ -30,9 +30,11 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.GuildChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.GuildChannels,
+					},
+				}),
 			},
 			allowed: plugin.GuildChannels,
 			expect:  nil,
@@ -48,9 +50,11 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.GuildTextChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.GuildTextChannels,
+					},
+				}),
 			},
 			allowed: plugin.GuildChannels,
 			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, true),
@@ -65,9 +69,11 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.DirectMessages,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.DirectMessages,
+					},
+				}),
 			},
 			allowed: plugin.DirectMessages,
 			expect:  nil,
@@ -83,9 +89,11 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 			},
 			allowed: plugin.DirectMessages,
 			expect:  newInvalidChannelTypeError(plugin.DirectMessages, mock.NoOpLocalizer, true),
@@ -100,9 +108,11 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.DirectMessages,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.DirectMessages,
+					},
+				}),
 			},
 			allowed: plugin.AllChannels,
 			expect:  nil,
@@ -117,9 +127,11 @@ func Test_assertChannelTypes(t *testing.T) {
 						},
 					},
 				},
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.AllChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.AllChannels,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{
 						Type: discord.GuildText,
@@ -140,9 +152,11 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.GuildChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.GuildChannels,
+					},
+				}),
 			},
 			allowed: plugin.GuildTextChannels,
 			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, true),
@@ -158,9 +172,11 @@ func Test_assertChannelTypes(t *testing.T) {
 					},
 				},
 				Localizer: mock.NoOpLocalizer,
-				Command: mock.RegisteredCommand{
-					ChannelTypesReturn: plugin.GuildChannels,
-				},
+				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+					CommandMeta: mock.CommandMeta{
+						ChannelTypes: plugin.GuildChannels,
+					},
+				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{
 						Type: discord.GuildNews,
@@ -191,9 +207,11 @@ func Test_assertChannelTypes(t *testing.T) {
 				},
 			},
 			Localizer: mock.NoOpLocalizer,
-			Command: mock.RegisteredCommand{
-				ChannelTypesReturn: plugin.GuildChannels,
-			},
+			InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				CommandMeta: mock.CommandMeta{
+					ChannelTypes: plugin.GuildChannels,
+				},
+			}),
 			ErrorHandler: mock.NewErrorHandler().
 				ExpectSilentError(noRemainingError),
 		}
@@ -305,13 +323,32 @@ func Test_insertRoleSorted(t *testing.T) {
 			},
 		},
 		{
-			name: "roles filled",
+			name: "append role",
 			role: discord.Role{
 				Position: 5,
 			},
 			roles: []discord.Role{
 				{
 					Position: 3,
+				},
+			},
+			expect: []discord.Role{
+				{
+					Position: 3,
+				},
+				{
+					Position: 5,
+				},
+			},
+		},
+		{
+			name: "insert role",
+			role: discord.Role{
+				Position: 3,
+			},
+			roles: []discord.Role{
+				{
+					Position: 5,
 				},
 			},
 			expect: []discord.Role{

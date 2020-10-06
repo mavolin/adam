@@ -73,14 +73,21 @@ func (id Identifier) IsRoot() bool {
 	return id == "."
 }
 
+// NumParents returns the number of parents the plugin has.
+//
+// Returns a negative number, if the Identifier is invalid.
+func (id Identifier) NumParents() int {
+	return strings.Count(string(id), ".") - 1
+}
+
 // IsParent checks if the passed Identifier is a parent of this identifier.
 func (id Identifier) IsParent(target Identifier) bool {
-	return id > target && strings.HasPrefix(string(id), string(target))
+	return len(id) > len(target) && strings.HasPrefix(string(id), string(target))
 }
 
 // IsChild checks if the passed Identifier is a child of this identifier.
 func (id Identifier) IsChild(target Identifier) bool {
-	return target > id && strings.HasPrefix(string(target), string(id))
+	return len(id) < len(target) && strings.HasPrefix(string(target), string(id))
 }
 
 // AsInvoke returns the identifier as a prefixless command invoke.

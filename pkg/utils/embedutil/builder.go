@@ -289,7 +289,7 @@ func (b *Builder) WithAuthorWithURLlt(name localization.Term, icon, url discord.
 
 // WithFieldt appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-// Name or value may be empty, in which case the field won't have a name or
+// providerName or value may be empty, in which case the field won't have a name or
 // value.
 func (b *Builder) WithField(name, value string) *Builder {
 	b.withField(name, value, false)
@@ -298,7 +298,7 @@ func (b *Builder) WithField(name, value string) *Builder {
 
 // WithFieldl appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-// Name or value may be empty, in which case the field won't have a name or
+// providerName or value may be empty, in which case the field won't have a name or
 // value.
 func (b *Builder) WithFieldl(name, value localization.Config) *Builder {
 	b.withFieldl(name, value, false)
@@ -307,7 +307,7 @@ func (b *Builder) WithFieldl(name, value localization.Config) *Builder {
 
 // WithFieldlt appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-// Name or value may be empty, in which case the field won't have a name or
+// providerName or value may be empty, in which case the field won't have a name or
 // value.
 func (b *Builder) WithFieldlt(name, value localization.Term) *Builder {
 	return b.WithFieldl(name.AsConfig(), value.AsConfig())
@@ -315,7 +315,7 @@ func (b *Builder) WithFieldlt(name, value localization.Term) *Builder {
 
 // WithInlinedField appends an inlined field (name: max. 256 characters, value:
 // max 1024 characters) to the embed.
-// Name or value may be empty, in which case the field won't have a name or
+// providerName or value may be empty, in which case the field won't have a name or
 // value.
 func (b *Builder) WithInlinedField(name, value string) *Builder {
 	b.withField(name, value, true)
@@ -324,7 +324,7 @@ func (b *Builder) WithInlinedField(name, value string) *Builder {
 
 // WithInlinedFieldl appends an inlined field (name: max. 256 characters,
 // value: max 1024 characters) to the embed.
-// Name or value may be empty, in which case the field won't have a name or
+// providerName or value may be empty, in which case the field won't have a name or
 // value.
 func (b *Builder) WithInlinedFieldl(name, value localization.Config) *Builder {
 	b.withFieldl(name, value, true)
@@ -333,7 +333,7 @@ func (b *Builder) WithInlinedFieldl(name, value localization.Config) *Builder {
 
 // WithInlinedFieldlt appends an inlined field (name: max. 256 characters,
 // value: max 1024 characters) to the embed.
-// Name or value may be empty, in which case the field won't have a name or
+// providerName or value may be empty, in which case the field won't have a name or
 // value.
 func (b *Builder) WithInlinedFieldlt(name, value localization.Term) *Builder {
 	return b.WithInlinedFieldl(name.AsConfig(), value.AsConfig())

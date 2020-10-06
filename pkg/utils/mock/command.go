@@ -17,75 +17,79 @@ func (c Command) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error
 	return c.InvokeFunc(s, ctx)
 }
 
-type RegisteredCommand struct {
-	ParentReturn plugin.RegisteredModule
-	ParentError  error
+// GenerateRegisteredCommand creates a mocked RegisteredCommand from the passed
+// Command using the passed provider name.
+func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.RegisteredCommand {
+	c := plugin.NewRegisteredCommandWithParent(nil, cmd.GetRestrictionFunc())
 
-	IdentifierReturn       plugin.Identifier
-	NameReturn             string
-	AliasesReturn          []string
-	ArgsReturn             plugin.ArgConfig
-	ShortDescriptionReturn string
-	LongDescriptionReturn  string
-	ExamplesReturn         []string
-	IsHiddenReturn         bool
-	ChannelTypesReturn     plugin.ChannelTypes
-	BotPermissionsReturn   discord.Permissions
-	IsRestrictedReturn     error
-	ThrottlerReturn        plugin.Throttler
-	InvokeFunc             func(s *state.State, ctx *plugin.Context) (interface{}, error)
+	c.Source = cmd
+	// c.SourceParents = nil
+	c.ProviderName = providerName
+	c.Identifier = plugin.Identifier("." + cmd.GetName())
+	c.Name = cmd.GetName()
+	c.Aliases = cmd.GetAliases()
+	c.Args = cmd.GetArgs()
+	c.Hidden = cmd.IsHidden()
+	c.ChannelTypes = cmd.GetChannelTypes()
+
+	if perms := cmd.GetBotPermissions(); perms != nil {
+		c.BotPermissions = *perms
+	}
+
+	c.Throttler = cmd.GetThrottler()
+
+	return c
 }
 
-func (r RegisteredCommand) Parent() (plugin.RegisteredModule, error) {
-	return r.ParentReturn, r.ParentError
-}
+// GenerateRegisteredCommandWithParents creates a new RegisteredCommand from
+// the passed module.
+// It then returns the command with the given identifier found in the module.
+//
+// The passed module must be the root module.
+func GenerateRegisteredCommandWithParents(
+	providerName string, smod plugin.Module, cmdID plugin.Identifier,
+) *plugin.RegisteredCommand {
+	rmod := GenerateRegisteredModule(providerName, smod)
+	if rmod == nil {
+		return nil
+	}
 
-func (r RegisteredCommand) Identifier() plugin.Identifier { return r.IdentifierReturn }
-func (r RegisteredCommand) Name() string                  { return r.NameReturn }
-func (r RegisteredCommand) Aliases() []string             { return r.AliasesReturn }
-func (r RegisteredCommand) Args() plugin.ArgConfig        { return r.ArgsReturn }
+	all := cmdID.All()
+	if len(all) <= 1 {
+		return nil
+	}
 
-func (r RegisteredCommand) ShortDescription(*localization.Localizer) string {
-	return r.ShortDescriptionReturn
-}
-func (r RegisteredCommand) LongDescription(*localization.Localizer) string {
-	return r.LongDescriptionReturn
-}
+	for _, id := range all[1 : len(all)-1] { // range from first module to last
+		rmod = rmod.FindModule(id.Name())
+		if rmod == nil {
+			return nil
+		}
+	}
 
-func (r RegisteredCommand) Examples(*localization.Localizer) []string { return r.ExamplesReturn }
-func (r RegisteredCommand) IsHidden() bool                            { return r.IsHiddenReturn }
-func (r RegisteredCommand) ChannelTypes() plugin.ChannelTypes         { return r.ChannelTypesReturn }
-func (r RegisteredCommand) BotPermissions() discord.Permissions       { return r.BotPermissionsReturn }
-
-func (r RegisteredCommand) IsRestricted(*state.State, *plugin.Context) error {
-	return r.IsRestrictedReturn
-}
-
-func (r RegisteredCommand) Throttler() plugin.Throttler { return r.ThrottlerReturn }
-
-func (r RegisteredCommand) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
-	return r.InvokeFunc(s, ctx)
+	return rmod.FindCommand(cmdID.Name())
 }
 
 type CommandMeta struct {
 	Name             string
 	Aliases          []string
-	Args             ArgConfig
 	ShortDescription string
 	LongDescription  string
-	Examples         []string
-	Hidden           bool
-	ChannelTypes     plugin.ChannelTypes
-	BotPermissions   *discord.Permissions
-	Restrictions     plugin.RestrictionFunc
-	Throttler        plugin.Throttler
+
+	Args ArgConfig
+
+	Examples       []string
+	Hidden         bool
+	ChannelTypes   plugin.ChannelTypes
+	BotPermissions *discord.Permissions
+	Restrictions   plugin.RestrictionFunc
+	Throttler      plugin.Throttler
 }
 
 func (c CommandMeta) GetName() string                                    { return c.Name }
 func (c CommandMeta) GetAliases() []string                               { return c.Aliases }
-func (c CommandMeta) GetArgs() plugin.ArgConfig                          { return c.Args }
 func (c CommandMeta) GetShortDescription(*localization.Localizer) string { return c.ShortDescription }
 func (c CommandMeta) GetLongDescription(*localization.Localizer) string  { return c.LongDescription }
+func (c CommandMeta) GetArgs() plugin.ArgConfig                          { return c.Args }
 func (c CommandMeta) GetExamples(*localization.Localizer) []string       { return c.Examples }
 func (c CommandMeta) IsHidden() bool                                     { return c.Hidden }
 func (c CommandMeta) GetChannelTypes() plugin.ChannelTypes               { return c.ChannelTypes }

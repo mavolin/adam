@@ -107,4 +107,23 @@ func Test_snowflakeThrottler_check(t *testing.T) {
 		cancelFunc, _ := st.check(s)
 		assert.NotNil(t, cancelFunc)
 	})
+
+	t.Run("cancel", func(t *testing.T) {
+		var s discord.Snowflake = 123
+
+		now = func() time.Time {
+			return time.Date(2020, 1, 1, 12, 0, 0, 0, time.UTC)
+		}
+
+		st := newSnowflakeThrottler(2, 30*time.Second)
+
+		cancelFunc, _ := st.check(s)
+		assert.NotNil(t, cancelFunc)
+
+		assert.Len(t, st.throttled[s], 1)
+
+		cancelFunc()
+
+		assert.Len(t, st.throttled[s], 0)
+	})
 }

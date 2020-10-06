@@ -43,9 +43,7 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRema
 		// not all guild types falls through
 	}
 
-	channelTypes := ctx.Command.ChannelTypes()
-
-	remaining := channelTypes & allowed
+	remaining := ctx.InvokedCommand.ChannelTypes & allowed
 	if remaining == 0 { // no channel types remaining
 		// there is no need to prevent execution, as another restriction
 		// may permit it, still we should capture this
@@ -100,10 +98,10 @@ func insertRoleSorted(r discord.Role, roles []discord.Role) []discord.Role {
 		return roles[i].Position >= r.Position
 	})
 
-	// keep missingRoles sorted
-	if i == len(roles) {
-		roles = append(roles, r)
-	} else {
+	roles = append(roles, r) // make space for another element
+
+	// only insert if r wasn't supposed to go to the end
+	if i < len(roles) {
 		copy(roles[i+1:], roles[i:])
 		roles[i] = r
 	}

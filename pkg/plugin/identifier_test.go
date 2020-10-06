@@ -91,6 +91,23 @@ func TestIdentifier_IsRoot(t *testing.T) {
 	})
 }
 
+func TestIdentifier_NumParents(t *testing.T) {
+	t.Run("root", func(t *testing.T) {
+		actual := Identifier(".").NumParents()
+		assert.Equal(t, 0, actual)
+	})
+
+	t.Run("no parents", func(t *testing.T) {
+		actual := Identifier(".mod").NumParents()
+		assert.Equal(t, 0, actual)
+	})
+
+	t.Run("parents", func(t *testing.T) {
+		actual := Identifier(".mod.ban").NumParents()
+		assert.Equal(t, 1, actual)
+	})
+}
+
 func TestIdentifier_IsParent(t *testing.T) {
 	testCases := []struct {
 		name       string

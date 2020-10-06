@@ -216,7 +216,7 @@ func (e *InternalError) StackTrace() []uintptr { return e.stack }
 func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
 	logstract.
 		WithFields(logstract.Fields{
-			"cmd_ident": ctx.CommandIdentifier,
+			"cmd_ident": ctx.InvokedCommand.Identifier,
 			"err":       e,
 		}).
 		Error("command returned with an error")
