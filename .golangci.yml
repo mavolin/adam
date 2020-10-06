@@ -52,6 +52,9 @@ issues:
       linters:
         - golint
         - unparam
+    # not a duplicate, but two types with delegate methods
+    - path: ^pkg/errors/user_(info|error).go$
+      linters: dupl
     # restriction functions tend to get long/complex
     - path: ^pkg/impl/restriction/
       linters:
@@ -59,8 +62,7 @@ issues:
         - gocognit
     # there would be no point in splitting this up
     - path: ^pkg/utils/embedutil/builder.go$
-      linters:
-        - funlen
+      linters: funlen
       text: ^Function 'Build' is too long \(\d+ > \d+\)$
     # this is required to maintain readability
     - path: ^pkg/utils/locutil/permission_terms.go$

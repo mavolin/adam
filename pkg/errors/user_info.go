@@ -7,26 +7,22 @@ import (
 	"github.com/mavolin/adam/pkg/localization"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
-	"github.com/mavolin/adam/pkg/utils/locutil"
 )
 
 // UserInfo is less sever error on the user-side.
 // The error will reported to the user via a message containing a detailed
 // description of the problem.
-// It won't be logged or captured by sentry.
+// It won't be logged
 type UserInfo struct {
-	// description of the info
-	desc locutil.Text
-
-	fields *embedutil.Builder
+	embed *embedutil.Builder
 }
 
 // NewUserInfo creates a new UserInfo using the passed description.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserInfo(description string) *UserInfo {
 	return &UserInfo{
-		desc:   locutil.NewStaticText(description),
-		fields: embedutil.NewBuilder(),
+		embed: InfoEmbed.Clone().
+			WithDescription(description),
 	}
 }
 
@@ -34,8 +30,8 @@ func NewUserInfo(description string) *UserInfo {
 // passed localization.Config.
 func NewUserInfol(description localization.Config) *UserInfo {
 	return &UserInfo{
-		desc:   locutil.NewLocalizedText(description),
-		fields: embedutil.NewBuilder(),
+		embed: InfoEmbed.Clone().
+			WithDescriptionl(description),
 	}
 }
 
@@ -45,12 +41,200 @@ func NewUserInfolt(description localization.Term) *UserInfo {
 	return NewUserInfol(description.AsConfig())
 }
 
+// WithSimpleTitle adds a plain title (max. 256 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleTitle(title string) *UserInfo {
+	i.embed.WithSimpleTitle(title)
+	return i
+}
+
+// WithSimpleTitlel adds a plain title (max. 256 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleTitlel(title localization.Config) *UserInfo {
+	i.embed.WithSimpleTitlel(title)
+	return i
+}
+
+// WithSimpleTitlelt adds a plain title (max. 256 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleTitlelt(title localization.Term) *UserInfo {
+	return i.WithSimpleTitlel(title.AsConfig())
+}
+
+// WithTitle adds a title (max. 256 characters) with a link to the UserInfo.
+func (i *UserInfo) WithTitle(title string, url discord.URL) *UserInfo {
+	i.embed.WithTitle(title, url)
+	return i
+}
+
+// WithTitlel adds a title (max. 256 characters) with a link to the UserInfo.
+func (i *UserInfo) WithTitlel(title localization.Config, url discord.URL) *UserInfo {
+	i.embed.WithTitlel(title, url)
+	return i
+}
+
+// WithTitlelt adds a title (max. 256 characters) with a link to the UserInfo.
+func (i *UserInfo) WithTitlelt(title localization.Term, url discord.URL) *UserInfo {
+	return i.WithTitlel(title.AsConfig(), url)
+}
+
+// WithDescription adds a description (max. 2048 characters) to the UserInfo.
+func (i *UserInfo) WithDescription(description string) *UserInfo {
+	i.embed.WithDescription(description)
+	return i
+}
+
+// WithDescriptionl adds a description (max. 2048 characters) to the UserInfo.
+func (i *UserInfo) WithDescriptionl(description localization.Config) *UserInfo {
+	i.embed.WithDescriptionl(description)
+	return i
+}
+
+// WithDescriptionlt adds a description (max. 2048 characters) to the UserInfo.
+func (i *UserInfo) WithDescriptionlt(description localization.Term) *UserInfo {
+	return i.WithDescriptionl(description.AsConfig())
+}
+
+// WithTimestamp adds a discord.Timestamp to the UserInfo.
+func (i *UserInfo) WithTimestamp(timestamp discord.Timestamp) *UserInfo {
+	i.embed.WithTimestamp(timestamp)
+	return i
+}
+
+// WithTimestamp adds a timestamp of the current time to the UserInfo.
+func (i *UserInfo) WithTimestampNow() *UserInfo {
+	return i.WithTimestamp(discord.NowTimestamp())
+}
+
+// WithColor sets the color of the embed to the passed discord.Color.
+func (i *UserInfo) WithColor(color discord.Color) *UserInfo {
+	i.embed.WithColor(color)
+	return i
+}
+
+// WithSimpleFooter adds a plain footer (max. 2048 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleFooter(text string) *UserInfo {
+	i.embed.WithSimpleFooter(text)
+	return i
+}
+
+// WithSimpleFooterl adds a plain footer (max. 2048 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleFooterl(text localization.Config) *UserInfo {
+	i.embed.WithSimpleFooterl(text)
+	return i
+}
+
+// WithSimpleFooterlt adds a plain footer (max. 2048 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleFooterlt(text localization.Term) *UserInfo {
+	return i.WithSimpleFooterl(text.AsConfig())
+}
+
+// WithFooter adds a footer (max. 2048 character) with an icon to the UserInfo.
+func (i *UserInfo) WithFooter(text string, icon discord.URL) *UserInfo {
+	i.embed.WithField(text, icon)
+	return i
+}
+
+// WithFooterl adds a footer (max. 2048 character) with an icon to the UserInfo.
+func (i *UserInfo) WithFooterl(text localization.Config, icon discord.URL) *UserInfo {
+	i.embed.WithFooterl(text, icon)
+	return i
+}
+
+// WithFooterlt adds a footer (max. 2048 character) with an icon to the UserInfo.
+func (i *UserInfo) WithFooterlt(text localization.Term, icon discord.URL) *UserInfo {
+	return i.WithFooterl(text.AsConfig(), icon)
+}
+
+// WithImage adds an image to the UserInfo.
+func (i *UserInfo) WithImage(image discord.URL) *UserInfo {
+	i.embed.WithImage(image)
+	return i
+}
+
+// WithThumbnail adds a thumbnail to the UserInfo.
+func (i *UserInfo) WithThumbnail(thumbnail discord.URL) *UserInfo {
+	i.embed.WithThumbnail(thumbnail)
+	return i
+}
+
+// WithSimpleAuthor adds a plain author (max. 256 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleAuthor(name string) *UserInfo {
+	i.embed.WithSimpleAuthor(name)
+	return i
+}
+
+// WithSimpleAuthorl adds a plain author (max. 256 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleAuthorl(name localization.Config) *UserInfo {
+	i.embed.WithSimpleAuthorl(name)
+	return i
+}
+
+// WithSimpleAuthorlt adds a plain author (max. 256 characters) to the UserInfo.
+func (i *UserInfo) WithSimpleAuthorlt(name localization.Term) *UserInfo {
+	return i.WithSimpleAuthorl(name.AsConfig())
+}
+
+// WithSimpleAuthorWithURL adds an author (max. 256 character) with a URL to
+// the embed.
+func (i *UserInfo) WithSimpleAuthorWithURL(name string, url discord.URL) *UserInfo {
+	i.embed.WithSimpleAuthorWithURL(name, url)
+	return i
+}
+
+// WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
+// the embed.
+func (i *UserInfo) WithSimpleAuthorWithURLl(name localization.Config, url discord.URL) *UserInfo {
+	i.embed.WithSimpleAuthorWithURLl(name, url)
+	return i
+}
+
+// WithSimpleAuthorWithURLlt adds an author (max. 256 character) with a URL to
+// the embed.
+func (i *UserInfo) WithSimpleAuthorWithURLlt(name localization.Term, url discord.URL) *UserInfo {
+	return i.WithSimpleAuthorWithURLl(name.AsConfig(), url)
+}
+
+// WithAuthor adds an author (max 256 characters) with an icon to the UserInfo.
+func (i *UserInfo) WithAuthor(name string, icon discord.URL) *UserInfo {
+	i.embed.WithAuthor(name, icon)
+	return i
+}
+
+// WithAuthorl adds an author (max 256 characters) with an icon to the UserInfo.
+func (i *UserInfo) WithAuthorl(name localization.Config, icon discord.URL) *UserInfo {
+	i.embed.WithAuthorl(name, icon)
+	return i
+}
+
+// WithAuthorlt adds an author (max 256 characters) with an icon to the UserInfo.
+func (i *UserInfo) WithAuthorlt(name localization.Term, icon discord.URL) *UserInfo {
+	return i.WithAuthorl(name.AsConfig(), icon)
+}
+
+// WithAuthorWithURL adds an author (max 256 characters) with an icon and a URL
+// to the UserInfo.
+func (i *UserInfo) WithAuthorWithURL(name string, icon, url discord.URL) *UserInfo {
+	i.embed.WithAuthorWithURL(name, icon, url)
+	return i
+}
+
+// WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
+// URL to the UserInfo.
+func (i *UserInfo) WithAuthorWithURLl(name localization.Config, icon, url discord.URL) *UserInfo {
+	i.embed.WithAuthorWithURLl(name, icon, url)
+	return i
+}
+
+// WithAuthorWithURLlt adds an author (max 256 characters) with an icon and a
+// URL to the UserInfo.
+func (i *UserInfo) WithAuthorWithURLlt(name localization.Term, icon, url discord.URL) *UserInfo {
+	return i.WithAuthorWithURLl(name.AsConfig(), icon, url)
+}
+
 // WithField adds the passed field to the UserInfo, and returns a pointer to
 // the UserInfo to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
 func (i *UserInfo) WithField(name, value string) *UserInfo {
-	i.fields.WithField(name, value)
+	i.embed.WithField(name, value)
 	return i
 }
 
@@ -60,7 +244,7 @@ func (i *UserInfo) WithField(name, value string) *UserInfo {
 // Name or value may be empty, in which case the field won't have a name or
 // value.
 func (i *UserInfo) WithFieldl(name, value localization.Config) *UserInfo {
-	i.fields.WithFieldl(name, value)
+	i.embed.WithFieldl(name, value)
 	return i
 }
 
@@ -77,7 +261,7 @@ func (i *UserInfo) WithFieldlt(name, value localization.Term) *UserInfo {
 // Name or value may be empty, in which case the field won't have a name or
 // value.
 func (i *UserInfo) WithInlinedField(name, value string) *UserInfo {
-	i.fields.WithInlinedField(name, value)
+	i.embed.WithInlinedField(name, value)
 	return i
 }
 
@@ -86,7 +270,7 @@ func (i *UserInfo) WithInlinedField(name, value string) *UserInfo {
 // Name or value may be empty, in which case the field won't have a name or
 // value.
 func (i *UserInfo) WithInlinedFieldl(name, value localization.Config) *UserInfo {
-	i.fields.WithInlinedFieldl(name, value)
+	i.embed.WithInlinedFieldl(name, value)
 	return i
 }
 
@@ -98,47 +282,15 @@ func (i *UserInfo) WithInlinedFieldlt(name, value localization.Term) *UserInfo {
 	return i.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
-// Description returns the description of the error and localizes it, if
-// possible.
-func (i *UserInfo) Description(l *localization.Localizer) (string, error) {
-	return i.desc.Get(l)
-}
-
-// Fields returns the discord.EmbedFields of the UserInfo.
-// This can be safely ignored, if only used for UserInfos generated by adam, as
-// these will never have fields.
-func (i *UserInfo) Fields(l *localization.Localizer) ([]discord.EmbedField, error) {
-	embed, err := i.fields.Build(l)
-	if err != nil {
-		return nil, err
-	}
-
-	return embed.Fields, nil
+// Embed returns the embed of the UserInfo.
+func (i *UserInfo) Embed(l *localization.Localizer) (discord.Embed, error) {
+	return i.embed.Build(l)
 }
 
 func (i *UserInfo) Error() string { return "user info" }
 
 // Handle sends an info embed with the description of the UserInfo.
 func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
-	desc, err := i.Description(ctx.Localizer)
-	if err != nil {
-		return err
-	}
-
-	embed, err := InfoEmbed.Clone().
-		WithDescription(desc).
-		Build(ctx.Localizer)
-	if err != nil {
-		return err
-	}
-
-	fields, err := i.Fields(ctx.Localizer)
-	if err != nil {
-		return err
-	}
-
-	embed.Fields = fields
-
-	_, err = ctx.ReplyEmbed(embed)
-	return err
+	_, err = ctx.ReplyEmbedBuilder(i.embed)
+	return
 }
