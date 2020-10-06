@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
+	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/localization"
@@ -58,6 +59,67 @@ func (l *mockLocalizer) build() *localization.Localizer {
 	return m.Localizer("")
 }
 
+type mockCommand struct {
+	name           string
+	aliases        []string
+	args           ArgConfig
+	shortDesc      string
+	longDesc       string
+	examples       []string
+	hidden         bool
+	channelTypes   ChannelTypes
+	botPermissions *discord.Permissions
+	restrictions   RestrictionFunc
+	throttler      Throttler
+	invokeFunc     func(*state.State, *Context) (interface{}, error)
+}
+
+func (c mockCommand) GetName() string                                    { return c.name }
+func (c mockCommand) GetAliases() []string                               { return c.aliases }
+func (c mockCommand) GetArgs() ArgConfig                                 { return c.args }
+func (c mockCommand) GetShortDescription(*localization.Localizer) string { return c.shortDesc }
+func (c mockCommand) GetLongDescription(*localization.Localizer) string  { return c.longDesc }
+func (c mockCommand) GetExamples(*localization.Localizer) []string       { return c.examples }
+func (c mockCommand) IsHidden() bool                                     { return c.hidden }
+func (c mockCommand) GetChannelTypes() ChannelTypes                      { return c.channelTypes }
+func (c mockCommand) GetBotPermissions() *discord.Permissions            { return c.botPermissions }
+func (c mockCommand) GetRestrictionFunc() RestrictionFunc                { return c.restrictions }
+func (c mockCommand) GetThrottler() Throttler                            { return c.throttler }
+
+func (c mockCommand) Invoke(s *state.State, ctx *Context) (interface{}, error) {
+	return c.invokeFunc(s, ctx)
+}
+
+type mockModule struct {
+	name                  string
+	shortDesc             string
+	longDesc              string
+	Hidden                bool
+	defaultChannelTypes   ChannelTypes
+	defaultBotPermissions *discord.Permissions
+	defaultRestrictions   RestrictionFunc
+	defaultThrottler      Throttler
+	commands              []Command
+	modules               []Module
+}
+
+func (c mockModule) GetName() string                                    { return c.name }
+func (c mockModule) GetShortDescription(*localization.Localizer) string { return c.shortDesc }
+func (c mockModule) GetLongDescription(*localization.Localizer) string  { return c.longDesc }
+func (c mockModule) IsHidden() bool                                     { return c.Hidden }
+func (c mockModule) GetDefaultChannelTypes() ChannelTypes               { return c.defaultChannelTypes }
+func (c mockModule) GetDefaultBotPermissions() *discord.Permissions     { return c.defaultBotPermissions }
+func (c mockModule) GetDefaultRestrictionFunc() RestrictionFunc         { return c.defaultRestrictions }
+func (c mockModule) GetDefaultThrottler() Throttler                     { return c.defaultThrottler }
+func (c mockModule) Commands() []Command                                { return c.commands }
+func (c mockModule) Modules() []Module                                  { return c.modules }
+
+type mockThrottler struct {
+	cmp string // used to make throttlers unique
+}
+
+func (m mockThrottler) Check(*Context) (func(), error) { return func() {}, nil }
+
 // mockDiscordDataProvider is a copy of mock.DiscordDataProvider to prevent
 // import cycles.
 type mockDiscordDataProvider struct {
@@ -81,4 +143,24 @@ func (d mockDiscordDataProvider) Guild() (*discord.Guild, error) {
 
 func (d mockDiscordDataProvider) Self() (*discord.Member, error) {
 	return d.SelfReturn, d.SelfError
+}
+
+// removeRegisteredModuleFuncs sets all functions stored in the passed
+// RegisteredModule to nil.
+// Additionally, it does the same for all submodules and subcommands
+// recursively.
+func removeRegisteredModuleFuncs(mod *RegisteredModule) {
+	for i := range mod.Commands {
+		removeRegisteredCommandFuncs(mod.Commands[i])
+	}
+
+	for i := range mod.Modules {
+		removeRegisteredModuleFuncs(mod.Modules[i])
+	}
+}
+
+// removeRegisteredCommandFuncs sets all functions stored in the passed
+// RegisteredCommand to nil.
+func removeRegisteredCommandFuncs(cmd *RegisteredCommand) {
+	cmd.restrictionFunc = nil
 }

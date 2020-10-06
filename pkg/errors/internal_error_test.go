@@ -244,6 +244,11 @@ func TestInternalError_Handle(t *testing.T) {
 	ctx.Localizer = mock.NewLocalizer(t).
 		On(internalErrorTitle.Term, "abc").
 		Build()
+	ctx.InvokedCommand = mock.GenerateRegisteredCommand("built_in", mock.Command{
+		CommandMeta: mock.CommandMeta{
+			Name: "abc",
+		},
+	})
 
 	embed := ErrorEmbed.Clone().
 		WithSimpleTitlelt(internalErrorTitle.Term).

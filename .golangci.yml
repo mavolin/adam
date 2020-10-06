@@ -68,3 +68,8 @@ issues:
         - golint
         - stylecheck
       text: should not use dot imports
+    # resolving inheritance, not complicated, just long
+    - path: ^pkg/plugin/registered_(command|module).go$
+      linters:
+        - funlen
+        - gocognit

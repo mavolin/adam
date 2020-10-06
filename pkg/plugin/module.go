@@ -30,6 +30,7 @@ type (
 		GetShortDescription(l *localization.Localizer) string
 		// GetLongDescription returns an option long description of the module.
 		GetLongDescription(l *localization.Localizer) string
+
 		// IsHidden specifies whether this module will be hidden from the help
 		// page.
 		//
@@ -68,57 +69,5 @@ type (
 		// To remove a Throttler defined by a parent without defining a new
 		// one use throttling.None.
 		GetDefaultThrottler() Throttler
-	}
-
-	// RegisteredModule is the abstraction of a module as returned by a
-	// Provider.
-	// In contrast to the regular module abstraction, RegisteredModule will
-	// return data that takes into account it's parents settings.
-	RegisteredModule interface {
-		// Parent returns the parent of this module.
-		// It will return nil, nil, if this module is top-level.
-		//
-		// In any other case will always return valid data, even if error !=
-		// nil.
-		// It is also guaranteed that the original parent of the module, i.e.
-		// the module that provides this command is included, if there is one.
-		//
-		// However, all runtime plugin providers that returned an error won't
-		// be included, and their error will be returned wrapped in a
-		// bot.RuntimePluginProviderError.
-		// If multiple errors occur, a errors.MultiError filled with
-		// bot.RuntimePluginProviderErrors will be returned.
-		Parent() (RegisteredModule, error)
-		// Identifier returns the identifier of the module.
-		Identifier() Identifier
-
-		// Name returns the name of the module.
-		Name() string
-		// ShortDescription returns an optional one-sentence description of the
-		// module.
-		ShortDescription(l *localization.Localizer) string
-		// LongDescription returns an option thorough description of the
-		// module.
-		LongDescription(l *localization.Localizer) string
-		// IsHidden specifies whether this module and all it's submodules and
-		// commands should be hidden from help messages.
-		IsHidden() bool
-
-		// Commands returns the subcommands of the module.
-		Commands() []RegisteredCommand
-		// Modules returns the submodules of the module.
-		Modules() []RegisteredModule
-		// FindCommand finds the command with the given invoke inside this
-		// module.
-		// For example if this is the top-level 'abc' module and you want to
-		// find the command with the identifier '.abc.def', you should search
-		// for 'def'.
-		FindCommand(invoke string) RegisteredCommand
-		// FindModule finds the module with the given invoke inside this
-		// module.
-		// For example if this is the top-level 'abc' module and you want to
-		// find the module with the identifier '.abc.def', you should search
-		// for def'.
-		FindModule(invoke string) RegisteredModule
 	}
 )

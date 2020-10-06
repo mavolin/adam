@@ -369,126 +369,104 @@ type (
 	//
 	// Copies are only created on call of one of the methods.
 	Provider interface {
-		// AllCommands returns a copy of all top-level commands.
-		// Commands[0] contains the built-in commands of the bot, and is named
-		// 'built_in'.
-		// If there are no built-in top-level commands, Commands will be nil.
+		// PluginRepositories returns plugin repositories containing all
+		// commands and modules of the bot.
+		// Repositories[0] contains the built-in plugins of the bot, and is
+		// named 'built_in'.
 		//
-		// AllCommands will always return valid data, even if error != nil.
-		// If a bot.RuntimePluginProvider returns an error, it will be wrapped
-		// in a bot.RuntimePluginProviderError, that contains the name of the
-		// runtime plugin provider and the original error.
-		//
-		// If multiple errors occur, the error will be of type
-		// errors.MultiError.
-		AllCommands() ([]CommandRepository, error)
-		// AllModules returns a copy of all top-level modules.
-		// Modules[0] contains the built-in commands of the bot, and is named
-		// 'built_in'.
-		// If there are no built-in top-level modules, Modules will be nil.
-		//
-		// AllModules will always return valid data, even if error != nil.
-		// If a bot.RuntimePluginProvider returns an error, it will be wrapped
-		// in a bot.RuntimePluginProviderError that contains the name of the
-		// runtime plugin provider and the original error.
-		//
-		// If multiple errors occur, the error will be of type
-		// errors.MultiError.
-		AllModules() ([]ModuleRepository, error)
+		// To check if any runtime plugin providers returned an error, call
+		// UnavailablePluginProviders.
+		PluginRepositories() []Repository
 
-		// Commands returns merged version of AllCommands for simpler
-		// iteration.
+		// Commands returns all top-level commands sorted in ascending order by
+		// name.
 		//
-		// Commands will always return valid data, even if error != nil.
-		// However, all runtime plugin providers that returned an error won't
-		// be included, and their error will be returned wrapped in a
-		// bot.RuntimePluginProviderError.
-		// If multiple errors occur, a errors.MultiError filled with
-		// bot.RuntimePluginProviderErrors will be returned.
-		Commands() ([]RegisteredCommand, error)
-		// Modules returns a merged version of AllModules, as the command
-		// router uses it.
+		// To check if any of the runtime plugin providers returned an error,
+		// call UnavailablePluginProviders.
+		// If that is the case, the data returned might be incomplete.
+		Commands() []RegisteredCommand
+		// Modules returns all top-level modules sorted in ascending order by
+		// name.
 		//
-		// Modules will always return valid data, even if error != nil.
-		// However, all runtime plugin providers that returned an error won't
-		// be included, and their error will be returned wrapped in a
-		// bot.RuntimePluginProviderError.
-		// If multiple errors occur, a errors.MultiError filled with
-		// bot.RuntimePluginProviderErrors will be returned.
-		Modules() ([]RegisteredModule, error)
+		// To check if any of the runtime plugin providers returned an error,
+		// call UnavailablePluginProviders.
+		// If that is the case, the data returned might be incomplete.
+		Modules() []RegisteredModule
 
 		// Command returns the RegisteredCommand with the passed Identifier.
 		//
 		// Note that Identifiers may only consist of the command's name, not
 		// their alias.
 		//
-		// It will return nil, nil if no command matching the identifier was
-		// found.
-		// An error will only be returned if one of the
-		// bot.RuntimePluginProviders returns an error, and should therefore
-		// be seen as an indicator that the command may exist, but is
-		// unavailable right now.
-		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
-		// If multiple errors occur, the returned error will be of type
-		// errors.MultiError.
-		Command(Identifier) (RegisteredCommand, error)
+		// It will return nil if no command matching the identifier was found.
+		//
+		// To check if any of the runtime plugin providers returned an error,
+		// call UnavailablePluginProviders.
+		Command(Identifier) *RegisteredCommand
 		// Module returns the RegisteredModule with the passed Identifier.
 		//
-		// It will return nil, nil if no module matching the identifier was
-		// found.
-		// An error will only be returned if one of the runtime plugin
-		// providers returns an error, and should therefore be seen as an
-		// indicator that the module may exist, but is unavailable right now.
-		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
-		// If multiple errors occur, the returned error will be of type
-		// errors.MultiError.
-		Module(Identifier) (RegisteredModule, error)
+		// It will return nil if no module matching the identifier was found.
+		//
+		// To check if any of the runtime plugin providers returned an error,
+		// call UnavailablePluginProviders.
+		// If that is the case, the module's description might not be available
+		// or differ from the description that is used if all plugin providers
+		// function properly.
+		Module(Identifier) *RegisteredModule
 
 		// FindCommand returns the RegisteredCommand with the passed invoke.
 		//
-		// Note that Identifiers may only consist of the command's name, not
-		// their alias.
-		//
-		// It will return nil, nil if no command matching the passed invoke was
+		// It will return nil if no command matching the passed invoke was
 		// found.
-		// An error will only be returned if one of the runtime plugin
-		// providers returns an error, and should therefore be seen as an
-		// indicator that the command may exist, but is unavailable right now.
-		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
-		// If multiple errors occur, the returned error will be of type
-		// errors.MultiError.
-		FindCommand(invoke string) (RegisteredCommand, error)
+		//
+		// To check if any of the runtime plugin providers returned an error,
+		// call UnavailablePluginProviders.
+		FindCommand(invoke string) *RegisteredCommand
 		// FindModule returns the RegisteredModule with the passed invoke.
 		//
-		// It will return nil, nil if no module matching the passed invoke was
+		// It will return nil if no module matching the passed invoke was
 		// found.
-		// An error will only be returned if one of the runtime plugin
-		// providers returns an error, and should therefore be seen as an
-		// indicator that the module may exist, but is unavailable right now.
-		// If so, it will be wrapped in a bot.RuntimePluginProviderError.
-		// If multiple errors occur, the returned error will be of type
-		// errors.MultiError.
-		FindModule(invoke string) (RegisteredModule, error)
+		//
+		// To check if any of the runtime plugin providers returned an error,
+		// call UnavailablePluginProviders.
+		// If that is the case, the module's description might not be available
+		// or differ from the description that is used if all plugin providers
+		// function properly.
+		FindModule(invoke string) *RegisteredModule
+
+		// UnavailablePluginProviders returns a list of all unavailable runtime
+		// plugin providers.
+		// If no runtime plugins were requested yet, it will request them and
+		// return the list of unavailable ones.
+		//
+		// If the length of the returned slice is 0, all plugin providers are
+		// available.
+		UnavailablePluginProviders() []UnavailablePluginProvider
 	}
 
-	// ModuleRepository is the struct returned by Provider.AllModules.
-	ModuleRepository struct {
-		// Name is the name of the bot.RuntimePluginProvider that provides
-		// these modules.
-		Name string
-		// Modules are the modules were returned by the
-		// bot.RuntimePluginProvider.
+	// Repository is the struct returned by Provider.PluginRepositories.
+	// It contains the top-level plugins of a single repository.
+	Repository struct {
+		// ProviderName is the name of the bot.RuntimePluginProvider that provides
+		// these plugins.
+		ProviderName string
+		// Modules are the top-level modules of the repository.
 		Modules []Module
+		// Commands are the top-level commands of the repository.
+		Commands []Command
+
+		// CommandDefaults are the global defaults for command settings, the
+		// provider uses.
+		CommandDefaults CommandDefaults
 	}
 
-	// CommandRepository is the struct returned by Provider.AllCommands.
-	CommandRepository struct {
-		// Name is the name of the bot.RuntimePluginProvider that provides
-		// these commands.
+	// UnavailablePluginProvider contains information about an unavailable
+	// runtime plugin provider.
+	UnavailablePluginProvider struct {
+		// Name is the name of the runtime plugin provider.
 		Name string
-		// Commands are the commands that were returned by the
-		// bot.RuntimePluginProvider.
-		Commands []Command
+		// Error is the error returned by the runtime plugin provider.
+		Error error
 	}
 
 	// ErrorHandler is an embeddable interface used to provide direct error
