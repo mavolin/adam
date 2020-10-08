@@ -7,7 +7,7 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// Meta is the static, unlocalized, implementation of the plugin.Command
+// Meta is the static, unlocalized, implementation of the plugin.CommandMeta
 // interface.
 type Meta struct {
 	// Name is the name of the command.

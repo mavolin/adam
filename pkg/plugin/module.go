@@ -33,9 +33,6 @@ type (
 
 		// IsHidden specifies whether this module will be hidden from the help
 		// page.
-		//
-		// If set to true, all submodules and subcommands will be hidden as
-		// well.
 		IsHidden() bool
 		// GetDefaultChannelTypes returns the ChannelTypes required to use this
 		// module.
