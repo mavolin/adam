@@ -10,10 +10,17 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
+// ArgTypeRaw can be used to indicate that an arg is not parsed, but used
+// literally.
+// See the docs of ArgsInfoer for more information.
+var ArgTypeRaw = TypeInfo{
+	Name:        "__raw__",
+	Description: "__raw__",
+}
+
 type (
 	// ArgConfig is the abstraction of the commands argument and flag
 	// configuration.
-	// It provides mean to parse arguments, and generate help messages.
 	//
 	// Default implementations can be found in impl/arg.
 	ArgConfig interface {
@@ -26,10 +33,26 @@ type (
 	// ArgsInfoer is an interface that can be optionally implemented by an
 	// ArgConfig.
 	// It provides meta information about the arguments and flags of a command.
+	//
+	// Raw Args
+	//
+	// As a special case, there is also support for raw arguments, i.e.
+	// arguments that are used literally.
+	//
+	// An argument config is considered as a raw argument, if Info returns a
+	// slice of length 1 with a single non-variadic required argument, no
+	// optionals and no flags.
+	// The required argument's Type must be ArgTypeRaw.
+	//
+	// If those requirements are fulfilled, help commands should display the
+	// description of the required argument instead of creating their normal
+	// argument help message.
 	ArgsInfoer interface {
 		// Info returns localized information about the arguments and flags of
 		// a command.
-		Info(l *i18n.Localizer) ([]ArgsInfo, error)
+		// If the returned slice is nil, it will be assumed, that no
+		// information is available.
+		Info(l *i18n.Localizer) []ArgsInfo
 	}
 
 	// ArgsInfo contains localized information about a command's arguments.
@@ -74,7 +97,10 @@ type (
 		Multi bool
 	}
 
-	// TypeInfo contains information about a type.
+	// TypeInfo contains information about a flag or arg type.
+	//
+	// Because of the special meaning of ArgTypeRaw, TypeInfos with the name
+	// and description '__raw__' should not be used.
 	TypeInfo struct {
 		// Name is the name of the type.
 		Name string
