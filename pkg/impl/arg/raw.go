@@ -23,7 +23,7 @@ func RawWithDescription(description string) plugin.ArgConfig {
 	}
 }
 
-// RawWithDescription lcreates a argument config for raw arguments, that uses
+// RawWithDescription creates a argument config for raw arguments, that uses
 // the passed description as argument config.
 func RawWithDescriptionl(description i18n.Config) plugin.ArgConfig {
 	return &raw{
@@ -31,7 +31,7 @@ func RawWithDescriptionl(description i18n.Config) plugin.ArgConfig {
 	}
 }
 
-// RawWithDescriptionlt lcreates a argument config for raw arguments, that uses
+// RawWithDescriptionlt creates a argument config for raw arguments, that uses
 // the passed description as argument config.
 func RawWithDescriptionlt(description i18n.Term) plugin.ArgConfig {
 	return &raw{
