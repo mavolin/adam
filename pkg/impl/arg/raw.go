@@ -15,18 +15,24 @@ type raw struct {
 // Raw is a plugin.ArgConfig that returns the arguments as
 var Raw = new(raw)
 
+// RawWithDescription creates a argument config for raw arguments, that uses
+// the passed description as argument config.
 func RawWithDescription(description string) plugin.ArgConfig {
 	return &raw{
 		desc: locutil.NewStaticText(description),
 	}
 }
 
+// RawWithDescription lcreates a argument config for raw arguments, that uses
+// the passed description as argument config.
 func RawWithDescriptionl(description i18n.Config) plugin.ArgConfig {
 	return &raw{
 		desc: locutil.NewLocalizedText(description),
 	}
 }
 
+// RawWithDescriptionlt lcreates a argument config for raw arguments, that uses
+// the passed description as argument config.
 func RawWithDescriptionlt(description i18n.Term) plugin.ArgConfig {
 	return &raw{
 		desc: locutil.NewLocalizedText(description.AsConfig()),
