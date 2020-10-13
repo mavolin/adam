@@ -16,13 +16,13 @@ var (
 
 	// ================================ Errors ================================
 
-	switchParseArgs = i18n.NewFallbackConfig(
-		"args.types.switch.errors.parse_args", "`{{.name}}` is a Switch flag and cannot be used with content.")
+	switchWithContentError = i18n.NewFallbackConfig(
+		"args.types.switch.errors.with_content", "`{{.name}}` is a Switch flag and cannot be used with content.")
 )
 
 type (
 	// ================================ Errors ================================
-	switchParseArgsPlaceholder struct {
+	switchWithContentErrorPlaceholders struct {
 		Name string
 	}
 )
