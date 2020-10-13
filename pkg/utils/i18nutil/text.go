@@ -9,15 +9,15 @@ type Text struct {
 	config i18n.Config
 }
 
-// NewStaticText returns a new static unlocalized Text.
-func NewStaticText(src string) Text {
+// NewText returns a new unlocalized Text.
+func NewText(src string) Text {
 	return Text{
 		string: src,
 	}
 }
 
-// NewLocalizedText returns a localized Text.
-func NewLocalizedText(src i18n.Config) Text {
+// NewTextl returns a new localized Text.
+func NewTextl(src i18n.Config) Text {
 	return Text{
 		config: src,
 	}
