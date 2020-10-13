@@ -41,10 +41,8 @@ func (p *commaParser) startParse() error {
 		return err
 	}
 
-	if len(p.helper.rargData)+len(p.helper.oargData) == 0 && len(p.helper.flagData) == 0 {
-		if item.typ != itemEOF {
-			return errors.NewArgumentParsingErrorl(noArgsError)
-		}
+	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && item.typ != itemEOF {
+		return errors.NewArgumentParsingErrorl(noArgsError)
 	}
 
 	for ; err == nil && item.typ != itemEOF; item, err = p.lexer.nextItem() {
