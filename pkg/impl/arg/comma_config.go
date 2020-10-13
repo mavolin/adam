@@ -48,51 +48,10 @@ func (c CommaConfig) Parse(args string, s *state.State, ctx *plugin.Context) (pl
 }
 
 func (c CommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
-	info := plugin.ArgsInfo{
-		Required: make([]plugin.ArgInfo, len(c.RequiredArgs)),
-		Optional: make([]plugin.ArgInfo, len(c.OptionalArgs)),
-		Flags:    make([]plugin.FlagInfo, len(c.Flags)),
-		Variadic: c.Variadic,
-	}
-
-	var err error
-
-	for i, arg := range c.RequiredArgs {
-		info.Required[i], err = requiredArgInfo(arg, l)
-		if err != nil {
-			return nil
-		}
-	}
-
-	for i, arg := range c.OptionalArgs {
-		info.Optional[i], err = optionalArgInfo(arg, l)
-		if err != nil {
-			return nil
-		}
-	}
-
-	for i, flag := range c.Flags {
-		info.Flags[i], err = flagInfo(flag, l)
-		if err != nil {
-			return nil
-		}
+	info, err := genArgsInfo(l, c.RequiredArgs, c.OptionalArgs, c.Flags, c.Variadic)
+	if err != nil {
+		return nil
 	}
 
 	return []plugin.ArgsInfo{info}
-}
-
-func (c CommaConfig) flag(name string) *Flag {
-	for _, flag := range c.Flags {
-		if flag.Name == name {
-			return &flag
-		}
-
-		for _, alias := range flag.Aliases {
-			if alias == name {
-				return &flag
-			}
-		}
-	}
-
-	return nil
 }
