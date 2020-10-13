@@ -8,7 +8,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
@@ -143,11 +143,11 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 					{
-						Name: locutil.NewStaticText("arg2"),
+						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
 					},
 				},
@@ -160,11 +160,11 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				OptionalArgs: []OptionalArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 					{
-						Name: locutil.NewStaticText("arg2"),
+						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
 					},
 				},
@@ -177,11 +177,11 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				OptionalArgs: []OptionalArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 					{
-						Name:    locutil.NewStaticText("arg2"),
+						Name:    i18nutil.NewText("arg2"),
 						Type:    mockTypeString,
 						Default: "abc",
 					},
@@ -195,12 +195,12 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				OptionalArgs: []OptionalArg{
 					{
-						Name:    locutil.NewStaticText("arg1"),
+						Name:    i18nutil.NewText("arg1"),
 						Type:    mockTypeInt,
 						Default: 123,
 					},
 					{
-						Name:    locutil.NewStaticText("arg2"),
+						Name:    i18nutil.NewText("arg2"),
 						Type:    mockTypeString,
 						Default: "abc",
 					},
@@ -215,7 +215,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				OptionalArgs: []OptionalArg{
 					{
-						Name: locutil.NewStaticText("arg2"),
+						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
 					},
 				},
@@ -228,7 +228,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 				},
@@ -242,7 +242,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 				},
@@ -256,7 +256,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				OptionalArgs: []OptionalArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 				},
@@ -270,7 +270,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				OptionalArgs: []OptionalArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 				},
@@ -284,7 +284,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				OptionalArgs: []OptionalArg{
 					{
-						Name:    locutil.NewStaticText("arg1"),
+						Name:    i18nutil.NewText("arg1"),
 						Type:    mockTypeInt,
 						Default: 123,
 					},
@@ -299,21 +299,21 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
 					},
 					{
-						Name: locutil.NewStaticText("arg2"),
+						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
 					},
 				},
 				OptionalArgs: []OptionalArg{
 					{
-						Name: locutil.NewStaticText("arg3"),
+						Name: i18nutil.NewText("arg3"),
 						Type: mockTypeInt,
 					},
 					{
-						Name:    locutil.NewStaticText("arg4"),
+						Name:    i18nutil.NewText("arg4"),
 						Type:    mockTypeString,
 						Default: "ghi",
 					},
@@ -341,7 +341,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
@@ -369,7 +369,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
@@ -391,7 +391,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
@@ -404,11 +404,11 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
@@ -430,7 +430,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
@@ -482,7 +482,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
@@ -495,7 +495,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
@@ -514,17 +514,17 @@ func TestCommaConfig_Parse(t *testing.T) {
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{
-						Name: locutil.NewStaticText("arg1"),
+						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
 				OptionalArgs: []OptionalArg{
 					{
-						Name: locutil.NewStaticText("arg2"),
+						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
 					},
 					{
-						Name: locutil.NewStaticText("arg3"),
+						Name: i18nutil.NewText("arg3"),
 						Type: mockTypeString,
 					},
 				},
@@ -616,38 +616,38 @@ func TestCommaConfig_Info(t *testing.T) {
 	cfg := CommaConfig{
 		RequiredArgs: []RequiredArg{
 			{
-				Name: locutil.NewStaticText("r1.name"),
+				Name: i18nutil.NewText("r1.name"),
 				Type: mockType{
 					name: "r1.type.name",
 					desc: "r1.type.desc",
 				},
-				Description: locutil.NewStaticText("r1.desc"),
+				Description: i18nutil.NewText("r1.desc"),
 			},
 			{
-				Name: locutil.NewStaticText("r2.name"),
+				Name: i18nutil.NewText("r2.name"),
 				Type: mockType{
 					name: "r2.type.name",
 					desc: "r2.type.desc",
 				},
-				Description: locutil.NewStaticText("r2.desc"),
+				Description: i18nutil.NewText("r2.desc"),
 			},
 		},
 		OptionalArgs: []OptionalArg{
 			{
-				Name: locutil.NewStaticText("o1.name"),
+				Name: i18nutil.NewText("o1.name"),
 				Type: mockType{
 					name: "o1.type.name",
 					desc: "o1.type.desc",
 				},
-				Description: locutil.NewStaticText("o1.desc"),
+				Description: i18nutil.NewText("o1.desc"),
 			},
 			{
-				Name: locutil.NewStaticText("o2.name"),
+				Name: i18nutil.NewText("o2.name"),
 				Type: mockType{
 					name: "o2.type.name",
 					desc: "o2.type.desc",
 				},
-				Description: locutil.NewStaticText("o2.desc"),
+				Description: i18nutil.NewText("o2.desc"),
 			},
 		},
 		Variadic: true,
@@ -659,7 +659,7 @@ func TestCommaConfig_Info(t *testing.T) {
 					name: "f1.type.name",
 					desc: "f1.type.desc",
 				},
-				Description: locutil.NewStaticText("f1.desc"),
+				Description: i18nutil.NewText("f1.desc"),
 			},
 			{
 				Name: "f2.name",
@@ -667,7 +667,7 @@ func TestCommaConfig_Info(t *testing.T) {
 					name: "f2.type.name",
 					desc: "f2.type.desc",
 				},
-				Description: locutil.NewStaticText("f2.desc"),
+				Description: i18nutil.NewText("f2.desc"),
 				Multi:       true,
 			},
 		},

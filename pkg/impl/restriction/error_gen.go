@@ -6,7 +6,7 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // newInvalidChannelTypeError returns a new errors.RestrictionError wrapping
@@ -142,7 +142,7 @@ func newInsufficientBotPermissionsError(missing discord.Permissions, l *i18n.Loc
 		return errors.NewRestrictionError(desc)
 	}
 
-	missingNames := locutil.PermissionNamesl(err.MissingPermissions, l)
+	missingNames := i18nutil.PermissionNamesl(err.MissingPermissions, l)
 
 	embeddableDesc := desc
 	indent, _ := genIndent(1)
@@ -166,7 +166,7 @@ func newInsufficientUserPermissionsError(missing discord.Permissions, l *i18n.Lo
 		return nil
 	}
 
-	missingNames := locutil.PermissionNamesl(missing, l)
+	missingNames := i18nutil.PermissionNamesl(missing, l)
 
 	if len(missingNames) == 0 {
 		return nil

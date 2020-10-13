@@ -70,7 +70,7 @@ issues:
       linters: funlen
       text: ^Function 'Build' is too long \(\d+ > \d+\)$
     # this is required to maintain readability
-    - path: ^pkg/utils/locutil/permission_terms.go$
+    - path: ^pkg/utils/i18nutil/permission_terms.go$
       linters:
         - golint
         - stylecheck

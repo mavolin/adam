@@ -12,7 +12,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
@@ -92,7 +92,7 @@ func TestWithDescription(t *testing.T) {
 
 		err := WithDescription(cause, desc)
 		assert.True(t, err == cause)
-		assert.Equal(t, locutil.NewStaticText(desc), err.desc)
+		assert.Equal(t, i18nutil.NewText(desc), err.desc)
 	})
 
 	t.Run("normal error", func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestWithDescription(t *testing.T) {
 
 		err := WithDescription(cause, desc)
 		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, locutil.NewStaticText(desc), err.desc)
+		assert.Equal(t, i18nutil.NewText(desc), err.desc)
 	})
 }
 
@@ -121,7 +121,7 @@ func TestWithDescriptionf(t *testing.T) {
 
 		err := WithDescriptionf(cause, "abc %s", "def")
 		assert.True(t, err == cause)
-		assert.Equal(t, locutil.NewStaticText(desc), cause.desc)
+		assert.Equal(t, i18nutil.NewText(desc), cause.desc)
 	})
 
 	t.Run("normal error", func(t *testing.T) {
@@ -132,7 +132,7 @@ func TestWithDescriptionf(t *testing.T) {
 
 		err := WithDescriptionf(cause, "def %s", "ghi")
 		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, locutil.NewStaticText(desc), err.desc)
+		assert.Equal(t, i18nutil.NewText(desc), err.desc)
 	})
 }
 
@@ -150,7 +150,7 @@ func TestWithDescriptionl(t *testing.T) {
 
 		err := WithDescriptionl(cause, desc)
 		assert.True(t, err == cause)
-		assert.Equal(t, locutil.NewLocalizedText(desc), cause.desc)
+		assert.Equal(t, i18nutil.NewTextl(desc), cause.desc)
 	})
 
 	t.Run("normal error", func(t *testing.T) {
@@ -161,7 +161,7 @@ func TestWithDescriptionl(t *testing.T) {
 
 		err := WithDescriptionl(cause, desc)
 		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, locutil.NewLocalizedText(desc), err.desc)
+		assert.Equal(t, i18nutil.NewTextl(desc), err.desc)
 	})
 }
 
@@ -179,7 +179,7 @@ func TestWithDescriptionlt(t *testing.T) {
 
 		err := WithDescriptionlt(cause, desc)
 		assert.True(t, err == cause)
-		assert.Equal(t, locutil.NewLocalizedText(desc.AsConfig()), cause.desc)
+		assert.Equal(t, i18nutil.NewTextl(desc.AsConfig()), cause.desc)
 	})
 
 	t.Run("normal error", func(t *testing.T) {
@@ -190,7 +190,7 @@ func TestWithDescriptionlt(t *testing.T) {
 
 		err := WithDescriptionlt(cause, desc)
 		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, locutil.NewLocalizedText(desc.AsConfig()), err.desc)
+		assert.Equal(t, i18nutil.NewTextl(desc.AsConfig()), err.desc)
 	})
 }
 

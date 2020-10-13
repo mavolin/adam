@@ -5,7 +5,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // ArgumentParsingError is the error used if the arguments or flags a user
@@ -20,8 +20,8 @@ import (
 // It contains information about why this error occurred, and what can be done
 // to fix it.
 type ArgumentParsingError struct {
-	desc   locutil.Text
-	reason locutil.Text
+	desc   i18nutil.Text
+	reason i18nutil.Text
 }
 
 // NewArgumentParsingError returns a new ArgumentParsingError with the passed
@@ -29,7 +29,7 @@ type ArgumentParsingError struct {
 // The description mustn't be empty for this error to be handled properly.
 func NewArgumentParsingError(description string) *ArgumentParsingError {
 	return &ArgumentParsingError{
-		desc: locutil.NewStaticText(description),
+		desc: i18nutil.NewText(description),
 	}
 }
 
@@ -37,7 +37,7 @@ func NewArgumentParsingError(description string) *ArgumentParsingError {
 // i18n.Config to generate a description.
 func NewArgumentParsingErrorl(description i18n.Config) *ArgumentParsingError {
 	return &ArgumentParsingError{
-		desc: locutil.NewLocalizedText(description),
+		desc: i18nutil.NewTextl(description),
 	}
 }
 
@@ -49,13 +49,13 @@ func NewArgumentParsingErrorlt(description i18n.Term) *ArgumentParsingError {
 
 // WithReason creates a copy of the error and adds the passed reason to it.
 func (e ArgumentParsingError) WithReason(reason string) *ArgumentParsingError {
-	e.reason = locutil.NewStaticText(reason)
+	e.reason = i18nutil.NewText(reason)
 	return &e
 }
 
 // WithReasonl creates a copy of the error and adds the passed reason to it.
 func (e ArgumentParsingError) WithReasonl(reason i18n.Config) *ArgumentParsingError {
-	e.reason = locutil.NewLocalizedText(reason)
+	e.reason = i18nutil.NewTextl(reason)
 	return &e
 }
 

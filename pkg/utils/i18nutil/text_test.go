@@ -1,4 +1,4 @@
-package locutil
+package i18nutil
 
 import (
 	"testing"
@@ -22,12 +22,12 @@ func TestText_IsEmpty(t *testing.T) {
 		},
 		{
 			name:   "string",
-			text:   NewStaticText("abc"),
+			text:   NewText("abc"),
 			expect: false,
 		},
 		{
 			name:   "config",
-			text:   NewLocalizedText(i18n.NewTermConfig("abc")),
+			text:   NewTextl(i18n.NewTermConfig("abc")),
 			expect: false,
 		},
 	}
@@ -44,7 +44,7 @@ func TestText_Get(t *testing.T) {
 	t.Run("static", func(t *testing.T) {
 		expect := "abc"
 
-		text := NewStaticText(expect)
+		text := NewText(expect)
 
 		actual, err := text.Get(nil)
 		require.NoError(t, err)
@@ -56,7 +56,7 @@ func TestText_Get(t *testing.T) {
 
 		var term i18n.Term = "def"
 
-		text := NewLocalizedText(term.AsConfig())
+		text := NewTextl(term.AsConfig())
 
 		actual, err := text.Get(newMockedLocalizer(t).
 			on(term, expect).

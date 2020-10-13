@@ -7,7 +7,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 type Kind string
@@ -21,16 +21,16 @@ type (
 	// RequiredArg is an unlocalized required argument.
 	RequiredArg struct {
 		// Name is the name of the argument.
-		Name locutil.Text
+		Name i18nutil.Text
 		// Type is the type of the argument.
 		Type Type
 		// Description is an optional short description of the argument.
-		Description locutil.Text
+		Description i18nutil.Text
 	}
 	// OptionalArg is an unlocalized optional argument.
 	OptionalArg struct {
 		// Name is the name of the argument.
-		Name locutil.Text
+		Name i18nutil.Text
 		// Type is the type of the argument.
 		Type Type
 		// Default is the default value of the argument.
@@ -39,7 +39,7 @@ type (
 		// as returned by Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the argument.
-		Description locutil.Text
+		Description i18nutil.Text
 	}
 	// Flag is an unlocalized flag.
 	Flag struct {
@@ -56,7 +56,7 @@ type (
 		// as returned by Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the flag.
-		Description locutil.Text
+		Description i18nutil.Text
 		// Multi specifies whether this flag can be used multiple times.
 		Multi bool
 	}

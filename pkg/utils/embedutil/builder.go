@@ -4,14 +4,14 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 type (
 	// Builder is a utility struct used to build embeds.
 	Builder struct {
-		title       locutil.Text
-		description locutil.Text
+		title       i18nutil.Text
+		description i18nutil.Text
 
 		url discord.URL
 
@@ -26,19 +26,19 @@ type (
 	}
 
 	footer struct {
-		text locutil.Text
+		text i18nutil.Text
 		icon discord.URL
 	}
 
 	author struct {
-		name locutil.Text
+		name i18nutil.Text
 		icon discord.URL
 		url  discord.URL
 	}
 
 	field struct {
-		name    locutil.Text
-		value   locutil.Text
+		name    i18nutil.Text
+		value   i18nutil.Text
 		inlined bool
 	}
 )
@@ -50,13 +50,13 @@ func NewBuilder() *Builder {
 
 // WithSimpleTitle adds a plain title (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleTitle(title string) *Builder {
-	b.title = locutil.NewStaticText(title)
+	b.title = i18nutil.NewText(title)
 	return b
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleTitlel(title i18n.Config) *Builder {
-	b.title = locutil.NewLocalizedText(title)
+	b.title = i18nutil.NewTextl(title)
 	return b
 }
 
@@ -67,7 +67,7 @@ func (b *Builder) WithSimpleTitlelt(title i18n.Term) *Builder {
 
 // WithTitle adds a title (max. 256 characters) with a link to the embed.
 func (b *Builder) WithTitle(title string, url discord.URL) *Builder {
-	b.title = locutil.NewStaticText(title)
+	b.title = i18nutil.NewText(title)
 	b.url = url
 
 	return b
@@ -75,7 +75,7 @@ func (b *Builder) WithTitle(title string, url discord.URL) *Builder {
 
 // WithTitlel adds a title (max. 256 characters) with a link to the embed.
 func (b *Builder) WithTitlel(title i18n.Config, url discord.URL) *Builder {
-	b.title = locutil.NewLocalizedText(title)
+	b.title = i18nutil.NewTextl(title)
 	b.url = url
 
 	return b
@@ -88,13 +88,13 @@ func (b *Builder) WithTitlelt(title i18n.Term, url discord.URL) *Builder {
 
 // WithDescription adds a description (max. 2048 characters) to the embed.
 func (b *Builder) WithDescription(description string) *Builder {
-	b.description = locutil.NewStaticText(description)
+	b.description = i18nutil.NewText(description)
 	return b
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the embed.
 func (b *Builder) WithDescriptionl(description i18n.Config) *Builder {
-	b.description = locutil.NewLocalizedText(description)
+	b.description = i18nutil.NewTextl(description)
 	return b
 }
 
@@ -123,7 +123,7 @@ func (b *Builder) WithColor(color discord.Color) *Builder {
 // WithSimpleFooter adds a plain footer (max. 2048 characters) to the embed.
 func (b *Builder) WithSimpleFooter(text string) *Builder {
 	b.footer = &footer{
-		text: locutil.NewStaticText(text),
+		text: i18nutil.NewText(text),
 	}
 
 	return b
@@ -132,7 +132,7 @@ func (b *Builder) WithSimpleFooter(text string) *Builder {
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the embed.
 func (b *Builder) WithSimpleFooterl(text i18n.Config) *Builder {
 	b.footer = &footer{
-		text: locutil.NewLocalizedText(text),
+		text: i18nutil.NewTextl(text),
 	}
 
 	return b
@@ -146,7 +146,7 @@ func (b *Builder) WithSimpleFooterlt(text i18n.Term) *Builder {
 // WithFooter adds a footer (max. 2048 character) with an icon to the embed.
 func (b *Builder) WithFooter(text string, icon discord.URL) *Builder {
 	b.footer = &footer{
-		text: locutil.NewStaticText(text),
+		text: i18nutil.NewText(text),
 		icon: icon,
 	}
 
@@ -156,7 +156,7 @@ func (b *Builder) WithFooter(text string, icon discord.URL) *Builder {
 // WithFooterl adds a footer (max. 2048 character) with an icon to the embed.
 func (b *Builder) WithFooterl(text i18n.Config, icon discord.URL) *Builder {
 	b.footer = &footer{
-		text: locutil.NewLocalizedText(text),
+		text: i18nutil.NewTextl(text),
 		icon: icon,
 	}
 
@@ -184,7 +184,7 @@ func (b *Builder) WithThumbnail(thumbnail discord.URL) *Builder {
 // WithSimpleAuthor adds a plain author (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleAuthor(name string) *Builder {
 	b.author = &author{
-		name: locutil.NewStaticText(name),
+		name: i18nutil.NewText(name),
 	}
 
 	return b
@@ -193,7 +193,7 @@ func (b *Builder) WithSimpleAuthor(name string) *Builder {
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the embed.
 func (b *Builder) WithSimpleAuthorl(name i18n.Config) *Builder {
 	b.author = &author{
-		name: locutil.NewLocalizedText(name),
+		name: i18nutil.NewTextl(name),
 	}
 
 	return b
@@ -208,7 +208,7 @@ func (b *Builder) WithSimpleAuthorlt(name i18n.Term) *Builder {
 // the embed.
 func (b *Builder) WithSimpleAuthorWithURL(name string, url discord.URL) *Builder {
 	b.author = &author{
-		name: locutil.NewStaticText(name),
+		name: i18nutil.NewText(name),
 		url:  url,
 	}
 
@@ -219,7 +219,7 @@ func (b *Builder) WithSimpleAuthorWithURL(name string, url discord.URL) *Builder
 // the embed.
 func (b *Builder) WithSimpleAuthorWithURLl(name i18n.Config, url discord.URL) *Builder {
 	b.author = &author{
-		name: locutil.NewLocalizedText(name),
+		name: i18nutil.NewTextl(name),
 		url:  url,
 	}
 
@@ -235,7 +235,7 @@ func (b *Builder) WithSimpleAuthorWithURLlt(name i18n.Term, url discord.URL) *Bu
 // WithAuthor adds an author (max 256 characters) with an icon to the embed.
 func (b *Builder) WithAuthor(name string, icon discord.URL) *Builder {
 	b.author = &author{
-		name: locutil.NewStaticText(name),
+		name: i18nutil.NewText(name),
 		icon: icon,
 	}
 
@@ -245,7 +245,7 @@ func (b *Builder) WithAuthor(name string, icon discord.URL) *Builder {
 // WithAuthorl adds an author (max 256 characters) with an icon to the embed.
 func (b *Builder) WithAuthorl(name i18n.Config, icon discord.URL) *Builder {
 	b.author = &author{
-		name: locutil.NewLocalizedText(name),
+		name: i18nutil.NewTextl(name),
 		icon: icon,
 	}
 
@@ -261,7 +261,7 @@ func (b *Builder) WithAuthorlt(name i18n.Term, icon discord.URL) *Builder {
 // to the embed.
 func (b *Builder) WithAuthorWithURL(name string, icon, url discord.URL) *Builder {
 	b.author = &author{
-		name: locutil.NewStaticText(name),
+		name: i18nutil.NewText(name),
 		icon: icon,
 		url:  url,
 	}
@@ -273,7 +273,7 @@ func (b *Builder) WithAuthorWithURL(name string, icon, url discord.URL) *Builder
 // URL to the embed.
 func (b *Builder) WithAuthorWithURLl(name i18n.Config, icon, url discord.URL) *Builder {
 	b.author = &author{
-		name: locutil.NewLocalizedText(name),
+		name: i18nutil.NewTextl(name),
 		icon: icon,
 		url:  url,
 	}
@@ -344,8 +344,8 @@ func (b *Builder) withField(name, value string, inlined bool) {
 		inlined: inlined,
 	}
 
-	f.name = locutil.NewStaticText(name)
-	f.value = locutil.NewStaticText(value)
+	f.name = i18nutil.NewText(name)
+	f.value = i18nutil.NewText(value)
 
 	b.fields = append(b.fields, f)
 }
@@ -355,8 +355,8 @@ func (b *Builder) withFieldl(name, value i18n.Config, inlined bool) {
 		inlined: inlined,
 	}
 
-	f.name = locutil.NewLocalizedText(name)
-	f.value = locutil.NewLocalizedText(value)
+	f.name = i18nutil.NewTextl(name)
+	f.value = i18nutil.NewTextl(value)
 
 	b.fields = append(b.fields, f)
 }
