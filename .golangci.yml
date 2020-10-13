@@ -80,6 +80,11 @@ issues:
       linters:
         - funlen
         - gocognit
+    # parsers are long...
     - path: ^pkg/impl/arg/comma_parser.go$
       linters: funlen
       text: ^Function 'parseArgs' has too many statements \(\d+ > \d+\)$
+    # parsers are long...
+    - path: ^pkg/impl/arg/shellword_parser.go$
+      linters: funlen
+      text: ^Function 'nextContent' has too many statements \(\d+ > \d+\)$
