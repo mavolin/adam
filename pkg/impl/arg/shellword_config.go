@@ -40,16 +40,6 @@ type ShellwordConfig struct {
 	Flags []Flag
 }
 
-type groupingCharacter uint8
-
-const (
-	singleQuote groupingCharacter = iota + 1
-	doubleQuote
-	SingleBacktick
-	DoubleBacktick
-	TripleBacktick
-)
-
 func (c ShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	parser := newShellwordParser(args, c, s, ctx)
 	return parser.parse()

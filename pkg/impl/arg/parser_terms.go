@@ -23,6 +23,9 @@ var (
 
 	emptyArgError = i18n.NewFallbackConfig(
 		"args.parser.errors.empty_arg", "The argument at position {{.position}} may not be empty.")
+
+	groupNotClosedError = i18n.NewFallbackConfig(
+		"args.parser.errors.group_not_closed", "You need to close the {{.quote}}.")
 )
 
 type (
@@ -40,5 +43,9 @@ type (
 
 	emptyArgErrorPlaceholders struct {
 		Position int
+	}
+
+	groupNotClosedErrorPlaceholder struct {
+		Quote string
 	}
 )
