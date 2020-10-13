@@ -34,6 +34,11 @@ linters:
     - gochecknoinits
     - funlen
 
+linters-settings:
+  funlen:
+    lines: 70
+    statements: 50
+
 issues:
   exclude-rules:
     - path: _test\.go$
@@ -75,3 +80,6 @@ issues:
       linters:
         - funlen
         - gocognit
+    - path: ^pkg/impl/arg/comma_parser.go$
+      linters: funlen
+      text: ^Function 'parseArgs' has too many statements \(\d+ > \d+\)$
