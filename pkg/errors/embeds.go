@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
@@ -13,7 +12,7 @@ import (
 // This means if localizing the embed, fallbacks should be defined.
 var ErrorEmbed = embedutil.NewBuilder().
 	WithSimpleTitlel(errorTitle).
-	WithColor(constant.ErrorColor)
+	WithColor(0xff5a5a)
 
 // InfoEmbed is the embedutil.Builder used to create new info embeds.
 // Infos may fill the description of the embed or add fields.
@@ -23,4 +22,4 @@ var ErrorEmbed = embedutil.NewBuilder().
 // This means if localizing the embed, fallbacks should be defined.
 var InfoEmbed = embedutil.NewBuilder().
 	WithSimpleTitlel(infoTitle).
-	WithColor(constant.InfoColor)
+	WithColor(0x6eb7b1)
