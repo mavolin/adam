@@ -55,19 +55,3 @@ func (c CommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 
 	return []plugin.ArgsInfo{info}
 }
-
-func (c CommaConfig) flag(name string) *Flag {
-	for _, flag := range c.Flags {
-		if flag.Name == name {
-			return &flag
-		}
-
-		for _, alias := range flag.Aliases {
-			if alias == name {
-				return &flag
-			}
-		}
-	}
-
-	return nil
-}
