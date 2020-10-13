@@ -7,6 +7,42 @@ import (
 
 const whitespace = " \t\n"
 
+func genArgsInfo(
+	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
+) (plugin.ArgsInfo, error) {
+	info := plugin.ArgsInfo{
+		Required: make([]plugin.ArgInfo, len(rargs)),
+		Optional: make([]plugin.ArgInfo, len(oargs)),
+		Flags:    make([]plugin.FlagInfo, len(flags)),
+		Variadic: variadic,
+	}
+
+	var err error
+
+	for i, arg := range rargs {
+		info.Required[i], err = requiredArgInfo(arg, l)
+		if err != nil {
+			return plugin.ArgsInfo{}, err
+		}
+	}
+
+	for i, arg := range oargs {
+		info.Optional[i], err = optionalArgInfo(arg, l)
+		if err != nil {
+			return plugin.ArgsInfo{}, err
+
+		}
+	}
+
+	for i, flag := range flags {
+		info.Flags[i], err = flagInfo(flag, l)
+		if err != nil {
+			return plugin.ArgsInfo{}, err
+		}
+	}
+	return info, nil
+}
+
 func requiredArgInfo(a RequiredArg, l *i18n.Localizer) (info plugin.ArgInfo, err error) {
 	info.Name, err = a.Name.Get(l)
 	if err != nil {
