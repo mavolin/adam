@@ -157,111 +157,47 @@ func (a Args) Time(i int) time.Time { return a[i].(time.Time) }
 // Regexp returns the flag with the passed index as *regexp.Regexp.
 func (a Args) Regexp(i int) *regexp.Regexp { return a[i].(*regexp.Regexp) }
 
-// LookupBool returns the argument with the passed index as bool.
-func (a Args) LookupBool(i int) (v bool, ok bool) {
-	v, ok = a[i].(bool)
-	return
-}
+// VariadicInt returns the last argument as []int.
+func (a Args) VariadicInt() []int { return a[len(a)-1].([]int) }
 
-// LookupInt returns the argument with the passed index as int.
-// ok is false if the value at the passed index is not of type int.
-func (a Args) LookupInt(i int) (v int, ok bool) {
-	v, ok = a[i].(int)
-	return
-}
+// VariadicInt64 returns the last argument as []int64.
+func (a Args) VariadicInt64() []int64 { return a[len(a)-1].([]int64) }
 
-// LookupInt64 returns the argument with the passed index as int64.
-// ok is false if the value at the passed index is not of type int64.
-func (a Args) LookupInt64(i int) (v int64, ok bool) {
-	v, ok = a[i].(int64)
-	return
-}
+// VariadicUint returns the last argument as []uint.
+func (a Args) VariadicUint() []uint { return a[len(a)-1].([]uint) }
 
-// LookupUint returns the argument with the passed index as uint.
-// ok is false if the value at the passed index is not of type uint.
-func (a Args) LookupUint(i int) (v uint, ok bool) {
-	v, ok = a[i].(uint)
-	return
-}
+// VariadicUint64 returns the last argument as []uint64.
+func (a Args) VariadicUint64() []uint64 { return a[len(a)-1].([]uint64) }
 
-// LookupUint64 returns the argument with the passed index as uint64.
-// ok is false if the value at the passed index is not of type uint64.
-func (a Args) LookupUint64(i int) (v uint64, ok bool) {
-	v, ok = a[i].(uint64)
-	return
-}
+// VariadicFloat32 returns the last argument as []float32.
+func (a Args) VariadicFloat32() []float32 { return a[len(a)-1].([]float32) }
 
-// LookupFloat32 returns the argument with the passed index as float32.
-// ok is false if the value at the passed index is not of type float32.
-func (a Args) LookupFloat32(i int) (v float32, ok bool) {
-	v, ok = a[i].(float32)
-	return
-}
+// VariadicFloat64 returns the last argument as []Float64.
+func (a Args) VariadicFloat64() []float64 { return a[len(a)-1].([]float64) }
 
-// LookupFloat64 returns the argument with the passed index as float64.
-// ok is false if the value at the passed index is not of type float64.
-func (a Args) LookupFloat64(i int) (v float64, ok bool) {
-	v, ok = a[i].(float64)
-	return
-}
+// VariadicString returns the last argument as []string.
+func (a Args) VariadicString() []string { return a[len(a)-1].([]string) }
 
-// LookupString returns the argument with the passed index as string.
-// ok is false if the value at the passed index is not of type string.
-func (a Args) LookupString(i int) (v string, ok bool) {
-	v, ok = a[i].(string)
-	return
-}
+// VariadicBool returns the last argument as []discord.Member.
+func (a Args) VariadicMember() []discord.Member { return a[len(a)-1].([]discord.Member) }
 
-// LookupMember returns the argument with the passed index as *discord.Member.
-// ok is false if the value at the passed index is not of type *discord.Member.
-func (a Args) LookupMember(i int) (v *discord.Member, ok bool) {
-	v, ok = a[i].(*discord.Member)
-	return
-}
+// VariadicChannel returns the last argument as []discord.Channel.
+func (a Args) VariadicChannel() []discord.Channel { return a[len(a)-1].([]discord.Channel) }
 
-// LookupChannel returns the argument with the passed index as
-// *discord.Channel.
-// ok is false if the value at the passed index is not of type
-// *discord.Channel.
-func (a Args) LookupChannel(i int) (v *discord.Channel, ok bool) {
-	v, ok = a[i].(*discord.Channel)
-	return
-}
+// VariadicRole returns the last argument as []discord.Role.
+func (a Args) VariadicRole() []discord.Role { return a[len(a)-1].([]discord.Role) }
 
-// LookupRole returns the argument with the passed index as *discord.Role.
-// ok is false if the value at the passed index is not of type *discord.Role.
-func (a Args) LookupRole(i int) (v *discord.Role, ok bool) {
-	v, ok = a[i].(*discord.Role)
-	return
-}
+// VariadicEmoji returns the last argument as []discord.Emoji.
+func (a Args) VariadicEmoji() []discord.Emoji { return a[len(a)-1].([]discord.Emoji) }
 
-// LookupEmoji returns the argument with the passed index as *discord.Emoji.
-// ok is false if the value at the passed index is not of type *discord.Emoji.
-func (a Args) LookupEmoji(i int) (v *discord.Emoji, ok bool) {
-	v, ok = a[i].(*discord.Emoji)
-	return
-}
+// VariadicDuration returns the last argument as []time.Duration.
+func (a Args) VariadicDuration() []time.Duration { return a[len(a)-1].([]time.Duration) }
 
-// LookupDuration returns the argument with the passed index as time.Duration.
-// ok is false if the value at the passed index is not of type time.Duration.
-func (a Args) LookupDuration(i int) (v time.Duration, ok bool) {
-	v, ok = a[i].(time.Duration)
-	return
-}
+// VariadicTime returns the last argument as []time.Time.
+func (a Args) VariadicTime() []time.Time { return a[len(a)-1].([]time.Time) }
 
-// LookupTime returns the argument with the passed index as time.Time.
-// ok is false if the value at the passed index is not of type time.Time.
-func (a Args) LookupTime(i int) (v time.Time, ok bool) {
-	v, ok = a[i].(time.Time)
-	return
-}
-
-// LookupRegexp returns the flag with the passed index as *regexp.Regexp.
-// ok is false if the value at the passed index is not of type *regexp.Regexp.
-func (a Args) LookupRegexp(i int) (v *regexp.Regexp, ok bool) {
-	v, ok = a[i].(*regexp.Regexp)
-	return
-}
+// VariadicRegexp returns the last argument as []*regexp.Regexp.
+func (a Args) VariadicRegexp() []*regexp.Regexp { return a[len(a)-1].([]*regexp.Regexp) }
 
 // Flags are the parsed flags of a command.
 type Flags map[string]interface{}
@@ -311,9 +247,6 @@ func (f Flags) Time(name string) time.Time { return f[name].(time.Time) }
 // Regexp returns the flag with the passed name as *regexp.Regexp.
 func (f Flags) Regexp(name string) *regexp.Regexp { return f[name].(*regexp.Regexp) }
 
-// MultiBool returns the flag with the passed name as []bool.
-func (f Flags) MultiBool(name string) []bool { return f[name].([]bool) }
-
 // MultiInt returns the flag with the passed name as []int.
 func (f Flags) MultiInt(name string) []int { return f[name].([]int) }
 
@@ -355,235 +288,3 @@ func (f Flags) MultiTime(name string) []time.Time { return f[name].([]time.Time)
 
 // MultiRegexp returns the flag with the passed name as []*regexp.Regexp.
 func (f Flags) MultiRegexp(name string) []*regexp.Regexp { return f[name].([]*regexp.Regexp) }
-
-// LookupBool returns the flag with the passed name as bool.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type bool.
-func (f Flags) LookupBool(name string) (v bool, ok bool) {
-	v, ok = f[name].(bool)
-	return
-}
-
-// LookupInt returns the flag with the passed name as int.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type int.
-func (f Flags) LookupInt(name string) (v int, ok bool) {
-	v, ok = f[name].(int)
-	return
-}
-
-// LookupInt64 returns the flag with the passed name as int64.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type int64.
-func (f Flags) LookupInt64(name string) (v int64, ok bool) {
-	v, ok = f[name].(int64)
-	return
-}
-
-// LookupUint returns the flag with the passed name as uint.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type uint.
-func (f Flags) LookupUint(name string) (v uint, ok bool) {
-	v, ok = f[name].(uint)
-	return
-}
-
-// LookupUint64 returns the flag with the passed name as uint64.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type uint64.
-func (f Flags) LookupUint64(name string) (v uint64, ok bool) {
-	v, ok = f[name].(uint64)
-	return
-}
-
-// LookupFloat32 returns the flag with the passed name as float32.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type float32.
-func (f Flags) LookupFloat32(name string) (v float32, ok bool) {
-	v, ok = f[name].(float32)
-	return
-}
-
-// LookupFloat64 returns the flag with the passed name as float64.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type float64.
-func (f Flags) LookupFloat64(name string) (v float64, ok bool) {
-	v, ok = f[name].(float64)
-	return
-}
-
-// LookupString returns the flag with the passed name as string.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type string.
-func (f Flags) LookupString(name string) (v string, ok bool) {
-	v, ok = f[name].(string)
-	return
-}
-
-// LookupMember returns the flag with the passed name as *discord.Member.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type *discord.Member.
-func (f Flags) LookupMember(name string) (v *discord.Member, ok bool) {
-	v, ok = f[name].(*discord.Member)
-	return
-}
-
-// LookupChannel returns the flag with the passed name as *discord.Channel.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type *discord.Channel.
-func (f Flags) LookupChannel(name string) (v *discord.Channel, ok bool) {
-	v, ok = f[name].(*discord.Channel)
-	return
-}
-
-// LookupRole returns the flag with the passed name as *discord.Role.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type *discord.Role.
-func (f Flags) LookupRole(name string) (v *discord.Role, ok bool) {
-	v, ok = f[name].(*discord.Role)
-	return
-}
-
-// LookupEmoji returns the flag with the passed name as *discord.Emoji.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type *discord.Emoji.
-func (f Flags) LookupEmoji(name string) (v *discord.Emoji, ok bool) {
-	v, ok = f[name].(*discord.Emoji)
-	return
-}
-
-// LookupDuration returns the flag with the passed name as time.Duration.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type time.Duration.
-func (f Flags) LookupDuration(name string) (v time.Duration, ok bool) {
-	v, ok = f[name].(time.Duration)
-	return
-}
-
-// LookupTime returns the flag with the passed name as time.Time.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type time.Time.
-func (f Flags) LookupTime(name string) (v time.Time, ok bool) {
-	v, ok = f[name].(time.Time)
-	return
-}
-
-// LookupRegexp returns the flag with the passed name as *regexp.Regexp.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type *regexp.*regexp.Regexp.
-func (f Flags) LookupRegexp(name string) (v *regexp.Regexp, ok bool) {
-	v, ok = f[name].(*regexp.Regexp)
-	return
-}
-
-// LookupMultiInt returns the flag with the passed name as []int.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []int.
-func (f Flags) LookupMultiInt(name string) (v []int, ok bool) {
-	v, ok = f[name].([]int)
-	return
-}
-
-// LookupMultiInt64 returns the flag with the passed name as []int64.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []int64.
-func (f Flags) LookupMultiInt64(name string) (v []int64, ok bool) {
-	v, ok = f[name].([]int64)
-	return
-}
-
-// LookupMultiUint returns the flag with the passed name as []uint.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []uint.
-func (f Flags) LookupMultiUint(name string) (v []uint, ok bool) {
-	v, ok = f[name].([]uint)
-	return
-}
-
-// LookupMultiUint64 returns the flag with the passed name as []uint64.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []uint64.
-func (f Flags) LookupMultiUint64(name string) (v []uint64, ok bool) {
-	v, ok = f[name].([]uint64)
-	return
-}
-
-// LookupMultiFloat32 returns the flag with the passed name as []float32.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []float32.
-func (f Flags) LookupMultiFloat32(name string) (v []float32, ok bool) {
-	v, ok = f[name].([]float32)
-	return
-}
-
-// LookupMultiFloat64 returns the flag with the passed name as []Float64.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []Float64.
-func (f Flags) LookupMultiFloat64(name string) (v []float64, ok bool) {
-	v, ok = f[name].([]float64)
-	return
-}
-
-// LookupMultiString returns the flag with the passed name as []string.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []string.
-func (f Flags) LookupMultiString(name string) (v []string, ok bool) {
-	v, ok = f[name].([]string)
-	return
-}
-
-// LookupMultiBool returns the flag with the passed name as []discord.Member.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []discord.Member.
-func (f Flags) LookupMultiMember(name string) (v []discord.Member, ok bool) {
-	v, ok = f[name].([]discord.Member)
-	return
-}
-
-// LookupMultiChannel returns the flag with the passed name as []discord.Channel.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []discord.Channel.
-func (f Flags) LookupMultiChannel(name string) (v []discord.Channel, ok bool) {
-	v, ok = f[name].([]discord.Channel)
-	return
-}
-
-// LookupMultiRole returns the flag with the passed name as []discord.Role.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []discord.Role.
-func (f Flags) LookupMultiRole(name string) (v []discord.Role, ok bool) {
-	v, ok = f[name].([]discord.Role)
-	return
-}
-
-// LookupMultiEmoji returns the flag with the passed name as []discord.Emoji.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []discord.Emoji.
-func (f Flags) LookupMultiEmoji(name string) (v []discord.Emoji, ok bool) {
-	v, ok = f[name].([]discord.Emoji)
-	return
-}
-
-// LookupMultiDuration returns the flag with the passed name as []time.Duration.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []time.Duration.
-func (f Flags) LookupMultiDuration(name string) (v []time.Duration, ok bool) {
-	v, ok = f[name].([]time.Duration)
-	return
-}
-
-// LookupMultiTime returns the flag with the passed name as []time.Time.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []time.Time.
-func (f Flags) LookupMultiTime(name string) (v []time.Time, ok bool) {
-	v, ok = f[name].([]time.Time)
-	return
-}
-
-// LookupMultiRegexp returns the flag with the passed name as []*regexp.Regexp.
-// ok is false if there is either no flag with the passed key, or the value is
-// not of type []*regexp.Regexp.
-func (f Flags) LookupMultiRegexp(name string) (v []*regexp.Regexp, ok bool) {
-	v, ok = f[name].([]*regexp.Regexp)
-	return
-}
