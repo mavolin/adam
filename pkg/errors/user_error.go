@@ -292,7 +292,7 @@ func (e *UserError) Embed(l *i18n.Localizer) (discord.Embed, error) {
 
 func (e *UserError) Error() string { return "user error" }
 
-// Handle sends an error embed with the description of the UserError.
+// Handle sends the error embed.
 func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 	_, err = ctx.ReplyEmbedBuilder(e.embed)
 	return

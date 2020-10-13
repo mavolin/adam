@@ -8,9 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
 // Await awaits a response of the user until the passed timout is reached.
@@ -224,25 +222,19 @@ func (w *Waiter) askForTimeExtension(ctx context.Context) error {
 }
 
 func (w *Waiter) sendTimeExtensionMessage() (*discord.Message, error) {
-	var color discord.Color
-
-	b, err := errors.InfoEmbed.Build(w.ctx.Localizer)
-	if err != nil {
-		color = constant.InfoColor
-	} else {
-		color = b.Color
-	}
-
-	embed := embedutil.NewBuilder().
-		WithColor(color).
+	embed, err := errors.NewCustomUserInfo().
 		WithSimpleTitlel(timeExtensionTitle).
 		WithDescriptionl(timeExtensionDescription.
 			WithPlaceholders(timeExtensionDescriptionPlaceholders{
 				ResponseUserMention:   "<@" + w.ctx.Author.ID.String() + ">",
 				TimeExtensionReaction: TimeExtensionReaction,
-			}))
+			})).
+		Embed(w.ctx.Localizer)
+	if err != nil {
+		return nil, err
+	}
 
-	msg, err := w.ctx.ReplyEmbedBuilder(embed)
+	msg, err := w.ctx.ReplyEmbed(embed)
 	if err != nil {
 		return nil, err
 	}

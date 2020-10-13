@@ -292,7 +292,7 @@ func (i *UserInfo) Embed(l *i18n.Localizer) (discord.Embed, error) {
 
 func (i *UserInfo) Error() string { return "user info" }
 
-// Handle sends an info embed with the description of the UserInfo.
+// Handle sends the info embed.
 func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
 	_, err = ctx.ReplyEmbedBuilder(i.embed)
 	return
