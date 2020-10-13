@@ -9,7 +9,7 @@ import (
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // InternalError represents a non-user triggered error, that is reported to
@@ -25,7 +25,7 @@ type InternalError struct {
 	stack errorutil.Stack
 
 	// description of the error
-	desc locutil.Text
+	desc i18nutil.Text
 }
 
 // WithStack enriches the passed error with a stack trace.
@@ -52,7 +52,7 @@ func withStack(err error) error {
 	return &InternalError{
 		cause: err,
 		stack: stackTrace(err, 2),
-		desc:  locutil.NewLocalizedText(defaultInternalDesc),
+		desc:  i18nutil.NewTextl(defaultInternalDesc),
 	}
 }
 
@@ -79,7 +79,7 @@ func Wrap(err error, message string) *InternalError {
 			cause: err,
 		},
 		stack: stackTrace(err, 1),
-		desc:  locutil.NewLocalizedText(defaultInternalDesc),
+		desc:  i18nutil.NewTextl(defaultInternalDesc),
 	}
 }
 
@@ -98,7 +98,7 @@ func Wrapf(err error, format string, args ...interface{}) *InternalError {
 			cause: err,
 		},
 		stack: stackTrace(err, 1),
-		desc:  locutil.NewLocalizedText(defaultInternalDesc),
+		desc:  i18nutil.NewTextl(defaultInternalDesc),
 	}
 }
 
@@ -114,14 +114,14 @@ func WithDescription(cause error, description string) *InternalError {
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.desc = locutil.NewStaticText(description)
+		ie.desc = i18nutil.NewText(description)
 		return ie
 	}
 
 	return &InternalError{
 		cause: cause,
 		stack: stackTrace(cause, 1),
-		desc:  locutil.NewStaticText(description),
+		desc:  i18nutil.NewText(description),
 	}
 }
 
@@ -137,14 +137,14 @@ func WithDescriptionf(cause error, format string, args ...interface{}) *Internal
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.desc = locutil.NewStaticText(fmt.Sprintf(format, args...))
+		ie.desc = i18nutil.NewText(fmt.Sprintf(format, args...))
 		return ie
 	}
 
 	return &InternalError{
 		cause: cause,
 		stack: stackTrace(cause, 1),
-		desc:  locutil.NewStaticText(fmt.Sprintf(format, args...)),
+		desc:  i18nutil.NewText(fmt.Sprintf(format, args...)),
 	}
 }
 
@@ -160,14 +160,14 @@ func WithDescriptionl(cause error, description i18n.Config) *InternalError {
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.desc = locutil.NewLocalizedText(description)
+		ie.desc = i18nutil.NewTextl(description)
 		return ie
 	}
 
 	return &InternalError{
 		cause: cause,
 		stack: stackTrace(cause, 1),
-		desc:  locutil.NewLocalizedText(description),
+		desc:  i18nutil.NewTextl(description),
 	}
 }
 
@@ -183,14 +183,14 @@ func WithDescriptionlt(cause error, description i18n.Term) *InternalError {
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.desc = locutil.NewLocalizedText(description.AsConfig())
+		ie.desc = i18nutil.NewTextl(description.AsConfig())
 		return ie
 	}
 
 	return &InternalError{
 		cause: cause,
 		stack: stackTrace(cause, 1),
-		desc:  locutil.NewLocalizedText(description.AsConfig()),
+		desc:  i18nutil.NewTextl(description.AsConfig()),
 	}
 }
 

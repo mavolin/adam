@@ -8,14 +8,14 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 var (
 	// DefaultWaiter is the waiter used for NewDefaultWaiter.
 	// DefaultWaiter must not be used directly to handleMessages response.
 	DefaultWaiter = &Waiter{
-		cancelKeywords: []locutil.Text{locutil.NewLocalizedText(defaultCancelKeyword)},
+		cancelKeywords: []i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
 	}
 
 	// TimeExtensionReaction is the reaction used to prolong the wait for
@@ -46,7 +46,7 @@ type (
 		// 		• timeExtensions > 0: timeExtension times
 		timeExtensions int
 
-		cancelKeywords  []locutil.Text
+		cancelKeywords  []i18nutil.Text
 		cancelReactions []cancelReaction
 
 		middlewares []interface{}
@@ -147,14 +147,14 @@ func (w *Waiter) WithMiddlewares(middlewares ...interface{}) *Waiter {
 // WithCancelKeyword adds the passed keyword to the cancel keywords.
 // If the user filtered for writes this keyword Await will return Canceled.
 func (w *Waiter) WithCancelKeyword(keyword string) *Waiter {
-	w.cancelKeywords = append(w.cancelKeywords, locutil.NewStaticText(keyword))
+	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewText(keyword))
 	return w
 }
 
 // WithCancelKeywordk adds the passed keyword to the cancel keywords.
 // If the user filtered for writes this keyword Await will return Canceled.
 func (w *Waiter) WithCancelKeywordl(keyword i18n.Config) *Waiter {
-	w.cancelKeywords = append(w.cancelKeywords, locutil.NewLocalizedText(keyword))
+	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewTextl(keyword))
 	return w
 }
 
@@ -188,7 +188,7 @@ func (w *Waiter) copy() (cp *Waiter) {
 		timeExtensions: w.timeExtensions,
 	}
 
-	cp.cancelKeywords = make([]locutil.Text, len(w.cancelKeywords))
+	cp.cancelKeywords = make([]i18nutil.Text, len(w.cancelKeywords))
 	copy(cp.cancelKeywords, w.cancelKeywords)
 
 	cp.cancelReactions = make([]cancelReaction, len(w.cancelReactions))

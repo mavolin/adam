@@ -1,4 +1,4 @@
-package locutil
+package i18nutil
 
 import "github.com/mavolin/adam/pkg/i18n"
 

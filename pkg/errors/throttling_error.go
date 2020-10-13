@@ -5,7 +5,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // ThrottlingError is the error returned if a command gets throttled.
@@ -13,14 +13,14 @@ import (
 // again.
 type ThrottlingError struct {
 	// description of the error
-	desc locutil.Text
+	desc i18nutil.Text
 }
 
 // NewThrottlingError creates a new ThrottlingError with the passed
 // description.
 func NewThrottlingError(description string) *ThrottlingError {
 	return &ThrottlingError{
-		desc: locutil.NewStaticText(description),
+		desc: i18nutil.NewText(description),
 	}
 }
 
@@ -28,7 +28,7 @@ func NewThrottlingError(description string) *ThrottlingError {
 // generated from the passed i18n.Config as description.
 func NewThrottlingErrorl(description i18n.Config) *ThrottlingError {
 	return &ThrottlingError{
-		desc: locutil.NewLocalizedText(description),
+		desc: i18nutil.NewTextl(description),
 	}
 }
 

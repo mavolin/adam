@@ -1,4 +1,4 @@
-package locutil
+package i18nutil
 
 import (
 	"testing"

@@ -5,7 +5,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 var (
@@ -31,7 +31,7 @@ var (
 // error and not using an embed, which suppresses mentions by default.
 type RestrictionError struct {
 	// description of the error
-	desc locutil.Text
+	desc i18nutil.Text
 
 	// Fatal defines if the RestrictionError is fatal.
 	// Fatal errors won't be shown in the help message.
@@ -42,7 +42,7 @@ type RestrictionError struct {
 // description.
 func NewRestrictionError(description string) *RestrictionError {
 	return &RestrictionError{
-		desc: locutil.NewStaticText(description),
+		desc: i18nutil.NewText(description),
 	}
 }
 
@@ -50,7 +50,7 @@ func NewRestrictionError(description string) *RestrictionError {
 // generated from the passed i18n.Config as description.
 func NewRestrictionErrorl(description i18n.Config) *RestrictionError {
 	return &RestrictionError{
-		desc: locutil.NewLocalizedText(description),
+		desc: i18nutil.NewTextl(description),
 	}
 }
 
@@ -64,7 +64,7 @@ func NewRestrictionErrorlt(description i18n.Term) *RestrictionError {
 // passed description.
 func NewFatalRestrictionError(description string) *RestrictionError {
 	return &RestrictionError{
-		desc:  locutil.NewStaticText(description),
+		desc:  i18nutil.NewText(description),
 		Fatal: true,
 	}
 }
@@ -73,7 +73,7 @@ func NewFatalRestrictionError(description string) *RestrictionError {
 // message generated from the passed i18n.Config as description.
 func NewFatalRestrictionErrorl(description i18n.Config) *RestrictionError {
 	return &RestrictionError{
-		desc:  locutil.NewLocalizedText(description),
+		desc:  i18nutil.NewTextl(description),
 		Fatal: true,
 	}
 }

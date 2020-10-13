@@ -5,11 +5,11 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 type raw struct {
-	desc locutil.Text
+	desc i18nutil.Text
 }
 
 // Raw is a plugin.ArgConfig that returns the arguments as
@@ -19,7 +19,7 @@ var Raw = new(raw)
 // the passed description as argument config.
 func RawWithDescription(description string) plugin.ArgConfig {
 	return &raw{
-		desc: locutil.NewStaticText(description),
+		desc: i18nutil.NewText(description),
 	}
 }
 
@@ -27,7 +27,7 @@ func RawWithDescription(description string) plugin.ArgConfig {
 // the passed description as argument config.
 func RawWithDescriptionl(description i18n.Config) plugin.ArgConfig {
 	return &raw{
-		desc: locutil.NewLocalizedText(description),
+		desc: i18nutil.NewTextl(description),
 	}
 }
 
@@ -35,7 +35,7 @@ func RawWithDescriptionl(description i18n.Config) plugin.ArgConfig {
 // the passed description as argument config.
 func RawWithDescriptionlt(description i18n.Term) plugin.ArgConfig {
 	return &raw{
-		desc: locutil.NewLocalizedText(description.AsConfig()),
+		desc: i18nutil.NewTextl(description.AsConfig()),
 	}
 }
 

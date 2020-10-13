@@ -11,7 +11,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/locutil"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
@@ -22,7 +22,7 @@ func TestArgumentParsingError_WithReason(t *testing.T) {
 	err2 := err1.WithReason(reason)
 
 	assert.NotEqual(t, err1, err2)
-	assert.Equal(t, locutil.NewStaticText(reason), err2.reason)
+	assert.Equal(t, i18nutil.NewText(reason), err2.reason)
 	assert.Equal(t, err1.desc, err2.desc)
 }
 
