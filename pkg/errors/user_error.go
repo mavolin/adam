@@ -17,22 +17,26 @@ type UserError struct {
 	embed *embedutil.Builder
 }
 
+// NewCustomUserError creates a new UserError using the ErrorEmbed as a
+// template.
+func NewCustomUserError() *UserError {
+	return &UserError{
+		embed: ErrorEmbed.Clone(),
+	}
+}
+
 // NewUserError creates a new UserError with the passed description.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserError(description string) *UserError {
-	return &UserError{
-		embed: ErrorEmbed.Clone().
-			WithDescription(description),
-	}
+	return NewCustomUserError().
+		WithDescription(description)
 }
 
 // NewUserErrorl creates a new UserError using the message generated from the
 // passed i18n.Config as description.
 func NewUserErrorl(description i18n.Config) *UserError {
-	return &UserError{
-		embed: ErrorEmbed.Clone().
-			WithDescriptionl(description),
-	}
+	return NewCustomUserError().
+		WithDescriptionl(description)
 }
 
 // NewUserErrorlt creates a new UserError using the message generated from the
