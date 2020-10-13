@@ -17,22 +17,25 @@ type UserInfo struct {
 	embed *embedutil.Builder
 }
 
+// NewCustomUserInfo creates a new UserInfo using the InfoEmbed as template.
+func NewCustomUserInfo() *UserInfo {
+	return &UserInfo{
+		embed: InfoEmbed.Clone(),
+	}
+}
+
 // NewUserInfo creates a new UserInfo using the passed description.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserInfo(description string) *UserInfo {
-	return &UserInfo{
-		embed: InfoEmbed.Clone().
-			WithDescription(description),
-	}
+	return NewCustomUserInfo().
+		WithDescription(description)
 }
 
 // NewUserInfol creates a new UserInfo using the message generated from the
 // passed i18n.Config.
 func NewUserInfol(description i18n.Config) *UserInfo {
-	return &UserInfo{
-		embed: InfoEmbed.Clone().
-			WithDescriptionl(description),
-	}
+	return NewCustomUserInfo().
+		WithDescriptionl(description)
 }
 
 // NewUserInfolt creates a new UserInfo using the message generated from the
