@@ -53,7 +53,7 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 			On(errorTitle.Term, "title").
 			On(channelTypeErrorGuild.Term, "guild").
 			Build(),
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	embed := ErrorEmbed.Clone().

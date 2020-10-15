@@ -249,7 +249,7 @@ func TestInternalError_Handle(t *testing.T) {
 				Name: "abc",
 			},
 		}),
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	embed := ErrorEmbed.Clone().

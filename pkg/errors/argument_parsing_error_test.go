@@ -128,7 +128,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 				},
 			},
 			Localizer: mock.NoOpLocalizer,
-			Replier:   replierFromState(s, 0),
+			Replier:   replierFromState(s, 123, 0),
 		}
 
 		m.SendEmbed(discord.Message{
@@ -165,7 +165,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 				},
 			},
 			Localizer: mock.NoOpLocalizer,
-			Replier:   replierFromState(s, 0),
+			Replier:   replierFromState(s, 123, 0),
 		}
 
 		embed := ErrorEmbed.Clone().

@@ -169,33 +169,34 @@ func removeRegisteredCommandFuncs(cmd *RegisteredCommand) {
 // wrappedReplier is a copy of replier.wrappedReplier, used to prevent import
 // cycles.
 type wrappedReplier struct {
-	s      *state.State
+	s         *state.State
+	channelID discord.ChannelID
+
 	userID discord.UserID
 	dmID   discord.ChannelID
 }
 
-func replierFromState(s *state.State, userID discord.UserID) Replier {
+func replierFromState(s *state.State, channelID discord.ChannelID, userID discord.UserID) Replier {
 	return &wrappedReplier{
-		s:      s,
-		userID: userID,
+		s:         s,
+		userID:    userID,
+		channelID: channelID,
 	}
 }
 
-func (r *wrappedReplier) SendMessageComplex(
-	channelID discord.ChannelID, data api.SendMessageData,
-) (*discord.Message, error) {
-	return r.s.SendMessageComplex(channelID, data)
+func (r *wrappedReplier) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
+	return r.s.SendMessageComplex(r.channelID, data)
 }
 
-func (r *wrappedReplier) PrivateChannelID() (discord.ChannelID, error) {
-	if r.dmID.IsValid() {
-		return r.dmID, nil
+func (r *wrappedReplier) ReplyDM(data api.SendMessageData) (*discord.Message, error) {
+	if !r.dmID.IsValid() {
+		c, err := r.s.CreatePrivateChannel(r.userID)
+		if err != nil {
+			return nil, err
+		}
+
+		r.dmID = c.ID
 	}
 
-	c, err := r.s.CreatePrivateChannel(r.userID)
-	if err != nil {
-		return 0, err
-	}
-
-	return c.ID, nil
+	return r.s.SendMessageComplex(r.dmID, data)
 }

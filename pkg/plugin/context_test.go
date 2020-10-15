@@ -64,7 +64,7 @@ func TestContext_Reply(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -104,7 +104,7 @@ func TestContext_Replyl(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -146,7 +146,7 @@ func TestContext_Replylt(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -178,7 +178,7 @@ func TestContext_ReplyEmbed(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -216,7 +216,7 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	builder := embedutil.
@@ -258,7 +258,7 @@ func TestContext_ReplyMessage(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 0),
+		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -295,7 +295,7 @@ func TestContext_ReplyDM(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 123),
+		Replier: replierFromState(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -344,7 +344,7 @@ func TestContext_ReplylDM(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		Replier: replierFromState(s, 123),
+		Replier: replierFromState(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -395,7 +395,7 @@ func TestContext_ReplyltDM(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		Replier: replierFromState(s, 123),
+		Replier: replierFromState(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -436,7 +436,7 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 123),
+		Replier: replierFromState(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -483,7 +483,7 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 123),
+		Replier: replierFromState(s, 0, 123),
 	}
 
 	builder := embedutil.
@@ -534,7 +534,7 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 				},
 			},
 		},
-		Replier: replierFromState(s, 123),
+		Replier: replierFromState(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456

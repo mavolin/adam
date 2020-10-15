@@ -61,9 +61,6 @@ type Context struct {
 	// Defaults to replier.WrapState, found in impl/replier
 	Replier Replier
 
-	// dmID is the id of the private chat with the user.
-	dmID discord.ChannelID
-
 	// Provider is an embedded interface that provides access to the Commands
 	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.
@@ -147,7 +144,7 @@ func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, erro
 		return nil, ErrInsufficientSendPermissions
 	}
 
-	msg, err := c.Replier.SendMessageComplex(c.ChannelID, data)
+	msg, err := c.Replier.ReplyMessage(data)
 	return msg, errWithStack(err)
 }
 
@@ -198,18 +195,7 @@ func (c *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, e
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
 // the invoking user.
 func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message, err error) {
-	if !c.dmID.IsValid() {
-		if c.Message.GuildID == 0 {
-			c.dmID = c.Message.ChannelID
-		} else {
-			c.dmID, err = c.Replier.PrivateChannelID()
-			if err != nil {
-				return nil, errWithStack(err)
-			}
-		}
-	}
-
-	msg, err = c.Replier.SendMessageComplex(c.dmID, data)
+	msg, err = c.Replier.ReplyDM(data)
 	return msg, errWithStack(err)
 }
 
@@ -268,12 +254,10 @@ type (
 	// the ability to delete answers after a set amount of time, after the bot
 	// responds.
 	Replier interface {
-		// SendMessageComplex sends the message in the channel with the passed
-		// ID.
-		SendMessageComplex(channelID discord.ChannelID, data api.SendMessageData) (*discord.Message, error)
-		// PrivateChannelID returns the id of the direct message channel with
-		// the invoking user.
-		PrivateChannelID() (discord.ChannelID, error)
+		// ReplyMessage sends a message in the invoking channel.
+		ReplyMessage(data api.SendMessageData) (*discord.Message, error)
+		// ReplyDM sends the passed message in a direct message to the user.
+		ReplyDM(data api.SendMessageData) (*discord.Message, error)
 	}
 
 	// DiscordDataProvider is an embeddable interface used to extend a Context

@@ -50,7 +50,7 @@ func TestWaiter_Await(t *testing.T) {
 					RoleIDs: []discord.RoleID{012},
 				},
 			},
-			Replier: replier.WrapState(s, 0),
+			Replier: replier.WrapState(s, 123, 0),
 		}
 
 		expect := errors.NewUserInfol(timeoutInfo.
