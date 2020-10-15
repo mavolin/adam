@@ -157,7 +157,7 @@ func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, erro
 
 	msg, err := c.s.SendMessageComplex(c.ChannelID, data)
 	if err != nil {
-		return nil, withStack(err)
+		return nil, errWithStack(err)
 	}
 
 	if c.GuildID == 0 {
@@ -227,7 +227,7 @@ func (c *Context) ReplyMessageDM(data api.SendMessageData) (*discord.Message, er
 
 	msg, err := c.s.SendMessageComplex(c.dmID, data)
 	if err != nil {
-		return nil, withStack(err)
+		return nil, errWithStack(err)
 	}
 
 	c.dmReplies = append(c.dmReplies, msg.ID)
@@ -246,7 +246,7 @@ func (c *Context) DeleteDMReplies() error {
 
 	err := c.s.DeleteMessages(c.dmID, c.dmReplies)
 	if err != nil {
-		return withStack(err)
+		return errWithStack(err)
 	}
 
 	c.dmReplies = nil
@@ -265,7 +265,7 @@ func (c *Context) DeleteGuildReplies() error {
 
 	err := c.s.DeleteMessages(c.ChannelID, c.guildReplies)
 	if err != nil {
-		return withStack(err)
+		return errWithStack(err)
 	}
 
 	c.guildReplies = nil
@@ -287,7 +287,9 @@ func (c *Context) DeleteAllReplies() error {
 }
 
 // DeleteInvoke deletes the invoking message.
-func (c *Context) DeleteInvoke() error { return withStack(c.s.DeleteMessage(c.ChannelID, c.ID)) }
+func (c *Context) DeleteInvoke() error {
+	return errWithStack(c.s.DeleteMessage(c.ChannelID, c.ID))
+}
 
 // DeleteInvokeInBackground deletes the invoking message in a separate
 // goroutine.
