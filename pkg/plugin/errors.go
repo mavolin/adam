@@ -4,12 +4,12 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 )
 
-// noHandlingError is an error that won't be handled.
-// This is a copy of errors.noHandlingError, to prevent import cycles
-type noHandlingError struct {
+// informationalError is an error that won't be handled.
+// This is a copy of errors.InformationalError, to prevent import cycles.
+type informationalError struct {
 	s string
 }
 
-func (e *noHandlingError) Error() string                       { return e.s }
-func (e *noHandlingError) Is(err error) bool                   { return e == err }
-func (e *noHandlingError) Handle(*state.State, *Context) error { return nil }
+func (e *informationalError) Error() string                       { return e.s }
+func (e *informationalError) Is(err error) bool                   { return e == err }
+func (e *informationalError) Handle(*state.State, *Context) error { return nil }
