@@ -12,7 +12,7 @@ import (
 )
 
 // Await awaits a response of the user until the passed timout is reached.
-// If he responds, the response is returned.
+// If they responds, the response is returned.
 //
 // If the timeout passes and time extension are enabled, the timeout will be
 // reset until the user responds, or the limit of of time extensions is
