@@ -38,6 +38,8 @@ type RestrictionError struct {
 	Fatal bool
 }
 
+var _ Interface = new(RestrictionError)
+
 // NewRestrictionError creates a new RestrictionError with the passed
 // description.
 func NewRestrictionError(description string) *RestrictionError {

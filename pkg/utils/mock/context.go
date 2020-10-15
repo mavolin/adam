@@ -23,6 +23,8 @@ type DiscordDataProvider struct {
 	SelfError  error
 }
 
+var _ plugin.DiscordDataProvider = DiscordDataProvider{}
+
 func (d DiscordDataProvider) Channel() (*discord.Channel, error) {
 	return d.ChannelReturn, d.ChannelError
 }
@@ -46,6 +48,8 @@ type PluginProvider struct {
 
 	UnavailablePluginProvidersReturn []plugin.UnavailablePluginProvider
 }
+
+var _ plugin.Provider = PluginProvider{}
 
 func (p PluginProvider) PluginRepositories() []plugin.Repository {
 	return p.PluginRepositoriesReturn
@@ -147,11 +151,17 @@ func (p PluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
 	return mod
 }
 
+func (p PluginProvider) UnavailablePluginProviders() []plugin.UnavailablePluginProvider {
+	return p.UnavailablePluginProvidersReturn
+}
+
 type ErrorHandler struct {
 	mut          sync.Mutex
 	expectErr    []error
 	expectSilent []error
 }
+
+var _ plugin.ErrorHandler = new(ErrorHandler)
 
 func NewErrorHandler() *ErrorHandler {
 	return new(ErrorHandler)

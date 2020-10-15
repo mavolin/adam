@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+
+	"github.com/mavolin/adam/internal/errorutil"
 )
 
 // ErrNaN gets returned, if a plural value is neither a number type nor a
@@ -46,12 +48,12 @@ func isOne(plural interface{}) (bool, error) {
 	case string:
 		num, err := strconv.ParseFloat(plural, 64)
 		if err != nil {
-			return false, withStack(ErrNaN)
+			return false, errorutil.WithStack(ErrNaN)
 		}
 
 		return num == 1 || num == -1, nil
 	default:
-		return false, withStack(ErrNaN)
+		return false, errorutil.WithStack(ErrNaN)
 	}
 }
 
@@ -63,14 +65,14 @@ func fillTemplate(tmpl string, placeholders map[string]interface{}) (string, err
 
 	t, err := template.New("").Parse(tmpl)
 	if err != nil {
-		return "", withStack(err)
+		return "", errorutil.WithStack(err)
 	}
 
 	var b bytes.Buffer
 
 	err = t.Execute(&b, placeholders)
 	if err != nil {
-		return "", withStack(err)
+		return "", errorutil.WithStack(err)
 	}
 
 	return b.String(), err

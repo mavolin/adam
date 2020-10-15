@@ -28,6 +28,8 @@ type InternalError struct {
 	desc i18nutil.Text
 }
 
+var _ Interface = new(InternalError)
+
 // WithStack enriches the passed error with a stack trace.
 // If the error is nil or it is another Interface, WithStack will return the
 // error as is.

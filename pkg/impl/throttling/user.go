@@ -13,6 +13,8 @@ type user struct {
 	throttler *snowflakeThrottler
 }
 
+var _ plugin.Throttler = new(user)
+
 // PerUser returns a new plugin.Throttler that works on a per-user basis.
 // It allows at maximum the passed number of invokes in the passed duration.
 func PerUser(maxInvokes uint, duration time.Duration) plugin.Throttler {

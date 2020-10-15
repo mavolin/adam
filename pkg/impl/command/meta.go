@@ -50,6 +50,8 @@ type Meta struct {
 	Throttler plugin.Throttler
 }
 
+var _ plugin.CommandMeta = Meta{}
+
 func (m Meta) GetName() string                            { return m.Name }
 func (m Meta) GetAliases() []string                       { return m.Aliases }
 func (m Meta) GetShortDescription(*i18n.Localizer) string { return m.ShortDescription }

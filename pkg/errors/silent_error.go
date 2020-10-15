@@ -20,6 +20,8 @@ type SilentError struct {
 	stack errorutil.Stack
 }
 
+var _ Interface = new(SilentError)
+
 // Silent creates a new silent error using the passed error as cause.
 // If the error is already a SilentError, it will be returned as is.
 // Furthermore, if the error is of type InternalError, the cause of the error

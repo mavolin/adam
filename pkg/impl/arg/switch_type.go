@@ -12,7 +12,7 @@ import (
 // It cannot be used as an argument type.
 //
 // Switch flags cannot be used as multi flags.
-var Switch = new(typeSwitch)
+var Switch Type = new(typeSwitch)
 
 type typeSwitch struct{}
 

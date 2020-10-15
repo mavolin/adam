@@ -19,6 +19,8 @@ type InsufficientBotPermissionsError struct {
 	MissingPermissions discord.Permissions
 }
 
+var _ Interface = new(InsufficientBotPermissionsError)
+
 // NewInsufficientBotPermissionError creates a new
 // InsufficientBotPermissionsError with the passed missing permissions.
 // If the missing permissions contain discord.PermissionAdministrator, all

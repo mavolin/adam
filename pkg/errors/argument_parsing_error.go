@@ -24,6 +24,8 @@ type ArgumentParsingError struct {
 	reason i18nutil.Text
 }
 
+var _ Interface = new(ArgumentParsingError)
+
 // NewArgumentParsingError returns a new ArgumentParsingError with the passed
 // description.
 // The description mustn't be empty for this error to be handled properly.

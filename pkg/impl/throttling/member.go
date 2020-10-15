@@ -20,6 +20,8 @@ type member struct {
 	duration   time.Duration
 }
 
+var _ plugin.Throttler = new(member)
+
 // PerMember returns a new plugin.Throttler that works on a per-member basis.
 // It allows at maximum the passed number of invokes in the passed duration.
 // Effectively, this is the same as PerUser but filtered additionally by guild.

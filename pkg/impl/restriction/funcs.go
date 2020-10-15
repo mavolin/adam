@@ -42,6 +42,8 @@ func NSFW(_ *state.State, ctx *plugin.Context) error {
 	return ErrNotNSFWChannel
 }
 
+var _ plugin.RestrictionFunc = NSFW
+
 // GuildOwner asserts that a command is executed by the guild owner.
 // It fails if the command is used in a direct message.
 func GuildOwner(_ *state.State, ctx *plugin.Context) error {
@@ -63,6 +65,8 @@ func GuildOwner(_ *state.State, ctx *plugin.Context) error {
 	return ErrNotGuildOwner
 }
 
+var _ plugin.RestrictionFunc = GuildOwner
+
 // BotOwner asserts that a command is executed by a bot owner.
 func BotOwner(_ *state.State, ctx *plugin.Context) error {
 	if ctx.IsBotOwner() {
@@ -71,6 +75,8 @@ func BotOwner(_ *state.State, ctx *plugin.Context) error {
 
 	return ErrNotBotOwner
 }
+
+var _ plugin.RestrictionFunc = BotOwner
 
 // Users creates a plugin.RestrictionFunc that defines a set of users that may
 // use a command.

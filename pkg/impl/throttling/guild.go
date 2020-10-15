@@ -14,6 +14,8 @@ type guild struct {
 	userThrottler  plugin.Throttler
 }
 
+var _ plugin.Throttler = new(guild)
+
 // PerGuild returns a new plugin.Throttler that works on a per-guild basis.
 // It allows at maximum the passed number of invokes in the passed duration.
 //

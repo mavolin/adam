@@ -40,6 +40,8 @@ type ShellwordConfig struct {
 	Flags []Flag
 }
 
+var _ plugin.ArgConfig = ShellwordConfig{}
+
 func (c ShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	parser := newShellwordParser(args, c, s, ctx)
 	return parser.parse()

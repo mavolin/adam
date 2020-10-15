@@ -23,6 +23,8 @@ type StaticCommand struct {
 	Reply interface{}
 }
 
+var _ plugin.Command = new(StaticCommand)
+
 func (c *StaticCommand) GetName() string      { return c.Meta.GetName() }
 func (c *StaticCommand) GetAliases() []string { return c.Meta.GetAliases() }
 
