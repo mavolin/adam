@@ -517,7 +517,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 			},
 			rawArgs: "'abc def",
 			expect: errors.NewArgumentParsingErrorl(groupNotClosedError.
-				WithPlaceholders(groupNotClosedErrorPlaceholder{
+				WithPlaceholders(groupNotClosedErrorPlaceholders{
 					Quote: "'",
 				})),
 		},

@@ -26,6 +26,9 @@ var (
 
 	groupNotClosedError = i18n.NewFallbackConfig(
 		"args.parser.errors.group_not_closed", "You need to close the {{.quote}}.")
+
+	unknownPrefixError = i18n.NewFallbackConfig(
+		"args.parser.errors.unknown_prefix", "I don't know any prefix with the name `{{.name}}.")
 )
 
 type (
@@ -45,7 +48,11 @@ type (
 		Position int
 	}
 
-	groupNotClosedErrorPlaceholder struct {
+	groupNotClosedErrorPlaceholders struct {
 		Quote string
+	}
+
+	unknownPrefixErrorPlaceholders struct {
+		Name string
 	}
 )
