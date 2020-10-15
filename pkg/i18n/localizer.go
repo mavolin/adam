@@ -5,6 +5,8 @@ import (
 	"reflect"
 
 	"github.com/iancoleman/strcase"
+
+	"github.com/mavolin/adam/internal/errorutil"
 )
 
 // ErrInvalidPlaceholders gets returned, if the type of Placeholders is
@@ -100,7 +102,7 @@ func (c Config) placeholdersToMap() (map[string]interface{}, error) {
 	t := v.Type()
 
 	if v.Kind() != reflect.Struct {
-		return nil, withStack(ErrInvalidPlaceholders)
+		return nil, errorutil.WithStack(ErrInvalidPlaceholders)
 	}
 
 	placeholders := make(map[string]interface{}, v.NumField())
