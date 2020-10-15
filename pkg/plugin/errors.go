@@ -22,7 +22,10 @@ type stackError struct {
 	s     errorutil.Stack
 }
 
-func withStack(err error) error {
+// errWithStack wraps the passed error in an error type containing stack
+// information.
+// If err is nil, errWithStack returns nil.
+func errWithStack(err error) error {
 	if err == nil {
 		return nil
 	}

@@ -1,4 +1,4 @@
-package response
+package reply
 
 import (
 	"context"
@@ -11,17 +11,17 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 )
 
-// Await awaits a response of the user until the passed timout is reached.
-// If he responds, the response is returned.
+// Await awaits a reply of the user until the passed timout is reached.
+// If they responds, the reply is returned.
 //
 // If the timeout passes and time extension are enabled, the timeout will be
 // reset until the user responds, or the limit of of time extensions is
 // reached, if set.
 // Otherwise, a UserInfo containing a timeout info will be returned.
 //
-// If the user cancels the response, Canceled will be returned.
+// If the user cancels the reply, Canceled will be returned.
 //
-// Besides that, a response can also be canceled through a middleware.
+// Besides that, a reply can also be canceled through a middleware.
 // If one the middlewares returns state.Filtered, errors.Abort will be
 // returned.
 func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
@@ -70,7 +70,7 @@ func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
 	case error:
 		return nil, r
 	default: // this should never happen
-		return nil, errors.NewWithStack("response: unexpected return value of result channel")
+		return nil, errors.NewWithStack("reply: unexpected return value of result channel")
 	}
 }
 

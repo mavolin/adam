@@ -26,15 +26,15 @@ type (
 		//	• api.SendMessageData
 		//	• i18n.Term
 		//	• i18n.Config
-		//	• any type implementing Response
-		//	• nil for no response
+		//	• any type implementing Reply
+		//	• nil for no reply
 		//
 		// Error Handling
 		//
 		// If Invoke returns an error it will be handed to the error handler
 		// of the bot.
 		// As a special case if both return values are non-nil, both the
-		// response and the error will be handled.
+		// reply and the error will be handled.
 		//
 		// Panic Handling
 		//
@@ -108,9 +108,9 @@ type (
 	}
 )
 
-// Response is the interface that a type can implement, to be used as a return
-// value of a Command.Invoke call.
-type Response interface {
-	// Send sends the response using the passed state.State and Context.
-	Send(s *state.State, ctx *Context) error
+// Reply is used to send a reply, if returned as first return value of a
+// Command.Invoke call.
+type Reply interface {
+	// SendReply sends the reply using the passed state.State and Context.
+	SendReply(s *state.State, ctx *Context) error
 }

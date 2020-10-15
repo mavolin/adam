@@ -18,15 +18,17 @@ func TestUserInfo_Handle(t *testing.T) {
 
 		m, s := state.NewMocker(t)
 
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
+		ctx := &plugin.Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: 123,
+					},
 				},
 			},
+			Localizer: mock.NoOpLocalizer,
+			Replier:   replierFromState(s, 123, 0),
 		}
-		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := InfoEmbed.Clone().
 			WithDescription(expectDesc).
@@ -54,15 +56,17 @@ func TestUserInfo_Handle(t *testing.T) {
 
 		m, s := state.NewMocker(t)
 
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
+		ctx := &plugin.Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: 123,
+					},
 				},
 			},
+			Localizer: mock.NoOpLocalizer,
+			Replier:   replierFromState(s, 123, 0),
 		}
-		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := InfoEmbed.Clone().
 			WithDescription(expectDesc).

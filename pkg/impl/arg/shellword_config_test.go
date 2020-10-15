@@ -406,7 +406,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, plugin.NewContext(nil))
+				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
 				if ape, ok := err.(*errors.ArgumentParsingError); ok && ape != nil {
 					desc, err := ape.Description(mock.NoOpLocalizer)
 					if err != nil {
@@ -526,7 +526,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				_, _, actual := c.config.Parse(c.rawArgs, nil, plugin.NewContext(nil))
+				_, _, actual := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
 				assert.Equal(t, c.expect, actual)
 			})
 		}

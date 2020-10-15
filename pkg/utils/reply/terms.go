@@ -1,4 +1,4 @@
-package response
+package reply
 
 import "github.com/mavolin/adam/pkg/i18n"
 

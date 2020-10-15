@@ -119,15 +119,17 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 
 		m, s := state.NewMocker(t)
 
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: channelID,
+		ctx := &plugin.Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: channelID,
+					},
 				},
 			},
+			Localizer: mock.NoOpLocalizer,
+			Replier:   replierFromState(s, 123, 0),
 		}
-		ctx.Localizer = mock.NoOpLocalizer
 
 		m.SendEmbed(discord.Message{
 			ChannelID: channelID,
@@ -154,15 +156,17 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 
 		m, s := state.NewMocker(t)
 
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
+		ctx := &plugin.Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: 123,
+					},
 				},
 			},
+			Localizer: mock.NoOpLocalizer,
+			Replier:   replierFromState(s, 123, 0),
 		}
-		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription(expectDesc).

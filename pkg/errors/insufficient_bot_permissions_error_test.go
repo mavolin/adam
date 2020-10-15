@@ -66,15 +66,17 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 	t.Run("single permission", func(t *testing.T) {
 		m, s := state.NewMocker(t)
 
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
+		ctx := &plugin.Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: 123,
+					},
 				},
 			},
+			Localizer: mock.NoOpLocalizer,
+			Replier:   replierFromState(s, 123, 0),
 		}
-		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me" +
@@ -97,15 +99,17 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 	t.Run("multiple permissions", func(t *testing.T) {
 		m, s := state.NewMocker(t)
 
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
+		ctx := &plugin.Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: 123,
+					},
 				},
 			},
+			Localizer: mock.NoOpLocalizer,
+			Replier:   replierFromState(s, 123, 0),
 		}
-		ctx.Localizer = mock.NoOpLocalizer
 
 		embed := ErrorEmbed.Clone().
 			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me the "+

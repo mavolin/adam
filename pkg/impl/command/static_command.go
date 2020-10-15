@@ -17,10 +17,10 @@ type StaticCommand struct {
 
 	bot.MiddlewareManager
 
-	// Response is the response that will be sent when called.
+	// Reply is the reply that will be sent when called.
 	// All types accepted by plugin.Command.Invoke as 1st return type are
 	// allowed.
-	Response interface{}
+	Reply interface{}
 }
 
 func (c *StaticCommand) GetName() string      { return c.Meta.GetName() }
@@ -46,5 +46,5 @@ func (c *StaticCommand) GetRestrictionFunc() plugin.RestrictionFunc {
 func (c *StaticCommand) GetThrottler() plugin.Throttler { return c.Meta.GetThrottler() }
 
 func (c *StaticCommand) Invoke(*state.State, *plugin.Context) (interface{}, error) {
-	return c.Response, nil
+	return c.Reply, nil
 }
