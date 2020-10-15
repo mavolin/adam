@@ -270,7 +270,7 @@ type (
 	Replier interface {
 		// SendMessageComplex sends the message in the channel with the passed
 		// ID.
-		SendMessageComplex(id discord.ChannelID, data api.SendMessageData) (*discord.Message, error)
+		SendMessageComplex(channelID discord.ChannelID, data api.SendMessageData) (*discord.Message, error)
 		// PrivateChannelID returns the id of the direct message channel with
 		// the invoking user.
 		PrivateChannelID() (discord.ChannelID, error)
