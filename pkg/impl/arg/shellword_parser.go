@@ -202,7 +202,7 @@ func (p *shellwordParser) nextContent() (string, error) {
 
 	if gc != 0 {
 		return "", errors.NewArgumentParsingErrorl(groupNotClosedError.
-			WithPlaceholders(groupNotClosedErrorPlaceholder{
+			WithPlaceholders(groupNotClosedErrorPlaceholders{
 				Quote: gc.Quote(),
 			}))
 	}

@@ -45,7 +45,7 @@ type (
 		Position int
 	}
 
-	groupNotClosedErrorPlaceholder struct {
+	groupNotClosedErrorPlaceholders struct {
 		Quote string
 	}
 )
