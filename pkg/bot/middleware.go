@@ -13,7 +13,9 @@ var ErrNotAMiddleware = errors.New("the passed func does not resemble a valid mi
 
 type (
 	// CommandFunc is the Invoke function of a plugin.Command.
-	CommandFunc func(s *state.State, ctx *plugin.Context) (interface{}, error)
+	// It doesn't have the reply return value, as the reply will already be
+	// sent, after the first next is called.
+	CommandFunc func(s *state.State, ctx *plugin.Context) error
 	// MiddlewareFunc is the function of a middleware.
 	MiddlewareFunc func(next CommandFunc) CommandFunc
 )
@@ -54,17 +56,17 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
 	switch f := f.(type) {
 	case func(*state.State, interface{}):
 		mf = func(next CommandFunc) CommandFunc {
-			return func(s *state.State, ctx *plugin.Context) (interface{}, error) {
+			return func(s *state.State, ctx *plugin.Context) error {
 				f(s, ctx.MessageCreateEvent)
 				return next(s, ctx)
 			}
 		}
 	case func(*state.State, interface{}) error:
 		mf = func(next CommandFunc) CommandFunc {
-			return func(s *state.State, ctx *plugin.Context) (interface{}, error) {
+			return func(s *state.State, ctx *plugin.Context) error {
 				err := f(s, ctx.MessageCreateEvent)
 				if err != nil {
-					return nil, err
+					return err
 				}
 
 				return next(s, ctx)
@@ -72,17 +74,17 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
 		}
 	case func(*state.State, *state.Base):
 		mf = func(next CommandFunc) CommandFunc {
-			return func(s *state.State, ctx *plugin.Context) (interface{}, error) {
+			return func(s *state.State, ctx *plugin.Context) error {
 				f(s, ctx.MessageCreateEvent.Base)
 				return next(s, ctx)
 			}
 		}
 	case func(*state.State, *state.Base) error:
 		mf = func(next CommandFunc) CommandFunc {
-			return func(s *state.State, ctx *plugin.Context) (interface{}, error) {
+			return func(s *state.State, ctx *plugin.Context) error {
 				err := f(s, ctx.MessageCreateEvent.Base)
 				if err != nil {
-					return nil, err
+					return err
 				}
 
 				return next(s, ctx)
@@ -90,17 +92,17 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
 		}
 	case func(*state.State, *state.MessageCreateEvent):
 		mf = func(next CommandFunc) CommandFunc {
-			return func(s *state.State, ctx *plugin.Context) (interface{}, error) {
+			return func(s *state.State, ctx *plugin.Context) error {
 				f(s, ctx.MessageCreateEvent)
 				return next(s, ctx)
 			}
 		}
 	case func(*state.State, *state.MessageCreateEvent) error:
 		mf = func(next CommandFunc) CommandFunc {
-			return func(s *state.State, ctx *plugin.Context) (interface{}, error) {
+			return func(s *state.State, ctx *plugin.Context) error {
 				err := f(s, ctx.MessageCreateEvent)
 				if err != nil {
-					return nil, err
+					return err
 				}
 
 				return next(s, ctx)
