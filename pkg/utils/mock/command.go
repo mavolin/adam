@@ -13,6 +13,8 @@ type Command struct {
 	InvokeFunc func(*state.State, *plugin.Context) (interface{}, error)
 }
 
+var _ plugin.Command = Command{}
+
 func (c Command) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
 	return c.InvokeFunc(s, ctx)
 }
@@ -85,6 +87,8 @@ type CommandMeta struct {
 	Throttler      plugin.Throttler
 }
 
+var _ plugin.CommandMeta = CommandMeta{}
+
 func (c CommandMeta) GetName() string                            { return c.Name }
 func (c CommandMeta) GetAliases() []string                       { return c.Aliases }
 func (c CommandMeta) GetShortDescription(*i18n.Localizer) string { return c.ShortDescription }
@@ -104,6 +108,8 @@ type ArgConfig struct {
 	FlagsReturn plugin.Flags
 	ErrorReturn error
 }
+
+var _ plugin.ArgConfig = ArgConfig{}
 
 func (a ArgConfig) Parse(_ string, _ *state.State, _ *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	return a.ArgsReturn, a.FlagsReturn, a.ErrorReturn

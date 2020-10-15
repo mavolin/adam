@@ -8,6 +8,7 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/internal/constant"
+	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
@@ -145,7 +146,7 @@ func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, erro
 	}
 
 	msg, err := c.Replier.ReplyMessage(data)
-	return msg, errWithStack(err)
+	return msg, errorutil.WithStack(err)
 }
 
 // ReplyDM replies with the passed message in in a direct message to the
@@ -196,7 +197,7 @@ func (c *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, e
 // the invoking user.
 func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message, err error) {
 	msg, err = c.Replier.ReplyDM(data)
-	return msg, errWithStack(err)
+	return msg, errorutil.WithStack(err)
 }
 
 // SelfPermissions checks if the bot has the passed permissions.
@@ -294,14 +295,14 @@ type (
 		// To check if any of the runtime plugin providers returned an error,
 		// call UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
-		Commands() []RegisteredCommand
+		Commands() []*RegisteredCommand
 		// Modules returns all top-level modules sorted in ascending order by
 		// name.
 		//
 		// To check if any of the runtime plugin providers returned an error,
 		// call UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
-		Modules() []RegisteredModule
+		Modules() []*RegisteredModule
 
 		// Command returns the RegisteredCommand with the passed Identifier.
 		//

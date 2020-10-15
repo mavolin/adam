@@ -14,6 +14,8 @@ type InvalidChannelTypeError struct {
 	AllowedChannelTypes plugin.ChannelTypes
 }
 
+var _ Interface = new(InvalidChannelTypeError)
+
 // NewInvalidChannelTypeError creates a new InvalidChannelTypeError with the
 // passed allowed plugin.ChannelTypes.
 func NewInvalidChannelTypeError(allowed plugin.ChannelTypes) *InvalidChannelTypeError {

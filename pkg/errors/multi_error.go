@@ -10,6 +10,8 @@ import (
 // They can be retrieved using RetrieveErrors function.
 type multiError []error
 
+var _ Interface = new(multiError)
+
 // Append creates an error consisting of the passed errors.
 // If one or both of them are multiErrors, it merges them and returns the
 // result.

@@ -13,6 +13,8 @@ type Module struct {
 	ModulesReturn  []plugin.Module
 }
 
+var _ plugin.Module = Module{}
+
 func (c Module) Commands() []plugin.Command { return c.CommandsReturn }
 func (c Module) Modules() []plugin.Module   { return c.ModulesReturn }
 
@@ -40,6 +42,8 @@ type ModuleMeta struct {
 	DefaultRestrictions   plugin.RestrictionFunc
 	DefaultThrottler      plugin.Throttler
 }
+
+var _ plugin.ModuleMeta = ModuleMeta{}
 
 func (c ModuleMeta) GetName() string                                   { return c.Name }
 func (c ModuleMeta) GetShortDescription(*i18n.Localizer) string        { return c.ShortDescription }

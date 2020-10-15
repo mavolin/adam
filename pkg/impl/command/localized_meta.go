@@ -49,6 +49,8 @@ type LocalizedMeta struct {
 	Throttler plugin.Throttler
 }
 
+var _ plugin.CommandMeta = LocalizedMeta{}
+
 func (m LocalizedMeta) GetName() string      { return m.Name }
 func (m LocalizedMeta) GetAliases() []string { return m.Aliases }
 

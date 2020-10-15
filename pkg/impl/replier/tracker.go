@@ -6,6 +6,8 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
+
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // Tracker is a plugin.Replier that tracks the messages that were sent.
@@ -43,6 +45,8 @@ type Tracker struct {
 	guildMessagesMutex sync.RWMutex
 	guildChannelID     discord.ChannelID
 }
+
+var _ plugin.Replier = new(Tracker)
 
 // NewTracker creates a new tracker using the passed state, with the passed
 // invoking user and the passed guild channel.

@@ -46,9 +46,11 @@ type LocalizedMeta struct {
 	DefaultThrottler plugin.Throttler
 }
 
-func (m *LocalizedMeta) GetName() string { return m.Name }
+var _ plugin.ModuleMeta = LocalizedMeta{}
 
-func (m *LocalizedMeta) GetShortDescription(l *i18n.Localizer) string {
+func (m LocalizedMeta) GetName() string { return m.Name }
+
+func (m LocalizedMeta) GetShortDescription(l *i18n.Localizer) string {
 	desc, err := l.Localize(m.ShortDescription)
 	if err != nil {
 		return ""
@@ -57,7 +59,7 @@ func (m *LocalizedMeta) GetShortDescription(l *i18n.Localizer) string {
 	return desc
 }
 
-func (m *LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
+func (m LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
 	desc, err := l.Localize(m.LongDescription)
 	if err != nil {
 		return ""
@@ -66,12 +68,15 @@ func (m *LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
 	return desc
 }
 
-func (m *LocalizedMeta) IsHidden() bool                              { return m.Hidden }
-func (m *LocalizedMeta) GetDefaultChannelTypes() plugin.ChannelTypes { return m.DefaultChannelTypes }
-func (m *LocalizedMeta) GetDefaultBotPermissions() *discord.Permissions {
+func (m LocalizedMeta) IsHidden() bool                              { return m.Hidden }
+func (m LocalizedMeta) GetDefaultChannelTypes() plugin.ChannelTypes { return m.DefaultChannelTypes }
+
+func (m LocalizedMeta) GetDefaultBotPermissions() *discord.Permissions {
 	return m.DefaultBotPermissions
 }
-func (m *LocalizedMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc {
+
+func (m LocalizedMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc {
 	return m.DefaultRestrictions
 }
-func (m *LocalizedMeta) GetDefaultThrottler() plugin.Throttler { return m.DefaultThrottler }
+
+func (m LocalizedMeta) GetDefaultThrottler() plugin.Throttler { return m.DefaultThrottler }

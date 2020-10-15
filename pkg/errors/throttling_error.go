@@ -16,6 +16,8 @@ type ThrottlingError struct {
 	desc i18nutil.Text
 }
 
+var _ Interface = new(ThrottlingError)
+
 // NewThrottlingError creates a new ThrottlingError with the passed
 // description.
 func NewThrottlingError(description string) *ThrottlingError {

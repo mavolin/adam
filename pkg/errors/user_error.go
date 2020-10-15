@@ -17,6 +17,8 @@ type UserError struct {
 	embed *embedutil.Builder
 }
 
+var _ Interface = new(UserError)
+
 // NewCustomUserError creates a new UserError using the ErrorEmbed as a
 // template.
 func NewCustomUserError() *UserError {

@@ -24,6 +24,8 @@ type InformationalError struct {
 	s string
 }
 
+var _ Interface = new(InformationalError)
+
 // NewInformationalError creates a new InformationalError with the passed
 // error message.
 func NewInformationalError(s string) *InformationalError {

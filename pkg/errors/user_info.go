@@ -17,6 +17,8 @@ type UserInfo struct {
 	embed *embedutil.Builder
 }
 
+var _ Interface = new(UserInfo)
+
 // NewCustomUserInfo creates a new UserInfo using the InfoEmbed as template.
 func NewCustomUserInfo() *UserInfo {
 	return &UserInfo{
