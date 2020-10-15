@@ -9,8 +9,8 @@ import (
 )
 
 type wrappedReplier struct {
-	s         *state.State
-	channelID discord.ChannelID
+	s              *state.State
+	guildChannelID discord.ChannelID
 
 	userID discord.UserID
 	dmID   discord.ChannelID
@@ -20,14 +20,14 @@ type wrappedReplier struct {
 // plugin.Replier.
 func WrapState(s *state.State, invokingUserID discord.UserID, channelID discord.ChannelID) plugin.Replier {
 	return &wrappedReplier{
-		s:         s,
-		channelID: channelID,
-		userID:    invokingUserID,
+		s:              s,
+		guildChannelID: channelID,
+		userID:         invokingUserID,
 	}
 }
 
 func (r *wrappedReplier) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	return r.s.SendMessageComplex(r.channelID, data)
+	return r.s.SendMessageComplex(r.guildChannelID, data)
 }
 
 func (r *wrappedReplier) ReplyDM(data api.SendMessageData) (*discord.Message, error) {
