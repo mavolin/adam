@@ -27,14 +27,14 @@ type (
 		//	• i18n.Term
 		//	• i18n.Config
 		//	• any type implementing Reply
-		//	• nil for no response
+		//	• nil for no reply
 		//
 		// Error Handling
 		//
 		// If Invoke returns an error it will be handed to the error handler
 		// of the bot.
 		// As a special case if both return values are non-nil, both the
-		// response and the error will be handled.
+		// reply and the error will be handled.
 		//
 		// Panic Handling
 		//

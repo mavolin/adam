@@ -1,4 +1,4 @@
-package response
+package reply
 
 import (
 	"github.com/diamondburned/arikawa/api"
@@ -13,25 +13,25 @@ import (
 
 var (
 	// DefaultWaiter is the waiter used for NewDefaultWaiter.
-	// DefaultWaiter must not be used directly to handleMessages response.
+	// DefaultWaiter must not be used directly to handleMessages reply.
 	DefaultWaiter = &Waiter{
 		cancelKeywords: []i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
 	}
 
 	// TimeExtensionReaction is the reaction used to prolong the wait for
-	// response, if a time extension is possible.
+	// reply, if a time extension is possible.
 	TimeExtensionReaction api.Emoji = "✅"
 )
 
 // Canceled is the error that gets returned, if a user signals the bot
-// should not continue waiting for a response.
+// should not continue waiting for a reply.
 var Canceled = errors.NewInformationalError("canceled")
 
 type (
-	// Waiter is used to handleMessages a response from the user.
+	// Waiter is used to handleMessages a reply from the user.
 	// It filters responses by user and channel.
 	// Additionally, Waiter provides several ways for an user to abort waiting
-	// for a response.
+	// for a reply.
 	Waiter struct {
 		state *state.State
 		ctx   *plugin.Context
@@ -58,10 +58,10 @@ type (
 	}
 )
 
-// NewWaiter creates a new response waiter using the passed state and context.
+// NewWaiter creates a new reply waiter using the passed state and context.
 // It will wait for a message from the message author in the channel the
 // command was invoked in.
-// Additionally, the ResponseMiddlewares stored in the Context will be added to
+// Additionally, the ReplyMiddlewares stored in the Context will be added to
 // the waiter.
 func NewWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 	w = &Waiter{
@@ -69,7 +69,7 @@ func NewWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 		ctx:   ctx,
 	}
 
-	w.WithMiddlewares(ctx.ResponseMiddlewares...)
+	w.WithMiddlewares(ctx.ReplyMiddlewares...)
 
 	return w
 }
@@ -81,7 +81,7 @@ func NewDefaultWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 	w.state = s
 	w.ctx = ctx
 
-	w.WithMiddlewares(ctx.ResponseMiddlewares...)
+	w.WithMiddlewares(ctx.ReplyMiddlewares...)
 
 	return
 }

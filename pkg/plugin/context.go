@@ -46,8 +46,8 @@ type Context struct {
 	// BotOwnerIDs contains the ids of the bot owners.
 	BotOwnerIDs []discord.UserID
 
-	// ResponseMiddlewares contains the middlewares that should be used when
-	// awaiting a response.
+	// ReplyMiddlewares contains the middlewares that should be used when
+	// awaiting a reply.
 	// These following types are permitted:
 	//		• func(*state.State, interface{})
 	//		• func(*state.State, interface{}) error
@@ -55,7 +55,7 @@ type Context struct {
 	//		• func(*state.State, *state.Base) error
 	//		• func(*state.State, *state.MessageCreateEvent)
 	//		• func(*state.State, *state.MessageCreateEvent) error
-	ResponseMiddlewares []interface{}
+	ReplyMiddlewares []interface{}
 
 	// Replier is the interface used to send replies to a command.
 	// Defaults to replier.WrapState, found in impl/replier
