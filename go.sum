@@ -16,10 +16,8 @@ github.com/mavolin/dismock v1.3.2 h1:WlyuRMDb9VIGVZ89V/yj82+GPYrN984uSvSebaD8T1g
 github.com/mavolin/dismock v1.3.2/go.mod h1:rf245lKIfp9MsAAr1niPy7Dc5mLDPMy5vJlpnaylaEs=
 github.com/mavolin/dismock v1.3.3 h1:jyG+YqQEqcn2boRnrmZXJyUxdOj+7Eh8Eqd0BF8xIjQ=
 github.com/mavolin/dismock v1.3.3/go.mod h1:rf245lKIfp9MsAAr1niPy7Dc5mLDPMy5vJlpnaylaEs=
-github.com/mavolin/disstate v2.0.2+incompatible h1:oUtPnQVc59ot3A37F6D0qt7/ETmIznqcz4bqPtRNymc=
-github.com/mavolin/disstate v2.0.2+incompatible/go.mod h1:rL5m7CNxDxJfPB7agT3XyHprVzhU9i0jjkFias2MGyc=
-github.com/mavolin/disstate/v2 v2.0.1 h1:42m33Bb64XmOFkdEbqpy999NnXylX5otAyd2qK1sX10=
-github.com/mavolin/disstate/v2 v2.0.1/go.mod h1:oiiQrzasHHuOr1A3wiXIcxykTjXws17IhFmYbNjzNO0=
+github.com/mavolin/disstate/v2 v2.0.2 h1:qX724LSMHq42hXsZ2Th/oTnX3iB3pBIdusdWuYY/3XQ=
+github.com/mavolin/disstate/v2 v2.0.2/go.mod h1:oiiQrzasHHuOr1A3wiXIcxykTjXws17IhFmYbNjzNO0=
 github.com/mavolin/logstract v1.1.0 h1:UDZHEWhjhI7rv01he8WstJcI1GhqeWD60sKpvMfayBk=
 github.com/mavolin/logstract v1.1.0/go.mod h1:P3O0ltVNjL/cIChVEJ3w+V07HS4XEF+tT/lUytpuHjQ=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
