@@ -18,7 +18,7 @@ type wrappedReplier struct {
 
 // WrapState wraps the passed state and id of the invoking user into a
 // plugin.Replier.
-func WrapState(s *state.State, channelID discord.ChannelID, invokingUserID discord.UserID) plugin.Replier {
+func WrapState(s *state.State, invokingUserID discord.UserID, channelID discord.ChannelID) plugin.Replier {
 	return &wrappedReplier{
 		s:         s,
 		channelID: channelID,
