@@ -19,14 +19,6 @@ var ErrInsufficientSendPermissions = &noHandlingError{
 	s: "insufficient permissions to send message",
 }
 
-// NewContext creates a new Context using the passed state.State.
-// All other fields must be set manually.
-func NewContext(s *state.State) *Context {
-	return &Context{
-		s: s,
-	}
-}
-
 // Context contains context information about a command.
 type Context struct {
 	// MessageCreateEvent contains the event data about the invoking message.
@@ -44,10 +36,6 @@ type Context struct {
 
 	// InvokedCommand is the RegisteredCommand that is being invoked.
 	InvokedCommand *RegisteredCommand
-
-	// DiscordDataProvider is an embedded interface that provides additional
-	// data fetched from Discord's API.
-	DiscordDataProvider
 
 	// Prefix is the prefix of the bot in the guild.
 	// If the guild has prefixes disabled, Prefix will be empty.
@@ -69,6 +57,13 @@ type Context struct {
 	//		• func(*state.State, *state.MessageCreateEvent) error
 	ResponseMiddlewares []interface{}
 
+	// Replier is the interface used to send replies to a command.
+	// Defaults to replier.WrapState, found in impl/replier
+	Replier Replier
+
+	// dmID is the id of the private chat with the user.
+	dmID discord.ChannelID
+
 	// Provider is an embedded interface that provides access to the Commands
 	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.
@@ -78,12 +73,9 @@ type Context struct {
 	// capabilities to the command.
 	ErrorHandler
 
-	s *state.State
-
-	dmID discord.ChannelID
-
-	guildReplies []discord.MessageID
-	dmReplies    []discord.MessageID
+	// DiscordDataProvider is an embedded interface that provides additional
+	// data fetched from Discord's API.
+	DiscordDataProvider
 }
 
 // IsBotOwner checks if the invoking user is a bot owner.
@@ -155,21 +147,11 @@ func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, erro
 		return nil, ErrInsufficientSendPermissions
 	}
 
-	msg, err := c.s.SendMessageComplex(c.ChannelID, data)
-	if err != nil {
-		return nil, errWithStack(err)
-	}
-
-	if c.GuildID == 0 {
-		c.dmReplies = append(c.dmReplies, msg.ID)
-	} else {
-		c.guildReplies = append(c.guildReplies, msg.ID)
-	}
-
-	return msg, nil
+	msg, err := c.Replier.SendMessageComplex(c.ChannelID, data)
+	return msg, errWithStack(err)
 }
 
-// ReplyDM replies with the passed message in tin a direct message to the
+// ReplyDM replies with the passed message in in a direct message to the
 // invoking user.
 func (c *Context) ReplyDM(content string) (*discord.Message, error) {
 	return c.ReplyMessageDM(api.SendMessageData{
@@ -177,9 +159,9 @@ func (c *Context) ReplyDM(content string) (*discord.Message, error) {
 	})
 }
 
-// ReplyDMl replies with the message translated from the passed
-// i18n.Config in a direct message to the invoking user.
-func (c *Context) ReplyDMl(cfg i18n.Config) (*discord.Message, error) {
+// ReplylDM replies with the message translated from the passed i18n.Config in
+// a direct message to the invoking user.
+func (c *Context) ReplylDM(cfg i18n.Config) (*discord.Message, error) {
 	s, err := c.Localizer.Localize(cfg)
 	if err != nil {
 		return nil, err
@@ -188,10 +170,10 @@ func (c *Context) ReplyDMl(cfg i18n.Config) (*discord.Message, error) {
 	return c.ReplyDM(s)
 }
 
-// Replylt replies with the message translated from the passed term in a direct
+// Replylt replies with the message generated from the passed term in a direct
 // message to the invoking user.
-func (c *Context) ReplyDMlt(term i18n.Term) (*discord.Message, error) {
-	return c.ReplyDMl(term.AsConfig())
+func (c *Context) ReplyltDM(term i18n.Term) (*discord.Message, error) {
+	return c.ReplylDM(term.AsConfig())
 }
 
 // ReplyEmbedDM replies with the passed discord.Embed in a direct message
@@ -215,92 +197,20 @@ func (c *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, e
 
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
 // the invoking user.
-func (c *Context) ReplyMessageDM(data api.SendMessageData) (*discord.Message, error) {
+func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message, err error) {
 	if !c.dmID.IsValid() {
-		ch, err := c.s.CreatePrivateChannel(c.Author.ID)
-		if err != nil {
-			return nil, err
+		if c.Message.GuildID == 0 {
+			c.dmID = c.Message.ChannelID
+		} else {
+			c.dmID, err = c.Replier.PrivateChannelID()
+			if err != nil {
+				return nil, errWithStack(err)
+			}
 		}
-
-		c.dmID = ch.ID
 	}
 
-	msg, err := c.s.SendMessageComplex(c.dmID, data)
-	if err != nil {
-		return nil, errWithStack(err)
-	}
-
-	c.dmReplies = append(c.dmReplies, msg.ID)
-
-	return msg, nil
-}
-
-// DeleteDMReplies deletes all replies sent to the invoking user in a private
-// channel during the execution of the command.
-//
-// Note that only those messages sent via the Context will be deleted.
-func (c *Context) DeleteDMReplies() error {
-	if len(c.dmReplies) == 0 {
-		return nil
-	}
-
-	err := c.s.DeleteMessages(c.dmID, c.dmReplies)
-	if err != nil {
-		return errWithStack(err)
-	}
-
-	c.dmReplies = nil
-
-	return nil
-}
-
-// DeleteGuildReplies deletes all replies sent to the invoking user in a guild.
-// during the execution of the command.
-//
-// Note that only those messages sent via the Context will be deleted.
-func (c *Context) DeleteGuildReplies() error {
-	if len(c.guildReplies) == 0 {
-		return nil
-	}
-
-	err := c.s.DeleteMessages(c.ChannelID, c.guildReplies)
-	if err != nil {
-		return errWithStack(err)
-	}
-
-	c.guildReplies = nil
-
-	return nil
-}
-
-// DeleteAllReplies deletes all replies sent to the invoking user, during the
-// execution of the command.
-//
-// Note that only those messages sent via the Context will be deleted.
-func (c *Context) DeleteAllReplies() error {
-	err := c.DeleteGuildReplies()
-	if err != nil {
-		return err
-	}
-
-	return c.DeleteDMReplies()
-}
-
-// DeleteInvoke deletes the invoking message.
-func (c *Context) DeleteInvoke() error {
-	return errWithStack(c.s.DeleteMessage(c.ChannelID, c.ID))
-}
-
-// DeleteInvokeInBackground deletes the invoking message in a separate
-// goroutine.
-// If it encounters an error, it will pass it to Context.HandleErrorSilent.
-func (c *Context) DeleteInvokeInBackground() {
-	go func() {
-		err := c.DeleteInvoke()
-		if err != nil {
-			c.HandleErrorSilent(err)
-		}
-	}()
+	msg, err = c.Replier.SendMessageComplex(c.dmID, data)
+	return msg, errWithStack(err)
 }
 
 // SelfPermissions checks if the bot has the passed permissions.
@@ -329,7 +239,7 @@ func (c *Context) SelfPermissions() (discord.Permissions, error) {
 	return discord.CalcOverwrites(*g, *ch, *s), nil
 }
 
-// UserPermissions returns the permissions of the invoking user in this
+// UserPermissions returns the permissions of the invoking user in the
 // channel.
 // If this command is executed in a direct message, constant.DMPermissions will
 // be returned instead.
@@ -352,6 +262,20 @@ func (c *Context) UserPermissions() (discord.Permissions, error) {
 }
 
 type (
+	// Replier is the interface used to send replies to a command.
+	//
+	// This allows the user to define special behavior for commands, such as
+	// the ability to delete answers after a set amount of time, after the bot
+	// responds.
+	Replier interface {
+		// SendMessageComplex sends the message in the channel with the passed
+		// ID.
+		SendMessageComplex(id discord.ChannelID, data api.SendMessageData) (*discord.Message, error)
+		// PrivateChannelID returns the id of the direct message channel with
+		// the invoking user.
+		PrivateChannelID() (discord.ChannelID, error)
+	}
+
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
 	DiscordDataProvider interface {

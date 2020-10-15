@@ -64,7 +64,7 @@ func TestContext_Reply(t *testing.T) {
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 0),
 	}
 
 	expect := &discord.Message{
@@ -104,7 +104,7 @@ func TestContext_Replyl(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		s: s,
+		Replier: replierFromState(s, 0),
 	}
 
 	expect := &discord.Message{
@@ -146,7 +146,7 @@ func TestContext_Replylt(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		s: s,
+		Replier: replierFromState(s, 0),
 	}
 
 	expect := &discord.Message{
@@ -178,7 +178,7 @@ func TestContext_ReplyEmbed(t *testing.T) {
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 0),
 	}
 
 	expect := &discord.Message{
@@ -216,7 +216,7 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 0),
 	}
 
 	builder := embedutil.
@@ -258,7 +258,7 @@ func TestContext_ReplyMessage(t *testing.T) {
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 0),
 	}
 
 	expect := &discord.Message{
@@ -288,13 +288,14 @@ func TestContext_ReplyDM(t *testing.T) {
 		MessageCreateEvent: &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
+					GuildID: 1,
 					Author: discord.User{
 						ID: 123,
 					},
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -321,7 +322,7 @@ func TestContext_ReplyDM(t *testing.T) {
 	m.Eval()
 }
 
-func TestContext_ReplyDMl(t *testing.T) {
+func TestContext_ReplylDM(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
@@ -333,6 +334,7 @@ func TestContext_ReplyDMl(t *testing.T) {
 		MessageCreateEvent: &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
+					GuildID: 1,
 					Author: discord.User{
 						ID: 123,
 					},
@@ -342,7 +344,7 @@ func TestContext_ReplyDMl(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		s: s,
+		Replier: replierFromState(s, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -362,7 +364,7 @@ func TestContext_ReplyDMl(t *testing.T) {
 	})
 	m.SendText(*expect)
 
-	actual, err := ctx.ReplyDMl(i18n.Config{
+	actual, err := ctx.ReplylDM(i18n.Config{
 		Term: term,
 	})
 	require.NoError(t, err)
@@ -371,7 +373,7 @@ func TestContext_ReplyDMl(t *testing.T) {
 	m.Eval()
 }
 
-func TestContext_ReplyDMlt(t *testing.T) {
+func TestContext_ReplyltDM(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	var (
@@ -383,6 +385,7 @@ func TestContext_ReplyDMlt(t *testing.T) {
 		MessageCreateEvent: &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
+					GuildID: 1,
 					Author: discord.User{
 						ID: 123,
 					},
@@ -392,7 +395,7 @@ func TestContext_ReplyDMlt(t *testing.T) {
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
-		s: s,
+		Replier: replierFromState(s, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -412,7 +415,7 @@ func TestContext_ReplyDMlt(t *testing.T) {
 	})
 	m.SendText(*expect)
 
-	actual, err := ctx.ReplyDMlt(term)
+	actual, err := ctx.ReplyltDM(term)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 
@@ -426,13 +429,14 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 		MessageCreateEvent: &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
+					GuildID: 1,
 					Author: discord.User{
 						ID: 123,
 					},
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -472,13 +476,14 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 		MessageCreateEvent: &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
+					GuildID: 1,
 					Author: discord.User{
 						ID: 123,
 					},
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 123),
 	}
 
 	builder := embedutil.
@@ -522,13 +527,14 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 		MessageCreateEvent: &state.MessageCreateEvent{
 			MessageCreateEvent: &gateway.MessageCreateEvent{
 				Message: discord.Message{
+					GuildID: 1,
 					Author: discord.User{
 						ID: 123,
 					},
 				},
 			},
 		},
-		s: s,
+		Replier: replierFromState(s, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -553,89 +559,6 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
-}
-
-func TestContext_DeleteDMReplies(t *testing.T) {
-	t.Run("no replies", func(t *testing.T) {
-		ctx := &Context{
-			dmReplies: nil,
-		}
-
-		err := ctx.DeleteDMReplies()
-		assert.Nil(t, err)
-	})
-
-	t.Run("success", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-
-		ctx := &Context{
-			s:         s,
-			dmID:      123,
-			dmReplies: []discord.MessageID{456, 789},
-		}
-
-		m.DeleteMessages(ctx.dmID, ctx.dmReplies)
-
-		err := ctx.DeleteDMReplies()
-		assert.NoError(t, err)
-
-		m.Eval()
-	})
-}
-
-func TestContext_DeleteGuildReplies(t *testing.T) {
-	t.Run("no replies", func(t *testing.T) {
-		ctx := &Context{
-			guildReplies: nil,
-		}
-
-		err := ctx.DeleteGuildReplies()
-		assert.Nil(t, err)
-	})
-
-	t.Run("success", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-
-		ctx := &Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						ChannelID: 123,
-					},
-				},
-			},
-			s:            s,
-			guildReplies: []discord.MessageID{456, 789},
-		}
-
-		m.DeleteMessages(ctx.ChannelID, ctx.guildReplies)
-
-		err := ctx.DeleteGuildReplies()
-		assert.NoError(t, err)
-
-		m.Eval()
-	})
-}
-
-func TestContext_DeleteInvoke(t *testing.T) {
-	m, s := state.NewMocker(t)
-
-	ctx := NewContext(s)
-	ctx.MessageCreateEvent = &state.MessageCreateEvent{
-		MessageCreateEvent: &gateway.MessageCreateEvent{
-			Message: discord.Message{
-				ID:        123,
-				ChannelID: 456,
-			},
-		},
-	}
-
-	m.DeleteMessage(ctx.ChannelID, ctx.ID)
-
-	err := ctx.DeleteInvoke()
-	assert.NoError(t, err)
 
 	m.Eval()
 }

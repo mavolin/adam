@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/impl/replier"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -20,34 +21,36 @@ func TestWaiter_Await(t *testing.T) {
 	t.Run("timeout", func(t *testing.T) {
 		m, s := state.NewMocker(t)
 
-		ctx := plugin.NewContext(s)
-		ctx.MessageCreateEvent = &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-					GuildID:   456,
-					Author: discord.User{
-						ID: 789,
+		ctx := &plugin.Context{
+			MessageCreateEvent: &state.MessageCreateEvent{
+				MessageCreateEvent: &gateway.MessageCreateEvent{
+					Message: discord.Message{
+						ChannelID: 123,
+						GuildID:   456,
+						Author: discord.User{
+							ID: 789,
+						},
 					},
 				},
 			},
-		}
-		ctx.Localizer = mock.NoOpLocalizer
-		ctx.DiscordDataProvider = mock.DiscordDataProvider{
-			ChannelReturn: &discord.Channel{},
-			ChannelError:  nil,
-			GuildReturn: &discord.Guild{
-				Roles: []discord.Role{
-					{
-						ID:          012,
-						Permissions: discord.PermissionSendMessages,
+			Localizer: mock.NoOpLocalizer,
+			DiscordDataProvider: mock.DiscordDataProvider{
+				ChannelReturn: &discord.Channel{},
+				ChannelError:  nil,
+				GuildReturn: &discord.Guild{
+					Roles: []discord.Role{
+						{
+							ID:          012,
+							Permissions: discord.PermissionSendMessages,
+						},
 					},
 				},
+				GuildError: nil,
+				SelfReturn: &discord.Member{
+					RoleIDs: []discord.RoleID{012},
+				},
 			},
-			GuildError: nil,
-			SelfReturn: &discord.Member{
-				RoleIDs: []discord.RoleID{012},
-			},
+			Replier: replier.WrapState(s, 0),
 		}
 
 		expect := errors.NewUserInfol(timeoutInfo.

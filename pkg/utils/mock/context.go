@@ -6,32 +6,9 @@ import (
 	"sync"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )
-
-// AttachState is a utility function that attaches a state.State to a
-// plugin.Context.
-// Responses won't be copied.
-func AttachState(s *state.State, ctx *plugin.Context) *plugin.Context {
-	cp := plugin.NewContext(s)
-
-	cp.MessageCreateEvent = ctx.MessageCreateEvent
-	cp.Localizer = ctx.Localizer
-	cp.Args = ctx.Args
-	cp.Flags = ctx.Flags
-	cp.InvokedCommand = ctx.InvokedCommand
-	cp.DiscordDataProvider = ctx.DiscordDataProvider
-	cp.Prefix = ctx.Prefix
-	cp.Location = ctx.Location
-	cp.BotOwnerIDs = ctx.BotOwnerIDs
-	cp.ResponseMiddlewares = ctx.ResponseMiddlewares
-	cp.Provider = ctx.Provider
-	cp.ErrorHandler = ctx.ErrorHandler
-
-	return cp
-}
 
 // DiscordDataProvider is the mock implementation of
 // plugin.DiscordDataProvider.

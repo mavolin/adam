@@ -233,22 +233,24 @@ func TestInternalError_Handle(t *testing.T) {
 
 	m, s := state.NewMocker(t)
 
-	ctx := plugin.NewContext(s)
-	ctx.MessageCreateEvent = &state.MessageCreateEvent{
-		MessageCreateEvent: &gateway.MessageCreateEvent{
-			Message: discord.Message{
-				ChannelID: 123,
+	ctx := &plugin.Context{
+		MessageCreateEvent: &state.MessageCreateEvent{
+			MessageCreateEvent: &gateway.MessageCreateEvent{
+				Message: discord.Message{
+					ChannelID: 123,
+				},
 			},
 		},
+		Localizer: mock.NewLocalizer(t).
+			On(internalErrorTitle.Term, "abc").
+			Build(),
+		InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+			CommandMeta: mock.CommandMeta{
+				Name: "abc",
+			},
+		}),
+		Replier: replierFromState(s, 0),
 	}
-	ctx.Localizer = mock.NewLocalizer(t).
-		On(internalErrorTitle.Term, "abc").
-		Build()
-	ctx.InvokedCommand = mock.GenerateRegisteredCommand("built_in", mock.Command{
-		CommandMeta: mock.CommandMeta{
-			Name: "abc",
-		},
-	})
 
 	embed := ErrorEmbed.Clone().
 		WithSimpleTitlelt(internalErrorTitle.Term).

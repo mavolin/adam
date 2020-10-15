@@ -521,11 +521,12 @@ func Test_allError_Wrap(t *testing.T) {
 			entryPrefix + "mno\n" +
 			entryPrefix + "mno")
 
-		ctx := plugin.NewContext(nil)
-		ctx.Localizer = mock.NewLocalizer(t).
-			On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
-			On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
-			Build()
+		ctx := &plugin.Context{
+			Localizer: mock.NewLocalizer(t).
+				On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+				On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
+				Build(),
+		}
 
 		err := All(fatalErrorFunc, fatalErrorFunc)(nil, ctx)
 
@@ -542,11 +543,12 @@ func Test_allError_Wrap(t *testing.T) {
 			entryPrefix + "abc\n" +
 			entryPrefix + "def")
 
-		ctx := plugin.NewContext(nil)
-		ctx.Localizer = mock.NewLocalizer(t).
-			On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
-			On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
-			Build()
+		ctx := &plugin.Context{
+			Localizer: mock.NewLocalizer(t).
+				On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+				On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
+				Build(),
+		}
 
 		err := All(errorFunc1, errorFunc2)(nil, ctx)
 
@@ -771,11 +773,12 @@ func Test_anyError_Wrap(t *testing.T) {
 			entryPrefix + "mno\n" +
 			entryPrefix + "mno")
 
-		ctx := plugin.NewContext(nil)
-		ctx.Localizer = mock.NewLocalizer(t).
-			On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
-			On(allMessageInline.Term, allMessageInline.Fallback.Other).
-			Build()
+		ctx := &plugin.Context{
+			Localizer: mock.NewLocalizer(t).
+				On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
+				On(allMessageInline.Term, allMessageInline.Fallback.Other).
+				Build(),
+		}
 
 		err := Any(fatalErrorFunc, fatalErrorFunc)(nil, ctx)
 
@@ -793,11 +796,12 @@ func Test_anyError_Wrap(t *testing.T) {
 			entryPrefix + "abc\n" +
 			entryPrefix + "def")
 
-		ctx := plugin.NewContext(nil)
-		ctx.Localizer = mock.NewLocalizer(t).
-			On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
-			On(allMessageInline.Term, allMessageInline.Fallback.Other).
-			Build()
+		ctx := &plugin.Context{
+			Localizer: mock.NewLocalizer(t).
+				On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
+				On(allMessageInline.Term, allMessageInline.Fallback.Other).
+				Build(),
+		}
 
 		err := Any(errorFunc1, errorFunc2)(nil, ctx)
 
