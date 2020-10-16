@@ -26,7 +26,7 @@ func (s typeSwitch) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (s typeSwitch) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (s typeSwitch) Parse(*state.State, *Context) (interface{}, error) {
 	return nil, errors.NewWithStack("arg: called Switch.Parse")
 }
 
