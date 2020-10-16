@@ -18,7 +18,7 @@ func TestOptions_Parse(t *testing.T) {
 			{
 				Prefix: "1",
 				Config: CommaConfig{
-					RequiredArgs: []RequiredArg{
+					RequiredArgs: []RequiredArgument{
 						{Type: mockTypeString},
 					},
 				},
@@ -90,7 +90,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 		{
 			Prefix: "1",
 			Config: CommaConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("1.r1.name"),
 						Type: mockType{
@@ -108,7 +108,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 						Description: i18nutil.NewText("1.r2.desc"),
 					},
 				},
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("1.o1.name"),
 						Type: mockType{
@@ -152,7 +152,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 		{
 			Prefix: "2",
 			Config: CommaConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("2.r1.name"),
 						Type: mockType{
@@ -170,7 +170,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 						Description: i18nutil.NewText("2.r2.desc"),
 					},
 				},
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("2.o1.name"),
 						Type: mockType{

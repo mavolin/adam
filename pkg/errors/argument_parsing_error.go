@@ -8,20 +8,10 @@ import (
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
-// ArgumentParsingError is the error used if the arguments or flags a user
-// supplied are invalid.
-// It consists of two separate parts:
-//
-// The description is mandatory, and contains information about which argument,
-// flag is affected, or similar information, such as signaling an error with
-// the argument prefix.
-//
-// The reason is optional and is usually filled during parsing.
-// It contains information about why this error occurred, and what can be done
-// to fix it.
+// ArgumentParsingError is the error used if an argument or flag a user
+// supplied is invalid.
 type ArgumentParsingError struct {
-	desc   i18nutil.Text
-	reason i18nutil.Text
+	desc i18nutil.Text
 }
 
 var _ Interface = new(ArgumentParsingError)
@@ -49,39 +39,10 @@ func NewArgumentParsingErrorlt(description i18n.Term) *ArgumentParsingError {
 	return NewArgumentParsingErrorl(description.AsConfig())
 }
 
-// WithReason creates a copy of the error and adds the passed reason to it.
-func (e ArgumentParsingError) WithReason(reason string) *ArgumentParsingError {
-	e.reason = i18nutil.NewText(reason)
-	return &e
-}
-
-// WithReasonl creates a copy of the error and adds the passed reason to it.
-func (e ArgumentParsingError) WithReasonl(reason i18n.Config) *ArgumentParsingError {
-	e.reason = i18nutil.NewTextl(reason)
-	return &e
-}
-
-// WithReasonlt creates a copy of the error and adds the passed reason to it.
-func (e ArgumentParsingError) WithReasonlt(reason i18n.Term) *ArgumentParsingError {
-	return e.WithReasonl(reason.AsConfig())
-}
-
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *ArgumentParsingError) Description(l *i18n.Localizer) (string, error) {
 	return e.desc.Get(l)
-}
-
-// Reason returns the reason of the error and to localizes it, if
-// possible.
-// If there is no description, an empty string will be returned.
-func (e *ArgumentParsingError) Reason(l *i18n.Localizer) string {
-	reason, err := e.reason.Get(l)
-	if err != nil { // we have no reason
-		return ""
-	}
-
-	return reason
 }
 
 func (e *ArgumentParsingError) Error() string { return "argument parsing error" }
@@ -97,13 +58,6 @@ func (e *ArgumentParsingError) Handle(_ *state.State, ctx *plugin.Context) error
 
 	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
-
-	if reasonVal := e.Reason(ctx.Localizer); reasonVal != "" {
-		// we can ignore the error, as we have a fallback
-		reasonName, _ := ctx.Localize(argumentParsingReasonFieldName)
-
-		embed.WithField(reasonName, reasonVal)
-	}
 
 	_, err = ctx.ReplyEmbedBuilder(embed)
 	return err

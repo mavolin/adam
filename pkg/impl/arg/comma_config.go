@@ -31,9 +31,9 @@ import (
 // a single one.
 type CommaConfig struct {
 	// RequiredArgs contains the required arguments.
-	RequiredArgs []RequiredArg
+	RequiredArgs []RequiredArgument
 	// OptionalArgs contains the optional arguments.
-	OptionalArgs []OptionalArg
+	OptionalArgs []OptionalArgument
 	// Variadic specifies whether the last possibly specifiable argument is
 	// variadic.
 	Variadic bool

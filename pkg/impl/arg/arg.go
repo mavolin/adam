@@ -13,13 +13,13 @@ import (
 type Kind string
 
 const (
-	KindArg  = "arg"
-	KindFlag = "flag"
+	KindArgument = "argument"
+	KindFlag     = "flag"
 )
 
 type (
-	// RequiredArg is an unlocalized required argument.
-	RequiredArg struct {
+	// RequiredArgument is an unlocalized required argument.
+	RequiredArgument struct {
 		// Name is the name of the argument.
 		Name i18nutil.Text
 		// Type is the type of the argument.
@@ -27,8 +27,8 @@ type (
 		// Description is an optional short description of the argument.
 		Description i18nutil.Text
 	}
-	// OptionalArg is an unlocalized optional argument.
-	OptionalArg struct {
+	// OptionalArgument is an unlocalized optional argument.
+	OptionalArgument struct {
 		// Name is the name of the argument.
 		Name i18nutil.Text
 		// Type is the type of the argument.
@@ -64,6 +64,7 @@ type (
 	// Type is the abstraction of a type.
 	Type interface {
 		// Name returns the name of the type.
+		// The name should be a noun.
 		Name(l *i18n.Localizer) string
 		// Description is an optional short description of the type.
 		Description(l *i18n.Localizer) string
@@ -72,7 +73,7 @@ type (
 		// The first return value must always be of the same type.
 		Parse(s *state.State, ctx *Context) (interface{}, error)
 		// Default returns the default value for the type.
-		// See Flag.Default or OptionalArg.Default for more info.
+		// See Flag.Default or OptionalArgument.Default for more info.
 		//
 		// It must return a value that is of the type returned by Parse.
 		Default() interface{}

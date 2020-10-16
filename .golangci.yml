@@ -57,6 +57,9 @@ issues:
       linters:
         - golint
         - unparam
+    # handling is pretty similar
+    - path: ^pkg/errors/.+_error.go$
+      linters: dupl
     # not a duplicate, but two types with delegate methods
     - path: ^pkg/errors/user_(info|error).go$
       linters: dupl
