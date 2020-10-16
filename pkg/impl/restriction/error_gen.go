@@ -102,7 +102,7 @@ func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 		return errors.NewRestrictionErrorl(
 			blockedChannelErrorSingle.
 				WithPlaceholders(blockedChannelErrorSinglePlaceholders{
-					Channel: "<#" + allowed[0].String() + ">",
+					Channel: allowed[0].Mention(),
 				}))
 	}
 
@@ -112,13 +112,13 @@ func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 	indent, _ := genIndent(1)
 
 	for _, c := range allowed {
-		embeddableDesc += "\n" + indent + entryPrefix + "<#" + c.String() + ">"
+		embeddableDesc += "\n" + indent + entryPrefix + c.Mention()
 	}
 
 	defaultDesc := desc + "\n"
 
 	for _, c := range allowed {
-		defaultDesc += "\n" + entryPrefix + "<#" + c.String() + ">"
+		defaultDesc += "\n" + entryPrefix + c.Mention()
 	}
 
 	return &EmbeddableError{

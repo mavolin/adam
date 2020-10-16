@@ -226,7 +226,7 @@ func (w *Waiter) sendTimeExtensionMessage() (*discord.Message, error) {
 		WithSimpleTitlel(timeExtensionTitle).
 		WithDescriptionl(timeExtensionDescription.
 			WithPlaceholders(timeExtensionDescriptionPlaceholders{
-				ResponseUserMention:   "<@" + w.ctx.Author.ID.String() + ">",
+				ResponseUserMention:   w.ctx.Author.Mention(),
 				TimeExtensionReaction: TimeExtensionReaction,
 			})).
 		Embed(w.ctx.Localizer)
