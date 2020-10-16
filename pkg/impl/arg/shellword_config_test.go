@@ -141,7 +141,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "required args",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -158,7 +158,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "optional args",
 			config: ShellwordConfig{
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -175,7 +175,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "optional args default",
 			config: ShellwordConfig{
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -193,7 +193,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "optional arg variadic default",
 			config: ShellwordConfig{
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name:    i18nutil.NewText("arg1"),
 						Type:    mockTypeInt,
@@ -213,7 +213,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "type default",
 			config: ShellwordConfig{
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
@@ -226,7 +226,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "single variadic required arg",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -240,7 +240,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "multiple variadic required args",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -254,7 +254,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "single variadic optional arg",
 			config: ShellwordConfig{
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -268,7 +268,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "multiple variadic optional args",
 			config: ShellwordConfig{
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -282,7 +282,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "variadic optional arg default",
 			config: ShellwordConfig{
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name:    i18nutil.NewText("arg1"),
 						Type:    mockTypeInt,
@@ -297,7 +297,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "flags and args",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -307,7 +307,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 						Type: mockTypeString,
 					},
 				},
-				OptionalArgs: []OptionalArg{
+				OptionalArgs: []OptionalArgument{
 					{
 						Name: i18nutil.NewText("arg3"),
 						Type: mockTypeInt,
@@ -339,7 +339,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "single quotes",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -352,7 +352,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "double quotes",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -365,7 +365,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "single backtick",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -378,7 +378,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "double backtick",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -391,7 +391,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "triple backtick",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -443,7 +443,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "not enough args",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -456,7 +456,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "too many args",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -508,7 +508,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		{
 			name: "group not closed",
 			config: ShellwordConfig{
-				RequiredArgs: []RequiredArg{
+				RequiredArgs: []RequiredArgument{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -535,7 +535,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 
 func TestShellwordConfig_Info(t *testing.T) {
 	cfg := ShellwordConfig{
-		RequiredArgs: []RequiredArg{
+		RequiredArgs: []RequiredArgument{
 			{
 				Name: i18nutil.NewText("r1.name"),
 				Type: mockType{
@@ -553,7 +553,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 				Description: i18nutil.NewText("r2.desc"),
 			},
 		},
-		OptionalArgs: []OptionalArg{
+		OptionalArgs: []OptionalArgument{
 			{
 				Name: i18nutil.NewText("o1.name"),
 				Type: mockType{
