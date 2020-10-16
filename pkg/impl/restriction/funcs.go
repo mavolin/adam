@@ -4,9 +4,9 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
 var (
@@ -443,7 +443,7 @@ func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 		}
 
 		if ctx.GuildID == 0 {
-			if constant.DMPermissions.Has(required) {
+			if permutil.DMPermissions.Has(required) {
 				return nil
 			}
 
@@ -477,7 +477,7 @@ func UserPermissions(perms discord.Permissions) plugin.RestrictionFunc {
 		}
 
 		if ctx.GuildID == 0 {
-			if constant.DMPermissions.Has(perms) {
+			if permutil.DMPermissions.Has(perms) {
 				return nil
 			}
 

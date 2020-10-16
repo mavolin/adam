@@ -7,10 +7,10 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
 // ErrInsufficientSendPermissions is an informational error that signals
@@ -205,7 +205,7 @@ func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message
 // be returned instead.
 func (c *Context) SelfPermissions() (discord.Permissions, error) {
 	if c.GuildID == 0 {
-		return constant.DMPermissions, nil
+		return permutil.DMPermissions, nil
 	}
 
 	g, err := c.Guild()
@@ -232,7 +232,7 @@ func (c *Context) SelfPermissions() (discord.Permissions, error) {
 // be returned instead.
 func (c *Context) UserPermissions() (discord.Permissions, error) {
 	if c.GuildID == 0 {
-		return constant.DMPermissions, nil
+		return permutil.DMPermissions, nil
 	}
 
 	g, err := c.Guild()
