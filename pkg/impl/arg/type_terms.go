@@ -41,6 +41,9 @@ var (
 
 	// ================================ Errors ================================
 
+	integerSyntaxError = i18n.NewFallbackConfig(
+		"args.types.integer.errors.syntax.argument", "{{.raw}} is not a number.")
+
 	integerUnderRangeErrorArg = i18n.NewFallbackConfig(
 		"args.types.integer.errors.under_range.argument",
 		"{{.raw}} is too small, try using a larger number as argument {{.postion}}.")
@@ -55,17 +58,17 @@ var (
 		"args.types.integer.errors.over_range.flag",
 		"{{.raw}} is a bit too large, try giving the `-{{.used_name}}`-flag a smaller number.")
 
-	intergerBelowMinErrorArg = i18n.NewFallbackConfig(
+	integerBelowMinErrorArg = i18n.NewFallbackConfig(
 		"args.types.integer.errors.below_min.argument",
 		"Argument {{.position}} must be larger or equal to {{.min}}.")
-	intergerBelowMinErrorFlag = i18n.NewFallbackConfig(
+	integerBelowMinErrorFlag = i18n.NewFallbackConfig(
 		"args.types.integer.errors.below_min.flag",
 		"The `-{{.used_name}}`-flag must be larger or equal to {{.min}}.")
 
-	intergerAboveMaxErrorArg = i18n.NewFallbackConfig(
+	integerAboveMaxErrorArg = i18n.NewFallbackConfig(
 		"args.types.integer.errors.below_min.argument",
-		"Argument {{.position}} must be smaller than {{.max}}.")
-	intergerAboveMaxErrorFlag = i18n.NewFallbackConfig(
+		"Argument {{.position}} must be smaller or equal to {{.max}}.")
+	integerAboveMaxErrorFlag = i18n.NewFallbackConfig(
 		"args.types.integer.errors.below_min.flag",
-		"The `-{{.used_name}}`-flag must be smaller {{.max}}.")
+		"The `-{{.used_name}}`-flag must be smaller or equal to {{.max}}.")
 )

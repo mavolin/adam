@@ -40,3 +40,18 @@ var (
 		dfault: "",
 	}
 )
+
+func attachDefaultPlaceholders(old interface{}, ctx *Context) (m map[string]interface{}) {
+	if mold, ok := old.(map[string]interface{}); ok {
+		m = mold
+	} else {
+		m = make(map[string]interface{})
+	}
+
+	m["name"] = ctx.Name
+	m["used_name"] = ctx.UsedName
+	m["raw"] = ctx.Raw
+	m["position"] = ctx.Index + 1
+
+	return
+}
