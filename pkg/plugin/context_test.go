@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/internal/constant"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
 func TestContext_IsBotOwner(t *testing.T) {
@@ -577,7 +577,7 @@ func TestContext_SelfPermissions(t *testing.T) {
 
 		actual, err := ctx.SelfPermissions()
 		require.NoError(t, err)
-		assert.Equal(t, constant.DMPermissions, actual)
+		assert.Equal(t, permutil.DMPermissions, actual)
 	})
 
 	t.Run("guild", func(t *testing.T) {
@@ -628,7 +628,7 @@ func TestContext_UserPermissions(t *testing.T) {
 
 		actual, err := ctx.UserPermissions()
 		require.NoError(t, err)
-		assert.Equal(t, constant.DMPermissions, actual)
+		assert.Equal(t, permutil.DMPermissions, actual)
 	})
 
 	t.Run("guild", func(t *testing.T) {
