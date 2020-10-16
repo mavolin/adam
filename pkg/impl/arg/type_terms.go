@@ -62,14 +62,14 @@ var (
 
 	numberUnderRangeErrorArg = i18n.NewFallbackConfig(
 		"args.types.number.errors.under_range.argument",
-		"{{.raw}} is too small, try using a larger number as argument {{.postion}}.")
+		"{{.raw}} is too small, try using a larger number as argument {{.position}}.")
 	numberUnderRangeErrorFlag = i18n.NewFallbackConfig(
 		"args.types.number.errors.under_range.flag",
 		"{{.raw}} is too small, try giving the `-{{.used_name}}`-flag a larger number.")
 
 	numberOverRangeErrorArg = i18n.NewFallbackConfig(
 		"args.types.number.errors.over_range.argument",
-		"{{.raw}} is too large, try using a smaller number as argument {{.postion}}.")
+		"{{.raw}} is too large, try using a smaller number as argument {{.position}}.")
 	numberOverRangeErrorFlag = i18n.NewFallbackConfig(
 		"args.types.integer.errors.over_range.flag",
 		"{{.raw}} is a bit too large, try giving the `-{{.used_name}}`-flag a smaller number.")

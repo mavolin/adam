@@ -26,8 +26,6 @@ var (
 		"errors.insufficient_bot_permissions.fields.missing_permissions.name",
 		"Missing Permissions")
 
-	argumentParsingReasonFieldName = i18n.NewFallbackConfig("errors.argument_parsing.reason.name", "Reason")
-
 	channelTypeErrorGuildText = i18n.NewFallbackConfig(
 		"errors.channel_type.description.guild_text",
 		"You must use this command in a regular text channel.")
