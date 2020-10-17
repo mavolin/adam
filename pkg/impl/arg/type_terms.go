@@ -153,4 +153,11 @@ var (
 	idAboveMaxLengthErrorFlag = i18n.NewFallbackConfig(
 		"args.types.id.errors.above_max_length.flag",
 		"The `-{{.used_name}}`-flag may not be longer than {{.max}} characters.")
+
+	idNotANumberErrorArg = i18n.NewFallbackConfig(
+		"args.types.id.errors.not_a_number.arg",
+		"Argument {{.position}} must be a number.")
+	idNotANumberErrorFlag = i18n.NewFallbackConfig(
+		"args.types.id.errors.not_a_number.flag",
+		"The `-{{.used_name}}`-flag must be a number.")
 )

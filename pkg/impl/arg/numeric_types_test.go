@@ -11,6 +11,8 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
+	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestInteger_Parse(t *testing.T) {
@@ -231,4 +233,159 @@ func TestDecimal_Parse(t *testing.T) {
 			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
 		})
 	}
+}
+
+func TestNumericID_Name(t *testing.T) {
+	t.Run("default name", func(t *testing.T) {
+		expect := mock.NoOpLocalizer.MustLocalize(idName)
+
+		id := SimpleNumericID
+
+		actual := id.Name(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("custom name", func(t *testing.T) {
+		expect := "abc"
+
+		id := NumericID{
+			CustomName: i18nutil.NewText(expect),
+		}
+
+		actual := id.Name(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
+	})
+}
+
+func TestNumericID_Description(t *testing.T) {
+	t.Run("default description", func(t *testing.T) {
+		expect := mock.NoOpLocalizer.MustLocalize(idDescription)
+
+		id := SimpleNumericID
+
+		actual := id.Description(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("custom description", func(t *testing.T) {
+		expect := "abc"
+
+		id := NumericID{
+			CustomDescription: i18nutil.NewText(expect),
+		}
+
+		actual := id.Description(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
+	})
+}
+
+func TestNumericID_Parse(t *testing.T) {
+	sucessCases := []struct {
+		name string
+		text NumericID
+
+		raw string
+
+		expect uint64
+	}{
+		{
+			name:   "simple text",
+			text:   SimpleNumericID,
+			raw:    "123",
+			expect: 123,
+		},
+		{
+			name:   "min length",
+			text:   NumericID{MinLength: 3},
+			raw:    "123",
+			expect: 123,
+		},
+		{
+			name:   "max length",
+			text:   NumericID{MaxLength: 3},
+			raw:    "123",
+			expect: 123,
+		},
+	}
+
+	t.Run("success", func(t *testing.T) {
+		for _, c := range sucessCases {
+			t.Run(c.name, func(t *testing.T) {
+				ctx := &Context{Raw: c.raw}
+
+				actual, err := c.text.Parse(nil, ctx)
+				require.NoError(t, err)
+				assert.Equal(t, c.expect, actual)
+			})
+		}
+	})
+
+	failureCases := []struct {
+		name string
+		text NumericID
+
+		raw string
+
+		expectArg, expectFlag i18n.Config
+	}{
+		{
+			name: "below min",
+			text: NumericID{MinLength: 3},
+			raw:  "12",
+			expectArg: idBelowMinLengthErrorArg.
+				WithPlaceholders(map[string]interface{}{
+					"min": uint(3),
+				}),
+			expectFlag: idBelowMinLengthErrorFlag.
+				WithPlaceholders(map[string]interface{}{
+					"min": uint(3),
+				}),
+		},
+		{
+			name: "above max",
+			text: NumericID{MaxLength: 3},
+			raw:  "1234",
+			expectArg: idAboveMaxLengthErrorArg.
+				WithPlaceholders(map[string]interface{}{
+					"max": uint(3),
+				}),
+			expectFlag: idAboveMaxLengthErrorFlag.
+				WithPlaceholders(map[string]interface{}{
+					"max": uint(3),
+				}),
+		},
+		{
+			name:       "not a number",
+			text:       SimpleNumericID,
+			raw:        "abc",
+			expectArg:  idNotANumberErrorArg,
+			expectFlag: idNotANumberErrorFlag,
+		},
+	}
+
+	t.Run("failure", func(t *testing.T) {
+		for _, c := range failureCases {
+			t.Run(c.name, func(t *testing.T) {
+				ctx := &Context{
+					Raw:  c.raw,
+					Kind: KindArg,
+				}
+
+				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+
+				_, actual := c.text.Parse(nil, ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+
+				ctx = &Context{
+					Raw:  c.raw,
+					Kind: KindFlag,
+				}
+
+				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+
+				_, actual = c.text.Parse(nil, ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+			})
+		}
+	})
 }
