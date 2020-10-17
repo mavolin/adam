@@ -18,9 +18,7 @@ var ErrInvalidPlaceholders = errors.New("placeholders must be of type map[string
 type Term string
 
 func (t Term) AsConfig() Config {
-	return Config{
-		Term: t,
-	}
+	return Config{Term: t}
 }
 
 // Config is a data struct that contains all information needed to create
@@ -50,11 +48,10 @@ type Config struct {
 	Fallback Fallback
 }
 
-// NewTermConfig is a utility function that can be used to inline term-only Configs.
+// NewTermConfig is a utility function that can be used to inline term-only
+// Configs.
 func NewTermConfig(term Term) Config {
-	return Config{
-		Term: term,
-	}
+	return term.AsConfig()
 }
 
 // NewFallbackConfig is a utility function that can be used to inline
