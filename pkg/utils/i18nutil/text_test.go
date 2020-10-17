@@ -18,23 +18,23 @@ func TestText_IsEmpty(t *testing.T) {
 		{
 			name:   "empty",
 			text:   Text{},
-			expect: true,
+			expect: false,
 		},
 		{
 			name:   "string",
 			text:   NewText("abc"),
-			expect: false,
+			expect: true,
 		},
 		{
 			name:   "config",
 			text:   NewTextl(i18n.NewTermConfig("abc")),
-			expect: false,
+			expect: true,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.text.IsEmpty()
+			actual := c.text.IsValid()
 			assert.Equal(t, c.expect, actual)
 		})
 	}

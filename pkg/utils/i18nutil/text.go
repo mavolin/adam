@@ -23,9 +23,9 @@ func NewTextl(src i18n.Config) Text {
 	}
 }
 
-// IsEmpty checks if the Text has no content.
-func (t Text) IsEmpty() bool {
-	return len(t.string) == 0 && !t.config.IsValid()
+// IsValid checks if the Text has no content.
+func (t Text) IsValid() bool {
+	return len(t.string) != 0 || t.config.IsValid()
 }
 
 // Get retrieves the value of the Text and localizes it, if possible.

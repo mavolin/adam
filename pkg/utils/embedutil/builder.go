@@ -395,14 +395,14 @@ func (b *Builder) Clone() *Builder {
 
 // Build builds the discord.Embed.
 func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
-	if !b.title.IsEmpty() {
+	if b.title.IsValid() {
 		e.Title, err = b.title.Get(l)
 		if err != nil {
 			return
 		}
 	}
 
-	if !b.description.IsEmpty() {
+	if b.description.IsValid() {
 		e.Description, err = b.description.Get(l)
 		if err != nil {
 			return
@@ -455,7 +455,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	for i, f := range b.fields {
 		var name string
 
-		if !f.name.IsEmpty() {
+		if f.name.IsValid() {
 			name, err = f.name.Get(l)
 			if err != nil {
 				return
@@ -464,7 +464,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 
 		var value string
 
-		if !f.value.IsEmpty() {
+		if f.value.IsValid() {
 			value, err = f.value.Get(l)
 			if err != nil {
 				return

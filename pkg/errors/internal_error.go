@@ -199,7 +199,7 @@ func WithDescriptionlt(cause error, description i18n.Term) *InternalError {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *InternalError) Description(l *i18n.Localizer) string {
-	if !e.desc.IsEmpty() {
+	if e.desc.IsValid() {
 		desc, err := e.desc.Get(l)
 		if err == nil {
 			return desc
