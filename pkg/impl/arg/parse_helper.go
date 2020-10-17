@@ -288,7 +288,7 @@ func (h *parseHelper) addArg(content string) error {
 		Name:     name,
 		UsedName: name,
 		Index:    h.argIndex,
-		Kind:     KindArgument,
+		Kind:     KindArg,
 	}
 
 	val, err := typ.Parse(h.state, ctx)

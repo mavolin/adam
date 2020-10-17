@@ -130,7 +130,7 @@ func newArgParsingErr(
 	placeholders["raw"] = ctx.Raw
 	placeholders["position"] = ctx.Index + 1
 
-	if ctx.Kind == KindArgument {
+	if ctx.Kind == KindArg {
 		return errors.NewArgumentParsingErrorl(argConfig.
 			WithPlaceholders(placeholders))
 	}

@@ -102,7 +102,7 @@ func TestInteger_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Raw:  c.raw,
-				Kind: KindArgument,
+				Kind: KindArg,
 			}
 
 			c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
@@ -212,7 +212,7 @@ func TestDecimal_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Raw:  c.raw,
-				Kind: KindArgument,
+				Kind: KindArg,
 			}
 
 			c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)

@@ -13,8 +13,8 @@ import (
 type Kind string
 
 const (
-	KindArgument = "argument"
-	KindFlag     = "flag"
+	KindArg  = "arg"
+	KindFlag = "flag"
 )
 
 type (
