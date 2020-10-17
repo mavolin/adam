@@ -9,6 +9,8 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
+	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestText_Parse(t *testing.T) {
@@ -148,6 +150,50 @@ func TestText_Parse(t *testing.T) {
 				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
 			})
 		}
+	})
+}
+
+func TestAlphanumericID_Name(t *testing.T) {
+	t.Run("default name", func(t *testing.T) {
+		expect := mock.NoOpLocalizer.MustLocalize(idName)
+
+		id := SimpleAlphanumericID
+
+		actual := id.Name(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("custom name", func(t *testing.T) {
+		expect := "abc"
+
+		id := AlphanumericID{
+			CustomName: i18nutil.NewText(expect),
+		}
+
+		actual := id.Name(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
+	})
+}
+
+func TestAlphanumericID_Description(t *testing.T) {
+	t.Run("default description", func(t *testing.T) {
+		expect := mock.NoOpLocalizer.MustLocalize(idDescription)
+
+		id := SimpleAlphanumericID
+
+		actual := id.Description(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("custom description", func(t *testing.T) {
+		expect := "abc"
+
+		id := AlphanumericID{
+			CustomDescription: i18nutil.NewText(expect),
+		}
+
+		actual := id.Description(mock.NoOpLocalizer)
+		assert.Equal(t, expect, actual)
 	})
 }
 
