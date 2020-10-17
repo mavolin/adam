@@ -29,9 +29,9 @@ import (
 // literally, to make usage easier for users unaware of shell notation.
 type ShellwordConfig struct {
 	// RequiredArgs contains the required arguments.
-	RequiredArgs []RequiredArgument
+	RequiredArgs []RequiredArg
 	// OptionalArgs contains the optional arguments.
-	OptionalArgs []OptionalArgument
+	OptionalArgs []OptionalArg
 	// Variadic specifies whether the last possibly specifiable argument is
 	// variadic.
 	Variadic bool

@@ -27,8 +27,8 @@ type Integer struct {
 }
 
 var (
-	// BasicInteger is an Integer with no bounds.
-	BasicInteger = Integer{}
+	// SimpleInteger is an Integer with no bounds.
+	SimpleInteger = Integer{}
 	// PositiveInteger is an Integer with inclusive minimum 0.
 	PositiveInteger = IntegerWithMin(0)
 	// NegativeInteger is an Integer with inclusive maximum -1.
@@ -107,8 +107,8 @@ type Decimal struct {
 }
 
 var (
-	// BasicDecimal is a decimal with no bounds
-	BasicDecimal = Decimal{}
+	// SimpleDecimal is a decimal with no bounds
+	SimpleDecimal = Decimal{}
 	// PositiveDecimal is an Decimal with inclusive minimum 0.
 	PositiveDecimal = DecimalWithMin(0)
 	// NegativeDecimal is an Decimal with inclusive maximum -1.

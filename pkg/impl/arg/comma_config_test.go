@@ -141,7 +141,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "required args",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -158,7 +158,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "optional args",
 			config: CommaConfig{
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -175,7 +175,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "optional args default",
 			config: CommaConfig{
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -193,7 +193,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "optional arg variadic default",
 			config: CommaConfig{
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name:    i18nutil.NewText("arg1"),
 						Type:    mockTypeInt,
@@ -213,7 +213,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "type default",
 			config: CommaConfig{
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
@@ -226,7 +226,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "single variadic required arg",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -240,7 +240,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "multiple variadic required args",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -254,7 +254,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "single variadic optional arg",
 			config: CommaConfig{
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -268,7 +268,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "multiple variadic optional args",
 			config: CommaConfig{
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -282,7 +282,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "variadic optional arg default",
 			config: CommaConfig{
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name:    i18nutil.NewText("arg1"),
 						Type:    mockTypeInt,
@@ -297,7 +297,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "flags and args",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeInt,
@@ -307,7 +307,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 						Type: mockTypeString,
 					},
 				},
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name: i18nutil.NewText("arg3"),
 						Type: mockTypeInt,
@@ -339,7 +339,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "arg comma escape",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -367,7 +367,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "minus escape",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -389,7 +389,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "no minus escape inside",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -402,7 +402,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "no minus escape required arg",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -428,7 +428,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "no minus escape no flag",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -480,7 +480,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "not enough args",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -493,7 +493,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "too many args",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
@@ -512,13 +512,13 @@ func TestCommaConfig_Parse(t *testing.T) {
 		{
 			name: "empty arg",
 			config: CommaConfig{
-				RequiredArgs: []RequiredArgument{
+				RequiredArgs: []RequiredArg{
 					{
 						Name: i18nutil.NewText("arg1"),
 						Type: mockTypeString,
 					},
 				},
-				OptionalArgs: []OptionalArgument{
+				OptionalArgs: []OptionalArg{
 					{
 						Name: i18nutil.NewText("arg2"),
 						Type: mockTypeString,
@@ -614,7 +614,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 
 func TestCommaConfig_Info(t *testing.T) {
 	cfg := CommaConfig{
-		RequiredArgs: []RequiredArgument{
+		RequiredArgs: []RequiredArg{
 			{
 				Name: i18nutil.NewText("r1.name"),
 				Type: mockType{
@@ -632,7 +632,7 @@ func TestCommaConfig_Info(t *testing.T) {
 				Description: i18nutil.NewText("r2.desc"),
 			},
 		},
-		OptionalArgs: []OptionalArgument{
+		OptionalArgs: []OptionalArg{
 			{
 				Name: i18nutil.NewText("o1.name"),
 				Type: mockType{
