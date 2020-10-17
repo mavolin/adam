@@ -125,3 +125,32 @@ var (
 		"args.types.text.errors.above_max_length.flag",
 		"The text used in the `-{{.used_name}}`-flag may not be longer than {{.max}} characters.")
 )
+
+// =============================================================================
+// ID
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	idName        = i18n.NewFallbackConfig("args.types.id.name", "ID")
+	idDescription = i18n.NewFallbackConfig("args.types.id.name", "The ID of something.")
+)
+
+// ================================ Errors ================================
+
+var (
+	idBelowMinLengthErrorArg = i18n.NewFallbackConfig(
+		"args.types.id.errors.below_min_length.arg",
+		"Argument {{.position}} must be at least {{.min}} characters long.")
+	idBelowMinLengthErrorFlag = i18n.NewFallbackConfig(
+		"args.types.id.errors.below_min_length.flag",
+		"The `-{{.used_name}}`-flag must be at least {{.min}} characters long.")
+
+	idAboveMaxLengthErrorArg = i18n.NewFallbackConfig(
+		"args.types.id.errors.above_max_length.arg",
+		"Argument {{.position}} may not be longer than {{.max}} characters.")
+	idAboveMaxLengthErrorFlag = i18n.NewFallbackConfig(
+		"args.types.id.errors.above_max_length.flag",
+		"The `-{{.used_name}}`-flag may not be longer than {{.max}} characters.")
+)
