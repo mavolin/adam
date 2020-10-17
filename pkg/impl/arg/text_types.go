@@ -9,6 +9,8 @@ import (
 )
 
 // Text is the Type for a string.
+//
+// Go type: string
 type Text struct {
 	// MinLength is the inclusive minimum length the text may have.
 	MinLength uint

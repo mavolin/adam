@@ -16,7 +16,8 @@ import (
 // =====================================================================================
 
 // Integer is the type used for whole numbers.
-// It uses int as underlying type.
+//
+// Go type: int
 type Integer struct {
 	// Min is the inclusive minimum of the integer.
 	// If Min is nil, there is no minimum.
@@ -101,6 +102,9 @@ func (i Integer) Default() interface{} {
 // Decimal
 // =====================================================================================
 
+// Decimal is the Type used for decimal numbers.
+//
+// Go type: float64
 type Decimal struct {
 	Min *float64
 	Max *float64
