@@ -9,7 +9,7 @@ import (
 const whitespace = " \t\n"
 
 func genArgsInfo(
-	l *i18n.Localizer, rargs []RequiredArgument, oargs []OptionalArgument, flags []Flag, variadic bool,
+	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
 ) (plugin.ArgsInfo, error) {
 	info := plugin.ArgsInfo{
 		Required: make([]plugin.ArgInfo, len(rargs)),
@@ -44,7 +44,7 @@ func genArgsInfo(
 	return info, nil
 }
 
-func requiredArgInfo(a RequiredArgument, l *i18n.Localizer) (info plugin.ArgInfo, err error) {
+func requiredArgInfo(a RequiredArg, l *i18n.Localizer) (info plugin.ArgInfo, err error) {
 	info.Name, err = a.Name.Get(l)
 	if err != nil {
 		return
@@ -61,7 +61,7 @@ func requiredArgInfo(a RequiredArgument, l *i18n.Localizer) (info plugin.ArgInfo
 	return
 }
 
-func optionalArgInfo(a OptionalArgument, l *i18n.Localizer) (info plugin.ArgInfo, err error) {
+func optionalArgInfo(a OptionalArg, l *i18n.Localizer) (info plugin.ArgInfo, err error) {
 	info.Name, err = a.Name.Get(l)
 	if err != nil {
 		return

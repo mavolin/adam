@@ -10,8 +10,8 @@ import (
 )
 
 type parseHelper struct {
-	rargData []RequiredArgument
-	oargData []OptionalArgument
+	rargData []RequiredArg
+	oargData []OptionalArg
 	flagData []Flag
 	variadic bool
 
@@ -29,7 +29,7 @@ type parseHelper struct {
 }
 
 func newParseHelper(
-	rargs []RequiredArgument, oargs []OptionalArgument, flags []Flag, variadic bool, s *state.State, ctx *plugin.Context,
+	rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool, s *state.State, ctx *plugin.Context,
 ) *parseHelper {
 	p := &parseHelper{
 		rargData: rargs,
