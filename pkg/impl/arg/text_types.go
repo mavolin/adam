@@ -39,7 +39,7 @@ type Text struct {
 	// 		• regexp - the regular expression that needs to be matched
 	//
 	// Defaults to: regexpNotMatchingErrorArg
-	RegexpErrorArg i18n.Config
+	RegexpErrorArg *i18n.Config
 	// RegexpErrorFlag is the error message used if a flag doesn't match the
 	// regular expression defined.
 	//
@@ -51,7 +51,7 @@ type Text struct {
 	// 		• regexp - the regular expression that needs to be matched
 	//
 	// Defaults to: regexpNotMatchingErrorFlag
-	RegexpErrorFlag i18n.Config
+	RegexpErrorFlag *i18n.Config
 }
 
 // SimpleText is a Text with no length boundaries and no regular expression.
@@ -81,9 +81,9 @@ func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if t.Regexp != nil && !t.Regexp.MatchString(ctx.Raw) {
-		if ctx.Kind == KindArg && !t.RegexpErrorArg.IsValid() {
+		if ctx.Kind == KindArg && t.RegexpErrorArg == nil {
 			t.RegexpErrorArg = regexpNotMatchingErrorArg
-		} else if ctx.Kind == KindFlag && !t.RegexpErrorFlag.IsValid() {
+		} else if ctx.Kind == KindFlag && t.RegexpErrorFlag == nil {
 			t.RegexpErrorFlag = regexpNotMatchingErrorFlag
 		}
 
@@ -137,7 +137,7 @@ type AlphanumericID struct {
 	// 		• regexp - the regular expression that needs to be matched
 	//
 	// Defaults to: idRegexpNotMatchingErrorArg
-	RegexpErrorArg i18n.Config
+	RegexpErrorArg *i18n.Config
 	// RegexpErrorFlag is the error message used if a flag doesn't match the
 	// regular expression defined.
 	//
@@ -149,7 +149,7 @@ type AlphanumericID struct {
 	// 		• regexp - the regular expression that needs to be matched
 	//
 	// Defaults to: idRegexpNotMatchingErrorFlag
-	RegexpErrorFlag i18n.Config
+	RegexpErrorFlag *i18n.Config
 }
 
 var SimpleAlphanumericID = AlphanumericID{}
@@ -192,9 +192,9 @@ func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error
 	}
 
 	if id.Regexp != nil && !id.Regexp.MatchString(ctx.Raw) {
-		if ctx.Kind == KindArg && !id.RegexpErrorArg.IsValid() {
+		if ctx.Kind == KindArg && id.RegexpErrorArg == nil {
 			id.RegexpErrorArg = regexpNotMatchingErrorArg
-		} else if ctx.Kind == KindFlag && !id.RegexpErrorFlag.IsValid() {
+		} else if ctx.Kind == KindFlag && id.RegexpErrorFlag == nil {
 			id.RegexpErrorFlag = regexpNotMatchingErrorFlag
 		}
 

@@ -580,7 +580,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			},
 			rawArgs: "-abc 123",
 			expect: errors.NewArgumentParsingErrorl(switchWithContentError.
-				WithPlaceholders(switchWithContentErrorPlaceholders{
+				WithPlaceholders(&switchWithContentErrorPlaceholders{
 					Name: "abc",
 				})),
 		},

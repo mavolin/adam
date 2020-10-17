@@ -98,7 +98,7 @@ func (c *Context) Reply(content string) (*discord.Message, error) {
 
 // Replyl replies with the message translated from the passed
 // i18n.Config in the channel the command was originally sent in.
-func (c *Context) Replyl(cfg i18n.Config) (*discord.Message, error) {
+func (c *Context) Replyl(cfg *i18n.Config) (*discord.Message, error) {
 	s, err := c.Localizer.Localize(cfg)
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func (c *Context) ReplyDM(content string) (*discord.Message, error) {
 
 // ReplylDM replies with the message translated from the passed i18n.Config in
 // a direct message to the invoking user.
-func (c *Context) ReplylDM(cfg i18n.Config) (*discord.Message, error) {
+func (c *Context) ReplylDM(cfg *i18n.Config) (*discord.Message, error) {
 	s, err := c.Localizer.Localize(cfg)
 	if err != nil {
 		return nil, err

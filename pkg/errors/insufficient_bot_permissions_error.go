@@ -60,7 +60,7 @@ func (e *InsufficientBotPermissionsError) Description(l *i18n.Localizer) (desc s
 
 		// we can ignore this error, as there is a fallback
 		desc, _ = l.Localize(insufficientBotPermissionsDescSingle.
-			WithPlaceholders(insufficientBotPermissionsDescSinglePlaceholders{
+			WithPlaceholders(&insufficientBotPermissionsDescSinglePlaceholders{
 				MissingPermission: missingNames[0],
 			}))
 	} else {

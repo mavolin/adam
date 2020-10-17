@@ -50,7 +50,7 @@ func NewRestrictionError(description string) *RestrictionError {
 
 // NewRestrictionErrorl creates a new RestrictionError using the message
 // generated from the passed i18n.Config as description.
-func NewRestrictionErrorl(description i18n.Config) *RestrictionError {
+func NewRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{
 		desc: i18nutil.NewTextl(description),
 	}
@@ -73,7 +73,7 @@ func NewFatalRestrictionError(description string) *RestrictionError {
 
 // NewFatalRestrictionErrorl creates a new fatal RestrictionError using the
 // message generated from the passed i18n.Config as description.
-func NewFatalRestrictionErrorl(description i18n.Config) *RestrictionError {
+func NewFatalRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{
 		desc:  i18nutil.NewTextl(description),
 		Fatal: true,

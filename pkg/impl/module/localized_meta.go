@@ -14,9 +14,9 @@ type LocalizedMeta struct {
 	// It may not contain whitespace or dots.
 	Name string
 	// ShortDescription is an optional short description of the module.
-	ShortDescription i18n.Config
+	ShortDescription *i18n.Config
 	// LongDescription is an optional long description of the module.
-	LongDescription i18n.Config
+	LongDescription *i18n.Config
 
 	// Hidden specifies whether this module should be hidden from the help
 	// message.

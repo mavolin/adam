@@ -25,7 +25,7 @@ func RawWithDescription(description string) plugin.ArgConfig {
 
 // RawWithDescription creates a argument config for raw arguments, that uses
 // the passed description as argument config.
-func RawWithDescriptionl(description i18n.Config) plugin.ArgConfig {
+func RawWithDescriptionl(description *i18n.Config) plugin.ArgConfig {
 	return &raw{
 		desc: i18nutil.NewTextl(description),
 	}

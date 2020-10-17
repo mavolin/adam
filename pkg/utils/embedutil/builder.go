@@ -55,7 +55,7 @@ func (b *Builder) WithSimpleTitle(title string) *Builder {
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the embed.
-func (b *Builder) WithSimpleTitlel(title i18n.Config) *Builder {
+func (b *Builder) WithSimpleTitlel(title *i18n.Config) *Builder {
 	b.title = i18nutil.NewTextl(title)
 	return b
 }
@@ -74,7 +74,7 @@ func (b *Builder) WithTitle(title string, url discord.URL) *Builder {
 }
 
 // WithTitlel adds a title (max. 256 characters) with a link to the embed.
-func (b *Builder) WithTitlel(title i18n.Config, url discord.URL) *Builder {
+func (b *Builder) WithTitlel(title *i18n.Config, url discord.URL) *Builder {
 	b.title = i18nutil.NewTextl(title)
 	b.url = url
 
@@ -93,7 +93,7 @@ func (b *Builder) WithDescription(description string) *Builder {
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the embed.
-func (b *Builder) WithDescriptionl(description i18n.Config) *Builder {
+func (b *Builder) WithDescriptionl(description *i18n.Config) *Builder {
 	b.description = i18nutil.NewTextl(description)
 	return b
 }
@@ -130,7 +130,7 @@ func (b *Builder) WithSimpleFooter(text string) *Builder {
 }
 
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the embed.
-func (b *Builder) WithSimpleFooterl(text i18n.Config) *Builder {
+func (b *Builder) WithSimpleFooterl(text *i18n.Config) *Builder {
 	b.footer = &footer{
 		text: i18nutil.NewTextl(text),
 	}
@@ -154,7 +154,7 @@ func (b *Builder) WithFooter(text string, icon discord.URL) *Builder {
 }
 
 // WithFooterl adds a footer (max. 2048 character) with an icon to the embed.
-func (b *Builder) WithFooterl(text i18n.Config, icon discord.URL) *Builder {
+func (b *Builder) WithFooterl(text *i18n.Config, icon discord.URL) *Builder {
 	b.footer = &footer{
 		text: i18nutil.NewTextl(text),
 		icon: icon,
@@ -191,7 +191,7 @@ func (b *Builder) WithSimpleAuthor(name string) *Builder {
 }
 
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the embed.
-func (b *Builder) WithSimpleAuthorl(name i18n.Config) *Builder {
+func (b *Builder) WithSimpleAuthorl(name *i18n.Config) *Builder {
 	b.author = &author{
 		name: i18nutil.NewTextl(name),
 	}
@@ -217,7 +217,7 @@ func (b *Builder) WithSimpleAuthorWithURL(name string, url discord.URL) *Builder
 
 // WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
 // the embed.
-func (b *Builder) WithSimpleAuthorWithURLl(name i18n.Config, url discord.URL) *Builder {
+func (b *Builder) WithSimpleAuthorWithURLl(name *i18n.Config, url discord.URL) *Builder {
 	b.author = &author{
 		name: i18nutil.NewTextl(name),
 		url:  url,
@@ -243,7 +243,7 @@ func (b *Builder) WithAuthor(name string, icon discord.URL) *Builder {
 }
 
 // WithAuthorl adds an author (max 256 characters) with an icon to the embed.
-func (b *Builder) WithAuthorl(name i18n.Config, icon discord.URL) *Builder {
+func (b *Builder) WithAuthorl(name *i18n.Config, icon discord.URL) *Builder {
 	b.author = &author{
 		name: i18nutil.NewTextl(name),
 		icon: icon,
@@ -271,7 +271,7 @@ func (b *Builder) WithAuthorWithURL(name string, icon, url discord.URL) *Builder
 
 // WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
 // URL to the embed.
-func (b *Builder) WithAuthorWithURLl(name i18n.Config, icon, url discord.URL) *Builder {
+func (b *Builder) WithAuthorWithURLl(name *i18n.Config, icon, url discord.URL) *Builder {
 	b.author = &author{
 		name: i18nutil.NewTextl(name),
 		icon: icon,
@@ -300,7 +300,7 @@ func (b *Builder) WithField(name, value string) *Builder {
 // characters) to the embed.
 // providerName or value may be empty, in which case the field won't have a name or
 // value.
-func (b *Builder) WithFieldl(name, value i18n.Config) *Builder {
+func (b *Builder) WithFieldl(name, value *i18n.Config) *Builder {
 	b.withFieldl(name, value, false)
 	return b
 }
@@ -326,7 +326,7 @@ func (b *Builder) WithInlinedField(name, value string) *Builder {
 // value: max 1024 characters) to the embed.
 // providerName or value may be empty, in which case the field won't have a name or
 // value.
-func (b *Builder) WithInlinedFieldl(name, value i18n.Config) *Builder {
+func (b *Builder) WithInlinedFieldl(name, value *i18n.Config) *Builder {
 	b.withFieldl(name, value, true)
 	return b
 }
@@ -350,7 +350,7 @@ func (b *Builder) withField(name, value string, inlined bool) {
 	b.fields = append(b.fields, f)
 }
 
-func (b *Builder) withFieldl(name, value i18n.Config, inlined bool) {
+func (b *Builder) withFieldl(name, value *i18n.Config, inlined bool) {
 	f := field{
 		inlined: inlined,
 	}

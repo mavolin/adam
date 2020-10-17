@@ -896,7 +896,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		}
 
 		actual := NewBuilder()
-		actual.withFieldl(name, i18n.Config{}, inlined)
+		actual.withFieldl(name, nil, inlined)
 
 		assert.Equal(t, expect, actual)
 	})
@@ -917,7 +917,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		}
 
 		actual := NewBuilder()
-		actual.withFieldl(i18n.Config{}, value, inlined)
+		actual.withFieldl(nil, value, inlined)
 
 		assert.Equal(t, expect, actual)
 	})

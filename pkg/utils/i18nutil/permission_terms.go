@@ -6,7 +6,7 @@ import (
 	. "github.com/mavolin/adam/pkg/i18n"
 )
 
-var permissionConfigs = map[Permissions]Config{
+var permissionConfigs = map[Permissions]*Config{
 	PermissionCreateInstantInvite: NewFallbackConfig("permissions.create_instant_invite", "Create Invite"),
 	PermissionKickMembers:         NewFallbackConfig("permissions.kick_members", "Kick Members"),
 	PermissionBanMembers:          NewFallbackConfig("permissions.ban_members", "Ban Members"),

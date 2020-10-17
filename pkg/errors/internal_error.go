@@ -156,7 +156,7 @@ func WithDescriptionf(cause error, format string, args ...interface{}) *Internal
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionl(cause error, description i18n.Config) *InternalError {
+func WithDescriptionl(cause error, description *i18n.Config) *InternalError {
 	if cause == nil {
 		return nil
 	}
@@ -185,7 +185,7 @@ func WithDescriptionlt(cause error, description i18n.Term) *InternalError {
 	}
 
 	if ie, ok := cause.(*InternalError); ok {
-		ie.desc = i18nutil.NewTextl(description.AsConfig())
+		ie.desc = i18nutil.NewTextlt(description)
 		return ie
 	}
 

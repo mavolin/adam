@@ -27,7 +27,7 @@ func NewArgumentParsingError(description string) *ArgumentParsingError {
 
 // NewArgumentParsingErrorl returns a new ArgumentParsingError using the passed
 // i18n.Config to generate a description.
-func NewArgumentParsingErrorl(description i18n.Config) *ArgumentParsingError {
+func NewArgumentParsingErrorl(description *i18n.Config) *ArgumentParsingError {
 	return &ArgumentParsingError{
 		desc: i18nutil.NewTextl(description),
 	}

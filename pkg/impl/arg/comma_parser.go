@@ -104,7 +104,7 @@ func (p *commaParser) parseFlag(flagName commaItem) (err error) {
 		return err
 	case finalizer.typ == itemFlagContent && f.Type == Switch:
 		return errors.NewArgumentParsingErrorl(switchWithContentError.
-			WithPlaceholders(switchWithContentErrorPlaceholders{
+			WithPlaceholders(&switchWithContentErrorPlaceholders{
 				Name: flagName.val,
 			}))
 	case finalizer.typ != itemComma && finalizer.typ != itemEOF:

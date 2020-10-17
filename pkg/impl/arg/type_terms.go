@@ -184,3 +184,36 @@ var (
 	choiceInvalidErrorFlag = i18n.NewFallbackConfig(
 		"args.types.choice.errors.invalid.flag", "`{{.raw}}` is not a valid choice for the `-{{.{{.used_name}}`-flag.")
 )
+
+// =============================================================================
+// Member
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	memberName             = i18n.NewFallbackConfig("args.types.member.name", "Member")
+	memberDescriptionNoIDs = i18n.NewFallbackConfig("args.types.member.description.no_ids",
+		"A member is a mention of a user in a server. For example @Wumpus.")
+	memberDescriptionWithIDs = i18n.NewFallbackConfig("args.types.member.description.with_ids",
+		"A member is either a mention of a user in a server or their id. For example @Wumpus or 123456789098765432.")
+)
+
+// =============================================================================
+// Users
+// =====================================================================================
+
+// ================================ Errors ================================
+
+var (
+	userInvalidMentionNoDigits = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_mention_no_digits.arg",
+		"{{.raw}} is not a valid mention.")
+
+	userInvalidMentionArg = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_mention.arg",
+		"The mention in argument {{.position}} is invalid. Make sure the user is still on the server.")
+	userInvalidMentionFlag = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_mention.flag",
+		"The mention for the `-{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
+)

@@ -66,7 +66,7 @@ func TestText_Parse(t *testing.T) {
 
 		raw string
 
-		expectArg, expectFlag i18n.Config
+		expectArg, expectFlag *i18n.Config
 	}{
 		{
 			name: "below min",
@@ -250,7 +250,7 @@ func TestAlphanumericID_Parse(t *testing.T) {
 
 		raw string
 
-		expectArg, expectFlag i18n.Config
+		expectArg, expectFlag *i18n.Config
 	}{
 		{
 			name: "below min",

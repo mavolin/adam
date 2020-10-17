@@ -1,12 +1,16 @@
 package arg
 
 import (
+	"regexp"
+
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
 const whitespace = " \t\n"
+
+var userMentionRegexp = regexp.MustCompile(`^<@!?(\d+)>$`)
 
 func genArgsInfo(
 	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
@@ -119,7 +123,7 @@ func typeInfo(t Type, l *i18n.Localizer) (info plugin.TypeInfo, ok bool) {
 // It automatically adds the following additional placeholder: name, used_name,
 // raw and position.
 func newArgParsingErr(
-	argConfig, flagConfig i18n.Config, ctx *Context, placeholders map[string]interface{},
+	argConfig, flagConfig *i18n.Config, ctx *Context, placeholders map[string]interface{},
 ) *errors.ArgumentParsingError {
 	if placeholders == nil {
 		placeholders = make(map[string]interface{}, 4)

@@ -32,8 +32,7 @@ func TestInteger_Parse(t *testing.T) {
 
 		raw string
 
-		expectArg  i18n.Config
-		expectFlag i18n.Config
+		expectArg, expectFlag *i18n.Config
 	}{
 		{
 			name:       "invalid syntax",
@@ -142,8 +141,7 @@ func TestDecimal_Parse(t *testing.T) {
 
 		raw string
 
-		expectArg  i18n.Config
-		expectFlag i18n.Config
+		expectArg, expectFlag *i18n.Config
 	}{
 		{
 			name:       "invalid syntax",
@@ -326,7 +324,7 @@ func TestNumericID_Parse(t *testing.T) {
 
 		raw string
 
-		expectArg, expectFlag i18n.Config
+		expectArg, expectFlag *i18n.Config
 	}{
 		{
 			name: "below min",

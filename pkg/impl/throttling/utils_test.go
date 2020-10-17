@@ -53,12 +53,12 @@ func Test_genError(t *testing.T) {
 			switch {
 			case c.expectSeconds > 0:
 				assert.Equal(t, errors.NewThrottlingErrorl(secondConfig.
-					WithPlaceholders(secondPlaceholders{
+					WithPlaceholders(&secondPlaceholders{
 						Seconds: c.expectSeconds,
 					})), acutal)
 			case c.expectMinutes > 0:
 				assert.Equal(t, errors.NewThrottlingErrorl(minuteConfig.
-					WithPlaceholders(minutePlaceholders{
+					WithPlaceholders(&minutePlaceholders{
 						Minutes: c.expectMinutes,
 					})), acutal)
 			default:

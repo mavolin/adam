@@ -157,7 +157,7 @@ func (w *Waiter) watchTimeout(
 
 			if timeExtensions == 0 {
 				err := errors.NewUserInfol(timeoutInfo.
-					WithPlaceholders(timeoutInfoPlaceholders{
+					WithPlaceholders(&timeoutInfoPlaceholders{
 						ResponseUserMention: w.ctx.Author.Mention(),
 					}))
 				sendResult(ctx, result, err)
@@ -211,7 +211,7 @@ func (w *Waiter) askForTimeExtension(ctx context.Context) error {
 	select {
 	case <-time.After(8 * time.Second):
 		return errors.NewUserInfol(timeoutInfo.
-			WithPlaceholders(timeoutInfoPlaceholders{
+			WithPlaceholders(&timeoutInfoPlaceholders{
 				ResponseUserMention: w.ctx.Author.Mention(),
 			}))
 	case <-react:
@@ -225,7 +225,7 @@ func (w *Waiter) sendTimeExtensionMessage() (*discord.Message, error) {
 	embed, err := errors.NewCustomUserInfo().
 		WithSimpleTitlel(timeExtensionTitle).
 		WithDescriptionl(timeExtensionDescription.
-			WithPlaceholders(timeExtensionDescriptionPlaceholders{
+			WithPlaceholders(&timeExtensionDescriptionPlaceholders{
 				ResponseUserMention:   w.ctx.Author.Mention(),
 				TimeExtensionReaction: TimeExtensionReaction,
 			})).

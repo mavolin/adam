@@ -28,7 +28,7 @@ func NewThrottlingError(description string) *ThrottlingError {
 
 // NewThrottlingErrorl creates a new ThrottlingError using the message
 // generated from the passed i18n.Config as description.
-func NewThrottlingErrorl(description i18n.Config) *ThrottlingError {
+func NewThrottlingErrorl(description *i18n.Config) *ThrottlingError {
 	return &ThrottlingError{
 		desc: i18nutil.NewTextl(description),
 	}

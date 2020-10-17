@@ -17,8 +17,8 @@ var ErrInvalidPlaceholders = errors.New("placeholders must be of type map[string
 // actual Config.Terms easier.
 type Term string
 
-func (t Term) AsConfig() Config {
-	return Config{Term: t}
+func (t Term) AsConfig() *Config {
+	return &Config{Term: t}
 }
 
 // Config is a data struct that contains all information needed to create
@@ -50,14 +50,14 @@ type Config struct {
 
 // NewTermConfig is a utility function that can be used to inline term-only
 // Configs.
-func NewTermConfig(term Term) Config {
+func NewTermConfig(term Term) *Config {
 	return term.AsConfig()
 }
 
 // NewFallbackConfig is a utility function that can be used to inline
 // term-only Configs with a fallback.
-func NewFallbackConfig(term Term, fallback string) Config {
-	return Config{
+func NewFallbackConfig(term Term, fallback string) *Config {
+	return &Config{
 		Term: term,
 		Fallback: Fallback{
 			Other: fallback,
@@ -65,21 +65,17 @@ func NewFallbackConfig(term Term, fallback string) Config {
 	}
 }
 
-// IsValid checks if the Config could theoretically generate a message.
-// This does not take into account invalid keys.
-func (c Config) IsValid() bool { return c.Term != "" || c.Fallback.Other != "" }
-
 // WithPlaceholders returns a copy of the Config with the passed placeholders
 // set.
-func (c Config) WithPlaceholders(placeholders interface{}) Config {
+func (c Config) WithPlaceholders(placeholders interface{}) *Config {
 	c.Placeholders = placeholders
-	return c
+	return &c
 }
 
 // WithPlural returns a copy of the Config with the passed plural set.
-func (c Config) WithPlural(plural interface{}) Config {
+func (c Config) WithPlural(plural interface{}) *Config {
 	c.Plural = plural
-	return c
+	return &c
 }
 
 func (c Config) placeholdersToMap() (map[string]interface{}, error) {
@@ -138,7 +134,7 @@ type Fallback struct {
 
 // genTranslation attempts to generate the translation using the passed
 // Placeholders and the passed plural data.
-func (f Fallback) genTranslation(placeholderData map[string]interface{}, plural interface{}) (string, error) {
+func (f *Fallback) genTranslation(placeholderData map[string]interface{}, plural interface{}) (string, error) {
 	if plural != nil { // we have plural information
 		if isOne, err := isOne(plural); err != nil { // attempt to check if plural is == 1
 			return "", err
@@ -195,7 +191,7 @@ func (l *Localizer) WithPlaceholders(p map[string]interface{}) {
 
 // Localize generates a localized message using the passed config.
 // c.NewTermConfig must be set.
-func (l *Localizer) Localize(c Config) (s string, err error) {
+func (l *Localizer) Localize(c *Config) (s string, err error) {
 	placeholders, err := c.placeholdersToMap()
 	if err != nil {
 		return string(c.Term), err
@@ -238,10 +234,12 @@ func (l *Localizer) Localize(c Config) (s string, err error) {
 //		l.Localize(i18n.Config{
 //			NewTermConfig: term,
 //		})
-func (l *Localizer) LocalizeTerm(term Term) (string, error) { return l.Localize(NewTermConfig(term)) }
+func (l *Localizer) LocalizeTerm(term Term) (string, error) {
+	return l.Localize(term.AsConfig())
+}
 
 // MustLocalize is the same as Localize, but it panics if there is an error.
-func (l *Localizer) MustLocalize(c Config) string {
+func (l *Localizer) MustLocalize(c *Config) string {
 	s, err := l.Localize(c)
 	if err != nil {
 		panic(err)
@@ -253,10 +251,5 @@ func (l *Localizer) MustLocalize(c Config) string {
 // MustLocalizeTerm is the same as LocalizeTerm, but it panics if there is an
 // error.
 func (l *Localizer) MustLocalizeTerm(term Term) string {
-	s, err := l.LocalizeTerm(term)
-	if err != nil {
-		panic(err)
-	}
-
-	return s
+	return l.MustLocalize(term.AsConfig())
 }
