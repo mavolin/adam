@@ -206,14 +206,24 @@ var (
 // ================================ Errors ================================
 
 var (
-	userInvalidMentionNoDigits = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_mention_no_digits.arg",
+	userInvalidMentionWithRaw = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_mention_with_raw",
 		"{{.raw}} is not a valid mention.")
+	userInvalidIDWithRaw = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_id_with_raw",
+		"{{.raw}} is not a valid user id.")
 
 	userInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.arg",
 		"The mention in argument {{.position}} is invalid. Make sure the user is still on the server.")
 	userInvalidMentionFlag = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.flag",
-		"The mention for the `-{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
+		"The mention in the `-{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
+
+	userInvalidIDArg = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_id.arg",
+		"The user ID in argument {{.position}} is invalid.")
+	userInvalidIDFlag = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_id.flag",
+		"The user ID in the `-{{.used_name}}`-flag is invalid.")
 )
