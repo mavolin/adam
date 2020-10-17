@@ -19,7 +19,7 @@ func TestInteger_Parse(t *testing.T) {
 
 		ctx := &Context{Raw: "123"}
 
-		actual, err := BasicInteger.Parse(nil, ctx)
+		actual, err := SimpleInteger.Parse(nil, ctx)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
@@ -129,7 +129,7 @@ func TestDecimal_Parse(t *testing.T) {
 
 		ctx := &Context{Raw: "123.456"}
 
-		actual, err := BasicDecimal.Parse(nil, ctx)
+		actual, err := SimpleDecimal.Parse(nil, ctx)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
