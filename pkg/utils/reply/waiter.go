@@ -153,7 +153,7 @@ func (w *Waiter) WithCancelKeyword(keyword string) *Waiter {
 
 // WithCancelKeywordk adds the passed keyword to the cancel keywords.
 // If the user filtered for writes this keyword Await will return Canceled.
-func (w *Waiter) WithCancelKeywordl(keyword i18n.Config) *Waiter {
+func (w *Waiter) WithCancelKeywordl(keyword *i18n.Config) *Waiter {
 	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewTextl(keyword))
 	return w
 }

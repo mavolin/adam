@@ -31,7 +31,7 @@ func newAllMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	} else if len(missing) == 1 {
 		return errors.NewFatalRestrictionErrorl(
 			missingRoleError.
-				WithPlaceholders(missingRoleErrorPlaceholders{
+				WithPlaceholders(&missingRoleErrorPlaceholders{
 					Role: missing[0].Mention(),
 				}))
 	}
@@ -66,7 +66,7 @@ func newAnyMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	} else if len(missing) == 1 {
 		return errors.NewFatalRestrictionErrorl(
 			missingRoleError.
-				WithPlaceholders(missingRoleErrorPlaceholders{
+				WithPlaceholders(&missingRoleErrorPlaceholders{
 					Role: missing[0].Mention(),
 				}))
 	}
@@ -101,7 +101,7 @@ func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 	} else if len(allowed) == 1 {
 		return errors.NewRestrictionErrorl(
 			blockedChannelErrorSingle.
-				WithPlaceholders(blockedChannelErrorSinglePlaceholders{
+				WithPlaceholders(&blockedChannelErrorSinglePlaceholders{
 					Channel: allowed[0].Mention(),
 				}))
 	}
@@ -174,7 +174,7 @@ func newInsufficientUserPermissionsError(missing discord.Permissions, l *i18n.Lo
 		// we can ignore this error, as there is a fallback
 		desc, _ := l.Localize(
 			insufficientUserPermissionsDescSingle.
-				WithPlaceholders(insufficientUserPermissionsDescSinglePlaceholders{
+				WithPlaceholders(&insufficientUserPermissionsDescSinglePlaceholders{
 					MissingPermission: missingNames[0],
 				}))
 

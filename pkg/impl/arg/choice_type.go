@@ -87,7 +87,7 @@ type (
 	// represents a single value.
 	LocalizedChoiceElement struct {
 		// Names are the names used for the element.
-		Names []i18n.Config
+		Names []*i18n.Config
 		// Value is the value the element corresponds to.
 		Value interface{}
 	}

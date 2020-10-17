@@ -35,7 +35,7 @@ func NewUserInfo(description string) *UserInfo {
 
 // NewUserInfol creates a new UserInfo using the message generated from the
 // passed i18n.Config.
-func NewUserInfol(description i18n.Config) *UserInfo {
+func NewUserInfol(description *i18n.Config) *UserInfo {
 	return NewCustomUserInfo().
 		WithDescriptionl(description)
 }
@@ -53,7 +53,7 @@ func (i *UserInfo) WithSimpleTitle(title string) *UserInfo {
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleTitlel(title i18n.Config) *UserInfo {
+func (i *UserInfo) WithSimpleTitlel(title *i18n.Config) *UserInfo {
 	i.embed.WithSimpleTitlel(title)
 	return i
 }
@@ -70,7 +70,7 @@ func (i *UserInfo) WithTitle(title string, url discord.URL) *UserInfo {
 }
 
 // WithTitlel adds a title (max. 256 characters) with a link to the UserInfo.
-func (i *UserInfo) WithTitlel(title i18n.Config, url discord.URL) *UserInfo {
+func (i *UserInfo) WithTitlel(title *i18n.Config, url discord.URL) *UserInfo {
 	i.embed.WithTitlel(title, url)
 	return i
 }
@@ -87,7 +87,7 @@ func (i *UserInfo) WithDescription(description string) *UserInfo {
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithDescriptionl(description i18n.Config) *UserInfo {
+func (i *UserInfo) WithDescriptionl(description *i18n.Config) *UserInfo {
 	i.embed.WithDescriptionl(description)
 	return i
 }
@@ -121,7 +121,7 @@ func (i *UserInfo) WithSimpleFooter(text string) *UserInfo {
 }
 
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleFooterl(text i18n.Config) *UserInfo {
+func (i *UserInfo) WithSimpleFooterl(text *i18n.Config) *UserInfo {
 	i.embed.WithSimpleFooterl(text)
 	return i
 }
@@ -138,7 +138,7 @@ func (i *UserInfo) WithFooter(text string, icon discord.URL) *UserInfo {
 }
 
 // WithFooterl adds a footer (max. 2048 character) with an icon to the UserInfo.
-func (i *UserInfo) WithFooterl(text i18n.Config, icon discord.URL) *UserInfo {
+func (i *UserInfo) WithFooterl(text *i18n.Config, icon discord.URL) *UserInfo {
 	i.embed.WithFooterl(text, icon)
 	return i
 }
@@ -167,7 +167,7 @@ func (i *UserInfo) WithSimpleAuthor(name string) *UserInfo {
 }
 
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleAuthorl(name i18n.Config) *UserInfo {
+func (i *UserInfo) WithSimpleAuthorl(name *i18n.Config) *UserInfo {
 	i.embed.WithSimpleAuthorl(name)
 	return i
 }
@@ -186,7 +186,7 @@ func (i *UserInfo) WithSimpleAuthorWithURL(name string, url discord.URL) *UserIn
 
 // WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
 // the embed.
-func (i *UserInfo) WithSimpleAuthorWithURLl(name i18n.Config, url discord.URL) *UserInfo {
+func (i *UserInfo) WithSimpleAuthorWithURLl(name *i18n.Config, url discord.URL) *UserInfo {
 	i.embed.WithSimpleAuthorWithURLl(name, url)
 	return i
 }
@@ -204,7 +204,7 @@ func (i *UserInfo) WithAuthor(name string, icon discord.URL) *UserInfo {
 }
 
 // WithAuthorl adds an author (max 256 characters) with an icon to the UserInfo.
-func (i *UserInfo) WithAuthorl(name i18n.Config, icon discord.URL) *UserInfo {
+func (i *UserInfo) WithAuthorl(name *i18n.Config, icon discord.URL) *UserInfo {
 	i.embed.WithAuthorl(name, icon)
 	return i
 }
@@ -223,7 +223,7 @@ func (i *UserInfo) WithAuthorWithURL(name string, icon, url discord.URL) *UserIn
 
 // WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
 // URL to the UserInfo.
-func (i *UserInfo) WithAuthorWithURLl(name i18n.Config, icon, url discord.URL) *UserInfo {
+func (i *UserInfo) WithAuthorWithURLl(name *i18n.Config, icon, url discord.URL) *UserInfo {
 	i.embed.WithAuthorWithURLl(name, icon, url)
 	return i
 }
@@ -248,7 +248,7 @@ func (i *UserInfo) WithField(name, value string) *UserInfo {
 // UserInfo to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (i *UserInfo) WithFieldl(name, value i18n.Config) *UserInfo {
+func (i *UserInfo) WithFieldl(name, value *i18n.Config) *UserInfo {
 	i.embed.WithFieldl(name, value)
 	return i
 }
@@ -274,7 +274,7 @@ func (i *UserInfo) WithInlinedField(name, value string) *UserInfo {
 // pointer to the UserInfo to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (i *UserInfo) WithInlinedFieldl(name, value i18n.Config) *UserInfo {
+func (i *UserInfo) WithInlinedFieldl(name, value *i18n.Config) *UserInfo {
 	i.embed.WithInlinedFieldl(name, value)
 	return i
 }

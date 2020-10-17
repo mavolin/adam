@@ -117,7 +117,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 
 		choice := LocalizedChoice{
 			{
-				Names: []i18n.Config{
+				Names: []*i18n.Config{
 					i18n.NewFallbackConfig("abc", "def"),
 				},
 				Value: expect,
@@ -139,7 +139,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		choice := LocalizedChoice{
 			{
-				Names: []i18n.Config{
+				Names: []*i18n.Config{
 					i18n.NewFallbackConfig("abc", "def"),
 				},
 				Value: "ghi",
@@ -180,7 +180,7 @@ func TestLocalizedChoice_Default(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		choice := LocalizedChoice{
 			{
-				Names: []i18n.Config{
+				Names: []*i18n.Config{
 					i18n.NewFallbackConfig("abc", "def"),
 				},
 				Value: 123,

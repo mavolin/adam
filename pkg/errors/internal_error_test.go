@@ -138,7 +138,7 @@ func TestWithDescriptionf(t *testing.T) {
 
 func TestWithDescriptionl(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
-		err := WithDescriptionl(nil, i18n.Config{})
+		err := WithDescriptionl(nil, nil)
 		assert.Nil(t, err)
 	})
 

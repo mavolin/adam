@@ -6,7 +6,7 @@ import "github.com/mavolin/adam/pkg/i18n"
 // It can either be static, or be defined using a Config.
 type Text struct {
 	string string
-	config i18n.Config
+	config *i18n.Config
 }
 
 // NewText returns a new unlocalized Text.
@@ -15,7 +15,7 @@ func NewText(src string) Text {
 }
 
 // NewTextl returns a new localized Text using the passed i18n.Config.
-func NewTextl(src i18n.Config) Text {
+func NewTextl(src *i18n.Config) Text {
 	return Text{config: src}
 }
 
@@ -26,14 +26,14 @@ func NewTextlt(src i18n.Term) Text {
 
 // IsValid checks if the Text has no content.
 func (t Text) IsValid() bool {
-	return len(t.string) != 0 || t.config.IsValid()
+	return len(t.string) != 0 || t.config != nil
 }
 
 // Get retrieves the value of the Text and localizes it, if possible.
 func (t Text) Get(l *i18n.Localizer) (string, error) {
 	if t.string != "" {
 		return t.string, nil
-	} else if t.config.IsValid() {
+	} else if t.config != nil {
 		return l.Localize(t.config)
 	}
 

@@ -36,7 +36,7 @@ func NewUserError(description string) *UserError {
 
 // NewUserErrorl creates a new UserError using the message generated from the
 // passed i18n.Config as description.
-func NewUserErrorl(description i18n.Config) *UserError {
+func NewUserErrorl(description *i18n.Config) *UserError {
 	return NewCustomUserError().
 		WithDescriptionl(description)
 }
@@ -54,7 +54,7 @@ func (e *UserError) WithSimpleTitle(title string) *UserError {
 }
 
 // WithSimpleTitlel adds a plain title (max. 256 characters) to the error.
-func (e *UserError) WithSimpleTitlel(title i18n.Config) *UserError {
+func (e *UserError) WithSimpleTitlel(title *i18n.Config) *UserError {
 	e.embed.WithSimpleTitlel(title)
 	return e
 }
@@ -71,7 +71,7 @@ func (e *UserError) WithTitle(title string, url discord.URL) *UserError {
 }
 
 // WithTitlel adds a title (max. 256 characters) with a link to the error.
-func (e *UserError) WithTitlel(title i18n.Config, url discord.URL) *UserError {
+func (e *UserError) WithTitlel(title *i18n.Config, url discord.URL) *UserError {
 	e.embed.WithTitlel(title, url)
 	return e
 }
@@ -88,7 +88,7 @@ func (e *UserError) WithDescription(description string) *UserError {
 }
 
 // WithDescriptionl adds a description (max. 2048 characters) to the error.
-func (e *UserError) WithDescriptionl(description i18n.Config) *UserError {
+func (e *UserError) WithDescriptionl(description *i18n.Config) *UserError {
 	e.embed.WithDescriptionl(description)
 	return e
 }
@@ -122,7 +122,7 @@ func (e *UserError) WithSimpleFooter(text string) *UserError {
 }
 
 // WithSimpleFooterl adds a plain footer (max. 2048 characters) to the error.
-func (e *UserError) WithSimpleFooterl(text i18n.Config) *UserError {
+func (e *UserError) WithSimpleFooterl(text *i18n.Config) *UserError {
 	e.embed.WithSimpleFooterl(text)
 	return e
 }
@@ -139,7 +139,7 @@ func (e *UserError) WithFooter(text string, icon discord.URL) *UserError {
 }
 
 // WithFooterl adds a footer (max. 2048 character) with an icon to the error.
-func (e *UserError) WithFooterl(text i18n.Config, icon discord.URL) *UserError {
+func (e *UserError) WithFooterl(text *i18n.Config, icon discord.URL) *UserError {
 	e.embed.WithFooterl(text, icon)
 	return e
 }
@@ -168,7 +168,7 @@ func (e *UserError) WithSimpleAuthor(name string) *UserError {
 }
 
 // WithSimpleAuthorl adds a plain author (max. 256 characters) to the error.
-func (e *UserError) WithSimpleAuthorl(name i18n.Config) *UserError {
+func (e *UserError) WithSimpleAuthorl(name *i18n.Config) *UserError {
 	e.embed.WithSimpleAuthorl(name)
 	return e
 }
@@ -187,7 +187,7 @@ func (e *UserError) WithSimpleAuthorWithURL(name string, url discord.URL) *UserE
 
 // WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
 // the embed.
-func (e *UserError) WithSimpleAuthorWithURLl(name i18n.Config, url discord.URL) *UserError {
+func (e *UserError) WithSimpleAuthorWithURLl(name *i18n.Config, url discord.URL) *UserError {
 	e.embed.WithSimpleAuthorWithURLl(name, url)
 	return e
 }
@@ -205,7 +205,7 @@ func (e *UserError) WithAuthor(name string, icon discord.URL) *UserError {
 }
 
 // WithAuthorl adds an author (max 256 characters) with an icon to the error.
-func (e *UserError) WithAuthorl(name i18n.Config, icon discord.URL) *UserError {
+func (e *UserError) WithAuthorl(name *i18n.Config, icon discord.URL) *UserError {
 	e.embed.WithAuthorl(name, icon)
 	return e
 }
@@ -224,7 +224,7 @@ func (e *UserError) WithAuthorWithURL(name string, icon, url discord.URL) *UserE
 
 // WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
 // URL to the error.
-func (e *UserError) WithAuthorWithURLl(name i18n.Config, icon, url discord.URL) *UserError {
+func (e *UserError) WithAuthorWithURLl(name *i18n.Config, icon, url discord.URL) *UserError {
 	e.embed.WithAuthorWithURLl(name, icon, url)
 	return e
 }
@@ -248,7 +248,7 @@ func (e *UserError) WithField(name, value string) *UserError {
 // UserError to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (e *UserError) WithFieldl(name, value i18n.Config) *UserError {
+func (e *UserError) WithFieldl(name, value *i18n.Config) *UserError {
 	e.embed.WithFieldl(name, value)
 	return e
 }
@@ -274,7 +274,7 @@ func (e *UserError) WithInlinedField(name, value string) *UserError {
 // to the UserError to allow chaining.
 // Name or value may be empty, in which case the field won't have a name or
 // value.
-func (e *UserError) WithInlinedFieldl(name, value i18n.Config) *UserError {
+func (e *UserError) WithInlinedFieldl(name, value *i18n.Config) *UserError {
 	e.embed.WithInlinedFieldl(name, value)
 	return e
 }

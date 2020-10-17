@@ -118,9 +118,7 @@ func TestContext_Replyl(t *testing.T) {
 
 	m.SendText(*expect)
 
-	actual, err := ctx.Replyl(i18n.Config{
-		Term: term,
-	})
+	actual, err := ctx.Replyl(term.AsConfig())
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 
@@ -364,9 +362,7 @@ func TestContext_ReplylDM(t *testing.T) {
 	})
 	m.SendText(*expect)
 
-	actual, err := ctx.ReplylDM(i18n.Config{
-		Term: term,
-	})
+	actual, err := ctx.ReplylDM(term.AsConfig())
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 

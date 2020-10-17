@@ -54,7 +54,7 @@ func TestWaiter_Await(t *testing.T) {
 		}
 
 		expect := errors.NewUserInfol(timeoutInfo.
-			WithPlaceholders(timeoutInfoPlaceholders{
+			WithPlaceholders(&timeoutInfoPlaceholders{
 				ResponseUserMention: ctx.Author.Mention(),
 			}))
 

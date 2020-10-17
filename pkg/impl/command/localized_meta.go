@@ -16,11 +16,11 @@ type LocalizedMeta struct {
 	// They may not contain whitespace or dots.
 	Aliases []string
 	// ShortDescription is an optional short description of the command.
-	ShortDescription i18n.Config
+	ShortDescription *i18n.Config
 	// LongDescription is an optional long description of the command.
-	LongDescription i18n.Config
+	LongDescription *i18n.Config
 	// Examples contains optional example usages of the command.
-	Examples []i18n.Config
+	Examples []*i18n.Config
 	// Args is the argument configuration of the command.
 	// If this is left empty, the command won't accept any arguments.
 	Args plugin.ArgConfig

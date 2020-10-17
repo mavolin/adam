@@ -8,24 +8,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestQuickConfig(t *testing.T) {
+func TestNewTermConfig(t *testing.T) {
 	var term Term = "abc"
 
-	expect := Config{
-		Term: term,
-	}
+	expect := term.AsConfig()
 
 	actual := NewTermConfig(term)
 	assert.Equal(t, expect, actual)
 }
 
-func TestQuickFallbackConfig(t *testing.T) {
+func TestNewFallbackConfig(t *testing.T) {
 	var (
 		term     Term = "abc"
 		fallback      = "def"
 	)
 
-	expect := Config{
+	expect := &Config{
 		Term: term,
 		Fallback: Fallback{
 			Other: fallback,
@@ -71,7 +69,7 @@ func TestConfig_placeholdersToMap(t *testing.T) {
 		},
 		{
 			name: "struct",
-			placeholders: struct {
+			placeholders: &struct {
 				ThisIsFieldNumber1 string
 				JSONData           int
 				EvenMore           string
@@ -354,7 +352,7 @@ func TestLocalizer_Localize(t *testing.T) {
 		name                string
 		defaultPlaceholders map[string]interface{}
 		langFunc            func(*testing.T) LangFunc
-		config              Config
+		config              *Config
 		expect              string
 	}{
 		{
@@ -374,7 +372,7 @@ func TestLocalizer_Localize(t *testing.T) {
 					return "abc", nil
 				}
 			},
-			config: Config{
+			config: &Config{
 				Term:         "abc",
 				Placeholders: map[string]interface{}{"def": "ghi"},
 				Plural:       "jkl",
@@ -383,7 +381,7 @@ func TestLocalizer_Localize(t *testing.T) {
 		},
 		{
 			name: "fallback",
-			config: Config{
+			config: &Config{
 				Fallback: Fallback{
 					Other: "abc",
 				},
@@ -395,7 +393,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			defaultPlaceholders: map[string]interface{}{
 				"def": "ghi",
 			},
-			config: Config{
+			config: &Config{
 				Fallback: Fallback{
 					Other: "abc {{.def}}",
 				},
@@ -426,12 +424,12 @@ func TestLocalizer_Localize(t *testing.T) {
 	failureCases := []struct {
 		name     string
 		langFunc LangFunc
-		config   Config
+		config   *Config
 	}{
 		{
 			name:     "placeholders error",
 			langFunc: nil,
-			config: Config{
+			config: &Config{
 				Placeholders: []string{},
 			},
 		},
@@ -448,7 +446,7 @@ func TestLocalizer_Localize(t *testing.T) {
 		{
 			name:     "fallback error",
 			langFunc: nil,
-			config: Config{
+			config: &Config{
 				Fallback: Fallback{
 					Other: "{{{.Error}}",
 				},
@@ -463,8 +461,8 @@ func TestLocalizer_Localize(t *testing.T) {
 					f: c.langFunc,
 				}
 
-				if c.config.Term == "" {
-					c.config.Term = "term"
+				if c.config == nil {
+					c.config = NewTermConfig("term")
 				}
 
 				actual, err := l.Localize(c.config)
@@ -522,7 +520,7 @@ func TestLocalizer_MustLocalize(t *testing.T) {
 		var actual string
 
 		require.NotPanics(t, func() {
-			actual = l.MustLocalize(Config{
+			actual = l.MustLocalize(&Config{
 				Fallback: Fallback{
 					Other: expect,
 				},
@@ -537,7 +535,7 @@ func TestLocalizer_MustLocalize(t *testing.T) {
 		}
 
 		assert.Panics(t, func() {
-			l.MustLocalize(Config{})
+			l.MustLocalize(&Config{})
 		})
 	})
 }

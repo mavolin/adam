@@ -12,7 +12,7 @@ import (
 // Any duration less or equal to 90 seconds will displayed using seconds.
 // Otherwise the minuteConfig will be used.
 func genError(
-	d time.Duration, secondConfig i18n.Config, minuteConfig i18n.Config,
+	d time.Duration, secondConfig, minuteConfig *i18n.Config,
 ) *errors.ThrottlingError {
 	d = d.Round(time.Second)
 
@@ -20,7 +20,7 @@ func genError(
 		return nil
 	} else if d <= 90*time.Second { // display up to 90 seconds in seconds
 		return errors.NewThrottlingErrorl(secondConfig.
-			WithPlaceholders(secondPlaceholders{
+			WithPlaceholders(&secondPlaceholders{
 				Seconds: int(d / time.Second),
 			}))
 	}
@@ -30,7 +30,7 @@ func genError(
 	d = d.Round(time.Minute)
 
 	return errors.NewThrottlingErrorl(minuteConfig.
-		WithPlaceholders(minutePlaceholders{
+		WithPlaceholders(&minutePlaceholders{
 			Minutes: int(d / time.Minute),
 		}))
 }
