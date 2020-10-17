@@ -161,3 +161,26 @@ var (
 		"args.types.id.errors.not_a_number.flag",
 		"The `-{{.used_name}}`-flag must be a number.")
 )
+
+// =============================================================================
+// Choice
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	choiceName        = i18n.NewFallbackConfig("args.types.choice.name", "Choice")
+	choiceDescription = i18n.NewFallbackConfig(
+		"args.types.choice.Name",
+		"A choice is a list of elements from which you can to pick one. "+
+			"Refer to the help of the command to see all possible choices.")
+)
+
+// ================================ Error ================================
+
+var (
+	choiceInvalidErrorArg = i18n.NewFallbackConfig(
+		"args.types.choice.errors.invalid.arg", "`{{.raw}}` is not a valid choice for argument {{.position}}.")
+	choiceInvalidErrorFlag = i18n.NewFallbackConfig(
+		"args.types.choice.errors.invalid.flag", "`{{.raw}}` is not a valid choice for the `-{{.{{.used_name}}`-flag.")
+)
