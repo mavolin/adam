@@ -63,6 +63,14 @@ issues:
     # not a duplicate, but two types with delegate methods
     - path: ^pkg/errors/user_(info|error).go$
       linters: dupl
+    # parsers are long...
+    - path: ^pkg/impl/arg/.+_parser.go$
+      linters:
+       - funlen
+       - gocognit
+    # Text and AlphanumericID are not duplicates, parsing is just similar
+    - path: ^pkg/impl/arg/text_types.go$
+      linters: dupl
     # restriction functions tend to get long/complex
     - path: ^pkg/impl/restriction/
       linters:
@@ -80,11 +88,6 @@ issues:
       text: should not use dot imports
     # resolving inheritance, not complicated, just long
     - path: ^pkg/plugin/registered_(command|module).go$
-      linters:
-        - funlen
-        - gocognit
-    # parsers are long and complex...
-    - path: ^pkg/impl/arg/.+_parser.go$
       linters:
         - funlen
         - gocognit
