@@ -193,10 +193,23 @@ var (
 
 var (
 	memberName             = i18n.NewFallbackConfig("args.types.member.name", "Member")
-	memberDescriptionNoIDs = i18n.NewFallbackConfig("args.types.member.description.no_ids",
-		"A member is a mention of a user in a server. For example @Wumpus.")
-	memberDescriptionWithIDs = i18n.NewFallbackConfig("args.types.member.description.with_ids",
+	memberDescriptionNoIDs = i18n.NewFallbackConfig(
+		"args.types.member.description.no_ids", "A member is a mention of a user in a server. For example @Wumpus.")
+	memberDescriptionWithIDs = i18n.NewFallbackConfig(
+		"args.types.member.description.with_ids",
 		"A member is either a mention of a user in a server or their id. For example @Wumpus or 123456789098765432.")
+)
+
+// =============================================================================
+// MemberID
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	memberIDName        = i18n.NewFallbackConfig("args.types.member_id.name", "Member ID")
+	memberIDDescription = i18n.NewFallbackConfig(
+		"args.types.member_id.description", "The id of a server member. For example 123456789098765432.")
 )
 
 // =============================================================================
@@ -207,11 +220,9 @@ var (
 
 var (
 	userInvalidMentionWithRaw = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_mention_with_raw",
-		"{{.raw}} is not a valid mention.")
+		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid mention.")
 	userInvalidIDWithRaw = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id_with_raw",
-		"{{.raw}} is not a valid user id.")
+		"args.types.user.errors.invalid_id_with_raw", "{{.raw}} is not a valid user id.")
 
 	userInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.arg",
@@ -221,9 +232,7 @@ var (
 		"The mention in the `-{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
 
 	userInvalidIDArg = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id.arg",
-		"The user ID in argument {{.position}} is invalid.")
+		"args.types.user.errors.invalid_id.arg", "The user ID in argument {{.position}} is invalid.")
 	userInvalidIDFlag = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id.flag",
-		"The user ID in the `-{{.used_name}}`-flag is invalid.")
+		"args.types.user.errors.invalid_id.flag", "The user ID in the `-{{.used_name}}`-flag is invalid.")
 )

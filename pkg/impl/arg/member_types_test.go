@@ -2,7 +2,6 @@ package arg
 
 import (
 	"net/http"
-	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -140,31 +139,20 @@ func TestMember_Parse(t *testing.T) {
 	failureCasesWithMemberCall := []struct {
 		name string
 
-		raw         string
-		memberError httputil.HTTPError
-		allowIDs    bool
+		raw      string
+		allowIDs bool
 
 		expectArg, expectFlag *i18n.Config
 	}{
 		{
-			name: "mention - member not found",
-			raw:  "<@456>",
-			memberError: httputil.HTTPError{
-				Status:  http.StatusNotFound,
-				Code:    10013, // unknown user
-				Message: "Unknown user",
-			},
+			name:       "mention - member not found",
+			raw:        "<@456>",
 			expectArg:  userInvalidMentionArg,
 			expectFlag: userInvalidMentionFlag,
 		},
 		{
-			name: "id - member not found",
-			raw:  "456",
-			memberError: httputil.HTTPError{
-				Status:  http.StatusNotFound,
-				Code:    10013, // unknown user
-				Message: "Unknown user",
-			},
+			name:       "id - member not found",
+			raw:        "456",
 			allowIDs:   true,
 			expectArg:  userInvalidIDArg,
 			expectFlag: userInvalidIDFlag,
@@ -173,27 +161,131 @@ func TestMember_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCasesWithoutMember {
-			MemberAllowIDs = c.allowIDs
+			t.Run(c.name, func(t *testing.T) {
+				MemberAllowIDs = c.allowIDs
 
-			c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, c.ctx)
+				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, c.ctx)
 
-			c.ctx.Kind = KindArg
+				c.ctx.Kind = KindArg
 
-			_, actual := Member.Parse(nil, c.ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				_, actual := Member.Parse(nil, c.ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
 
-			c.ctx.Kind = KindFlag
+				c.ctx.Kind = KindFlag
 
-			c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, c.ctx)
+				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, c.ctx)
 
-			_, actual = Member.Parse(nil, c.ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				_, actual = Member.Parse(nil, c.ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+			})
 		}
 
 		for _, c := range failureCasesWithMemberCall {
-			srcMocker, _ := state.NewMocker(t)
+			t.Run(c.name, func(t *testing.T) {
+				srcMocker, _ := state.NewMocker(t)
 
-			MemberAllowIDs = c.allowIDs
+				MemberAllowIDs = c.allowIDs
+
+				ctx := &Context{
+					Context: &plugin.Context{
+						MessageCreateEvent: &state.MessageCreateEvent{
+							MessageCreateEvent: &gateway.MessageCreateEvent{
+								Message: discord.Message{
+									GuildID: 123,
+								},
+							},
+						},
+					},
+					Raw:  c.raw,
+					Kind: KindArg,
+				}
+
+				srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/456", httputil.HTTPError{
+					Status:  http.StatusNotFound,
+					Code:    10013, // unknown user
+					Message: "Unknown user",
+				})
+
+				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+
+				m, s := state.CloneMocker(srcMocker, t)
+
+				_, actual := Member.Parse(s, ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+
+				ctx.Kind = KindFlag
+
+				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+
+				_, s = state.CloneMocker(srcMocker, t)
+
+				_, actual = Member.Parse(s, ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+
+				m.Eval()
+			})
+		}
+	})
+}
+
+func TestMemberID_Parse(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		m, s := state.NewMocker(t)
+
+		ctx := &Context{
+			Context: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 123,
+						},
+					},
+				},
+			},
+			Raw: "456",
+		}
+
+		expect := &discord.Member{
+			User: discord.User{
+				ID: 456,
+			},
+		}
+
+		m.Member(ctx.GuildID, *expect)
+
+		actual, err := MemberID.Parse(s, ctx)
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		t.Run("invalid id", func(t *testing.T) {
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: "abc",
+			}
+
+			desc := userInvalidIDWithRaw
+			desc.Placeholders = attachDefaultPlaceholders(userInvalidIDWithRaw.Placeholders, ctx)
+
+			expect := errors.NewArgumentParsingErrorl(desc)
+
+			_, actual := MemberID.Parse(nil, ctx)
+			assert.Equal(t, expect, actual)
+		})
+
+		t.Run("member not found", func(t *testing.T) {
+			srcMocker, _ := state.NewMocker(t)
 
 			ctx := &Context{
 				Context: &plugin.Context{
@@ -205,39 +297,37 @@ func TestMember_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  c.raw,
+				Raw:  "456",
 				Kind: KindArg,
 			}
 
-			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+strconv.Itoa(456), c.memberError)
+			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/456", httputil.HTTPError{
+				Status:  http.StatusNotFound,
+				Code:    10013, // unknown user
+				Message: "Unknown user",
+			})
 
-			c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+			desc := userInvalidIDArg
+			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
+
+			expect := errors.NewArgumentParsingErrorl(desc)
 
 			_, s := state.CloneMocker(srcMocker, t)
 
-			_, actual := Member.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+			_, actual := MemberID.Parse(s, ctx)
+			assert.Equal(t, expect, actual)
 
-			ctx = &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
-				},
-				Raw:  c.raw,
-				Kind: KindFlag,
-			}
+			ctx.Kind = KindFlag
 
-			c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+			desc = userInvalidIDFlag
+			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
+
+			expect = errors.NewArgumentParsingErrorl(desc)
 
 			_, s = state.CloneMocker(srcMocker, t)
 
-			_, actual = Member.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
-		}
+			_, actual = MemberID.Parse(s, ctx)
+			assert.Equal(t, expect, actual)
+		})
 	})
 }

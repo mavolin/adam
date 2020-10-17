@@ -89,3 +89,44 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 func (m member) Default() interface{} {
 	return (*discord.Member)(nil)
 }
+
+// =============================================================================
+// MemberID
+// =====================================================================================
+
+var MemberID = memberID{}
+
+type memberID struct{}
+
+func (m memberID) Name(l *i18n.Localizer) string {
+	name, _ := l.Localize(memberIDName) // we have a fallback
+	return name
+}
+
+func (m memberID) Description(l *i18n.Localizer) string {
+	desc, _ := l.Localize(memberIDDescription) // we have a fallback
+	return desc
+}
+
+func (m memberID) Parse(s *state.State, ctx *Context) (interface{}, error) {
+	err := restriction.ChannelTypes(plugin.GuildChannels)(s, ctx.Context)
+	if err != nil {
+		return nil, err
+	}
+
+	mid, err := discord.ParseSnowflake(ctx.Raw)
+	if err != nil {
+		return nil, newArgParsingErr(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
+	}
+
+	member, err := s.Member(ctx.GuildID, discord.UserID(mid))
+	if err != nil {
+		return nil, newArgParsingErr(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
+	}
+
+	return member, nil
+}
+
+func (m memberID) Default() interface{} {
+	return (*discord.Member)(nil)
+}
