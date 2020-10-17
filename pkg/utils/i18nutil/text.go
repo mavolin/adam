@@ -11,21 +11,22 @@ type Text struct {
 
 // NewText returns a new unlocalized Text.
 func NewText(src string) Text {
-	return Text{
-		string: src,
-	}
+	return Text{string: src}
 }
 
-// NewTextl returns a new localized Text.
+// NewTextl returns a new localized Text using the passed i18n.Config.
 func NewTextl(src i18n.Config) Text {
-	return Text{
-		config: src,
-	}
+	return Text{config: src}
 }
 
-// IsEmpty checks if the Text has no content.
-func (t Text) IsEmpty() bool {
-	return len(t.string) == 0 && !t.config.IsValid()
+// NewTextl returns a new localized Text using the passed i18n.Term.
+func NewTextlt(src i18n.Term) Text {
+	return NewTextl(src.AsConfig())
+}
+
+// IsValid checks if the Text has no content.
+func (t Text) IsValid() bool {
+	return len(t.string) != 0 || t.config.IsValid()
 }
 
 // Get retrieves the value of the Text and localizes it, if possible.

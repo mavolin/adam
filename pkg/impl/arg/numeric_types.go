@@ -9,6 +9,7 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // =============================================================================
@@ -16,7 +17,8 @@ import (
 // =====================================================================================
 
 // Integer is the type used for whole numbers.
-// It uses int as underlying type.
+//
+// Go type: int
 type Integer struct {
 	// Min is the inclusive minimum of the integer.
 	// If Min is nil, there is no minimum.
@@ -101,6 +103,9 @@ func (i Integer) Default() interface{} {
 // Decimal
 // =====================================================================================
 
+// Decimal is the Type used for decimal numbers.
+//
+// Go type: float64
 type Decimal struct {
 	Min *float64
 	Max *float64
@@ -177,4 +182,87 @@ func (i Decimal) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 
 func (i Decimal) Default() interface{} {
 	return float64(0)
+}
+
+// =============================================================================
+// NumericID
+// =====================================================================================
+
+// NumericID is the Type used for IDs consisting only of numbers.
+// Additionally, ids must be positive.
+// By default, NumericIDs share the same name and description as
+// AlphanumericIDs, simply their definition differs.
+//
+// In contrast to an AlphaNumericID, a NumericID returns uint64s.
+// This also means, it is capped at 64 bit positive integers.
+// If your IDs exceed that limit, use a AlphanumericID with a regular
+// expression.
+//
+// Go type: uint64
+type NumericID struct {
+	// CustomName allows you to set a custom name for the id.
+	// If not set, the default name will be used.
+	CustomName i18nutil.Text
+	// CustomDescription allows you to set a custom description for the id.
+	// If not set, the default description will be used.
+	CustomDescription i18nutil.Text
+
+	// MinLength is the inclusive minimum length the ID may have.
+	MinLength uint
+	// MaxLength is the inclusive maximum length the text may have.
+	// If MaxLength is 0, the text won't have a maximum.
+	MaxLength uint
+}
+
+// SimpleNumericID is a NumericID with no length boundaries and no custom name
+// or description.
+var SimpleNumericID = NumericID{}
+
+func (id NumericID) Name(l *i18n.Localizer) string {
+	if id.CustomName.IsValid() {
+		name, err := id.CustomName.Get(l)
+		if err == nil {
+			return name
+		}
+	}
+
+	name, _ := l.Localize(idName) // we have id fallback
+	return name
+}
+
+func (id NumericID) Description(l *i18n.Localizer) string {
+	if id.CustomDescription.IsValid() {
+		desc, err := id.CustomDescription.Get(l)
+		if err == nil {
+			return desc
+		}
+	}
+
+	desc, _ := l.Localize(idDescription) // we have id fallback
+	return desc
+}
+
+func (id NumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+	parsed, err := strconv.ParseUint(ctx.Raw, 10, 64)
+	if err != nil {
+		return nil, newArgParsingErr(idNotANumberErrorArg, idNotANumberErrorFlag, ctx, nil)
+	}
+
+	if uint(len(ctx.Raw)) < id.MinLength {
+		return nil, newArgParsingErr(
+			idBelowMinLengthErrorArg, idBelowMinLengthErrorFlag, ctx, map[string]interface{}{
+				"min": id.MinLength,
+			})
+	} else if id.MaxLength > 0 && uint(len(ctx.Raw)) > id.MaxLength {
+		return nil, newArgParsingErr(
+			idAboveMaxLengthErrorArg, idAboveMaxLengthErrorFlag, ctx, map[string]interface{}{
+				"max": id.MaxLength,
+			})
+	}
+
+	return parsed, nil
+}
+
+func (id NumericID) Default() interface{} {
+	panic("implement me")
 }
