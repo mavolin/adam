@@ -15,7 +15,7 @@ var (
 	// DefaultWaiter is the waiter used for NewDefaultWaiter.
 	// DefaultWaiter must not be used directly to handleMessages reply.
 	DefaultWaiter = &Waiter{
-		cancelKeywords: []i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
+		cancelKeywords: []*i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
 	}
 
 	// TimeExtensionReaction is the reaction used to prolong the wait for
@@ -46,7 +46,7 @@ type (
 		// 		• timeExtensions > 0: timeExtension times
 		timeExtensions int
 
-		cancelKeywords  []i18nutil.Text
+		cancelKeywords  []*i18nutil.Text
 		cancelReactions []cancelReaction
 
 		middlewares []interface{}
@@ -188,7 +188,7 @@ func (w *Waiter) copy() (cp *Waiter) {
 		timeExtensions: w.timeExtensions,
 	}
 
-	cp.cancelKeywords = make([]i18nutil.Text, len(w.cancelKeywords))
+	cp.cancelKeywords = make([]*i18nutil.Text, len(w.cancelKeywords))
 	copy(cp.cancelKeywords, w.cancelKeywords)
 
 	cp.cancelReactions = make([]cancelReaction, len(w.cancelReactions))

@@ -9,7 +9,7 @@ import (
 )
 
 type raw struct {
-	desc i18nutil.Text
+	desc *i18nutil.Text
 }
 
 // Raw is a plugin.ArgConfig that returns the arguments as

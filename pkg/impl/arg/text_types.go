@@ -30,6 +30,8 @@ type Text struct {
 	Regexp *regexp.Regexp
 	// RegexpErrorArg is the error message used if an argument doesn't match
 	// the regular expression defined.
+	// If you want an unlocalized error, just fill Fallback.Other field of the
+	// config.
 	//
 	// Available Placeholders are:
 	//
@@ -42,6 +44,8 @@ type Text struct {
 	RegexpErrorArg *i18n.Config
 	// RegexpErrorFlag is the error message used if a flag doesn't match the
 	// regular expression defined.
+	// If you want an unlocalized error, just fill Fallback.Other field of the
+	// config.
 	//
 	// Available Placeholders are:
 	//
@@ -100,6 +104,95 @@ func (t Text) Default() interface{} {
 }
 
 // =============================================================================
+// Link
+// =====================================================================================
+
+// DefaultLinkRegexp is the regular expression used to match links by default.
+//
+// This is an adapted version of the regular expression found at:
+// http://urlregex.com/.
+var DefaultLinkRegexp = regexp.MustCompile(
+	`^https?://` + // protocol
+		`(?:\d{1,3}(?:\.\d{1,3}){3}|` + // ip address
+		`(?:[a-z\d\x{00a1}-\x{ffff}]+-)*[a-z\d\x{00a1}-\x{ffff}]+` + // second- and third-level domain
+		`(?:\.(?:[a-z\d\x{00a1}-\x{ffff}]+-?)*[a-z\d\x{00a1}-\x{ffff}]+)*` + // first part of top-level domain
+		`(?:\.[a-z\x{00a1}-\x{ffff}]{2,6}))` + // last part of the top-level domain
+		`(?::\d+)?` + // port
+		`(?:[^\s]*)?$`, // path
+)
+
+// Link is the Type used for URLs.
+type Link struct {
+	// Regexp is the regular expression the link needs to match to pass.
+	//
+	// Defaults to: DefaultLinkRegexp
+	Regexp *regexp.Regexp
+	// RegexpErrorArg is the error message used if an argument doesn't match
+	// the regular expression defined.
+	// If you want an unlocalized error, just fill Fallback.Other field of the
+	// config.
+	//
+	// Available Placeholders are:
+	//
+	// 		• name - the name of the argument
+	// 		• raw - the raw argument
+	// 		• position - the position of the id (1-indexed)
+	// 		• regexp - the regular expression that needs to be matched
+	//
+	// Defaults to: regexpNotMatchingErrorArg
+	RegexpErrorArg *i18n.Config
+	// RegexpErrorFlag is the error message used if a flag doesn't match the
+	// regular expression defined.
+	// If you want an unlocalized error, just fill Fallback.Other field of the
+	// config.
+	//
+	// Available Placeholders are:
+	//
+	// 		• name - the full name of the flag
+	// 		• used_name - the name of the flag the invoking user used
+	// 		• raw - the raw flag without the flags name
+	// 		• regexp - the regular expression that needs to be matched
+	//
+	// Defaults to: regexpNotMatchingErrorFlag
+	RegexpErrorFlag *i18n.Config
+}
+
+// SimpleLink is a link that uses no custom regular expression.
+var SimpleLink = new(Link)
+
+func (l Link) Name(loc *i18n.Localizer) string {
+	name, _ := loc.Localize(linkName) // we have a fallback
+	return name
+}
+
+func (l Link) Description(loc *i18n.Localizer) string {
+	desc, _ := loc.Localize(linkDescription)
+	return desc
+}
+
+func (l Link) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+	if l.Regexp == nil {
+		l.Regexp = DefaultLinkRegexp
+	}
+
+	if !l.Regexp.MatchString(ctx.Raw) {
+		if ctx.Kind == KindArg && l.RegexpErrorArg == nil {
+			l.RegexpErrorArg = linkInvalidErrorArg
+		} else if ctx.Kind == KindFlag && l.RegexpErrorFlag == nil {
+			l.RegexpErrorFlag = linkInvalidErrorFlag
+		}
+
+		return nil, newArgParsingErr(l.RegexpErrorArg, l.RegexpErrorFlag, ctx, nil)
+	}
+
+	return ctx.Raw, nil
+}
+
+func (l Link) Default() interface{} {
+	return ""
+}
+
+// =============================================================================
 // AlphanumericID
 // =====================================================================================
 
@@ -114,10 +207,10 @@ func (t Text) Default() interface{} {
 type AlphanumericID struct {
 	// CustomName allows you to set a custom name for the id.
 	// If not set, the default name will be used.
-	CustomName i18nutil.Text
+	CustomName *i18nutil.Text
 	// CustomDescription allows you to set a custom description for the id.
 	// If not set, the default description will be used.
-	CustomDescription i18nutil.Text
+	CustomDescription *i18nutil.Text
 
 	// MinLength is the inclusive minimum length the ID may have.
 	MinLength uint
@@ -125,9 +218,12 @@ type AlphanumericID struct {
 	// If MaxLength is 0, the text won't have a maximum.
 	MaxLength uint
 
+	// Regexp is the regular expression the id needs to match to pass.
 	Regexp *regexp.Regexp
 	// RegexpErrorArg is the error message used if an argument doesn't match
 	// the regular expression defined.
+	// If you want an unlocalized error, just fill Fallback.Other field of the
+	// config.
 	//
 	// Available Placeholders are:
 	//
@@ -140,6 +236,8 @@ type AlphanumericID struct {
 	RegexpErrorArg *i18n.Config
 	// RegexpErrorFlag is the error message used if a flag doesn't match the
 	// regular expression defined.
+	// If you want an unlocalized error, just fill Fallback.Other field of the
+	// config.
 	//
 	// Available Placeholders are:
 	//
@@ -155,7 +253,7 @@ type AlphanumericID struct {
 var SimpleAlphanumericID = new(AlphanumericID)
 
 func (id AlphanumericID) Name(l *i18n.Localizer) string {
-	if id.CustomName.IsValid() {
+	if id.CustomName != nil {
 		name, err := id.CustomName.Get(l)
 		if err == nil {
 			return name
@@ -167,7 +265,7 @@ func (id AlphanumericID) Name(l *i18n.Localizer) string {
 }
 
 func (id AlphanumericID) Description(l *i18n.Localizer) string {
-	if id.CustomDescription.IsValid() {
+	if id.CustomDescription != nil {
 		desc, err := id.CustomDescription.Get(l)
 		if err == nil {
 			return desc

@@ -202,10 +202,10 @@ func (i Decimal) Default() interface{} {
 type NumericID struct {
 	// CustomName allows you to set a custom name for the id.
 	// If not set, the default name will be used.
-	CustomName i18nutil.Text
+	CustomName *i18nutil.Text
 	// CustomDescription allows you to set a custom description for the id.
 	// If not set, the default description will be used.
-	CustomDescription i18nutil.Text
+	CustomDescription *i18nutil.Text
 
 	// MinLength is the inclusive minimum length the id may have.
 	MinLength uint
@@ -219,7 +219,7 @@ type NumericID struct {
 var SimpleNumericID = new(NumericID)
 
 func (id NumericID) Name(l *i18n.Localizer) string {
-	if id.CustomName.IsValid() {
+	if id.CustomName != nil {
 		name, err := id.CustomName.Get(l)
 		if err == nil {
 			return name
@@ -231,7 +231,7 @@ func (id NumericID) Name(l *i18n.Localizer) string {
 }
 
 func (id NumericID) Description(l *i18n.Localizer) string {
-	if id.CustomDescription.IsValid() {
+	if id.CustomDescription != nil {
 		desc, err := id.CustomDescription.Get(l)
 		if err == nil {
 			return desc

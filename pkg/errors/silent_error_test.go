@@ -26,14 +26,14 @@ func TestSilent(t *testing.T) {
 		cause := WithStack(expectCause)
 
 		actual := Silent(cause)
-		assert.Equal(t, expectCause, actual.cause)
+		assert.Equal(t, expectCause, actual.(*SilentError).cause)
 	})
 
 	t.Run("normal error", func(t *testing.T) {
 		cause := New("abc")
 
 		err := Silent(cause)
-		assert.Equal(t, cause, err.cause)
+		assert.Equal(t, cause, err.(*SilentError).cause)
 	})
 }
 

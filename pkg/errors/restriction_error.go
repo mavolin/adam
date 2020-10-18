@@ -31,7 +31,7 @@ var (
 // error and not using an embed, which suppresses mentions by default.
 type RestrictionError struct {
 	// description of the error
-	desc i18nutil.Text
+	desc *i18nutil.Text
 
 	// Fatal defines if the RestrictionError is fatal.
 	// Fatal errors won't be shown in the help message.

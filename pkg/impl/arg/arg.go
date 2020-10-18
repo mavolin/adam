@@ -21,16 +21,16 @@ type (
 	// RequiredArg is a required argument.
 	RequiredArg struct {
 		// Name is the name of the argument.
-		Name i18nutil.Text
+		Name *i18nutil.Text
 		// Type is the type of the argument.
 		Type Type
 		// Description is an optional short description of the argument.
-		Description i18nutil.Text
+		Description *i18nutil.Text
 	}
 	// OptionalArg is a optional argument.
 	OptionalArg struct {
 		// Name is the name of the argument.
-		Name i18nutil.Text
+		Name *i18nutil.Text
 		// Type is the type of the argument.
 		Type Type
 		// Default is the default value of the argument.
@@ -39,7 +39,7 @@ type (
 		// as returned by Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the argument.
-		Description i18nutil.Text
+		Description *i18nutil.Text
 	}
 	// Flag is a flag.
 	Flag struct {
@@ -56,7 +56,7 @@ type (
 		// as returned by Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the flag.
-		Description i18nutil.Text
+		Description *i18nutil.Text
 		// Multi specifies whether this flag can be used multiple times.
 		Multi bool
 	}

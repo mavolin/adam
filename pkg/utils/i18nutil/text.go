@@ -10,32 +10,31 @@ type Text struct {
 }
 
 // NewText returns a new unlocalized Text.
-func NewText(src string) Text {
-	return Text{string: src}
+func NewText(src string) *Text {
+	return &Text{string: src}
 }
 
 // NewTextl returns a new localized Text using the passed i18n.Config.
-func NewTextl(src *i18n.Config) Text {
-	return Text{config: src}
+func NewTextl(src *i18n.Config) *Text {
+	if src == nil {
+		return nil
+	}
+
+	return &Text{config: src}
 }
 
 // NewTextl returns a new localized Text using the passed i18n.Term.
-func NewTextlt(src i18n.Term) Text {
+func NewTextlt(src i18n.Term) *Text {
 	return NewTextl(src.AsConfig())
 }
 
-// IsValid checks if the Text has no content.
-func (t Text) IsValid() bool {
-	return len(t.string) != 0 || t.config != nil
-}
-
 // Get retrieves the value of the Text and localizes it, if possible.
-func (t Text) Get(l *i18n.Localizer) (string, error) {
-	if t.string != "" {
-		return t.string, nil
+func (t *Text) Get(l *i18n.Localizer) (string, error) {
+	if t == nil {
+		return "", nil
 	} else if t.config != nil {
 		return l.Localize(t.config)
 	}
 
-	return "", nil
+	return t.string, nil
 }

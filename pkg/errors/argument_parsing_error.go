@@ -11,7 +11,7 @@ import (
 // ArgumentParsingError is the error used if an argument or flag a user
 // supplied is invalid.
 type ArgumentParsingError struct {
-	desc i18nutil.Text
+	desc *i18nutil.Text
 }
 
 var _ Interface = new(ArgumentParsingError)

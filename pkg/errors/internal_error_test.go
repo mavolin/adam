@@ -92,7 +92,7 @@ func TestWithDescription(t *testing.T) {
 
 		err := WithDescription(cause, desc)
 		assert.True(t, err == cause)
-		assert.Equal(t, i18nutil.NewText(desc), err.desc)
+		assert.Equal(t, i18nutil.NewText(desc), err.(*InternalError).desc)
 	})
 
 	t.Run("normal error", func(t *testing.T) {
@@ -102,8 +102,8 @@ func TestWithDescription(t *testing.T) {
 		)
 
 		err := WithDescription(cause, desc)
-		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, i18nutil.NewText(desc), err.desc)
+		assert.Equal(t, cause, err.(*InternalError).cause)
+		assert.Equal(t, i18nutil.NewText(desc), err.(*InternalError).desc)
 	})
 }
 
@@ -131,8 +131,8 @@ func TestWithDescriptionf(t *testing.T) {
 		)
 
 		err := WithDescriptionf(cause, "def %s", "ghi")
-		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, i18nutil.NewText(desc), err.desc)
+		assert.Equal(t, cause, err.(*InternalError).cause)
+		assert.Equal(t, i18nutil.NewText(desc), err.(*InternalError).desc)
 	})
 }
 
@@ -160,8 +160,8 @@ func TestWithDescriptionl(t *testing.T) {
 		)
 
 		err := WithDescriptionl(cause, desc)
-		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, i18nutil.NewTextl(desc), err.desc)
+		assert.Equal(t, cause, err.(*InternalError).cause)
+		assert.Equal(t, i18nutil.NewTextl(desc), err.(*InternalError).desc)
 	})
 }
 
@@ -189,8 +189,8 @@ func TestWithDescriptionlt(t *testing.T) {
 		)
 
 		err := WithDescriptionlt(cause, desc)
-		assert.Equal(t, cause, err.cause)
-		assert.Equal(t, i18nutil.NewTextl(desc.AsConfig()), err.desc)
+		assert.Equal(t, cause, err.(*InternalError).cause)
+		assert.Equal(t, i18nutil.NewTextl(desc.AsConfig()), err.(*InternalError).desc)
 	})
 }
 
@@ -200,7 +200,7 @@ func TestInternalError_Description(t *testing.T) {
 
 		err := WithDescription(New(""), expect)
 
-		actual := err.Description(mock.NoOpLocalizer)
+		actual := err.(*InternalError).Description(mock.NoOpLocalizer)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -216,15 +216,8 @@ func TestInternalError_Description(t *testing.T) {
 
 		err := WithDescriptionlt(New(""), term)
 
-		actual := err.Description(l)
+		actual := err.(*InternalError).Description(l)
 		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("invalid description", func(t *testing.T) {
-		err := WithDescription(New(""), "")
-
-		actual := err.Description(mock.NoOpLocalizer)
-		assert.NotEmpty(t, actual)
 	})
 }
 
@@ -264,7 +257,7 @@ func TestInternalError_Handle(t *testing.T) {
 
 	e := WithDescription(New(""), expectDesc)
 
-	err := e.Handle(s, ctx)
+	err := e.(*InternalError).Handle(s, ctx)
 	require.NoError(t, err)
 
 	m.Eval()
