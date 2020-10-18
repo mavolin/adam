@@ -9,6 +9,8 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
+// parseHelper is a helper struct that aids in parsing plugin.ArgConfigs.
+// It assumes flags always start with a single minus ('-').
 type parseHelper struct {
 	rargData []RequiredArg
 	oargData []OptionalArg
@@ -181,8 +183,8 @@ func (h *parseHelper) addFlag(flag *Flag, usedName, content string) (err error) 
 		ctx := &Context{
 			Context:  h.ctx,
 			Raw:      content,
-			Name:     flag.Name,
-			UsedName: usedName,
+			Name:     "-" + flag.Name,
+			UsedName: "-" + usedName,
 			Kind:     KindFlag,
 		}
 
