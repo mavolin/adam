@@ -42,7 +42,7 @@ func CanMembersInteract(g discord.Guild, a, b discord.Member) bool {
 }
 
 // CanMemberInteractWithRole checks if the passed Member can take
-// administrative action on the role with the passed ID.
+// administrative action on the role with the passed id.
 // Both member and role must be in the passed guild.
 func CanMemberInteractWithRole(g discord.Guild, m discord.Member, roleID discord.RoleID) bool {
 	if g.OwnerID == m.User.ID {

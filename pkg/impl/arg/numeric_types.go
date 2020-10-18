@@ -30,7 +30,7 @@ type Integer struct {
 
 var (
 	// SimpleInteger is an Integer with no bounds.
-	SimpleInteger = Integer{}
+	SimpleInteger = new(Integer)
 	// PositiveInteger is an Integer with inclusive minimum 0.
 	PositiveInteger = IntegerWithMin(0)
 	// NegativeInteger is an Integer with inclusive maximum -1.
@@ -38,19 +38,19 @@ var (
 )
 
 // IntegerWithMin creates a new Integer with the passed inclusive minimum.
-func IntegerWithMin(min int) Integer {
-	return Integer{Min: &min}
+func IntegerWithMin(min int) *Integer {
+	return &Integer{Min: &min}
 }
 
 // IntegerWithMax creates a new Integer with the passed inclusive maximum.
-func IntegerWithMax(max int) Integer {
-	return Integer{Max: &max}
+func IntegerWithMax(max int) *Integer {
+	return &Integer{Max: &max}
 }
 
 // IntegerWithBounds creates a new Integer with the passed inclusive minimum
 // and maximum.
-func IntegerWithBounds(min, max int) Integer {
-	return Integer{
+func IntegerWithBounds(min, max int) *Integer {
+	return &Integer{
 		Min: &min,
 		Max: &max,
 	}
@@ -113,7 +113,7 @@ type Decimal struct {
 
 var (
 	// SimpleDecimal is a decimal with no bounds
-	SimpleDecimal = Decimal{}
+	SimpleDecimal = new(Decimal)
 	// PositiveDecimal is an Decimal with inclusive minimum 0.
 	PositiveDecimal = DecimalWithMin(0)
 	// NegativeDecimal is an Decimal with inclusive maximum -1.
@@ -188,7 +188,7 @@ func (i Decimal) Default() interface{} {
 // NumericID
 // =====================================================================================
 
-// NumericID is the Type used for IDs consisting only of numbers.
+// NumericID is the Type used for ids consisting only of numbers.
 // Additionally, ids must be positive.
 // By default, NumericIDs share the same name and description as
 // AlphanumericIDs, simply their definition differs.
@@ -207,7 +207,7 @@ type NumericID struct {
 	// If not set, the default description will be used.
 	CustomDescription i18nutil.Text
 
-	// MinLength is the inclusive minimum length the ID may have.
+	// MinLength is the inclusive minimum length the id may have.
 	MinLength uint
 	// MaxLength is the inclusive maximum length the text may have.
 	// If MaxLength is 0, the text won't have a maximum.
@@ -216,7 +216,7 @@ type NumericID struct {
 
 // SimpleNumericID is a NumericID with no length boundaries and no custom name
 // or description.
-var SimpleNumericID = NumericID{}
+var SimpleNumericID = new(NumericID)
 
 func (id NumericID) Name(l *i18n.Localizer) string {
 	if id.CustomName.IsValid() {

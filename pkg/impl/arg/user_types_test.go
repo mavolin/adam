@@ -17,49 +17,32 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-func TestMember_Parse(t *testing.T) {
+func TestUser_Parse(t *testing.T) {
 	successCases := []struct {
 		name string
 
 		ctx *Context
 
-		expect *discord.Member
+		expect *discord.User
 	}{
 		{
 			name: "mention fallback",
 			ctx: &Context{
 				Context: &plugin.Context{
 					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
+						MessageCreateEvent: new(gateway.MessageCreateEvent),
 					},
 				},
-				Raw: "<@456>",
+				Raw: "<@123>",
 			},
-			expect: &discord.Member{
-				User: discord.User{ID: 456},
-			},
+			expect: &discord.User{ID: 123},
 		},
 		{
 			name: "id",
 			ctx: &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
-				},
-				Raw: "456",
+				Raw: "123",
 			},
-			expect: &discord.Member{
-				User: discord.User{ID: 456},
-			},
+			expect: &discord.User{ID: 123},
 		},
 	}
 
@@ -68,9 +51,9 @@ func TestMember_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
 
-				m.Member(c.ctx.GuildID, *c.expect)
+				m.User(*c.expect)
 
-				actual, err := Member.Parse(s, c.ctx)
+				actual, err := User.Parse(s, c.ctx)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
 
@@ -79,31 +62,26 @@ func TestMember_Parse(t *testing.T) {
 		}
 
 		t.Run("mention", func(t *testing.T) {
-			expect := &discord.Member{
-				User: discord.User{ID: 456},
-				Deaf: true,
-			}
+			expect := &discord.User{ID: 123}
 
 			ctx := &Context{
 				Context: &plugin.Context{
 					MessageCreateEvent: &state.MessageCreateEvent{
 						MessageCreateEvent: &gateway.MessageCreateEvent{
 							Message: discord.Message{
-								GuildID: 123,
 								Mentions: []discord.GuildUser{
 									{
-										User:   discord.User{ID: 456},
-										Member: &discord.Member{Deaf: true},
+										User: *expect,
 									},
 								},
 							},
 						},
 					},
 				},
-				Raw: expect.User.Mention(),
+				Raw: expect.Mention(),
 			}
 
-			actual, err := Member.Parse(nil, ctx)
+			actual, err := User.Parse(nil, ctx)
 			require.NoError(t, err)
 			assert.Equal(t, expect, actual)
 		})
@@ -112,15 +90,6 @@ func TestMember_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
 			ctx := &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
-				},
 				Raw:  "<@" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
 				Kind: KindArg,
 			}
@@ -128,7 +97,7 @@ func TestMember_Parse(t *testing.T) {
 			expect := userInvalidMentionArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
-			_, actual := Member.Parse(nil, ctx)
+			_, actual := User.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			ctx.Kind = KindFlag
@@ -136,30 +105,26 @@ func TestMember_Parse(t *testing.T) {
 			expect = userInvalidMentionFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
-			_, actual = Member.Parse(nil, ctx)
+			_, actual = User.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
-		t.Run("mention member not found", func(t *testing.T) {
+		t.Run("mention user not found", func(t *testing.T) {
 			srcMocker, _ := state.NewMocker(t)
 
-			var userID discord.UserID = 456
+			var userID discord.UserID = 123
 
 			ctx := &Context{
 				Context: &plugin.Context{
 					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
+						MessageCreateEvent: new(gateway.MessageCreateEvent),
 					},
 				},
 				Raw:  userID.Mention(),
 				Kind: KindArg,
 			}
 
-			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
+			srcMocker.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
@@ -170,7 +135,7 @@ func TestMember_Parse(t *testing.T) {
 
 			m, s := state.CloneMocker(srcMocker, t)
 
-			_, actual := Member.Parse(s, ctx)
+			_, actual := User.Parse(s, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			m.Eval()
@@ -182,7 +147,7 @@ func TestMember_Parse(t *testing.T) {
 
 			m, s = state.CloneMocker(srcMocker, t)
 
-			_, actual = Member.Parse(s, ctx)
+			_, actual = User.Parse(s, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			m.Eval()
@@ -190,15 +155,6 @@ func TestMember_Parse(t *testing.T) {
 
 		t.Run("invalid id", func(t *testing.T) {
 			ctx := &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
-				},
 				Raw:  "abc",
 				Kind: KindArg,
 			}
@@ -206,7 +162,7 @@ func TestMember_Parse(t *testing.T) {
 			expect := userInvalidIDWithRaw
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
-			_, actual := Member.Parse(nil, ctx)
+			_, actual := User.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			ctx.Kind = KindFlag
@@ -214,30 +170,21 @@ func TestMember_Parse(t *testing.T) {
 			expect = userInvalidIDWithRaw
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
-			_, actual = Member.Parse(nil, ctx)
+			_, actual = User.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
 		t.Run("id user not found", func(t *testing.T) {
 			srcMocker, _ := state.NewMocker(t)
 
-			var userID discord.UserID = 456
+			var userID discord.UserID = 123
 
 			ctx := &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
-				},
-				Raw:  userID.String(),
+				Raw:  "123",
 				Kind: KindArg,
 			}
 
-			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
+			srcMocker.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
@@ -248,7 +195,7 @@ func TestMember_Parse(t *testing.T) {
 
 			m, s := state.CloneMocker(srcMocker, t)
 
-			_, actual := Member.Parse(s, ctx)
+			_, actual := User.Parse(s, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			m.Eval()
@@ -260,7 +207,7 @@ func TestMember_Parse(t *testing.T) {
 
 			m, s = state.CloneMocker(srcMocker, t)
 
-			_, actual = Member.Parse(s, ctx)
+			_, actual = User.Parse(s, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			m.Eval()
@@ -268,32 +215,17 @@ func TestMember_Parse(t *testing.T) {
 	})
 }
 
-func TestMemberID_Parse(t *testing.T) {
+func TestUserID_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := state.NewMocker(t)
 
-		ctx := &Context{
-			Context: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
-			},
-			Raw: "456",
-		}
+		ctx := &Context{Raw: "456"}
 
-		expect := &discord.Member{
-			User: discord.User{
-				ID: 456,
-			},
-		}
+		expect := &discord.User{ID: 456}
 
-		m.Member(ctx.GuildID, *expect)
+		m.User(*expect)
 
-		actual, err := MemberID.Parse(s, ctx)
+		actual, err := UserID.Parse(s, ctx)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 
@@ -302,46 +234,26 @@ func TestMemberID_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		t.Run("invalid id", func(t *testing.T) {
-			ctx := &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
-				},
-				Raw: "abc",
-			}
+			ctx := &Context{Raw: "abc"}
 
 			desc := userInvalidIDWithRaw
 			desc.Placeholders = attachDefaultPlaceholders(userInvalidIDWithRaw.Placeholders, ctx)
 
 			expect := errors.NewArgumentParsingErrorl(desc)
 
-			_, actual := MemberID.Parse(nil, ctx)
+			_, actual := UserID.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 		})
 
-		t.Run("member not found", func(t *testing.T) {
+		t.Run("user not found", func(t *testing.T) {
 			srcMocker, _ := state.NewMocker(t)
 
 			ctx := &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
-				},
 				Raw:  "456",
 				Kind: KindArg,
 			}
 
-			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/456", httputil.HTTPError{
+			srcMocker.Error(http.MethodGet, "/users/456", httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
@@ -354,7 +266,7 @@ func TestMemberID_Parse(t *testing.T) {
 
 			_, s := state.CloneMocker(srcMocker, t)
 
-			_, actual := MemberID.Parse(s, ctx)
+			_, actual := UserID.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
@@ -366,7 +278,7 @@ func TestMemberID_Parse(t *testing.T) {
 
 			_, s = state.CloneMocker(srcMocker, t)
 
-			_, actual = MemberID.Parse(s, ctx)
+			_, actual = UserID.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
 		})
 	})

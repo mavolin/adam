@@ -55,7 +55,7 @@ type Text struct {
 }
 
 // SimpleText is a Text with no length boundaries and no regular expression.
-var SimpleText = Text{}
+var SimpleText = new(Text)
 
 func (t Text) Name(l *i18n.Localizer) string {
 	name, _ := l.Localize(textName) // we have a fallback
@@ -103,7 +103,7 @@ func (t Text) Default() interface{} {
 // AlphanumericID
 // =====================================================================================
 
-// AlphanumericID is a Type for alphanumeric IDs.
+// AlphanumericID is a Type for alphanumeric ids.
 // By default AlphanumericIDs share the same name and description as a
 // NumericID, simply their definition differs.
 //
@@ -152,7 +152,7 @@ type AlphanumericID struct {
 	RegexpErrorFlag *i18n.Config
 }
 
-var SimpleAlphanumericID = AlphanumericID{}
+var SimpleAlphanumericID = new(AlphanumericID)
 
 func (id AlphanumericID) Name(l *i18n.Localizer) string {
 	if id.CustomName.IsValid() {

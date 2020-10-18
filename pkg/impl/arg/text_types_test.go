@@ -16,7 +16,7 @@ import (
 func TestText_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		text Text
+		text *Text
 
 		raw string
 
@@ -30,19 +30,19 @@ func TestText_Parse(t *testing.T) {
 		},
 		{
 			name:   "min length",
-			text:   Text{MinLength: 3},
+			text:   &Text{MinLength: 3},
 			raw:    "abc",
 			expect: "abc",
 		},
 		{
 			name:   "max length",
-			text:   Text{MaxLength: 3},
+			text:   &Text{MaxLength: 3},
 			raw:    "abc",
 			expect: "abc",
 		},
 		{
 			name:   "regexp",
-			text:   Text{Regexp: regexp.MustCompile("abc")},
+			text:   &Text{Regexp: regexp.MustCompile("abc")},
 			raw:    "abc",
 			expect: "abc",
 		},
@@ -200,7 +200,7 @@ func TestAlphanumericID_Description(t *testing.T) {
 func TestAlphanumericID_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		text AlphanumericID
+		text *AlphanumericID
 
 		raw string
 
@@ -214,19 +214,19 @@ func TestAlphanumericID_Parse(t *testing.T) {
 		},
 		{
 			name:   "min length",
-			text:   AlphanumericID{MinLength: 3},
+			text:   &AlphanumericID{MinLength: 3},
 			raw:    "abc",
 			expect: "abc",
 		},
 		{
 			name:   "max length",
-			text:   AlphanumericID{MaxLength: 3},
+			text:   &AlphanumericID{MaxLength: 3},
 			raw:    "abc",
 			expect: "abc",
 		},
 		{
 			name:   "regexp",
-			text:   AlphanumericID{Regexp: regexp.MustCompile("abc")},
+			text:   &AlphanumericID{Regexp: regexp.MustCompile("abc")},
 			raw:    "abc",
 			expect: "abc",
 		},
