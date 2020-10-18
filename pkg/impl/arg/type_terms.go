@@ -127,6 +127,26 @@ var (
 )
 
 // =============================================================================
+// Link
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	linkName        = i18n.NewFallbackConfig("args.types.link.name", "Link")
+	linkDescription = i18n.NewFallbackConfig("args.types.link.description", "A link to something on the web.")
+)
+
+// ================================ Errors ================================
+
+var (
+	linkInvalidErrorArg = i18n.NewFallbackConfig(
+		"args.types.link.errors.invalid.arg", "Argument {{.position}} must be a valid link.")
+	linkInvalidErrorFlag = i18n.NewFallbackConfig(
+		"args.types.link.errors.invalid.flag", "The `-{{.used.name}}`-flag must be a valid link.")
+)
+
+// =============================================================================
 // ID
 // =====================================================================================
 
