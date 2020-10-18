@@ -214,3 +214,72 @@ func TestUser_Parse(t *testing.T) {
 		})
 	})
 }
+
+func TestUserID_Parse(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		m, s := state.NewMocker(t)
+
+		ctx := &Context{Raw: "456"}
+
+		expect := &discord.User{ID: 456}
+
+		m.User(*expect)
+
+		actual, err := UserID.Parse(s, ctx)
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		t.Run("invalid id", func(t *testing.T) {
+			ctx := &Context{Raw: "abc"}
+
+			desc := userInvalidIDWithRaw
+			desc.Placeholders = attachDefaultPlaceholders(userInvalidIDWithRaw.Placeholders, ctx)
+
+			expect := errors.NewArgumentParsingErrorl(desc)
+
+			_, actual := UserID.Parse(nil, ctx)
+			assert.Equal(t, expect, actual)
+		})
+
+		t.Run("user not found", func(t *testing.T) {
+			srcMocker, _ := state.NewMocker(t)
+
+			ctx := &Context{
+				Raw:  "456",
+				Kind: KindArg,
+			}
+
+			srcMocker.Error(http.MethodGet, "/users/456", httputil.HTTPError{
+				Status:  http.StatusNotFound,
+				Code:    10013, // unknown user
+				Message: "Unknown user",
+			})
+
+			desc := userInvalidIDArg
+			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
+
+			expect := errors.NewArgumentParsingErrorl(desc)
+
+			_, s := state.CloneMocker(srcMocker, t)
+
+			_, actual := UserID.Parse(s, ctx)
+			assert.Equal(t, expect, actual)
+
+			ctx.Kind = KindFlag
+
+			desc = userInvalidIDFlag
+			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
+
+			expect = errors.NewArgumentParsingErrorl(desc)
+
+			_, s = state.CloneMocker(srcMocker, t)
+
+			_, actual = UserID.Parse(s, ctx)
+			assert.Equal(t, expect, actual)
+		})
+	})
+}

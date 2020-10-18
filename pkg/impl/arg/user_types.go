@@ -75,6 +75,37 @@ func (u user) Default() interface{} {
 // UserID
 // =====================================================================================
 
+// UserID is the same as a User, but it only accepts ids.
+//
+// Go type: *discord.User
 var UserID = new(userID)
 
 type userID struct{}
+
+func (u userID) Name(l *i18n.Localizer) string {
+	name, _ := l.Localize(userIDName) // we have fallback
+	return name
+}
+
+func (u userID) Description(l *i18n.Localizer) string {
+	desc, _ := l.Localize(userIDDescription) // we have a fallback
+	return desc
+}
+
+func (u userID) Parse(s *state.State, ctx *Context) (interface{}, error) {
+	uid, err := discord.ParseSnowflake(ctx.Raw)
+	if err != nil {
+		return nil, newArgParsingErr(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
+	}
+
+	user, err := s.User(discord.UserID(uid))
+	if err != nil {
+		return nil, newArgParsingErr(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
+	}
+
+	return user, nil
+}
+
+func (u userID) Default() interface{} {
+	return (*discord.User)(nil)
+}
