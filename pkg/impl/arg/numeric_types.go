@@ -30,7 +30,7 @@ type Integer struct {
 
 var (
 	// SimpleInteger is an Integer with no bounds.
-	SimpleInteger = &Integer{}
+	SimpleInteger = new(Integer)
 	// PositiveInteger is an Integer with inclusive minimum 0.
 	PositiveInteger = IntegerWithMin(0)
 	// NegativeInteger is an Integer with inclusive maximum -1.
@@ -113,7 +113,7 @@ type Decimal struct {
 
 var (
 	// SimpleDecimal is a decimal with no bounds
-	SimpleDecimal = Decimal{}
+	SimpleDecimal = new(Decimal)
 	// PositiveDecimal is an Decimal with inclusive minimum 0.
 	PositiveDecimal = DecimalWithMin(0)
 	// NegativeDecimal is an Decimal with inclusive maximum -1.
@@ -216,7 +216,7 @@ type NumericID struct {
 
 // SimpleNumericID is a NumericID with no length boundaries and no custom name
 // or description.
-var SimpleNumericID = NumericID{}
+var SimpleNumericID = new(NumericID)
 
 func (id NumericID) Name(l *i18n.Localizer) string {
 	if id.CustomName.IsValid() {

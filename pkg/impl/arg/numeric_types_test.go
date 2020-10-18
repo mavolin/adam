@@ -282,7 +282,7 @@ func TestNumericID_Description(t *testing.T) {
 func TestNumericID_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		text NumericID
+		text *NumericID
 
 		raw string
 
@@ -296,13 +296,13 @@ func TestNumericID_Parse(t *testing.T) {
 		},
 		{
 			name:   "min length",
-			text:   NumericID{MinLength: 3},
+			text:   &NumericID{MinLength: 3},
 			raw:    "123",
 			expect: 123,
 		},
 		{
 			name:   "max length",
-			text:   NumericID{MaxLength: 3},
+			text:   &NumericID{MaxLength: 3},
 			raw:    "123",
 			expect: 123,
 		},
@@ -322,7 +322,7 @@ func TestNumericID_Parse(t *testing.T) {
 
 	failureCases := []struct {
 		name string
-		text NumericID
+		text *NumericID
 
 		raw string
 
@@ -330,7 +330,7 @@ func TestNumericID_Parse(t *testing.T) {
 	}{
 		{
 			name: "below min",
-			text: NumericID{MinLength: 3},
+			text: &NumericID{MinLength: 3},
 			raw:  "12",
 			expectArg: idBelowMinLengthErrorArg.
 				WithPlaceholders(map[string]interface{}{
@@ -343,7 +343,7 @@ func TestNumericID_Parse(t *testing.T) {
 		},
 		{
 			name: "above max",
-			text: NumericID{MaxLength: 3},
+			text: &NumericID{MaxLength: 3},
 			raw:  "1234",
 			expectArg: idAboveMaxLengthErrorArg.
 				WithPlaceholders(map[string]interface{}{

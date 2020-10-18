@@ -27,7 +27,7 @@ var MemberAllowIDs = true
 // guild member.
 //
 // Go type: *discord.Member
-var Member = &member{}
+var Member = new(member)
 
 type member struct{}
 
@@ -105,7 +105,7 @@ func (m member) Default() interface{} {
 // MemberID is the same as a Member, but it only accepts ids.
 //
 // Go type: *discord.Member
-var MemberID = &memberID{}
+var MemberID = new(memberID)
 
 type memberID struct{}
 

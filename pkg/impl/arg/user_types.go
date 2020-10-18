@@ -17,7 +17,7 @@ import (
 // A User can either be a mention, or an id.
 //
 // Gp type: *discord.User
-var User = &user{}
+var User = new(user)
 
 type user struct{}
 
@@ -74,3 +74,7 @@ func (u user) Default() interface{} {
 // =============================================================================
 // UserID
 // =====================================================================================
+
+var UserID = new(userID)
+
+type userID struct{}
