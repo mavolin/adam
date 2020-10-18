@@ -221,3 +221,99 @@ func TestRole_Parse(t *testing.T) {
 		})
 	})
 }
+
+func TestRoleID_Parse(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		m, s := state.NewMocker(t)
+
+		ctx := &Context{
+			Context: &plugin.Context{
+				MessageCreateEvent: &state.MessageCreateEvent{
+					MessageCreateEvent: &gateway.MessageCreateEvent{
+						Message: discord.Message{
+							GuildID: 123,
+						},
+					},
+				},
+			},
+			Raw: "456",
+		}
+
+		expect := &discord.Role{ID: 456}
+
+		m.Roles(ctx.GuildID, []discord.Role{*expect})
+
+		actual, err := RoleID.Parse(s, ctx)
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		t.Run("invalid id", func(t *testing.T) {
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: "abc",
+			}
+
+			desc := roleInvalidIDWithRaw
+			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
+
+			expect := errors.NewArgumentParsingErrorl(desc)
+
+			_, actual := RoleID.Parse(nil, ctx)
+			assert.Equal(t, expect, actual)
+		})
+
+		t.Run("role not found", func(t *testing.T) {
+			srcMocker, _ := state.NewMocker(t)
+
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw:  "456",
+				Kind: KindArg,
+			}
+
+			srcMocker.Roles(ctx.GuildID, []discord.Role{})
+
+			desc := roleInvalidIDArg
+			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
+
+			expect := errors.NewArgumentParsingErrorl(desc)
+
+			_, s := state.CloneMocker(srcMocker, t)
+
+			_, actual := RoleID.Parse(s, ctx)
+			assert.Equal(t, expect, actual)
+
+			ctx.Kind = KindFlag
+
+			desc = roleInvalidIDFlag
+			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
+
+			expect = errors.NewArgumentParsingErrorl(desc)
+
+			_, s = state.CloneMocker(srcMocker, t)
+
+			_, actual = RoleID.Parse(s, ctx)
+			assert.Equal(t, expect, actual)
+		})
+	})
+}

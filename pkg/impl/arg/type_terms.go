@@ -315,6 +315,14 @@ var (
 // RoleID
 // =====================================================================================
 
+// ================================ Meta Data ================================
+
+var (
+	roleIDName        = i18n.NewFallbackConfig("args.types.role_id.name", "Role ID")
+	roleIDDescription = i18n.NewFallbackConfig(
+		"args.types.role_id.description", "The id of a role. For example 123456789098765432")
+)
+
 // ================================ Errors ================================
 
 var (
