@@ -14,7 +14,7 @@ import (
 // User is the Type used to specify users globally.
 // The User doesn't have to be on the same guild as the invoking one.
 // In contrast to member, this can also be used in direct messages.
-// A User can either be a mention, or an ID.
+// A User can either be a mention, or an id.
 //
 // Gp type: *discord.User
 var User = &user{}
@@ -70,3 +70,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 func (u user) Default() interface{} {
 	return (*discord.User)(nil)
 }
+
+// =============================================================================
+// UserID
+// =====================================================================================

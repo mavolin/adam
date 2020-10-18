@@ -188,7 +188,7 @@ func (i Decimal) Default() interface{} {
 // NumericID
 // =====================================================================================
 
-// NumericID is the Type used for IDs consisting only of numbers.
+// NumericID is the Type used for ids consisting only of numbers.
 // Additionally, ids must be positive.
 // By default, NumericIDs share the same name and description as
 // AlphanumericIDs, simply their definition differs.
@@ -207,7 +207,7 @@ type NumericID struct {
 	// If not set, the default description will be used.
 	CustomDescription i18nutil.Text
 
-	// MinLength is the inclusive minimum length the ID may have.
+	// MinLength is the inclusive minimum length the id may have.
 	MinLength uint
 	// MaxLength is the inclusive maximum length the text may have.
 	// If MaxLength is 0, the text won't have a maximum.

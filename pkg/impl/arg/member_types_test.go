@@ -100,7 +100,7 @@ func TestMember_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw: "<@" + expect.User.ID.String() + ">",
+				Raw: expect.User.Mention(),
 			}
 
 			actual, err := Member.Parse(nil, ctx)
@@ -155,7 +155,7 @@ func TestMember_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "<@" + userID.String() + ">",
+				Raw:  userID.Mention(),
 				Kind: KindArg,
 			}
 

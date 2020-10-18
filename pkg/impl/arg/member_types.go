@@ -23,8 +23,8 @@ var MemberAllowIDs = true
 // It will always return an error, if the command is called in a direct
 // message.
 //
-// A Member can either be a mention of a member, or, if enabled, an ID
-// of a guild member.
+// A Member can either be a mention of a member, or, if enabled, an id of a
+// guild member.
 //
 // Go type: *discord.Member
 var Member = &member{}
@@ -102,7 +102,7 @@ func (m member) Default() interface{} {
 // MemberID
 // =====================================================================================
 
-// MemberID is the same as a Member, but it only accepts IDs.
+// MemberID is the same as a Member, but it only accepts ids.
 //
 // Go type: *discord.Member
 var MemberID = &memberID{}

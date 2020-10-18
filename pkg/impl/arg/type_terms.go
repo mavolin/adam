@@ -134,7 +134,7 @@ var (
 
 var (
 	idName        = i18n.NewFallbackConfig("args.types.id.name", "ID")
-	idDescription = i18n.NewFallbackConfig("args.types.id.name", "The ID of something.")
+	idDescription = i18n.NewFallbackConfig("args.types.id.name", "The id of something.")
 )
 
 // ================================ Errors ================================
@@ -231,8 +231,6 @@ var (
 var (
 	userInvalidMentionWithRaw = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid mention.")
-	userInvalidIDWithRaw = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id_with_raw", "{{.raw}} is not a valid user id.")
 
 	userInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.arg",
@@ -240,6 +238,25 @@ var (
 	userInvalidMentionFlag = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.flag",
 		"The mention in the `-{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
+)
+
+// =============================================================================
+// UserID
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	userIDName        = i18n.NewFallbackConfig("args.types.user_id.name", "User ID")
+	userIDDescription = i18n.NewFallbackConfig(
+		"args.types.user_id.description", "The id of a user. For example 123456789098765432.")
+)
+
+// ================================ Error ================================
+
+var (
+	userInvalidIDWithRaw = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_id_with_raw", "{{.raw}} is not a valid user id.")
 
 	userInvalidIDArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_id.arg", "The user id in argument {{.position}} is invalid.")

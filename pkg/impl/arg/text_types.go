@@ -103,7 +103,7 @@ func (t Text) Default() interface{} {
 // AlphanumericID
 // =====================================================================================
 
-// AlphanumericID is a Type for alphanumeric IDs.
+// AlphanumericID is a Type for alphanumeric ids.
 // By default AlphanumericIDs share the same name and description as a
 // NumericID, simply their definition differs.
 //

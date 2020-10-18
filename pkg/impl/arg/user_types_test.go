@@ -78,7 +78,7 @@ func TestUser_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw: "<@" + expect.ID.String() + ">",
+				Raw: expect.Mention(),
 			}
 
 			actual, err := User.Parse(nil, ctx)
@@ -120,7 +120,7 @@ func TestUser_Parse(t *testing.T) {
 						MessageCreateEvent: new(gateway.MessageCreateEvent),
 					},
 				},
-				Raw:  "<@" + userID.String() + ">",
+				Raw:  userID.Mention(),
 				Kind: KindArg,
 			}
 
