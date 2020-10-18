@@ -26,6 +26,7 @@ var MemberAllowIDs = true
 // A Member can either be a mention of a member, or, if enabled, an ID
 // of a guild member.
 //
+// Go type: *discord.Member
 var Member = member{}
 
 type member struct{}
@@ -94,6 +95,9 @@ func (m member) Default() interface{} {
 // MemberID
 // =====================================================================================
 
+// MemberID is the same as a Member, but it only accepts IDs.
+//
+// Go type: *discord.Member
 var MemberID = memberID{}
 
 type memberID struct{}
