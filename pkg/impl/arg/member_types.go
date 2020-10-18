@@ -27,7 +27,7 @@ var MemberAllowIDs = true
 // of a guild member.
 //
 // Go type: *discord.Member
-var Member = member{}
+var Member = &member{}
 
 type member struct{}
 
@@ -54,12 +54,19 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return nil, err
 	}
 
-	if userMentionRegexp.MatchString(ctx.Raw) {
-		id := userMentionRegexp.FindStringSubmatch(ctx.Raw)[1]
+	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) > 1 {
+		id := matches[1]
 
 		mid, err := discord.ParseSnowflake(id)
 		if err != nil { // range err
 			return nil, newArgParsingErr(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
+		}
+
+		for _, m := range ctx.Mentions {
+			if m.ID == discord.UserID(mid) {
+				m.Member.User = m.User
+				return m.Member, nil
+			}
 		}
 
 		member, err := s.Member(ctx.GuildID, discord.UserID(mid))
@@ -98,7 +105,7 @@ func (m member) Default() interface{} {
 // MemberID is the same as a Member, but it only accepts IDs.
 //
 // Go type: *discord.Member
-var MemberID = memberID{}
+var MemberID = &memberID{}
 
 type memberID struct{}
 

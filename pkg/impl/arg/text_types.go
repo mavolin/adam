@@ -55,7 +55,7 @@ type Text struct {
 }
 
 // SimpleText is a Text with no length boundaries and no regular expression.
-var SimpleText = Text{}
+var SimpleText = &Text{}
 
 func (t Text) Name(l *i18n.Localizer) string {
 	name, _ := l.Localize(textName) // we have a fallback
@@ -152,7 +152,7 @@ type AlphanumericID struct {
 	RegexpErrorFlag *i18n.Config
 }
 
-var SimpleAlphanumericID = AlphanumericID{}
+var SimpleAlphanumericID = &AlphanumericID{}
 
 func (id AlphanumericID) Name(l *i18n.Localizer) string {
 	if id.CustomName.IsValid() {

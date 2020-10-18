@@ -20,21 +20,43 @@ func TestMember_Parse(t *testing.T) {
 	successCases := []struct {
 		name string
 
-		raw      string
+		ctx      *Context
 		allowIDs bool
 
 		expect *discord.Member
 	}{
 		{
-			name: "mention",
-			raw:  "<@456>",
+			name: "mention fallback",
+			ctx: &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: "<@456>",
+			},
 			expect: &discord.Member{
 				User: discord.User{ID: 456},
 			},
 		},
 		{
-			name:     "id",
-			raw:      "456",
+			name: "id",
+			ctx: &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: "<@456>",
+			},
 			allowIDs: true,
 			expect: &discord.Member{
 				User: discord.User{ID: 456},
@@ -49,28 +71,48 @@ func TestMember_Parse(t *testing.T) {
 
 				MemberAllowIDs = c.allowIDs
 
-				ctx := &Context{
-					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: &gateway.MessageCreateEvent{
-								Message: discord.Message{
-									GuildID: 123,
-								},
-							},
-						},
-					},
-					Raw: c.raw,
-				}
+				m.Member(c.ctx.GuildID, *c.expect)
 
-				m.Member(ctx.GuildID, *c.expect)
-
-				actual, err := Member.Parse(s, ctx)
+				actual, err := Member.Parse(s, c.ctx)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
 
 				m.Eval()
 			})
 		}
+
+		t.Run("mention", func(t *testing.T) {
+
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+								Mentions: []discord.GuildUser{
+									{
+										User: discord.User{ID: 456},
+										Member: &discord.Member{
+											Deaf: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Raw: "<@456>",
+			}
+
+			expect := &discord.Member{
+				User: discord.User{ID: 456},
+				Deaf: true,
+			}
+
+			actual, err := Member.Parse(nil, ctx)
+			require.NoError(t, err)
+			assert.Equal(t, expect, actual)
+		})
 	})
 
 	var failureCasesWithoutMember = []struct {

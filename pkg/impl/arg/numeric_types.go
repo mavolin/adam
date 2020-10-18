@@ -30,7 +30,7 @@ type Integer struct {
 
 var (
 	// SimpleInteger is an Integer with no bounds.
-	SimpleInteger = Integer{}
+	SimpleInteger = &Integer{}
 	// PositiveInteger is an Integer with inclusive minimum 0.
 	PositiveInteger = IntegerWithMin(0)
 	// NegativeInteger is an Integer with inclusive maximum -1.
@@ -38,19 +38,19 @@ var (
 )
 
 // IntegerWithMin creates a new Integer with the passed inclusive minimum.
-func IntegerWithMin(min int) Integer {
-	return Integer{Min: &min}
+func IntegerWithMin(min int) *Integer {
+	return &Integer{Min: &min}
 }
 
 // IntegerWithMax creates a new Integer with the passed inclusive maximum.
-func IntegerWithMax(max int) Integer {
-	return Integer{Max: &max}
+func IntegerWithMax(max int) *Integer {
+	return &Integer{Max: &max}
 }
 
 // IntegerWithBounds creates a new Integer with the passed inclusive minimum
 // and maximum.
-func IntegerWithBounds(min, max int) Integer {
-	return Integer{
+func IntegerWithBounds(min, max int) *Integer {
+	return &Integer{
 		Min: &min,
 		Max: &max,
 	}

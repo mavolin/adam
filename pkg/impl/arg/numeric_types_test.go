@@ -90,7 +90,7 @@ func TestInteger_Parse(t *testing.T) {
 
 	for _, c := range failureCases {
 		t.Run(c.name, func(t *testing.T) {
-			var i Integer
+			var i *Integer
 
 			switch {
 			case c.min != 0 && c.max != 0:
@@ -99,6 +99,8 @@ func TestInteger_Parse(t *testing.T) {
 				i = IntegerWithMin(c.min)
 			case c.max != 0:
 				i = IntegerWithMax(c.max)
+			default:
+				i = SimpleInteger
 			}
 
 			ctx := &Context{
