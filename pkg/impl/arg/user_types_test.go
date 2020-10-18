@@ -78,7 +78,7 @@ func TestUser_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw: "<@123>",
+				Raw: "<@" + expect.ID.String() + ">",
 			}
 
 			actual, err := User.Parse(nil, ctx)
