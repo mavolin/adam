@@ -86,10 +86,12 @@ type (
 		// Raw is the raw argument or flag.
 		Raw string
 		// Name is the name of the argument or flag.
+		// It includes possible prefixes such as minuses.
 		Name string
 		// UsedName is the alias of the flag the Context represents.
 		// If the name of the flag was used, or the context represents an
 		// argument, UsedName will be equal to Name.
+		// It includes possible prefixes such as minuses.
 		UsedName string
 		// Index contains the index of the argument, if the context represents
 		// an argument.
