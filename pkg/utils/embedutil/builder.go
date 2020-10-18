@@ -10,8 +10,8 @@ import (
 type (
 	// Builder is a utility struct used to build embeds.
 	Builder struct {
-		title       i18nutil.Text
-		description i18nutil.Text
+		title       *i18nutil.Text
+		description *i18nutil.Text
 
 		url discord.URL
 
@@ -26,19 +26,19 @@ type (
 	}
 
 	footer struct {
-		text i18nutil.Text
+		text *i18nutil.Text
 		icon discord.URL
 	}
 
 	author struct {
-		name i18nutil.Text
+		name *i18nutil.Text
 		icon discord.URL
 		url  discord.URL
 	}
 
 	field struct {
-		name    i18nutil.Text
-		value   i18nutil.Text
+		name    *i18nutil.Text
+		value   *i18nutil.Text
 		inlined bool
 	}
 )
@@ -344,8 +344,13 @@ func (b *Builder) withField(name, value string, inlined bool) {
 		inlined: inlined,
 	}
 
-	f.name = i18nutil.NewText(name)
-	f.value = i18nutil.NewText(value)
+	if len(name) > 0 {
+		f.name = i18nutil.NewText(name)
+	}
+
+	if len(value) > 0 {
+		f.value = i18nutil.NewText(value)
+	}
 
 	b.fields = append(b.fields, f)
 }
@@ -395,14 +400,14 @@ func (b *Builder) Clone() *Builder {
 
 // Build builds the discord.Embed.
 func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
-	if b.title.IsValid() {
+	if b.title != nil {
 		e.Title, err = b.title.Get(l)
 		if err != nil {
 			return
 		}
 	}
 
-	if b.description.IsValid() {
+	if b.description != nil {
 		e.Description, err = b.description.Get(l)
 		if err != nil {
 			return
@@ -455,7 +460,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	for i, f := range b.fields {
 		var name string
 
-		if f.name.IsValid() {
+		if f.name != nil {
 			name, err = f.name.Get(l)
 			if err != nil {
 				return
@@ -464,7 +469,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 
 		var value string
 
-		if f.value.IsValid() {
+		if f.value != nil {
 			value, err = f.value.Get(l)
 			if err != nil {
 				return

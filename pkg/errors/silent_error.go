@@ -26,7 +26,7 @@ var _ Interface = new(SilentError)
 // If the error is already a SilentError, it will be returned as is.
 // Furthermore, if the error is of type InternalError, the cause of the error
 // will be extracted first, before creating a SilentError.
-func Silent(err error) *SilentError {
+func Silent(err error) error {
 	if err == nil {
 		return nil
 	}
@@ -47,7 +47,7 @@ func Silent(err error) *SilentError {
 // WrapSilent wraps the passed error with passed message, enriches the
 // error with a stack trace, and marks the error as log-only.
 // The returned error will print as '$message: $err.Error()'.
-func WrapSilent(err error, message string) *SilentError {
+func WrapSilent(err error, message string) error {
 	if err == nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func WrapSilent(err error, message string) *SilentError {
 // enriches the error with a stack trace, and marks the error as log-only.
 // The returned error will print as
 // '$fmt.Sprintf(format, args...): $err.Error()'.
-func WrapSilentf(err error, format string, args ...interface{}) *SilentError {
+func WrapSilentf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
 	}

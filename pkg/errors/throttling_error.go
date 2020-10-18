@@ -13,7 +13,7 @@ import (
 // again.
 type ThrottlingError struct {
 	// description of the error
-	desc i18nutil.Text
+	desc *i18nutil.Text
 }
 
 var _ Interface = new(ThrottlingError)

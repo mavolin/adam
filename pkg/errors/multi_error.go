@@ -52,24 +52,24 @@ func AppendSilent(err1, err2 error) error {
 		}
 
 		serr2 := Silent(err2)
-		serr2.stack = serr2.stack[1:]
+		serr2.(*SilentError).stack = serr2.(*SilentError).stack[1:]
 
 		return append(err1Typed, serr2)
 	} else if err, ok := err2.(multiError); ok {
 		serr1 := Silent(err1)
-		serr1.stack = serr1.stack[1:]
+		serr1.(*SilentError).stack = serr1.(*SilentError).stack[1:]
 
 		return append(multiError{serr1}, err...)
 	}
 
 	serr1 := Silent(err1)
-	if len(serr1.stack) > 1 {
-		serr1.stack = serr1.stack[:len(serr1.stack)-1]
+	if len(serr1.(*SilentError).stack) > 1 {
+		serr1.(*SilentError).stack = serr1.(*SilentError).stack[:len(serr1.(*SilentError).stack)-1]
 	}
 
 	serr2 := Silent(err2)
-	if len(serr2.stack) > 1 {
-		serr2.stack = serr2.stack[:len(serr2.stack)-1]
+	if len(serr2.(*SilentError).stack) > 1 {
+		serr2.(*SilentError).stack = serr2.(*SilentError).stack[:len(serr2.(*SilentError).stack)-1]
 	}
 
 	return multiError{serr1, serr2}
@@ -114,8 +114,8 @@ func CombineSilent(errs ...error) error {
 	for i, err := range errs {
 		if _, ok := err.(multiError); !ok {
 			silent := Silent(err)
-			if len(silent.stack) > 1 {
-				silent.stack = silent.stack[:len(silent.stack)-1]
+			if len(silent.(*SilentError).stack) > 1 {
+				silent.(*SilentError).stack = silent.(*SilentError).stack[:len(silent.(*SilentError).stack)-1]
 			}
 
 			errs[i] = silent
@@ -151,7 +151,7 @@ func (merr multiError) Error() (s string) {
 // If one of the errors is an InternalError, i.e. if at least one error was not
 // added silently, it will be handled as such.
 // All other errors will be handled as a SilentError.
-func (merr multiError) Handle(s *state.State, ctx *plugin.Context) error {
+func (merr multiError) Handle(_ *state.State, ctx *plugin.Context) error {
 	internal := false
 
 	for _, err := range merr {

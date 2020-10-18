@@ -25,7 +25,7 @@ type InternalError struct {
 	stack errorutil.Stack
 
 	// description of the error
-	desc i18nutil.Text
+	desc *i18nutil.Text
 }
 
 var _ Interface = new(InternalError)
@@ -70,7 +70,7 @@ func (e *messageError) Unwrap() error { return e.cause }
 // Wrap wraps the passed error with the passed message and enriches it with a
 // stack trace.
 // The returned error will print as '$message: $err.Error()'.
-func Wrap(err error, message string) *InternalError {
+func Wrap(err error, message string) error {
 	if err == nil {
 		return nil
 	}
@@ -89,7 +89,7 @@ func Wrap(err error, message string) *InternalError {
 // enriches the new error with a stack trace.
 // The returned error will print as
 // '$fmt.Sprintf(format, args...): $err.Error()'.
-func Wrapf(err error, format string, args ...interface{}) *InternalError {
+func Wrapf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
 	}
@@ -110,7 +110,7 @@ func Wrapf(err error, format string, args ...interface{}) *InternalError {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescription(cause error, description string) *InternalError {
+func WithDescription(cause error, description string) error {
 	if cause == nil {
 		return nil
 	}
@@ -133,7 +133,7 @@ func WithDescription(cause error, description string) *InternalError {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionf(cause error, format string, args ...interface{}) *InternalError {
+func WithDescriptionf(cause error, format string, args ...interface{}) error {
 	if cause == nil {
 		return nil
 	}
@@ -156,7 +156,7 @@ func WithDescriptionf(cause error, format string, args ...interface{}) *Internal
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionl(cause error, description *i18n.Config) *InternalError {
+func WithDescriptionl(cause error, description *i18n.Config) error {
 	if cause == nil {
 		return nil
 	}
@@ -179,7 +179,7 @@ func WithDescriptionl(cause error, description *i18n.Config) *InternalError {
 //
 // When using a custom error handler, the description can be retrieved by
 // calling internalError.WithDescription(localizer).
-func WithDescriptionlt(cause error, description i18n.Term) *InternalError {
+func WithDescriptionlt(cause error, description i18n.Term) error {
 	if cause == nil {
 		return nil
 	}
@@ -199,7 +199,7 @@ func WithDescriptionlt(cause error, description i18n.Term) *InternalError {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *InternalError) Description(l *i18n.Localizer) string {
-	if e.desc.IsValid() {
+	if e.desc != nil {
 		desc, err := e.desc.Get(l)
 		if err == nil {
 			return desc
