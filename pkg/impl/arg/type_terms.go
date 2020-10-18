@@ -272,7 +272,7 @@ var (
 		"args.types.user_id.description", "The id of a user. For example 123456789098765432.")
 )
 
-// ================================ Error ================================
+// ================================ Errors ================================
 
 var (
 	userInvalidIDWithRaw = i18n.NewFallbackConfig(
@@ -282,6 +282,57 @@ var (
 		"args.types.user.errors.invalid_id.arg", "The user id in argument {{.position}} is invalid.")
 	userInvalidIDFlag = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_id.flag", "The user id in the `{{.used_name}}`-flag is invalid.")
+)
+
+// =============================================================================
+// Role
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	roleName        = i18n.NewFallbackConfig("args.types.role.name", "Role")
+	roleDescription = i18n.NewFallbackConfig(
+		"args.types.role.description",
+		"A role mention or an id of a role. For example @WumpusGang or 123456789098765432.")
+)
+
+// ================================ Errors ================================
+
+var (
+	roleInvalidMentionWithRaw = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
+
+	roleInvalidMentionArg = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_mention.arg",
+		"The mention in argument {{.position}} is invalid. Make sure the role exists.")
+	roleInvalidMentionFlag = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_mention.flag",
+		"The mention in the `{{.used_name}}`-flag is invalid. Make sure the role exists.")
+)
+
+// =============================================================================
+// RoleID
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	roleIDName        = i18n.NewFallbackConfig("args.types.role_id.name", "Role ID")
+	roleIDDescription = i18n.NewFallbackConfig(
+		"args.types.role_id.description", "The id of a role. For example 123456789098765432")
+)
+
+// ================================ Errors ================================
+
+var (
+	roleInvalidIDWithRaw = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_id_with_raw", "{{.raw}} is not a valid role id.")
+
+	roleInvalidIDArg = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_id.arg", "The role id in argument {{.position}} is invalid.")
+	roleInvalidIDFlag = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_id.flag", "The role id in the `{{.used_name}}`-flag is invalid.")
 )
 
 // =============================================================================
