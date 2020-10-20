@@ -10,7 +10,7 @@ import "strings"
 
 type (
 	// Emoji is an emoji.
-	Emoji string
+	Emoji = string
 
 	// SkinTonedEmoji is an emoji that has different skin tones.
 	SkinTonedEmoji struct {
