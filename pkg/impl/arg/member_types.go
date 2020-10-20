@@ -54,22 +54,22 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return nil, err
 	}
 
-	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) > 1 {
-		id := matches[1]
+	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 2 {
+		rawID := matches[1]
 
-		mid, err := discord.ParseSnowflake(id)
+		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
 			return nil, newArgParsingErr(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
 		}
 
 		for _, m := range ctx.Mentions {
-			if m.ID == discord.UserID(mid) {
+			if m.ID == discord.UserID(id) {
 				m.Member.User = m.User
 				return m.Member, nil
 			}
 		}
 
-		member, err := s.Member(ctx.GuildID, discord.UserID(mid))
+		member, err := s.Member(ctx.GuildID, discord.UserID(id))
 		if err != nil {
 			return nil, newArgParsingErr(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
 		}
@@ -81,12 +81,12 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return nil, newArgParsingErr(userInvalidMentionWithRaw, userInvalidMentionWithRaw, ctx, nil)
 	}
 
-	mid, err := discord.ParseSnowflake(ctx.Raw)
+	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
 		return nil, newArgParsingErr(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
 	}
 
-	member, err := s.Member(ctx.GuildID, discord.UserID(mid))
+	member, err := s.Member(ctx.GuildID, discord.UserID(id))
 	if err != nil {
 		return nil, newArgParsingErr(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
 	}

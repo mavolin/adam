@@ -33,24 +33,24 @@ func (u user) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-var userMentionRegexp = regexp.MustCompile(`^<@!?(\d+)>$`)
+var userMentionRegexp = regexp.MustCompile(`^<@!?(?P<id>\d+)>$`)
 
 func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
-	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) > 1 {
-		id := matches[1]
+	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 2 {
+		rawID := matches[1]
 
-		uid, err := discord.ParseSnowflake(id)
+		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
 			return nil, newArgParsingErr(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
 		}
 
 		for _, m := range ctx.Mentions {
-			if m.ID == discord.UserID(uid) {
+			if m.ID == discord.UserID(id) {
 				return &m.User, nil
 			}
 		}
 
-		user, err := s.User(discord.UserID(uid))
+		user, err := s.User(discord.UserID(id))
 		if err != nil {
 			return nil, newArgParsingErr(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
 		}
@@ -58,12 +58,12 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return user, nil
 	}
 
-	uid, err := discord.ParseSnowflake(ctx.Raw)
+	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
 		return nil, newArgParsingErr(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
 	}
 
-	user, err := s.User(discord.UserID(uid))
+	user, err := s.User(discord.UserID(id))
 	if err != nil {
 		return nil, newArgParsingErr(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
 	}

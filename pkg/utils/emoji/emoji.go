@@ -31,7 +31,7 @@ type (
 
 // IsValid checks if the passed emoji is a valid emoji as used by discord.
 func IsValid(emoji string) bool {
-	_, ok := emojis[Emoji(emoji)]
+	_, ok := emojis[emoji]
 	return ok
 }
 
@@ -50,7 +50,7 @@ func CountryFlag(code string) Emoji {
 		return ""
 	}
 
-	return Emoji(flag)
+	return flag
 }
 
 const flagBaseIndex = '\U0001F1E6' - 'a'
