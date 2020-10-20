@@ -1,6 +1,8 @@
 package arg
 
 import (
+	"regexp"
+
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
@@ -30,6 +32,8 @@ func (u user) Description(l *i18n.Localizer) string {
 	desc, _ := l.Localize(userDescription) // we have a fallback
 	return desc
 }
+
+var userMentionRegexp = regexp.MustCompile(`^<@!?(\d+)>$`)
 
 func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) > 1 {
