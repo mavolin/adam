@@ -9,5 +9,6 @@ require (
 	github.com/mavolin/disstate/v2 v2.1.0
 	github.com/mavolin/logstract v1.1.0
 	github.com/stretchr/testify v1.6.1
+	golang.org/x/text v0.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )
