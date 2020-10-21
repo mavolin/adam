@@ -1,6 +1,9 @@
 package arg
 
-import "github.com/mavolin/adam/pkg/i18n"
+import (
+	"github.com/mavolin/adam/pkg/i18n"
+	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
+)
 
 // =============================================================================
 // Common
@@ -213,7 +216,47 @@ var (
 
 var (
 	emojiName        = i18n.NewFallbackConfig("args.types.emoji.name", "Emoji")
-	emojiDescription = i18n.NewFallbackConfig("args.types.emoji.description", "An emoji. 👻")
+	emojiDescription = i18n.NewFallbackConfig("args.types.emoji.description", "An emoji. "+emojiutil.Ghost)
+)
+
+// ================================ Errors ================================
+
+var (
+	emojiCustomEmojiInDMError = i18n.NewFallbackConfig(
+		"args.types.emoji.errors.custom_emoji_in_dm", "You can't use custom emojis in DMs.")
+
+	emojiOnlyUnicodeErrorArg = i18n.NewFallbackConfig(
+		"args.types.emoji.errors.only_unicode.arg",
+		emojiutil.Prohibited+" You can only use default emojis as argument {{.position}}.")
+	emojiOnlyUnicodeErrorFlag = i18n.NewFallbackConfig(
+		"args.types.emoji.errors.only_unicode.flag",
+		emojiutil.Prohibited+" You can only use default emojis as `{{.used_name}}`-flag.")
+
+	emojiInvalidError = i18n.NewFallbackConfig(
+		"args.types.emoji.errors.invalid",
+		emojiutil.DesktopComputer+emojiutil.Collision+" {{.raw}} is not an emoji.")
+
+	emojiNoAccessError = i18n.NewFallbackConfig(
+		"args.types.user.errors.no_access",
+		"{{.raw}} is not a valid emoji or I'm unable to access it. "+
+			"Make sure to only use emojis from this server.")
+)
+
+// =============================================================================
+// EmojiID
+// =====================================================================================
+
+// ================================ Errors ================================
+
+var (
+	emojiIDNoAccessErrorArg = i18n.NewFallbackConfig(
+		"args.types.emoji_id.errors.no_access.arg",
+		"Argument {{.position}} is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
+			"Make sure to only use emojis from this server.")
+	emojiIDNoAccessErrorFlag = i18n.NewFallbackConfig(
+		"args.types.emoji_id.errors.no_access.flag",
+		"The `{{.used_name}}`-flag contains no valid emoji id or I'm unable to access the emoji it belongs to. "+
+			"Make sure to only use emojis from this server.")
 )
 
 // =============================================================================
