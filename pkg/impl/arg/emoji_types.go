@@ -45,7 +45,14 @@ func (e emoji) Name(l *i18n.Localizer) string {
 }
 
 func (e emoji) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(emojiDescription) // we have a fallback
+	if EmojiAllowIDs {
+		desc, err := l.Localize(emojiDescriptionWithID)
+		if err == nil {
+			return desc
+		}
+	}
+
+	desc, _ := l.Localize(emojiDescriptionNoID) // we have a fallback
 	return desc
 }
 
@@ -122,7 +129,7 @@ func (r rawEmoji) Name(l *i18n.Localizer) string {
 }
 
 func (r rawEmoji) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(emojiDescription) // we have a fallback
+	desc, _ := l.Localize(emojiDescriptionNoID) // we have a fallback
 	return desc
 }
 

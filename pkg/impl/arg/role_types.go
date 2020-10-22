@@ -37,7 +37,14 @@ func (r role) Name(l *i18n.Localizer) string {
 }
 
 func (r role) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(roleDescription) // we have a fallback
+	if RoleAllowIDs {
+		desc, err := l.Localize(roleDescriptionWithID)
+		if err == nil {
+			return desc
+		}
+	}
+
+	desc, _ := l.Localize(roleDescriptionNoId) // we have a fallback
 	return desc
 }
 

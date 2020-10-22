@@ -30,7 +30,7 @@ var (
 	switchName        = i18n.NewFallbackConfig("args.types.switch.name", "Switch")
 	switchDescription = i18n.NewFallbackConfig(
 		"args.types.switch.description",
-		"Used to turn on a feature of a command. Only used with flags.")
+		"Used to turn on a feature of a command. Only used for flags.")
 )
 
 // ================================ Errors ================================
@@ -215,8 +215,11 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	emojiName        = i18n.NewFallbackConfig("args.types.emoji.name", "Emoji")
-	emojiDescription = i18n.NewFallbackConfig("args.types.emoji.description", "An emoji. "+emojiutil.Ghost)
+	emojiName = i18n.NewFallbackConfig("args.types.emoji.name", "Emoji")
+
+	emojiDescriptionNoID   = i18n.NewFallbackConfig("args.types.emoji.description.no_id", "An emoji. "+emojiutil.Ghost)
+	emojiDescriptionWithID = i18n.NewFallbackConfig(
+		"args.types.emoji.description.with_id", "An emoji or the id of an emoji. "+emojiutil.Ghost)
 )
 
 // ================================ Errors ================================
@@ -266,12 +269,13 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	memberName             = i18n.NewFallbackConfig("args.types.member.name", "Member")
+	memberName = i18n.NewFallbackConfig("args.types.member.name", "Member")
+
 	memberDescriptionNoIDs = i18n.NewFallbackConfig(
-		"args.types.member.description.no_ids", "A member is a mention of a user in a server. For example @Wumpus.")
+		"args.types.member.description.no_ids", "A mention of a user in a server. For example @Wumpus.")
 	memberDescriptionWithIDs = i18n.NewFallbackConfig(
 		"args.types.member.description.with_ids",
-		"A member is either a mention of a user or their id. For example @Wumpus or 123456789098765432.")
+		"A user mention or their id. For example @Wumpus or 123456789098765432.")
 )
 
 // =============================================================================
@@ -296,8 +300,8 @@ var (
 	userName        = i18n.NewFallbackConfig("args.types.user.name", "User")
 	userDescription = i18n.NewFallbackConfig(
 		"args.types.user.description",
-		"A user is either a mention of a user or their id. "+
-			"The command doesn't need to be invoked on the server the user is on.")
+		"A user mention or their id. The command doesn't need to be invoked on the server the user is on. "+
+			"For example: @Wumpus or 123456789098765432")
 )
 
 // ================================ Errors ================================
@@ -345,9 +349,12 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	roleName        = i18n.NewFallbackConfig("args.types.role.name", "Role")
-	roleDescription = i18n.NewFallbackConfig(
-		"args.types.role.description",
+	roleName = i18n.NewFallbackConfig("args.types.role.name", "Role")
+
+	roleDescriptionNoId = i18n.NewFallbackConfig(
+		"args.types.role.description.no_id", "A role mention. For example @WumpusGang.")
+	roleDescriptionWithID = i18n.NewFallbackConfig(
+		"args.types.role.description.with_id",
 		"A role mention or an id of a role. For example @WumpusGang or 123456789098765432.")
 )
 
@@ -387,6 +394,19 @@ var (
 		"args.types.role.errors.invalid_id.arg", "The role id in argument {{.position}} is invalid.")
 	roleInvalidIDFlag = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_id.flag", "The role id in the `{{.used_name}}`-flag is invalid.")
+)
+
+// =============================================================================
+// TextChannel
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	textChannelName        = i18n.NewFallbackConfig("args.types.text_channel.name", "Text Channel")
+	textChannelDescription = i18n.NewFallbackConfig(
+		"args.types.text_channel.description",
+		"A text channel is a text or announcement channel in a server.")
 )
 
 // =============================================================================
