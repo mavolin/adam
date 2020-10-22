@@ -60,7 +60,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(userInvalidWithRaw, userInvalidWithRaw, ctx, nil)
 	}
 
 	user, err := s.User(discord.UserID(id))

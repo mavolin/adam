@@ -78,7 +78,7 @@ func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(roleInvalidIDWithRaw, roleInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(roleInvalidWithRaw, roleInvalidWithRaw, ctx, nil)
 	}
 
 	role, err := s.Role(ctx.GuildID, discord.RoleID(id))

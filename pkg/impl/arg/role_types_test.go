@@ -148,7 +148,7 @@ func TestRole_Parse(t *testing.T) {
 			m.Eval()
 		})
 
-		t.Run("invalid id", func(t *testing.T) {
+		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
 					MessageCreateEvent: &state.MessageCreateEvent{
@@ -163,16 +163,13 @@ func TestRole_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := roleInvalidIDWithRaw
+			expect := roleInvalidWithRaw
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Role.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			ctx.Kind = KindFlag
-
-			expect = roleInvalidIDWithRaw
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual = Role.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)

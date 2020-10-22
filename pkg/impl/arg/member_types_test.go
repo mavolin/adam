@@ -188,7 +188,7 @@ func TestMember_Parse(t *testing.T) {
 			m.Eval()
 		})
 
-		t.Run("invalid id", func(t *testing.T) {
+		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
 					MessageCreateEvent: &state.MessageCreateEvent{
@@ -203,16 +203,13 @@ func TestMember_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := userInvalidIDWithRaw
+			expect := userInvalidWithRaw
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Member.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			ctx.Kind = KindFlag
-
-			expect = userInvalidIDWithRaw
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual = Member.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)

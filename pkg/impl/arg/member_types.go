@@ -83,7 +83,7 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(userInvalidWithRaw, userInvalidWithRaw, ctx, nil)
 	}
 
 	member, err := s.Member(ctx.GuildID, discord.UserID(id))

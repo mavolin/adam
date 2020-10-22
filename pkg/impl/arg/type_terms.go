@@ -310,6 +310,9 @@ var (
 	userInvalidMentionWithRaw = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid mention.")
 
+	userInvalidWithRaw = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_with_raw", "{{.raw}} is not a user.")
+
 	userInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.arg",
 		"The mention in argument {{.position}} is invalid. Make sure the user is still on the server.")
@@ -364,6 +367,9 @@ var (
 	roleInvalidMentionWithRaw = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
 
+	roleInvalidWithRaw = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_with_raw", "{{.raw}} is not a role.")
+
 	roleInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention.arg",
 		"The mention in argument {{.position}} is invalid. Make sure the role exists.")
@@ -403,10 +409,14 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	textChannelName        = i18n.NewFallbackConfig("args.types.text_channel.name", "Text Channel")
-	textChannelDescription = i18n.NewFallbackConfig(
-		"args.types.text_channel.description",
-		"A text channel is a text or announcement channel in a server.")
+	textChannelName = i18n.NewFallbackConfig("args.types.text_channel.name", "Text Channel")
+
+	textChannelDescriptionNoID = i18n.NewFallbackConfig(
+		"args.types.text_channel.description.no_id",
+		"A mention of a text or announcement channel.")
+	textChannelDescriptionWithID = i18n.NewFallbackConfig(
+		"args.types.text_channel.description.with_id",
+		"A mention of a text or a announcement channel or an id of such.")
 )
 
 // =============================================================================
