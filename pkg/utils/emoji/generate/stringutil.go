@@ -76,9 +76,7 @@ func escapedUnicodeSequence(s string) string {
 
 	b.Grow(len(s) * 10) // max space used per char
 
-	chars := []rune(s)
-
-	for _, r := range chars {
+	for _, r := range s {
 		if r <= 0xFFFF {
 			b.WriteString(`\u`)
 			b.WriteString(fmt.Sprintf("%.4x", r))
