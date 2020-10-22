@@ -1,16 +1,12 @@
 package arg
 
 import (
-	"regexp"
-
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
 const whitespace = " \t\n"
-
-var userMentionRegexp = regexp.MustCompile(`^<@!?(\d+)>$`)
 
 func genArgsInfo(
 	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,

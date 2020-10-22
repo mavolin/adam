@@ -1,6 +1,8 @@
 package arg
 
 import (
+	"regexp"
+
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
@@ -39,21 +41,23 @@ func (r role) Description(l *i18n.Localizer) string {
 	return desc
 }
 
+var roleMentionRegexp = regexp.MustCompile(`^<@&(?P<id>\d+)>$`)
+
 func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	err := restriction.ChannelTypes(plugin.GuildChannels)(s, ctx.Context)
 	if err != nil {
 		return nil, err
 	}
 
-	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) > 1 {
-		id := matches[1]
+	if matches := roleMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 2 {
+		rawID := matches[1]
 
-		rid, err := discord.ParseSnowflake(id)
+		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
 			return nil, newArgParsingErr(roleInvalidMentionArg, roleInvalidMentionFlag, ctx, nil)
 		}
 
-		role, err := s.Role(ctx.GuildID, discord.RoleID(rid))
+		role, err := s.Role(ctx.GuildID, discord.RoleID(id))
 		if err != nil {
 			return nil, newArgParsingErr(roleInvalidMentionArg, roleInvalidMentionFlag, ctx, nil)
 		}
@@ -65,12 +69,12 @@ func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return nil, newArgParsingErr(roleInvalidMentionWithRaw, roleInvalidMentionWithRaw, ctx, nil)
 	}
 
-	rid, err := discord.ParseSnowflake(ctx.Raw)
+	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
 		return nil, newArgParsingErr(roleInvalidIDWithRaw, roleInvalidIDWithRaw, ctx, nil)
 	}
 
-	role, err := s.Role(ctx.GuildID, discord.RoleID(rid))
+	role, err := s.Role(ctx.GuildID, discord.RoleID(id))
 	if err != nil {
 		return nil, newArgParsingErr(roleInvalidIDArg, roleInvalidIDFlag, ctx, nil)
 	}

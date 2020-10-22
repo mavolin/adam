@@ -35,7 +35,7 @@ func TestRole_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw: "<@456>",
+				Raw: "<@&456>",
 			},
 			expect: &discord.Role{ID: 456},
 		},
@@ -85,7 +85,7 @@ func TestRole_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "<@" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
+				Raw:  "<@&" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
 				Kind: KindArg,
 			}
 
@@ -107,7 +107,7 @@ func TestRole_Parse(t *testing.T) {
 		t.Run("mention role not found", func(t *testing.T) {
 			srcMocker, _ := state.NewMocker(t)
 
-			var roleID discord.UserID = 123
+			var roleID discord.RoleID = 123
 
 			ctx := &Context{
 				Context: &plugin.Context{

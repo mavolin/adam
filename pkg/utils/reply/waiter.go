@@ -8,6 +8,7 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/emoji"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
@@ -18,9 +19,9 @@ var (
 		cancelKeywords: []*i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
 	}
 
-	// TimeExtensionReaction is the reaction used to prolong the wait for
+	// TimeExtensionReaction is the reaction used to prolong the wait for a
 	// reply, if a time extension is possible.
-	TimeExtensionReaction api.Emoji = "✅"
+	TimeExtensionReaction = emoji.CheckMarkButton
 )
 
 // Canceled is the error that gets returned, if a user signals the bot
