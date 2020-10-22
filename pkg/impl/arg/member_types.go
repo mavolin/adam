@@ -10,7 +10,7 @@ import (
 )
 
 // MemberAllowIDs is a global flag that allows you to specify whether Members
-// may be noted as Snowflakes.
+// may also be noted as plain Snowflakes.
 //
 // Defaults to true.
 var MemberAllowIDs = true

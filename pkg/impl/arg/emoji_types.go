@@ -11,7 +11,7 @@ import (
 )
 
 // EmojiAllowIDs is a global flag that allows you to specify whether Emojis
-// may be noted as Snowflakes.
+// may also be noted as plain Snowflakes.
 //
 // Defaults to false.
 var EmojiAllowIDs = false
