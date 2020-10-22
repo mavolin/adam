@@ -24,10 +24,8 @@ var (
 	// Emoji is the Type used for unicode and custom emojis.
 	// Due to Discord-API limitations the type currently only supports custom
 	// emojis from the invoking guild.
-	// However, if such features become available, this will be modified.
 	// Use RawEmoji to use the raw emoji, which is not bound to such
 	// limitations.
-	// Alternatively, you could obtain the emoji through a reaction.
 	//
 	// Go type: *discord.Emoji
 	Emoji = &emoji{customEmojis: true}
@@ -51,7 +49,7 @@ func (e emoji) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-var customEmojiRegexp = regexp.MustCompile(`^<a?:.+:(?P<id>\d+)>$`)
+var customEmojiRegexp = regexp.MustCompile(`^<a?:(?P<name>[^:]+):(?P<id>\d+)>$`)
 
 func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	if emojiutil.IsValid(ctx.Raw) {
@@ -64,8 +62,8 @@ func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return nil, newArgParsingErr(emojiCustomEmojiInDMError, emojiCustomEmojiInDMError, ctx, nil)
 	}
 
-	if matches := customEmojiRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 2 {
-		rawID := matches[1]
+	if matches := customEmojiRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 3 {
+		rawID := matches[2]
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
@@ -99,4 +97,45 @@ func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 func (e emoji) Default() interface{} {
 	return (*discord.Emoji)(nil)
+}
+
+// =============================================================================
+// RawEmoji
+// =====================================================================================
+
+// RawEmoji is the Type for used for emojis that are either default emojis or
+// custom ones from any guild.
+// This means that an emoji is only guaranteed to be available to the bot, if
+// it is unicode.
+// If the emoji is custom, it is only guaranteed that it follows the pattern
+// of an emoji.
+// Unlike Emoji, this type only accepts actual emojis but no ids.
+//
+// Go type: api.Emoji
+var RawEmoji = new(rawEmoji)
+
+type rawEmoji struct{}
+
+func (r rawEmoji) Name(l *i18n.Localizer) string {
+	name, _ := l.Localize(emojiName) // we have a fallback
+	return name
+}
+
+func (r rawEmoji) Description(l *i18n.Localizer) string {
+	desc, _ := l.Localize(emojiDescription) // we have a fallback
+	return desc
+}
+
+func (r rawEmoji) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+	if emojiutil.IsValid(ctx.Raw) {
+		return ctx.Raw, nil
+	} else if matches := customEmojiRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 3 {
+		return matches[1] + ":" + matches[2], nil
+	}
+
+	return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+}
+
+func (r rawEmoji) Default() interface{} {
+	return ""
 }

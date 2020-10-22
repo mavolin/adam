@@ -244,3 +244,56 @@ func TestEmoji_Parse(t *testing.T) {
 		}
 	})
 }
+
+func TestRawEmoji_Parse(t *testing.T) {
+	successCases := []struct {
+		name string
+
+		raw string
+
+		expect string
+	}{
+		{
+			name:   "unicode",
+			raw:    emojiutil.SmilingFaceWithHeartEyes,
+			expect: emojiutil.SmilingFaceWithHeartEyes,
+		},
+		{
+			name:   "custom emoji",
+			raw:    "<:abc:123>",
+			expect: "abc:123",
+		},
+	}
+
+	t.Run("success", func(t *testing.T) {
+		for _, c := range successCases {
+			t.Run(c.name, func(t *testing.T) {
+				ctx := &Context{Raw: c.raw}
+
+				actual, err := RawEmoji.Parse(nil, ctx)
+				require.NoError(t, err)
+				assert.Equal(t, c.expect, actual)
+			})
+		}
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		ctx := &Context{
+			Raw:  "abc",
+			Kind: KindArg,
+		}
+
+		expect := emojiInvalidError
+		expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+		_, actual := RawEmoji.Parse(nil, ctx)
+		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+
+		ctx.Kind = KindFlag
+
+		// error is the same for flags
+
+		_, actual = RawEmoji.Parse(nil, ctx)
+		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+	})
+}
