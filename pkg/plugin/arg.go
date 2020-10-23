@@ -34,19 +34,19 @@ type (
 	// ArgConfig.
 	// It provides meta information about the arguments and flags of a command.
 	//
-	// Raw Args
+	// Raw Arguments
 	//
 	// As a special case, there is also support for raw arguments, i.e.
-	// arguments that are used literally.
+	// arguments that are not parsed.
 	//
-	// An argument config is considered as a raw argument, if Info returns a
+	// A command is considered to use raw arguments, if Info returns a
 	// slice of length 1 with a single non-variadic required argument, no
 	// optionals and no flags.
 	// The required argument's Type must be ArgTypeRaw.
 	//
 	// If those requirements are fulfilled, help commands should display the
-	// description of the required argument instead of creating their normal
-	// argument help message.
+	// description of the required argument instead of creating an argument
+	// help message.
 	ArgsInfoer interface {
 		// Info returns localized information about the arguments and flags of
 		// a command.
@@ -59,7 +59,7 @@ type (
 	ArgsInfo struct {
 		// Prefix contains the prefix, if there are multiple argument
 		// combinations.
-		// Otherwise it should be empty.
+		// Otherwise it will be ignored.
 		Prefix string
 		// Required contains information about required arguments.
 		Required []ArgInfo
@@ -98,6 +98,8 @@ type (
 	}
 
 	// TypeInfo contains information about a flag or arg type.
+	// The returned name and description must be the same for all arguments of
+	// the guild.
 	//
 	// Because of the special meaning of ArgTypeRaw, TypeInfos with the name
 	// and description '__raw__' should not be used.
