@@ -387,19 +387,6 @@ func TestCommaConfig_Parse(t *testing.T) {
 			},
 		},
 		{
-			name: "no minus escape inside",
-			config: CommaConfig{
-				RequiredArgs: []RequiredArg{
-					{
-						Name: i18nutil.NewText("arg1"),
-						Type: mockTypeString,
-					},
-				},
-			},
-			rawArgs:    "abc-def",
-			expectArgs: plugin.Args{"abc-def"},
-		},
-		{
 			name: "no minus escape required arg",
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
@@ -426,7 +413,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			},
 		},
 		{
-			name: "no minus escape no flag",
+			name: "no minus escape if no flag",
 			config: CommaConfig{
 				RequiredArgs: []RequiredArg{
 					{

@@ -15,20 +15,17 @@ import (
 // Flag names mustn't contain double minuses, commas and whitespace (space, tab
 // or newline).
 //
-// Additionally, in order to distinguish flags from arguments, a double minus
-// ('--') must be used to use a literal minus.
+// Additionally, in order to distinguish flags from arguments, if an argument
+// beings with a minus, it must be escaped using a double minus.
 // To ease usability for users unaware of this, escapes are not needed, if one
 // of the following cases is fulfilled:
 //
-// 1. The minus is used inside of a flag or argument, i.e. anywhere but the
-// beginning.
+// 1. The minus is used in any of the required arguments except the first.
 //
-// 2. The minus is used in any of the required arguments except the first.
+// 2. There are no flags.
 //
-// 3. There are no flags.
-//
-// This still means, however, that a double minus will always be interpreted as
-// a single one.
+// Even if one of those exceptions applies, it will still be escaped to
+// preserve predictability.
 type CommaConfig struct {
 	// RequiredArgs contains the required arguments.
 	RequiredArgs []RequiredArg

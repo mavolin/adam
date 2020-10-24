@@ -10,7 +10,7 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-var commaConfigEscaper = strings.NewReplacer(",,", ",", "--", "-")
+var commaConfigEscaper = strings.NewReplacer(",,", ",")
 
 var interfaceType = reflect.TypeOf(func(interface{}) {}).In(0)
 
@@ -115,7 +115,13 @@ func (p *commaParser) parseFlag(flagName commaItem) (err error) {
 }
 
 func (p *commaParser) parseArg(content commaItem) error {
-	err := p.helper.addArg(commaConfigEscaper.Replace(content.val))
+	if strings.HasPrefix(content.val, "--") {
+		content.val = content.val[1:]
+	}
+
+	content.val = commaConfigEscaper.Replace(content.val)
+
+	err := p.helper.addArg(content.val)
 	if err != nil {
 		return err
 	}
