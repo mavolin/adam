@@ -16,7 +16,7 @@ import (
 func TestText_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		text *Text
+		text Type
 
 		raw string
 
@@ -163,7 +163,7 @@ func TestLink_Parse(t *testing.T) {
 
 	failureCases := []struct {
 		name string
-		link *Link
+		link Type
 
 		raw string
 
@@ -268,7 +268,7 @@ func TestAlphanumericID_Description(t *testing.T) {
 func TestAlphanumericID_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		id   *AlphanumericID
+		id   Type
 
 		raw string
 
@@ -282,19 +282,19 @@ func TestAlphanumericID_Parse(t *testing.T) {
 		},
 		{
 			name:   "min length",
-			id:     &AlphanumericID{MinLength: 3},
+			id:     AlphanumericID{MinLength: 3},
 			raw:    "abc",
 			expect: "abc",
 		},
 		{
 			name:   "max length",
-			id:     &AlphanumericID{MaxLength: 3},
+			id:     AlphanumericID{MaxLength: 3},
 			raw:    "abc",
 			expect: "abc",
 		},
 		{
 			name:   "regexp",
-			id:     &AlphanumericID{Regexp: regexp.MustCompile("abc")},
+			id:     AlphanumericID{Regexp: regexp.MustCompile("abc")},
 			raw:    "abc",
 			expect: "abc",
 		},

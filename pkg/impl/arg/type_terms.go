@@ -122,26 +122,26 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	textName        = i18n.NewFallbackConfig("args.types.text.name", "Text")
-	textDescription = i18n.NewFallbackConfig("args.types.text.description", "A text.")
+	textName        = i18n.NewFallbackConfig("args.types.id.name", "Text")
+	textDescription = i18n.NewFallbackConfig("args.types.id.description", "A id.")
 )
 
 // ================================ Errors ================================
 
 var (
 	textBelowMinLengthErrorArg = i18n.NewFallbackConfig(
-		"args.types.text.errors.below_min_length.arg",
-		"The text in argument {{.position}} must be at least {{.min}} characters long.")
+		"args.types.id.errors.below_min_length.arg",
+		"The id in argument {{.position}} must be at least {{.min}} characters long.")
 	textBelowMinLengthErrorFlag = i18n.NewFallbackConfig(
-		"args.types.text.errors.below_min_length.flag",
-		"The text used as the `{{.used_name}}`-flag must be at least {{.min}} characters long.")
+		"args.types.id.errors.below_min_length.flag",
+		"The id used as the `{{.used_name}}`-flag must be at least {{.min}} characters long.")
 
 	textAboveMaxLengthErrorArg = i18n.NewFallbackConfig(
-		"args.types.text.errors.above_max_length.arg",
-		"The text in argument {{.position}} may not be longer than {{.max}} characters.")
+		"args.types.id.errors.above_max_length.arg",
+		"The id in argument {{.position}} may not be longer than {{.max}} characters.")
 	textAboveMaxLengthErrorFlag = i18n.NewFallbackConfig(
-		"args.types.text.errors.above_max_length.flag",
-		"The text used as the `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
+		"args.types.id.errors.above_max_length.flag",
+		"The id used as the `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
 )
 
 // =============================================================================
@@ -399,21 +399,21 @@ var (
 
 	textChannelDescriptionNoID = i18n.NewFallbackConfig(
 		"args.types.text_channel.description.no_id",
-		"A mention of a text or announcement channel.")
+		"A mention of a id or announcement channel.")
 	textChannelDescriptionWithID = i18n.NewFallbackConfig(
 		"args.types.text_channel.description.with_id",
-		"A mention of a text or a announcement channel or an id of such.")
+		"A mention of a id or a announcement channel or an id of such.")
 )
 
 // ================================ Errors ================================
 
 var (
 	textChannelInvalidError = i18n.NewFallbackConfig(
-		"args.types.text_channel.errors.invalid", "{{.raw}} is not a valid text channel.")
+		"args.types.text_channel.errors.invalid", "{{.raw}} is not a valid id channel.")
 
 	textChannelInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention_with_raw",
-		"{{.raw}} is not a valid mention of a text channel.")
+		"{{.raw}} is not a valid mention of a id channel.")
 
 	textChannelInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention.arg",
@@ -428,7 +428,7 @@ var (
 
 	textChannelInvalidTypeError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_type",
-		"{{.raw}} is neither a text nor an announcement channel.")
+		"{{.raw}} is neither a id nor an announcement channel.")
 )
 
 // =============================================================================
@@ -444,7 +444,7 @@ var (
 
 	textChannelIDInvalidTypeError = i18n.NewFallbackConfig(
 		"args.types.text_channel_id.errors.invalid_type",
-		"The id {{.raw}} belongs to neither a text nor an announcement channel.")
+		"The id {{.raw}} belongs to neither a id nor an announcement channel.")
 )
 
 // =============================================================================

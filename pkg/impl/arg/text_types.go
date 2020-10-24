@@ -17,14 +17,14 @@ import (
 //
 // Go type: string
 type Text struct {
-	// MinLength is the inclusive minimum length the text may have.
+	// MinLength is the inclusive minimum length the id may have.
 	MinLength uint
-	// MaxLength is the inclusive maximum length the text may have.
-	// If MaxLength is 0, the text won't have a maximum.
+	// MaxLength is the inclusive maximum length the id may have.
+	// If MaxLength is 0, the id won't have a maximum.
 	MaxLength uint
 
-	// Regexp is the regular expression the text must match.
-	// If Regexp is set to nil/zero, the text won't be matched.
+	// Regexp is the regular expression the id must match.
+	// If Regexp is set to nil/zero, the id won't be matched.
 	//
 	// If matching fails, RegexpError will be returned.
 	Regexp *regexp.Regexp
@@ -37,7 +37,7 @@ type Text struct {
 	//
 	// 		• name - the name of the argument
 	// 		• raw - the raw argument
-	// 		• position - the position of the text (1-indexed)
+	// 		• position - the position of the id (1-indexed)
 	// 		• regexp - the regular expression that needs to be matched
 	//
 	// Defaults to: regexpNotMatchingErrorArg
@@ -216,8 +216,8 @@ type AlphanumericID struct {
 
 	// MinLength is the inclusive minimum length the ID may have.
 	MinLength uint
-	// MaxLength is the inclusive maximum length the text may have.
-	// If MaxLength is 0, the text won't have a maximum.
+	// MaxLength is the inclusive maximum length the id may have.
+	// If MaxLength is 0, the id won't have a maximum.
 	MaxLength uint
 
 	// Regexp is the regular expression the id needs to match to pass.
@@ -231,7 +231,7 @@ type AlphanumericID struct {
 	//
 	// 		• name - the name of the argument
 	// 		• raw - the raw argument
-	// 		• position - the position of the text (1-indexed)
+	// 		• position - the position of the id (1-indexed)
 	// 		• regexp - the regular expression that needs to be matched
 	//
 	// Defaults to: idRegexpNotMatchingErrorArg

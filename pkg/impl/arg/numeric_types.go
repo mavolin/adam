@@ -209,8 +209,8 @@ type NumericID struct {
 
 	// MinLength is the inclusive minimum length the id may have.
 	MinLength uint
-	// MaxLength is the inclusive maximum length the text may have.
-	// If MaxLength is 0, the text won't have a maximum.
+	// MaxLength is the inclusive maximum length the id may have.
+	// If MaxLength is 0, the id won't have a maximum.
 	MaxLength uint
 }
 

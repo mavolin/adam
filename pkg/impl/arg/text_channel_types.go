@@ -21,7 +21,7 @@ var TextChannelAllowIDs = false
 // TextChannel
 // =====================================================================================
 
-// TextChannel is the Type used for guild text channels and news channels.
+// TextChannel is the Type used for guild id channels and news channels.
 // The channel must be on the same guild as the invoking one.
 //
 // TextChannel will always fail if used in a direct message.
