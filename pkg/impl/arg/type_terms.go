@@ -217,6 +217,8 @@ var (
 // ================================ Errors ================================
 
 var (
+	emojiInvalidError = i18n.NewFallbackConfig("args.types.emoji.errors.invalid", "{{.raw}} is not an emoji.")
+
 	emojiCustomEmojiInDMError = i18n.NewFallbackConfig(
 		"args.types.emoji.errors.custom_emoji_in_dm", "You can't use custom emojis in DMs.")
 
@@ -226,8 +228,6 @@ var (
 	emojiCustomEmojiErrorFlag = i18n.NewFallbackConfig(
 		"args.types.emoji.errors.custom_emoji.flag",
 		"You can't use a custom emoji as `{{.used_name}}`-flag.")
-
-	emojiInvalidError = i18n.NewFallbackConfig("args.types.emoji.errors.invalid", "{{.raw}} is not an emoji.")
 
 	emojiNoAccessError = i18n.NewFallbackConfig(
 		"args.types.user.errors.no_access",
@@ -242,13 +242,9 @@ var (
 // ================================ Errors ================================
 
 var (
-	emojiIDNoAccessErrorArg = i18n.NewFallbackConfig(
-		"args.types.emoji_id.errors.no_access.arg",
-		"Argument {{.position}} is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
-			"Make sure to only use emojis from this server.")
-	emojiIDNoAccessErrorFlag = i18n.NewFallbackConfig(
-		"args.types.emoji_id.errors.no_access.flag",
-		"The `{{.used_name}}`-flag contains no valid emoji id or I'm unable to access the emoji it belongs to. "+
+	emojiIDNoAccessError = i18n.NewFallbackConfig(
+		"args.types.emoji_id.errors.no_access",
+		"{{.raw}} is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
 			"Make sure to only use emojis from this server.")
 )
 
@@ -297,11 +293,10 @@ var (
 // ================================ Errors ================================
 
 var (
+	userInvalidError = i18n.NewFallbackConfig("args.types.user.errors.invalid", "{{.raw}} is not a user.")
+
 	userInvalidMentionWithRaw = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid user mention.")
-
-	userInvalidWithRaw = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_with_raw", "{{.raw}} is not a user.")
 
 	userInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.arg",
@@ -326,13 +321,8 @@ var (
 // ================================ Errors ================================
 
 var (
-	userInvalidIDWithRaw = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id_with_raw", "{{.raw}} is not a valid user id.")
-
-	userInvalidIDArg = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id.arg", "The user id in argument {{.position}} is invalid.")
-	userInvalidIDFlag = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id.flag", "The user id in the `{{.used_name}}`-flag is invalid.")
+	userIDInvalidError = i18n.NewFallbackConfig(
+		"args.types.user_id.errors.invalid", "{{.raw}} is not a valid user id.")
 )
 
 // =============================================================================
@@ -354,11 +344,10 @@ var (
 // ================================ Errors ================================
 
 var (
-	roleInvalidMentionWithRaw = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
+	roleInvalidError = i18n.NewFallbackConfig("args.types.role.errors.invalid", "{{.raw}} is not a role.")
 
-	roleInvalidWithRaw = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_with_raw", "{{.raw}} is not a role.")
+	roleInvalidMentionWithRawError = i18n.NewFallbackConfig(
+		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
 
 	roleInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention.arg",
@@ -383,13 +372,8 @@ var (
 // ================================ Errors ================================
 
 var (
-	roleInvalidIDWithRaw = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_id_with_raw", "{{.raw}} is not a valid role id.")
-
-	roleInvalidIDArg = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_id.arg", "The role id in argument {{.position}} is invalid.")
-	roleInvalidIDFlag = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_id.flag", "The role id you used as `{{.used_name}}`-flag is invalid.")
+	roleIDInvalidError = i18n.NewFallbackConfig(
+		"args.types.role_id.errors.invalid", "{{.raw}} is not a valid role id.")
 )
 
 // =============================================================================
@@ -412,6 +396,13 @@ var (
 // ================================ Errors ================================
 
 var (
+	textChannelInvalidError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid", "{{.raw}} is not a valid text channel.")
+
+	textChannelInvalidMentionWithRaw = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid_mention_with_args",
+		"{{.raw}} is not a valid mention of a text channel.")
+
 	textChannelInvalidMentionArg = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention.arg",
 		"The mention in argument {{.position}} does not belong to channel on this server.")
@@ -425,6 +416,18 @@ var (
 	textChannelGuildNotMatchingErrorFlag = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.guild_not_matching.flag",
 		"The channel used as the `-{{.used_name}}`-flag must be on this server.")
+)
+
+// =============================================================================
+// TextChannelID
+// =====================================================================================
+
+// ================================ Errors ================================
+
+var (
+	textChannelIDInvalidArg = i18n.NewFallbackConfig(
+		"args.types.text_channel_id.errors.invalid.arg",
+		"")
 )
 
 // =============================================================================

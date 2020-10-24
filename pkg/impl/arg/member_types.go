@@ -83,12 +83,12 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidWithRaw, ctx, nil)
+		return nil, newArgParsingErr(userInvalidError, ctx, nil)
 	}
 
 	member, err := s.Member(ctx.GuildID, discord.UserID(id))
 	if err != nil {
-		return nil, newArgParsingErr2(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr(userIDInvalidError, ctx, nil)
 	}
 
 	return member, nil
@@ -127,12 +127,12 @@ func (m memberID) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	mid, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr2(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(userIDInvalidError, ctx, nil)
 	}
 
 	member, err := s.Member(ctx.GuildID, discord.UserID(mid))
 	if err != nil {
-		return nil, newArgParsingErr2(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr(userIDInvalidError, ctx, nil)
 	}
 
 	return member, nil

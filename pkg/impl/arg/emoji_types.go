@@ -102,7 +102,7 @@ func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	emoji, err := s.Emoji(ctx.GuildID, discord.EmojiID(id))
 	if err != nil {
-		return nil, newArgParsingErr2(emojiIDNoAccessErrorArg, emojiIDNoAccessErrorFlag, ctx, nil)
+		return nil, newArgParsingErr(emojiIDNoAccessError, ctx, nil)
 	}
 
 	return emoji, nil

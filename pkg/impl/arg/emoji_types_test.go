@@ -176,8 +176,8 @@ func TestEmoji_Parse(t *testing.T) {
 			name:          "emoji id not found",
 			raw:           "123",
 			allowEmojiIDs: true,
-			expectArg:     emojiIDNoAccessErrorArg,
-			expectFlag:    emojiIDNoAccessErrorFlag,
+			expectArg:     emojiIDNoAccessError,
+			expectFlag:    emojiIDNoAccessError,
 		},
 	}
 

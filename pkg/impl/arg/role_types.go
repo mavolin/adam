@@ -73,17 +73,17 @@ func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if !RoleAllowIDs {
-		return nil, newArgParsingErr(roleInvalidMentionWithRaw, ctx, nil)
+		return nil, newArgParsingErr(roleInvalidMentionWithRawError, ctx, nil)
 	}
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(roleInvalidWithRaw, ctx, nil)
+		return nil, newArgParsingErr(roleInvalidError, ctx, nil)
 	}
 
 	role, err := s.Role(ctx.GuildID, discord.RoleID(id))
 	if err != nil {
-		return nil, newArgParsingErr2(roleInvalidIDArg, roleInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
 	}
 
 	return role, nil
@@ -122,12 +122,12 @@ func (r roleID) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	rid, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(roleInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
 	}
 
 	role, err := s.Role(ctx.GuildID, discord.RoleID(rid))
 	if err != nil {
-		return nil, newArgParsingErr2(roleInvalidIDArg, roleInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
 	}
 
 	return role, nil
