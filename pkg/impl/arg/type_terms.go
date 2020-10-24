@@ -334,7 +334,7 @@ var (
 var (
 	roleName = i18n.NewFallbackConfig("args.types.role.name", "Role")
 
-	roleDescriptionNoId = i18n.NewFallbackConfig(
+	roleDescriptionNoID = i18n.NewFallbackConfig(
 		"args.types.role.description.no_id", "A role mention. For example @WumpusGang.")
 	roleDescriptionWithID = i18n.NewFallbackConfig(
 		"args.types.role.description.with_id",
