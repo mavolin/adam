@@ -44,7 +44,7 @@ func (r role) Description(l *i18n.Localizer) string {
 		}
 	}
 
-	desc, _ := l.Localize(roleDescriptionNoId) // we have a fallback
+	desc, _ := l.Localize(roleDescriptionNoID) // we have a fallback
 	return desc
 }
 

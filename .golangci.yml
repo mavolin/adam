@@ -68,6 +68,10 @@ issues:
       linters:
        - funlen
        - gocognit
+    # consistency with newArgParsingErr2
+    - path: ^pkg/impl/arg/utils.go$
+      linters: unparam
+      text: "`newArgParsingErr` - `placeholders` always receives `nil`"
     # Text and AlphanumericID are not duplicates, parsing is just similar
     - path: ^pkg/impl/arg/text_types.go$
       linters: dupl
