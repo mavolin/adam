@@ -61,7 +61,7 @@ var (
 
 var (
 	choiceInvalidError = i18n.NewFallbackConfig(
-		"args.types.choice.errors.invalid", "`{{.raw}}` is not a valid choice.")
+		"args.types.choice.errors.invalid", "{{.raw}} is not a valid choice.")
 )
 
 // =============================================================================
@@ -377,6 +377,18 @@ var (
 )
 
 // =============================================================================
+// Channels
+// =====================================================================================
+
+// ================================ Errors ================================
+
+var (
+	channelIDInvalid = i18n.NewFallbackConfig(
+		"args.types.channel_id.errors.invalid",
+		"{{.raw}} is not a valid channel id.")
+)
+
+// =============================================================================
 // TextChannel
 // =====================================================================================
 
@@ -410,12 +422,13 @@ var (
 		"args.types.text_channel.errors.invalid_mention.flag",
 		"The mention you used as the `{{.used_name}}`-flag does not belong to channel on this server.")
 
-	textChannelGuildNotMatchingErrorArg = i18n.NewFallbackConfig(
-		"args.types.text_channel.errors.guild_not_matching.arg",
-		"The channel in argument {{.position}} must be on this server.")
-	textChannelGuildNotMatchingErrorFlag = i18n.NewFallbackConfig(
-		"args.types.text_channel.errors.guild_not_matching.flag",
-		"The channel used as the `-{{.used_name}}`-flag must be on this server.")
+	textChannelGuildNotMatchingError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.guild_not_matching",
+		"{{.raw}} is not a channel from this server.")
+
+	textChannelInvalidTypeError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid_type",
+		"{{.raw}} is neither a text nor an announcement channel.")
 )
 
 // =============================================================================
@@ -425,9 +438,13 @@ var (
 // ================================ Errors ================================
 
 var (
-	textChannelIDInvalidArg = i18n.NewFallbackConfig(
-		"args.types.text_channel_id.errors.invalid.arg",
-		"")
+	textChannelIDGuildNotMatchingError = i18n.NewFallbackConfig(
+		"args.types.text_channel_id.errors.guild_not_matching",
+		"The id {{.raw}} belongs to a channel from another server.")
+
+	textChannelIDInvalidTypeError = i18n.NewFallbackConfig(
+		"args.types.text_channel_id.errors.invalid_type",
+		"The id {{.raw}} belongs to neither a text nor an announcement channel.")
 )
 
 // =============================================================================

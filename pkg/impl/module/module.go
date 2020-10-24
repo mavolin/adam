@@ -3,8 +3,6 @@
 package module
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-
 	"github.com/mavolin/adam/pkg/bot"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -35,10 +33,6 @@ func (m *Module) GetShortDescription(l *i18n.Localizer) string { return m.Meta.G
 func (m *Module) GetLongDescription(l *i18n.Localizer) string  { return m.Meta.GetLongDescription(l) }
 func (m *Module) IsHidden() bool                               { return m.Meta.IsHidden() }
 func (m *Module) GetDefaultChannelTypes() plugin.ChannelTypes  { return m.Meta.GetDefaultChannelTypes() }
-
-func (m *Module) GetDefaultBotPermissions() *discord.Permissions {
-	return m.Meta.GetDefaultBotPermissions()
-}
 
 func (m *Module) GetDefaultRestrictionFunc() plugin.RestrictionFunc {
 	return m.Meta.GetDefaultRestrictionFunc()

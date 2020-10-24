@@ -1,8 +1,6 @@
 package plugin
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
@@ -39,12 +37,6 @@ type (
 		//
 		// Commands can overwrite this, by setting a custom ChannelTypes.
 		GetDefaultChannelTypes() ChannelTypes
-		// GetDefaultBotPermissions get the permissions needed to use this
-		// module.
-		//
-		// Commands can overwrite this, by setting their bot permissions to a
-		// non-nil value.
-		GetDefaultBotPermissions() *discord.Permissions
 		// IsRestricted checks if the user calling the command is restricted
 		// from using this module.
 		// If the bot lacks one ore more permissions command execution will
