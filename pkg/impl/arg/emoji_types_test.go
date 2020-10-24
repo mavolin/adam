@@ -1,8 +1,8 @@
 package arg
 
 import (
+	"fmt"
 	"math"
-	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -18,7 +18,7 @@ import (
 )
 
 func TestEmoji_Parse(t *testing.T) {
-	apiSucessCases := []struct {
+	apiSuccessCases := []struct {
 		name string
 
 		raw           string
@@ -48,7 +48,7 @@ func TestEmoji_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
-		for _, c := range apiSucessCases {
+		for _, c := range apiSuccessCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
 
@@ -101,8 +101,8 @@ func TestEmoji_Parse(t *testing.T) {
 			raw:          "<:abc:123>",
 			guild:        true,
 			customEmojis: false,
-			expectArg:    emojiOnlyUnicodeErrorArg,
-			expectFlag:   emojiOnlyUnicodeErrorFlag,
+			expectArg:    emojiCustomEmojiErrorArg,
+			expectFlag:   emojiCustomEmojiErrorFlag,
 		},
 		{
 			name:         "custom emoji in dm",
@@ -114,7 +114,7 @@ func TestEmoji_Parse(t *testing.T) {
 		},
 		{
 			name:         "custom emoji id range error",
-			raw:          "<:abc:" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
+			raw:          fmt.Sprintf("<:abc:%v9>", uint64(math.MaxUint64)),
 			guild:        true,
 			customEmojis: true,
 			expectArg:    emojiInvalidError,
@@ -128,6 +128,24 @@ func TestEmoji_Parse(t *testing.T) {
 			customEmojis:  true,
 			expectArg:     emojiInvalidError,
 			expectFlag:    emojiInvalidError,
+		},
+		{
+			name:          "id - no custom emojis allowed",
+			raw:           "123",
+			guild:         true,
+			allowEmojiIDs: true,
+			customEmojis:  false,
+			expectArg:     emojiCustomEmojiErrorArg,
+			expectFlag:    emojiCustomEmojiErrorFlag,
+		},
+		{
+			name:          "id in dm",
+			raw:           "123",
+			guild:         false,
+			allowEmojiIDs: true,
+			customEmojis:  true,
+			expectArg:     emojiCustomEmojiInDMError,
+			expectFlag:    emojiCustomEmojiInDMError,
 		},
 		{
 			name:          "id invalid",
@@ -158,8 +176,8 @@ func TestEmoji_Parse(t *testing.T) {
 			name:          "emoji id not found",
 			raw:           "123",
 			allowEmojiIDs: true,
-			expectArg:     emojiIDNoAccessErrorArg,
-			expectFlag:    emojiIDNoAccessErrorFlag,
+			expectArg:     emojiIDNoAccessError,
+			expectFlag:    emojiIDNoAccessError,
 		},
 	}
 
@@ -278,22 +296,12 @@ func TestRawEmoji_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		ctx := &Context{
-			Raw:  "abc",
-			Kind: KindArg,
-		}
+		ctx := &Context{Raw: "abc"}
 
 		expect := emojiInvalidError
 		expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 		_, actual := RawEmoji.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-		ctx.Kind = KindFlag
-
-		// error is the same for flags
-
-		_, actual = RawEmoji.Parse(nil, ctx)
 		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 	})
 }

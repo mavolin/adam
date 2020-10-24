@@ -30,17 +30,39 @@ var (
 	switchName        = i18n.NewFallbackConfig("args.types.switch.name", "Switch")
 	switchDescription = i18n.NewFallbackConfig(
 		"args.types.switch.description",
-		"Used to turn on a feature of a command. Only used with flags.")
+		"Used to turn on a feature of a command. Only used for flags.")
 )
 
 // ================================ Errors ================================
 
 var switchWithContentError = i18n.NewFallbackConfig(
-	"args.types.switch.errors.with_content", "`{{.name}}` is a Switch flag and cannot be used with content.")
+	"args.types.switch.errors.with_content",
+	"The `{{.used-name}}`-flag is a switch flag and cannot be used with content.")
 
 type switchWithContentErrorPlaceholders struct {
 	Name string
 }
+
+// =============================================================================
+// Choice
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	choiceName        = i18n.NewFallbackConfig("args.types.choice.name", "Choice")
+	choiceDescription = i18n.NewFallbackConfig(
+		"args.types.choice.Name",
+		"A choice is a list of elements from which you can to pick one. "+
+			"Refer to the help of the command to see all possible choices.")
+)
+
+// ================================ Error ================================
+
+var (
+	choiceInvalidError = i18n.NewFallbackConfig(
+		"args.types.choice.errors.invalid", "{{.raw}} is not a valid choice.")
+)
 
 // =============================================================================
 // Numbers
@@ -71,19 +93,12 @@ var decimalSyntaxError = i18n.NewFallbackConfig("args.types.decimal.errors.synta
 // ================================ Shared Errors ================================
 
 var (
-	numberUnderRangeErrorArg = i18n.NewFallbackConfig(
-		"args.types.number.errors.under_range.arg",
-		"{{.raw}} is too small, try using a larger number as argument {{.position}}.")
-	numberUnderRangeErrorFlag = i18n.NewFallbackConfig(
-		"args.types.number.errors.under_range.flag",
-		"{{.raw}} is too small, try giving the `{{.used_name}}`-flag a larger number.")
-
-	numberOverRangeErrorArg = i18n.NewFallbackConfig(
+	numberBelowRangeError = i18n.NewFallbackConfig(
+		"args.types.number.errors.under_range",
+		"{{.raw}} is too small, try using a larger number.")
+	numberOverRangeError = i18n.NewFallbackConfig(
 		"args.types.number.errors.over_range.arg",
-		"{{.raw}} is too large, try using a smaller number as argument {{.position}}.")
-	numberOverRangeErrorFlag = i18n.NewFallbackConfig(
-		"args.types.integer.errors.over_range.flag",
-		"{{.raw}} is a too large, try giving the `{{.used_name}}`-flag a smaller number.")
+		"{{.raw}} is too large, try using a smaller number.")
 
 	numberBelowMinErrorArg = i18n.NewFallbackConfig(
 		"args.types.number.errors.below_min.arg",
@@ -107,26 +122,26 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	textName        = i18n.NewFallbackConfig("args.types.text.name", "Text")
-	textDescription = i18n.NewFallbackConfig("args.types.text.desc", "A text. What else is there to say.")
+	textName        = i18n.NewFallbackConfig("args.types.id.name", "Text")
+	textDescription = i18n.NewFallbackConfig("args.types.id.description", "A id.")
 )
 
 // ================================ Errors ================================
 
 var (
 	textBelowMinLengthErrorArg = i18n.NewFallbackConfig(
-		"args.types.text.errors.below_min_length.arg",
-		"The text in argument {{.position}} must be at least {{.min}} characters long.")
+		"args.types.id.errors.below_min_length.arg",
+		"The id in argument {{.position}} must be at least {{.min}} characters long.")
 	textBelowMinLengthErrorFlag = i18n.NewFallbackConfig(
-		"args.types.text.errors.below_min_length.flag",
-		"The text used in the `{{.used_name}}`-flag must be at least {{.min}} characters long.")
+		"args.types.id.errors.below_min_length.flag",
+		"The id used as the `{{.used_name}}`-flag must be at least {{.min}} characters long.")
 
 	textAboveMaxLengthErrorArg = i18n.NewFallbackConfig(
-		"args.types.text.errors.above_max_length.arg",
-		"The text in argument {{.position}} may not be longer than {{.max}} characters.")
+		"args.types.id.errors.above_max_length.arg",
+		"The id in argument {{.position}} may not be longer than {{.max}} characters.")
 	textAboveMaxLengthErrorFlag = i18n.NewFallbackConfig(
-		"args.types.text.errors.above_max_length.flag",
-		"The text used in the `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
+		"args.types.id.errors.above_max_length.flag",
+		"The id used as the `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
 )
 
 // =============================================================================
@@ -144,9 +159,9 @@ var (
 
 var (
 	linkInvalidErrorArg = i18n.NewFallbackConfig(
-		"args.types.link.errors.invalid.arg", "Argument {{.position}} must be a valid link.")
+		"args.types.link.errors.invalid.arg", "The link in argument {{.position}} is not valid.")
 	linkInvalidErrorFlag = i18n.NewFallbackConfig(
-		"args.types.link.errors.invalid.flag", "The `{{.used.name}}`-flag must be a valid link.")
+		"args.types.link.errors.invalid.flag", "The link used as `{{.used_name}}`-flag is not valid.")
 )
 
 // =============================================================================
@@ -157,7 +172,7 @@ var (
 
 var (
 	idName        = i18n.NewFallbackConfig("args.types.id.name", "ID")
-	idDescription = i18n.NewFallbackConfig("args.types.id.name", "The id of something.")
+	idDescription = i18n.NewFallbackConfig("args.types.id.name", "The unique id of something.")
 )
 
 // ================================ Errors ================================
@@ -186,59 +201,37 @@ var (
 )
 
 // =============================================================================
-// Choice
-// =====================================================================================
-
-// ================================ Meta Data ================================
-
-var (
-	choiceName        = i18n.NewFallbackConfig("args.types.choice.name", "Choice")
-	choiceDescription = i18n.NewFallbackConfig(
-		"args.types.choice.Name",
-		"A choice is a list of elements from which you can to pick one. "+
-			"Refer to the help of the command to see all possible choices.")
-)
-
-// ================================ Error ================================
-
-var (
-	choiceInvalidErrorArg = i18n.NewFallbackConfig(
-		"args.types.choice.errors.invalid.arg", "`{{.raw}}` is not a valid choice for argument {{.position}}.")
-	choiceInvalidErrorFlag = i18n.NewFallbackConfig(
-		"args.types.choice.errors.invalid.flag", "`{{.raw}}` is not a valid choice for the `{{.used_name}}`-flag.")
-)
-
-// =============================================================================
 // Emoji
 // =====================================================================================
 
 // ================================ Meta Data ================================
 
 var (
-	emojiName        = i18n.NewFallbackConfig("args.types.emoji.name", "Emoji")
-	emojiDescription = i18n.NewFallbackConfig("args.types.emoji.description", "An emoji. "+emojiutil.Ghost)
+	emojiName = i18n.NewFallbackConfig("args.types.emoji.name", "Emoji")
+
+	emojiDescriptionNoID   = i18n.NewFallbackConfig("args.types.emoji.description.no_id", "An emoji. "+emojiutil.Ghost)
+	emojiDescriptionWithID = i18n.NewFallbackConfig(
+		"args.types.emoji.description.with_id", "An emoji or the id of an emoji. "+emojiutil.Ghost)
 )
 
 // ================================ Errors ================================
 
 var (
+	emojiInvalidError = i18n.NewFallbackConfig("args.types.emoji.errors.invalid", "{{.raw}} is not an emoji.")
+
 	emojiCustomEmojiInDMError = i18n.NewFallbackConfig(
 		"args.types.emoji.errors.custom_emoji_in_dm", "You can't use custom emojis in DMs.")
 
-	emojiOnlyUnicodeErrorArg = i18n.NewFallbackConfig(
-		"args.types.emoji.errors.only_unicode.arg",
-		emojiutil.Prohibited+" You can only use default emojis as argument {{.position}}.")
-	emojiOnlyUnicodeErrorFlag = i18n.NewFallbackConfig(
-		"args.types.emoji.errors.only_unicode.flag",
-		emojiutil.Prohibited+" You can only use default emojis as `{{.used_name}}`-flag.")
-
-	emojiInvalidError = i18n.NewFallbackConfig(
-		"args.types.emoji.errors.invalid",
-		emojiutil.DesktopComputer+emojiutil.Collision+" {{.raw}} is not an emoji.")
+	emojiCustomEmojiErrorArg = i18n.NewFallbackConfig(
+		"args.types.emoji.errors.custom_emoji.arg",
+		"You can't use a custom emoji as argument {{.position}}.")
+	emojiCustomEmojiErrorFlag = i18n.NewFallbackConfig(
+		"args.types.emoji.errors.custom_emoji.flag",
+		"You can't use a custom emoji as `{{.used_name}}`-flag.")
 
 	emojiNoAccessError = i18n.NewFallbackConfig(
 		"args.types.user.errors.no_access",
-		"{{.raw}} is not a valid emoji or I'm unable to access it. "+
+		"{{.raw}} is either not an emoji or I'm unable to access it. "+
 			"Make sure to only use emojis from this server.")
 )
 
@@ -249,13 +242,9 @@ var (
 // ================================ Errors ================================
 
 var (
-	emojiIDNoAccessErrorArg = i18n.NewFallbackConfig(
-		"args.types.emoji_id.errors.no_access.arg",
-		"Argument {{.position}} is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
-			"Make sure to only use emojis from this server.")
-	emojiIDNoAccessErrorFlag = i18n.NewFallbackConfig(
-		"args.types.emoji_id.errors.no_access.flag",
-		"The `{{.used_name}}`-flag contains no valid emoji id or I'm unable to access the emoji it belongs to. "+
+	emojiIDNoAccessError = i18n.NewFallbackConfig(
+		"args.types.emoji_id.errors.no_access",
+		"{{.raw}} is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
 			"Make sure to only use emojis from this server.")
 )
 
@@ -266,12 +255,13 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	memberName             = i18n.NewFallbackConfig("args.types.member.name", "Member")
+	memberName = i18n.NewFallbackConfig("args.types.member.name", "Member")
+
 	memberDescriptionNoIDs = i18n.NewFallbackConfig(
-		"args.types.member.description.no_ids", "A member is a mention of a user in a server. For example @Wumpus.")
+		"args.types.member.description.no_ids", "A mention of a user in a server. For example @Wumpus.")
 	memberDescriptionWithIDs = i18n.NewFallbackConfig(
 		"args.types.member.description.with_ids",
-		"A member is either a mention of a user or their id. For example @Wumpus or 123456789098765432.")
+		"A user mention or their id. For example @Wumpus or 123456789098765432.")
 )
 
 // =============================================================================
@@ -296,20 +286,22 @@ var (
 	userName        = i18n.NewFallbackConfig("args.types.user.name", "User")
 	userDescription = i18n.NewFallbackConfig(
 		"args.types.user.description",
-		"A user is either a mention of a user or their id. "+
-			"The command doesn't need to be invoked on the server the user is on.")
+		"A user mention or their id. The command doesn't need to be invoked on the server the user is on. "+
+			"For example: @Wumpus or 123456789098765432")
 )
 
 // ================================ Errors ================================
 
 var (
-	userInvalidMentionWithRaw = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid mention.")
+	userInvalidError = i18n.NewFallbackConfig("args.types.user.errors.invalid", "{{.raw}} is not a user.")
 
-	userInvalidMentionArg = i18n.NewFallbackConfig(
+	userInvalidMentionWithRawError = i18n.NewFallbackConfig(
+		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid user mention.")
+
+	userInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.arg",
 		"The mention in argument {{.position}} is invalid. Make sure the user is still on the server.")
-	userInvalidMentionFlag = i18n.NewFallbackConfig(
+	userInvalidMentionErrorFlag = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.flag",
 		"The mention in the `{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
 )
@@ -329,13 +321,8 @@ var (
 // ================================ Errors ================================
 
 var (
-	userInvalidIDWithRaw = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id_with_raw", "{{.raw}} is not a valid user id.")
-
-	userInvalidIDArg = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id.arg", "The user id in argument {{.position}} is invalid.")
-	userInvalidIDFlag = i18n.NewFallbackConfig(
-		"args.types.user.errors.invalid_id.flag", "The user id in the `{{.used_name}}`-flag is invalid.")
+	userIDInvalidError = i18n.NewFallbackConfig(
+		"args.types.user_id.errors.invalid", "{{.raw}} is not a valid user id.")
 )
 
 // =============================================================================
@@ -345,24 +332,29 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	roleName        = i18n.NewFallbackConfig("args.types.role.name", "Role")
-	roleDescription = i18n.NewFallbackConfig(
-		"args.types.role.description",
+	roleName = i18n.NewFallbackConfig("args.types.role.name", "Role")
+
+	roleDescriptionNoId = i18n.NewFallbackConfig(
+		"args.types.role.description.no_id", "A role mention. For example @WumpusGang.")
+	roleDescriptionWithID = i18n.NewFallbackConfig(
+		"args.types.role.description.with_id",
 		"A role mention or an id of a role. For example @WumpusGang or 123456789098765432.")
 )
 
 // ================================ Errors ================================
 
 var (
-	roleInvalidMentionWithRaw = i18n.NewFallbackConfig(
+	roleInvalidError = i18n.NewFallbackConfig("args.types.role.errors.invalid", "{{.raw}} is not a role.")
+
+	roleInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
 
-	roleInvalidMentionArg = i18n.NewFallbackConfig(
+	roleInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention.arg",
-		"The mention in argument {{.position}} is invalid. Make sure the role exists.")
-	roleInvalidMentionFlag = i18n.NewFallbackConfig(
+		"The role mention in argument {{.position}} is invalid. Make sure the still role exists.")
+	roleInvalidMentionErrorFlag = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention.flag",
-		"The mention in the `{{.used_name}}`-flag is invalid. Make sure the role exists.")
+		"The role mention you used as `{{.used_name}}`-flag is invalid. Make sure the still role exists.")
 )
 
 // =============================================================================
@@ -380,13 +372,87 @@ var (
 // ================================ Errors ================================
 
 var (
-	roleInvalidIDWithRaw = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_id_with_raw", "{{.raw}} is not a valid role id.")
+	roleIDInvalidError = i18n.NewFallbackConfig(
+		"args.types.role_id.errors.invalid", "{{.raw}} is not a valid role id.")
+)
 
-	roleInvalidIDArg = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_id.arg", "The role id in argument {{.position}} is invalid.")
-	roleInvalidIDFlag = i18n.NewFallbackConfig(
-		"args.types.role.errors.invalid_id.flag", "The role id in the `{{.used_name}}`-flag is invalid.")
+// =============================================================================
+// Channels
+// =====================================================================================
+
+// ================================ Errors ================================
+
+var (
+	channelIDInvalidError = i18n.NewFallbackConfig(
+		"args.types.channel_id.errors.invalid",
+		"{{.raw}} is not a valid channel id.")
+)
+
+// =============================================================================
+// TextChannel
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	textChannelName = i18n.NewFallbackConfig("args.types.text_channel.name", "Text Channel")
+
+	textChannelDescriptionNoID = i18n.NewFallbackConfig(
+		"args.types.text_channel.description.no_id",
+		"A mention of a id or announcement channel.")
+	textChannelDescriptionWithID = i18n.NewFallbackConfig(
+		"args.types.text_channel.description.with_id",
+		"A mention of a id or a announcement channel or an id of such.")
+)
+
+// ================================ Errors ================================
+
+var (
+	textChannelInvalidError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid", "{{.raw}} is not a valid id channel.")
+
+	textChannelInvalidMentionWithRawError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid_mention_with_raw",
+		"{{.raw}} is not a valid mention of a id channel.")
+
+	textChannelInvalidMentionErrorArg = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid_mention.arg",
+		"The mention in argument {{.position}} does not belong to channel on this server.")
+	textChannelInvalidMentionErrorFlag = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid_mention.flag",
+		"The mention you used as the `{{.used_name}}`-flag does not belong to channel on this server.")
+
+	textChannelGuildNotMatchingError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.guild_not_matching",
+		"{{.raw}} is not a channel from this server.")
+
+	textChannelInvalidTypeError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid_type",
+		"{{.raw}} is neither a id nor an announcement channel.")
+)
+
+// =============================================================================
+// TextChannelID
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	textChannelIDName        = i18n.NewFallbackConfig("args.types.text_channel_id.name", "Text Channel ID")
+	textChannelIDDescription = i18n.NewFallbackConfig(
+		"args.types.text_channel_id.description", "The id of a text or announcement channel.")
+)
+
+// ================================ Errors ================================
+
+var (
+	textChannelIDGuildNotMatchingError = i18n.NewFallbackConfig(
+		"args.types.text_channel_id.errors.guild_not_matching",
+		"The id {{.raw}} belongs to a channel from another server.")
+
+	textChannelIDInvalidTypeError = i18n.NewFallbackConfig(
+		"args.types.text_channel_id.errors.invalid_type",
+		"The id {{.raw}} belongs to neither a id nor an announcement channel.")
 )
 
 // =============================================================================
@@ -399,8 +465,7 @@ var (
 	regexpName        = i18n.NewFallbackConfig("args.types.regular_expression.name", "Regular Expression")
 	regexpDescription = i18n.NewFallbackConfig(
 		"args.types.regular_expression.description",
-		"A regular expression is a regular expression following the RE2/Golang-flavor. "+
-			"It can be used to macht text that follows user-defined rules.")
+		"A regular expression is a regular expression following the RE2/Go-flavor.")
 )
 
 // ================================ Errors ================================
@@ -418,8 +483,8 @@ var (
 		"The regular expression in argument {{.position}} uses an invalid character class:\n```\n{{.expression}}\n```")
 	regexpInvalidCharClassErrorFlag = i18n.NewFallbackConfig(
 		"args.types.regular_expression.errors.invalid_character_class.flag",
-		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid character class:"+
-			"\n```\n{{.expression}}\n```")
+		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid character class:\n"+
+			"```\n{{.expression}}\n```")
 
 	regexpInvalidCharRangeErrorArg = i18n.NewFallbackConfig(
 		"args.types.regular_expression.errors.invalid_character_range.arg",

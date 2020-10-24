@@ -47,16 +47,16 @@ func TestInteger_Parse(t *testing.T) {
 			min:        0,
 			max:        0,
 			raw:        strconv.Itoa(math.MaxInt64) + "9",
-			expectArg:  numberOverRangeErrorArg,
-			expectFlag: numberOverRangeErrorFlag,
+			expectArg:  numberOverRangeError,
+			expectFlag: numberOverRangeError,
 		},
 		{
 			name:       "under bit range",
 			min:        0,
 			max:        0,
 			raw:        strconv.Itoa(math.MinInt64) + "9",
-			expectArg:  numberUnderRangeErrorArg,
-			expectFlag: numberUnderRangeErrorFlag,
+			expectArg:  numberBelowRangeError,
+			expectFlag: numberBelowRangeError,
 		},
 		{
 			name: "below min",
@@ -90,7 +90,7 @@ func TestInteger_Parse(t *testing.T) {
 
 	for _, c := range failureCases {
 		t.Run(c.name, func(t *testing.T) {
-			var i *Integer
+			var i Type
 
 			switch {
 			case c.min != 0 && c.max != 0:
@@ -158,16 +158,16 @@ func TestDecimal_Parse(t *testing.T) {
 			min:        0,
 			max:        0,
 			raw:        fmt.Sprint(math.MaxFloat64) + "9",
-			expectArg:  numberOverRangeErrorArg,
-			expectFlag: numberOverRangeErrorFlag,
+			expectArg:  numberOverRangeError,
+			expectFlag: numberOverRangeError,
 		},
 		{
 			name:       "under bit range",
 			min:        0,
 			max:        0,
 			raw:        fmt.Sprint(-1*math.MaxFloat64) + "9",
-			expectArg:  numberUnderRangeErrorArg,
-			expectFlag: numberUnderRangeErrorFlag,
+			expectArg:  numberBelowRangeError,
+			expectFlag: numberBelowRangeError,
 		},
 		{
 			name: "below min",
@@ -282,27 +282,27 @@ func TestNumericID_Description(t *testing.T) {
 func TestNumericID_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		text *NumericID
+		id   Type
 
 		raw string
 
 		expect uint64
 	}{
 		{
-			name:   "simple text",
-			text:   SimpleNumericID,
+			name:   "simple id",
+			id:     SimpleNumericID,
 			raw:    "123",
 			expect: 123,
 		},
 		{
 			name:   "min length",
-			text:   &NumericID{MinLength: 3},
+			id:     NumericID{MinLength: 3},
 			raw:    "123",
 			expect: 123,
 		},
 		{
 			name:   "max length",
-			text:   &NumericID{MaxLength: 3},
+			id:     NumericID{MaxLength: 3},
 			raw:    "123",
 			expect: 123,
 		},
@@ -313,7 +313,7 @@ func TestNumericID_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				ctx := &Context{Raw: c.raw}
 
-				actual, err := c.text.Parse(nil, ctx)
+				actual, err := c.id.Parse(nil, ctx)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
 			})
@@ -322,7 +322,7 @@ func TestNumericID_Parse(t *testing.T) {
 
 	failureCases := []struct {
 		name string
-		text *NumericID
+		id   Type
 
 		raw string
 
@@ -330,7 +330,7 @@ func TestNumericID_Parse(t *testing.T) {
 	}{
 		{
 			name: "below min",
-			text: &NumericID{MinLength: 3},
+			id:   NumericID{MinLength: 3},
 			raw:  "12",
 			expectArg: idBelowMinLengthErrorArg.
 				WithPlaceholders(map[string]interface{}{
@@ -343,7 +343,7 @@ func TestNumericID_Parse(t *testing.T) {
 		},
 		{
 			name: "above max",
-			text: &NumericID{MaxLength: 3},
+			id:   NumericID{MaxLength: 3},
 			raw:  "1234",
 			expectArg: idAboveMaxLengthErrorArg.
 				WithPlaceholders(map[string]interface{}{
@@ -356,7 +356,7 @@ func TestNumericID_Parse(t *testing.T) {
 		},
 		{
 			name:       "not a number",
-			text:       SimpleNumericID,
+			id:         SimpleNumericID,
 			raw:        "abc",
 			expectArg:  idNotANumberErrorArg,
 			expectFlag: idNotANumberErrorFlag,
@@ -373,7 +373,7 @@ func TestNumericID_Parse(t *testing.T) {
 
 				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
 
-				_, actual := c.text.Parse(nil, ctx)
+				_, actual := c.id.Parse(nil, ctx)
 				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
 
 				ctx = &Context{
@@ -383,7 +383,7 @@ func TestNumericID_Parse(t *testing.T) {
 
 				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
 
-				_, actual = c.text.Parse(nil, ctx)
+				_, actual = c.id.Parse(nil, ctx)
 				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
 			})
 		}

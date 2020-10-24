@@ -1,8 +1,8 @@
 package arg
 
 import (
+	"fmt"
 	"math"
-	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -85,11 +85,11 @@ func TestRole_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "<@&" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
+				Raw:  fmt.Sprintf("<@&%d9>", uint64(math.MaxUint64)),
 				Kind: KindArg,
 			}
 
-			expect := roleInvalidMentionArg
+			expect := roleInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Role.Parse(nil, ctx)
@@ -97,7 +97,7 @@ func TestRole_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = roleInvalidMentionFlag
+			expect = roleInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual = Role.Parse(nil, ctx)
@@ -125,7 +125,7 @@ func TestRole_Parse(t *testing.T) {
 
 			srcMocker.Roles(ctx.GuildID, []discord.Role{})
 
-			expect := roleInvalidMentionArg
+			expect := roleInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s := state.CloneMocker(srcMocker, t)
@@ -137,7 +137,7 @@ func TestRole_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = roleInvalidMentionFlag
+			expect = roleInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s = state.CloneMocker(srcMocker, t)
@@ -148,7 +148,7 @@ func TestRole_Parse(t *testing.T) {
 			m.Eval()
 		})
 
-		t.Run("invalid id", func(t *testing.T) {
+		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
 					MessageCreateEvent: &state.MessageCreateEvent{
@@ -159,27 +159,18 @@ func TestRole_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "abc",
-				Kind: KindArg,
+				Raw: "abc",
 			}
 
-			expect := roleInvalidIDWithRaw
+			expect := roleInvalidError
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Role.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-			ctx.Kind = KindFlag
-
-			expect = roleInvalidIDWithRaw
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
-
-			_, actual = Role.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
 		t.Run("role id not found", func(t *testing.T) {
-			srcMocker, _ := state.NewMocker(t)
+			m, s := state.NewMocker(t)
 
 			ctx := &Context{
 				Context: &plugin.Context{
@@ -191,30 +182,15 @@ func TestRole_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "456",
-				Kind: KindArg,
+				Raw: "456",
 			}
 
-			srcMocker.Roles(ctx.GuildID, []discord.Role{})
+			m.Roles(ctx.GuildID, []discord.Role{})
 
-			expect := roleInvalidIDArg
+			expect := roleIDInvalidError
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
-
-			m, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := Role.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-			m.Eval()
-
-			ctx.Kind = KindFlag
-
-			expect = roleInvalidIDFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
-
-			m, s = state.CloneMocker(srcMocker, t)
-
-			_, actual = Role.Parse(s, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			m.Eval()
@@ -265,17 +241,15 @@ func TestRoleID_Parse(t *testing.T) {
 				Raw: "abc",
 			}
 
-			desc := roleInvalidIDWithRaw
-			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
-
-			expect := errors.NewArgumentParsingErrorl(desc)
+			expect := roleIDInvalidError
+			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := RoleID.Parse(nil, ctx)
-			assert.Equal(t, expect, actual)
+			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
 		t.Run("role not found", func(t *testing.T) {
-			srcMocker, _ := state.NewMocker(t)
+			m, s := state.NewMocker(t)
 
 			ctx := &Context{
 				Context: &plugin.Context{
@@ -287,33 +261,20 @@ func TestRoleID_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "456",
-				Kind: KindArg,
+				Raw: "456",
 			}
 
-			srcMocker.Roles(ctx.GuildID, []discord.Role{})
+			m.Roles(ctx.GuildID, []discord.Role{})
 
-			desc := roleInvalidIDArg
+			desc := roleIDInvalidError
 			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
 
 			expect := errors.NewArgumentParsingErrorl(desc)
 
-			_, s := state.CloneMocker(srcMocker, t)
-
 			_, actual := RoleID.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
 
-			ctx.Kind = KindFlag
-
-			desc = roleInvalidIDFlag
-			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
-
-			expect = errors.NewArgumentParsingErrorl(desc)
-
-			_, s = state.CloneMocker(srcMocker, t)
-
-			_, actual = RoleID.Parse(s, ctx)
-			assert.Equal(t, expect, actual)
+			m.Eval()
 		})
 	})
 }

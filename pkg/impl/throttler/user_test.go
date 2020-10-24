@@ -1,4 +1,4 @@
-package throttling
+package throttler
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-func Test_channel_Check(t *testing.T) {
+func Test_user_Check(t *testing.T) {
 	t.Run("blocked", func(t *testing.T) {
 		var s discord.Snowflake = 123
 
@@ -20,8 +20,8 @@ func Test_channel_Check(t *testing.T) {
 			return time.Date(2020, 1, 1, 12, 0, 0, 0, time.UTC)
 		}
 
-		channel := PerChannel(2, 30*time.Second).(*channel)
-		channel.throttler.throttled[s] = []time.Time{
+		user := PerUser(2, 30*time.Second).(*user)
+		user.throttler.throttled[s] = []time.Time{
 			time.Date(2020, 1, 1, 11, 59, 40, 0, time.UTC),
 			time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 		}
@@ -30,15 +30,17 @@ func Test_channel_Check(t *testing.T) {
 			MessageCreateEvent: &state.MessageCreateEvent{
 				MessageCreateEvent: &gateway.MessageCreateEvent{
 					Message: discord.Message{
-						ChannelID: discord.ChannelID(s),
+						Author: discord.User{
+							ID: discord.UserID(s),
+						},
 					},
 				},
 			},
 		}
 
-		cancelFunc, err := channel.Check(ctx)
+		cancelFunc, err := user.Check(ctx)
 		assert.Nil(t, cancelFunc)
-		assert.Equal(t, genError(10*time.Second, channelErrorSecond, channelErrorMinute), err)
+		assert.Equal(t, genError(10*time.Second, userThrottledErrorSecond, userThrottledErrorMinute), err)
 	})
 
 	t.Run("pass", func(t *testing.T) {
@@ -48,8 +50,8 @@ func Test_channel_Check(t *testing.T) {
 			return time.Date(2020, 1, 1, 12, 0, 0, 0, time.UTC)
 		}
 
-		channel := PerChannel(2, 30*time.Second).(*channel)
-		channel.throttler.throttled[s] = []time.Time{
+		user := PerUser(2, 30*time.Second).(*user)
+		user.throttler.throttled[s] = []time.Time{
 			time.Date(2020, 1, 1, 11, 59, 29, 0, time.UTC),
 			time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 		}
@@ -66,7 +68,7 @@ func Test_channel_Check(t *testing.T) {
 			},
 		}
 
-		cancelFunc, _ := channel.Check(ctx)
+		cancelFunc, _ := user.Check(ctx)
 		assert.NotNil(t, cancelFunc)
 	})
 }

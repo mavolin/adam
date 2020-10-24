@@ -11,7 +11,7 @@ import (
 )
 
 // EmojiAllowIDs is a global flag that allows you to specify whether Emojis
-// may be noted as Snowflakes.
+// may also be noted as plain Snowflakes.
 //
 // Defaults to false.
 var EmojiAllowIDs = false
@@ -28,11 +28,11 @@ var (
 	// limitations.
 	//
 	// Go type: *discord.Emoji
-	Emoji = &emoji{customEmojis: true}
+	Emoji Type = &emoji{customEmojis: true}
 	// UnicodeEmoji is the type used for unicode emojis.
 	//
 	// Go type: *discord.Emoji
-	UnicodeEmoji = &emoji{customEmojis: false}
+	UnicodeEmoji Type = &emoji{customEmojis: false}
 )
 
 type emoji struct {
@@ -45,7 +45,14 @@ func (e emoji) Name(l *i18n.Localizer) string {
 }
 
 func (e emoji) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(emojiDescription) // we have a fallback
+	if EmojiAllowIDs {
+		desc, err := l.Localize(emojiDescriptionWithID)
+		if err == nil {
+			return desc
+		}
+	}
+
+	desc, _ := l.Localize(emojiDescriptionNoID) // we have a fallback
 	return desc
 }
 
@@ -56,40 +63,46 @@ func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return &discord.Emoji{Name: ctx.Raw}, nil
 	}
 
-	if !e.customEmojis {
-		return nil, newArgParsingErr(emojiOnlyUnicodeErrorArg, emojiOnlyUnicodeErrorFlag, ctx, nil)
-	} else if ctx.GuildID == 0 {
-		return nil, newArgParsingErr(emojiCustomEmojiInDMError, emojiCustomEmojiInDMError, ctx, nil)
-	}
-
 	if matches := customEmojiRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 3 {
+		if !e.customEmojis {
+			return nil, newArgParsingErr2(emojiCustomEmojiErrorArg, emojiCustomEmojiErrorFlag, ctx, nil)
+		} else if ctx.GuildID == 0 {
+			return nil, newArgParsingErr2(emojiCustomEmojiInDMError, emojiCustomEmojiInDMError, ctx, nil)
+		}
+
 		rawID := matches[2]
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+			return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
 		}
 
 		emoji, err := s.Emoji(ctx.GuildID, discord.EmojiID(id))
 		if err != nil {
-			return nil, newArgParsingErr(emojiNoAccessError, emojiNoAccessError, ctx, nil)
+			return nil, newArgParsingErr(emojiNoAccessError, ctx, nil)
 		}
 
 		return emoji, nil
 	}
 
 	if !EmojiAllowIDs {
-		return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+		return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
 	}
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+		return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
+	}
+
+	if !e.customEmojis {
+		return nil, newArgParsingErr2(emojiCustomEmojiErrorArg, emojiCustomEmojiErrorFlag, ctx, nil)
+	} else if ctx.GuildID == 0 {
+		return nil, newArgParsingErr(emojiCustomEmojiInDMError, ctx, nil)
 	}
 
 	emoji, err := s.Emoji(ctx.GuildID, discord.EmojiID(id))
 	if err != nil {
-		return nil, newArgParsingErr(emojiIDNoAccessErrorArg, emojiIDNoAccessErrorFlag, ctx, nil)
+		return nil, newArgParsingErr(emojiIDNoAccessError, ctx, nil)
 	}
 
 	return emoji, nil
@@ -112,7 +125,7 @@ func (e emoji) Default() interface{} {
 // Unlike Emoji, this type only accepts actual emojis but no ids.
 //
 // Go type: api.Emoji
-var RawEmoji = new(rawEmoji)
+var RawEmoji Type = new(rawEmoji)
 
 type rawEmoji struct{}
 
@@ -122,7 +135,7 @@ func (r rawEmoji) Name(l *i18n.Localizer) string {
 }
 
 func (r rawEmoji) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(emojiDescription) // we have a fallback
+	desc, _ := l.Localize(emojiDescriptionNoID) // we have a fallback
 	return desc
 }
 
@@ -133,7 +146,7 @@ func (r rawEmoji) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		return matches[1] + ":" + matches[2], nil
 	}
 
-	return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+	return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
 }
 
 func (r rawEmoji) Default() interface{} {

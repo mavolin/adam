@@ -1,9 +1,9 @@
 package arg
 
 import (
+	"fmt"
 	"math"
 	"net/http"
-	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -121,11 +121,11 @@ func TestMember_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "<@" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
+				Raw:  fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
 				Kind: KindArg,
 			}
 
-			expect := userInvalidMentionArg
+			expect := userInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Member.Parse(nil, ctx)
@@ -133,7 +133,7 @@ func TestMember_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = userInvalidMentionFlag
+			expect = userInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual = Member.Parse(nil, ctx)
@@ -165,7 +165,7 @@ func TestMember_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := userInvalidMentionArg
+			expect := userInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s := state.CloneMocker(srcMocker, t)
@@ -177,7 +177,7 @@ func TestMember_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = userInvalidMentionFlag
+			expect = userInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s = state.CloneMocker(srcMocker, t)
@@ -188,7 +188,7 @@ func TestMember_Parse(t *testing.T) {
 			m.Eval()
 		})
 
-		t.Run("invalid id", func(t *testing.T) {
+		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
 					MessageCreateEvent: &state.MessageCreateEvent{
@@ -199,27 +199,18 @@ func TestMember_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "abc",
-				Kind: KindArg,
+				Raw: "abc",
 			}
 
-			expect := userInvalidIDWithRaw
+			expect := userInvalidError
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Member.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-			ctx.Kind = KindFlag
-
-			expect = userInvalidIDWithRaw
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
-
-			_, actual = Member.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
 		t.Run("id user not found", func(t *testing.T) {
-			srcMocker, _ := state.NewMocker(t)
+			m, s := state.NewMocker(t)
 
 			var userID discord.UserID = 456
 
@@ -233,34 +224,19 @@ func TestMember_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  userID.String(),
-				Kind: KindArg,
+				Raw: userID.String(),
 			}
 
-			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
+			m.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
 			})
 
-			expect := userInvalidIDArg
+			expect := userIDInvalidError
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
-
-			m, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := Member.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-			m.Eval()
-
-			ctx.Kind = KindFlag
-
-			expect = userInvalidIDFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
-
-			m, s = state.CloneMocker(srcMocker, t)
-
-			_, actual = Member.Parse(s, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			m.Eval()
@@ -315,17 +291,15 @@ func TestMemberID_Parse(t *testing.T) {
 				Raw: "abc",
 			}
 
-			desc := userInvalidIDWithRaw
-			desc.Placeholders = attachDefaultPlaceholders(userInvalidIDWithRaw.Placeholders, ctx)
-
-			expect := errors.NewArgumentParsingErrorl(desc)
+			expect := userIDInvalidError
+			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := MemberID.Parse(nil, ctx)
-			assert.Equal(t, expect, actual)
+			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
 		t.Run("member not found", func(t *testing.T) {
-			srcMocker, _ := state.NewMocker(t)
+			m, s := state.NewMocker(t)
 
 			ctx := &Context{
 				Context: &plugin.Context{
@@ -337,37 +311,22 @@ func TestMemberID_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "456",
-				Kind: KindArg,
+				Raw: "456",
 			}
 
-			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/456", httputil.HTTPError{
+			m.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/456", httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
 			})
 
-			desc := userInvalidIDArg
-			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
-
-			expect := errors.NewArgumentParsingErrorl(desc)
-
-			_, s := state.CloneMocker(srcMocker, t)
+			expect := userIDInvalidError
+			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := MemberID.Parse(s, ctx)
-			assert.Equal(t, expect, actual)
+			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
-			ctx.Kind = KindFlag
-
-			desc = userInvalidIDFlag
-			desc.Placeholders = attachDefaultPlaceholders(desc.Placeholders, ctx)
-
-			expect = errors.NewArgumentParsingErrorl(desc)
-
-			_, s = state.CloneMocker(srcMocker, t)
-
-			_, actual = MemberID.Parse(s, ctx)
-			assert.Equal(t, expect, actual)
+			m.Eval()
 		})
 	})
 }

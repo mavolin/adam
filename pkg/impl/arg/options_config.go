@@ -23,6 +23,9 @@ type (
 	}
 )
 
+var _ plugin.ArgConfig = Options{}
+var _ plugin.ArgsInfoer = Options{}
+
 func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	if len(args) == 0 {
 		return nil, nil, errors.NewArgumentParsingErrorl(notEnoughArgsError)

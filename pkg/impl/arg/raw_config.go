@@ -14,6 +14,7 @@ type raw struct {
 
 // Raw is a plugin.ArgConfig that returns the arguments as
 var Raw plugin.ArgConfig = new(raw)
+var _ plugin.ArgsInfoer = new(raw)
 
 // RawWithDescription creates a argument config for raw arguments, that uses
 // the passed description as argument config.

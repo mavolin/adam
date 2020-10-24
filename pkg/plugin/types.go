@@ -55,21 +55,17 @@ type (
 	// It will call Wrap() to properly wrap the error.
 	RestrictionErrorWrapper interface {
 		// Wrap wraps the error returned by the RestrictionFunc.
-		//
-		// If this error is caused by unfulfilled restrictions, it should
-		// automatically decide, whether a errors.RestrictionError or a
-		// errors.FatalRestrictionError is appropriate.
 		Wrap(*state.State, *Context) error
 	}
 )
 
 // Throttler is used to create cooldowns for commands.
 //
-// Implementations can be found in impl/throttling.
+// Implementations can be found in impl/throttler.
 type Throttler interface {
 	// Check checks if the command may be executed and increments the counter
 	// if so.
-	// It returns not nil, nil if the command may be executed and nil, not-nil
+	// It returns non-nil, nil if the command may be executed and nil, non-nil
 	// if the command is throttled.
 	// The returned error should be of type errors.ThrottlingError.
 	//

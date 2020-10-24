@@ -1,8 +1,6 @@
 package module
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -29,11 +27,6 @@ type Meta struct {
 	//
 	// If this is not set, the channel types of the parent will be used.
 	DefaultChannelTypes plugin.ChannelTypes
-	// DefaultBotPermissions are the discord.Permissions used as default, for
-	// all submodule and -commands that don't specify some.
-	//
-	// If this is not set, the bot permissions of the parent will be used.
-	DefaultBotPermissions *discord.Permissions
 	// DefaultRestrictions are the restrictions used as default, for all
 	// submodule and -commands that don't specify some.
 	//
@@ -53,6 +46,5 @@ func (m Meta) GetShortDescription(*i18n.Localizer) string        { return m.Shor
 func (m Meta) GetLongDescription(*i18n.Localizer) string         { return m.LongDescription }
 func (m Meta) IsHidden() bool                                    { return m.Hidden }
 func (m Meta) GetDefaultChannelTypes() plugin.ChannelTypes       { return m.DefaultChannelTypes }
-func (m Meta) GetDefaultBotPermissions() *discord.Permissions    { return m.DefaultBotPermissions }
 func (m Meta) GetDefaultRestrictionFunc() plugin.RestrictionFunc { return m.DefaultRestrictions }
 func (m Meta) GetDefaultThrottler() plugin.Throttler             { return m.DefaultThrottler }

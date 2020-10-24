@@ -1,4 +1,4 @@
-package throttling
+package throttler
 
 import "github.com/mavolin/adam/pkg/plugin"
 

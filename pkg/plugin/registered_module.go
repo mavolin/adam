@@ -317,10 +317,6 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d C
 			channelTypes = t
 		}
 
-		if perms := p.GetDefaultBotPermissions(); perms != nil {
-			botPermissions = *perms
-		}
-
 		if t := p.GetDefaultThrottler(); t != nil {
 			throttler = t
 		}

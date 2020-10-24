@@ -114,11 +114,31 @@ func typeInfo(t Type, l *i18n.Localizer) (info plugin.TypeInfo, ok bool) {
 	return
 }
 
-// newArgParsingErr creates a new errors.ArgumentParsingError and decides based
-// on the passed Context which of the two i18n.Configs to use.
-// It automatically adds the following additional placeholder: name, used_name,
-// raw and position.
+// newArgParsingErr2 creates a new errors.ArgumentParsingError using the passed
+// i18n.Config.
+// It adds the following additional placeholder: name, used_name, raw and
+// position.
 func newArgParsingErr(
+	cfg *i18n.Config, ctx *Context, placeholders map[string]interface{},
+) *errors.ArgumentParsingError {
+	if placeholders == nil {
+		placeholders = make(map[string]interface{}, 4)
+	}
+
+	placeholders["name"] = ctx.Name
+	placeholders["used_name"] = ctx.UsedName
+	placeholders["raw"] = ctx.Raw
+	placeholders["position"] = ctx.Index + 1
+
+	return errors.NewArgumentParsingErrorl(cfg.
+		WithPlaceholders(placeholders))
+}
+
+// newArgParsingErr2 creates a new errors.ArgumentParsingError and decides based
+// on the passed Context which of the two i18n.Configs to use.
+// It adds the following additional placeholder: name, used_name, raw and
+// position.
+func newArgParsingErr2(
 	argConfig, flagConfig *i18n.Config, ctx *Context, placeholders map[string]interface{},
 ) *errors.ArgumentParsingError {
 	if placeholders == nil {

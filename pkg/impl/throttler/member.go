@@ -1,4 +1,4 @@
-package throttling
+package throttler
 
 import (
 	"sync"
@@ -54,7 +54,7 @@ func (g *member) Check(ctx *plugin.Context) (func(), error) {
 	g.memberThrottler[ctx.GuildID] = gt
 
 	if cancelFunc == nil {
-		return nil, genError(available, memberErrorSecond, memberErrorMinute)
+		return nil, genError(available, memberThrottledErrorSecond, memberThrottledErrorMinute)
 	}
 
 	g.memberThrottler[ctx.GuildID] = gt

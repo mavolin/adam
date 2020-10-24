@@ -91,7 +91,7 @@ func (l *commaLexer) nextItem() (commaItem, error) {
 	}
 }
 
-// ================================ Helper ================================
+// ================================ Helpers ================================
 
 // has checks if there are at least min runes remaining.
 func (l *commaLexer) has(min int) bool {
@@ -148,9 +148,7 @@ func (l *commaLexer) emit(typ commaItemType) {
 	l.start = l.pos
 }
 
-// =============================================================================
-// STATE FUNCTIONS
-// =====================================================================================
+// ================================ State functions ================================
 
 func item(l *commaLexer) (commaStateFunc, error) {
 	if l.drained() {

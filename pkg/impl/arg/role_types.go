@@ -12,7 +12,7 @@ import (
 )
 
 // RoleAllowIDs is a global flag that allows you to specify whether Roles
-// may be noted as Snowflakes.
+// may also be noted as plain Snowflakes.
 //
 // Defaults to true.
 var RoleAllowIDs = true
@@ -27,7 +27,7 @@ var RoleAllowIDs = true
 // It will return an error if used on a guild.
 //
 // Go type: *discord.Role
-var Role = new(role)
+var Role Type = new(role)
 
 type role struct{}
 
@@ -37,7 +37,14 @@ func (r role) Name(l *i18n.Localizer) string {
 }
 
 func (r role) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(roleDescription) // we have a fallback
+	if RoleAllowIDs {
+		desc, err := l.Localize(roleDescriptionWithID)
+		if err == nil {
+			return desc
+		}
+	}
+
+	desc, _ := l.Localize(roleDescriptionNoId) // we have a fallback
 	return desc
 }
 
@@ -54,29 +61,29 @@ func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr(roleInvalidMentionArg, roleInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(roleInvalidMentionErrorArg, roleInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		role, err := s.Role(ctx.GuildID, discord.RoleID(id))
 		if err != nil {
-			return nil, newArgParsingErr(roleInvalidMentionArg, roleInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(roleInvalidMentionErrorArg, roleInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		return role, nil
 	}
 
 	if !RoleAllowIDs {
-		return nil, newArgParsingErr(roleInvalidMentionWithRaw, roleInvalidMentionWithRaw, ctx, nil)
+		return nil, newArgParsingErr(roleInvalidMentionWithRawError, ctx, nil)
 	}
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(roleInvalidIDWithRaw, roleInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(roleInvalidError, ctx, nil)
 	}
 
 	role, err := s.Role(ctx.GuildID, discord.RoleID(id))
 	if err != nil {
-		return nil, newArgParsingErr(roleInvalidIDArg, roleInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
 	}
 
 	return role, nil
@@ -93,7 +100,7 @@ func (r role) Default() interface{} {
 // RoleID is the same Type as Role, but it only accepts role ids.
 //
 // Go type: *discord.Role
-var RoleID = new(roleID)
+var RoleID Type = new(roleID)
 
 type roleID struct{}
 
@@ -115,12 +122,12 @@ func (r roleID) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	rid, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(roleInvalidIDWithRaw, roleInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
 	}
 
 	role, err := s.Role(ctx.GuildID, discord.RoleID(rid))
 	if err != nil {
-		return nil, newArgParsingErr(roleInvalidIDArg, roleInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
 	}
 
 	return role, nil

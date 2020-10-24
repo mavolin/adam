@@ -1,8 +1,6 @@
 package mock
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -36,11 +34,10 @@ type ModuleMeta struct {
 	ShortDescription string
 	LongDescription  string
 
-	Hidden                bool
-	DefaultChannelTypes   plugin.ChannelTypes
-	DefaultBotPermissions *discord.Permissions
-	DefaultRestrictions   plugin.RestrictionFunc
-	DefaultThrottler      plugin.Throttler
+	Hidden              bool
+	DefaultChannelTypes plugin.ChannelTypes
+	DefaultRestrictions plugin.RestrictionFunc
+	DefaultThrottler    plugin.Throttler
 }
 
 var _ plugin.ModuleMeta = ModuleMeta{}
@@ -50,6 +47,5 @@ func (c ModuleMeta) GetShortDescription(*i18n.Localizer) string        { return 
 func (c ModuleMeta) GetLongDescription(*i18n.Localizer) string         { return c.LongDescription }
 func (c ModuleMeta) IsHidden() bool                                    { return c.Hidden }
 func (c ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes       { return c.DefaultChannelTypes }
-func (c ModuleMeta) GetDefaultBotPermissions() *discord.Permissions    { return c.DefaultBotPermissions }
 func (c ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc { return c.DefaultRestrictions }
 func (c ModuleMeta) GetDefaultThrottler() plugin.Throttler             { return c.DefaultThrottler }

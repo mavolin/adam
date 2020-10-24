@@ -1,4 +1,4 @@
-package throttling
+package throttler
 
 import (
 	"testing"
@@ -42,7 +42,7 @@ func Test_member_Check(t *testing.T) {
 
 			cancelFunc, err := guild.Check(ctx)
 			assert.Nil(t, cancelFunc)
-			assert.Equal(t, genError(10*time.Second, userErrorSecond, userErrorMinute), err)
+			assert.Equal(t, genError(10*time.Second, userThrottledErrorSecond, userThrottledErrorMinute), err)
 		})
 
 		t.Run("pass", func(t *testing.T) {
@@ -110,7 +110,7 @@ func Test_member_Check(t *testing.T) {
 
 			cancelFunc, err := guild.Check(ctx)
 			assert.Nil(t, cancelFunc)
-			assert.Equal(t, genError(10*time.Second, memberErrorSecond, memberErrorMinute), err)
+			assert.Equal(t, genError(10*time.Second, memberThrottledErrorSecond, memberThrottledErrorMinute), err)
 		})
 
 		t.Run("pass", func(t *testing.T) {
