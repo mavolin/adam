@@ -45,7 +45,7 @@ type LocalizedMeta struct {
 	// Throttler is the plugin.Throttler of the command.
 	//
 	// If none is set, the throttler of the parent will be used.
-	// Use throttling.None to prevent inheritance.
+	// Use throttler.None to prevent inheritance.
 	Throttler plugin.Throttler
 }
 

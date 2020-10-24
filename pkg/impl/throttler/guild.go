@@ -1,4 +1,4 @@
-package throttling
+package throttler
 
 import (
 	"time"
@@ -35,7 +35,7 @@ func (g *guild) Check(ctx *plugin.Context) (func(), error) {
 
 	cancelFunc, available := g.guildThrottler.check(discord.Snowflake(ctx.GuildID))
 	if cancelFunc == nil {
-		return nil, genError(available, guildErrorSecond, guildErrorMinute)
+		return nil, genError(available, guildThrottledErrorSecond, guildThrottledErrorMinute)
 	}
 
 	return cancelFunc, nil

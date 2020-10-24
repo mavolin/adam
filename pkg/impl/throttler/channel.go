@@ -1,4 +1,4 @@
-package throttling
+package throttler
 
 import (
 	"time"
@@ -27,7 +27,7 @@ func (g *channel) Check(ctx *plugin.Context) (func(), error) {
 	cancelFunc, available := g.throttler.check(discord.Snowflake(ctx.ChannelID))
 
 	if cancelFunc == nil {
-		return nil, genError(available, channelErrorSecond, channelErrorMinute)
+		return nil, genError(available, channelThrottledErrorSecond, channelThrottledErrorMinute)
 	}
 
 	return cancelFunc, nil

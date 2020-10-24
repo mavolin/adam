@@ -64,7 +64,7 @@ type (
 		// Throttler.
 		//
 		// To remove a Throttler defined by a parent without defining a new
-		// one use throttling.None.
+		// one use throttler.None.
 		GetDefaultThrottler() Throttler
 	}
 )

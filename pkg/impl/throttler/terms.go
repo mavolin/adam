@@ -1,19 +1,19 @@
-package throttling
+package throttler
 
 import "github.com/mavolin/adam/pkg/i18n"
 
 // ================================ channel ================================
 
 var (
-	channelErrorSecond = &i18n.Config{
-		Term: "throttling.channel.second",
+	channelThrottledErrorSecond = &i18n.Config{
+		Term: "throttler.channel.errors.throttled.second",
 		Fallback: i18n.Fallback{
 			One:   "This command can be used again in this channel in one second.",
 			Other: "This command can be used again in this channel in {{.seconds}} seconds.",
 		},
 	}
-	channelErrorMinute = &i18n.Config{
-		Term: "throttling.channel.minute",
+	channelThrottledErrorMinute = &i18n.Config{
+		Term: "throttler.channel.errors.throttled.minute",
 		Fallback: i18n.Fallback{
 			One:   "This command can be used again in this channel in one minute.",
 			Other: "This command can be used again in this channel in {{.minutes}} minutes.",
@@ -24,15 +24,15 @@ var (
 // ================================ guild ================================
 
 var (
-	guildErrorSecond = &i18n.Config{
-		Term: "throttling.guild.second",
+	guildThrottledErrorSecond = &i18n.Config{
+		Term: "throttler.guild.errors.throttled.second",
 		Fallback: i18n.Fallback{
 			One:   "This command can be used again in this server in one second.",
 			Other: "This command can be used again in this server in {{.seconds}} seconds.",
 		},
 	}
-	guildErrorMinute = &i18n.Config{
-		Term: "throttling.guild.minute",
+	guildThrottledErrorMinute = &i18n.Config{
+		Term: "throttler.guild.errors.throttled.minute",
 		Fallback: i18n.Fallback{
 			One:   "This command can be used again in this server in one minute.",
 			Other: "This command can be used again in this server in {{.minutes}} minutes.",
@@ -43,18 +43,18 @@ var (
 // ================================ member ================================
 
 var (
-	memberErrorSecond = &i18n.Config{
-		Term: "throttling.member.second",
+	memberThrottledErrorSecond = &i18n.Config{
+		Term: "throttler.member.errors.throttled.second",
 		Fallback: i18n.Fallback{
-			One:   "You can use this command again in this guild in one second.",
-			Other: "You can use this command again in this guild in {{.seconds}} seconds.",
+			One:   "You can use this command again in one second.",
+			Other: "You can use this command again in {{.seconds}} seconds.",
 		},
 	}
-	memberErrorMinute = &i18n.Config{
-		Term: "throttling.member.minute",
+	memberThrottledErrorMinute = &i18n.Config{
+		Term: "throttler.member.errors.throttled.minute",
 		Fallback: i18n.Fallback{
-			One:   "You can use this command again in this guild in one minute.",
-			Other: "You can use this command again in this guild in {{.minutes}} minutes.",
+			One:   "You can use this command again in one minute.",
+			Other: "You can use this command again in {{.minutes}} minutes.",
 		},
 	}
 )
@@ -62,15 +62,15 @@ var (
 // ================================ user ================================
 
 var (
-	userErrorSecond = &i18n.Config{
-		Term: "throttling.user.second",
+	userThrottledErrorSecond = &i18n.Config{
+		Term: "throttler.user.errors.throttled.second",
 		Fallback: i18n.Fallback{
 			One:   "You can use this command again in one second.",
 			Other: "You can use this command again in {{.seconds}} seconds.",
 		},
 	}
-	userErrorMinute = &i18n.Config{
-		Term: "throttling.user.minute",
+	userThrottledErrorMinute = &i18n.Config{
+		Term: "throttler.user.errors.throttled.minute",
 		Fallback: i18n.Fallback{
 			One:   "You can use this command again in one minute.",
 			Other: "You can use this command again in {{.minutes}} minutes.",
