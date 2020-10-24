@@ -59,7 +59,7 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr2(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		for _, m := range ctx.Mentions {
@@ -71,14 +71,14 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		member, err := s.Member(ctx.GuildID, discord.UserID(id))
 		if err != nil {
-			return nil, newArgParsingErr2(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		return member, nil
 	}
 
 	if !MemberAllowIDs {
-		return nil, newArgParsingErr(userInvalidMentionWithRaw, ctx, nil)
+		return nil, newArgParsingErr(userInvalidMentionWithRawError, ctx, nil)
 	}
 
 	id, err := discord.ParseSnowflake(ctx.Raw)

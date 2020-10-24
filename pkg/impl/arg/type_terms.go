@@ -295,13 +295,13 @@ var (
 var (
 	userInvalidError = i18n.NewFallbackConfig("args.types.user.errors.invalid", "{{.raw}} is not a user.")
 
-	userInvalidMentionWithRaw = i18n.NewFallbackConfig(
+	userInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid user mention.")
 
-	userInvalidMentionArg = i18n.NewFallbackConfig(
+	userInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.arg",
 		"The mention in argument {{.position}} is invalid. Make sure the user is still on the server.")
-	userInvalidMentionFlag = i18n.NewFallbackConfig(
+	userInvalidMentionErrorFlag = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.flag",
 		"The mention in the `{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
 )
@@ -349,10 +349,10 @@ var (
 	roleInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
 
-	roleInvalidMentionArg = i18n.NewFallbackConfig(
+	roleInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention.arg",
 		"The role mention in argument {{.position}} is invalid. Make sure the still role exists.")
-	roleInvalidMentionFlag = i18n.NewFallbackConfig(
+	roleInvalidMentionErrorFlag = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention.flag",
 		"The role mention you used as `{{.used_name}}`-flag is invalid. Make sure the still role exists.")
 )
@@ -383,7 +383,7 @@ var (
 // ================================ Errors ================================
 
 var (
-	channelIDInvalid = i18n.NewFallbackConfig(
+	channelIDInvalidError = i18n.NewFallbackConfig(
 		"args.types.channel_id.errors.invalid",
 		"{{.raw}} is not a valid channel id.")
 )
@@ -411,14 +411,14 @@ var (
 	textChannelInvalidError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid", "{{.raw}} is not a valid text channel.")
 
-	textChannelInvalidMentionWithRaw = i18n.NewFallbackConfig(
+	textChannelInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention_with_args",
 		"{{.raw}} is not a valid mention of a text channel.")
 
-	textChannelInvalidMentionArg = i18n.NewFallbackConfig(
+	textChannelInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention.arg",
 		"The mention in argument {{.position}} does not belong to channel on this server.")
-	textChannelInvalidMentionFlag = i18n.NewFallbackConfig(
+	textChannelInvalidMentionErrorFlag = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention.flag",
 		"The mention you used as the `{{.used_name}}`-flag does not belong to channel on this server.")
 

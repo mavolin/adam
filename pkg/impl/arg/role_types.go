@@ -61,12 +61,12 @@ func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr2(roleInvalidMentionArg, roleInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(roleInvalidMentionErrorArg, roleInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		role, err := s.Role(ctx.GuildID, discord.RoleID(id))
 		if err != nil {
-			return nil, newArgParsingErr2(roleInvalidMentionArg, roleInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(roleInvalidMentionErrorArg, roleInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		return role, nil

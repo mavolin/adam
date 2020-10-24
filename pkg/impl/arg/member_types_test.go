@@ -125,7 +125,7 @@ func TestMember_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := userInvalidMentionArg
+			expect := userInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Member.Parse(nil, ctx)
@@ -133,7 +133,7 @@ func TestMember_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = userInvalidMentionFlag
+			expect = userInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual = Member.Parse(nil, ctx)
@@ -165,7 +165,7 @@ func TestMember_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := userInvalidMentionArg
+			expect := userInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s := state.CloneMocker(srcMocker, t)
@@ -177,7 +177,7 @@ func TestMember_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = userInvalidMentionFlag
+			expect = userInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s = state.CloneMocker(srcMocker, t)

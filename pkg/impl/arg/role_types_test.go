@@ -89,7 +89,7 @@ func TestRole_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := roleInvalidMentionArg
+			expect := roleInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Role.Parse(nil, ctx)
@@ -97,7 +97,7 @@ func TestRole_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = roleInvalidMentionFlag
+			expect = roleInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual = Role.Parse(nil, ctx)
@@ -125,7 +125,7 @@ func TestRole_Parse(t *testing.T) {
 
 			srcMocker.Roles(ctx.GuildID, []discord.Role{})
 
-			expect := roleInvalidMentionArg
+			expect := roleInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s := state.CloneMocker(srcMocker, t)
@@ -137,7 +137,7 @@ func TestRole_Parse(t *testing.T) {
 
 			ctx.Kind = KindFlag
 
-			expect = roleInvalidMentionFlag
+			expect = roleInvalidMentionErrorFlag
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			m, s = state.CloneMocker(srcMocker, t)

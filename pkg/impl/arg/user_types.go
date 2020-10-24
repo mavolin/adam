@@ -41,7 +41,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr2(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		for _, m := range ctx.Mentions {
@@ -52,7 +52,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		user, err := s.User(discord.UserID(id))
 		if err != nil {
-			return nil, newArgParsingErr2(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		return user, nil
