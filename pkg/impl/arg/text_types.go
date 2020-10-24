@@ -59,7 +59,8 @@ type Text struct {
 }
 
 // SimpleText is a Text with no length boundaries and no regular expression.
-var SimpleText = new(Text)
+var SimpleText Type = new(Text)
+var _ Type = Text{}
 
 func (t Text) Name(l *i18n.Localizer) string {
 	name, _ := l.Localize(textName) // we have a fallback
@@ -158,7 +159,8 @@ type Link struct {
 }
 
 // SimpleLink is a link that uses no custom regular expression.
-var SimpleLink = new(Link)
+var SimpleLink Type = new(Link)
+var _ Type = Link{}
 
 func (l Link) Name(loc *i18n.Localizer) string {
 	name, _ := loc.Localize(linkName) // we have a fallback
@@ -250,7 +252,8 @@ type AlphanumericID struct {
 	RegexpErrorFlag *i18n.Config
 }
 
-var SimpleAlphanumericID = new(AlphanumericID)
+var SimpleAlphanumericID Type = new(AlphanumericID)
+var _ Type = AlphanumericID{}
 
 func (id AlphanumericID) Name(l *i18n.Localizer) string {
 	if id.CustomName != nil {

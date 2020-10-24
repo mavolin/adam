@@ -27,7 +27,7 @@ var RoleAllowIDs = true
 // It will return an error if used on a guild.
 //
 // Go type: *discord.Role
-var Role = new(role)
+var Role Type = new(role)
 
 type role struct{}
 
@@ -100,7 +100,7 @@ func (r role) Default() interface{} {
 // RoleID is the same Type as Role, but it only accepts role ids.
 //
 // Go type: *discord.Role
-var RoleID = new(roleID)
+var RoleID Type = new(roleID)
 
 type roleID struct{}
 

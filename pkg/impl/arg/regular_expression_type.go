@@ -12,7 +12,7 @@ import (
 // RegularExpression is the Type used for regular expressions.
 //
 // Go type: *regexp.Regexp
-var RegularExpression = new(regularExpression)
+var RegularExpression Type = new(regularExpression)
 
 type regularExpression struct{}
 

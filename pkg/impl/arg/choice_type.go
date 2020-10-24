@@ -30,6 +30,8 @@ type (
 	}
 )
 
+var _ Type = Choice{}
+
 func (c Choice) Name(l *i18n.Localizer) string {
 	name, _ := l.Localize(choiceName) // we have a fallback
 	return name

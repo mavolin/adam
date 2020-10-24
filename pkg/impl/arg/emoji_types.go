@@ -28,11 +28,11 @@ var (
 	// limitations.
 	//
 	// Go type: *discord.Emoji
-	Emoji = &emoji{customEmojis: true}
+	Emoji Type = &emoji{customEmojis: true}
 	// UnicodeEmoji is the type used for unicode emojis.
 	//
 	// Go type: *discord.Emoji
-	UnicodeEmoji = &emoji{customEmojis: false}
+	UnicodeEmoji Type = &emoji{customEmojis: false}
 )
 
 type emoji struct {
@@ -125,7 +125,7 @@ func (e emoji) Default() interface{} {
 // Unlike Emoji, this type only accepts actual emojis but no ids.
 //
 // Go type: api.Emoji
-var RawEmoji = new(rawEmoji)
+var RawEmoji Type = new(rawEmoji)
 
 type rawEmoji struct{}
 

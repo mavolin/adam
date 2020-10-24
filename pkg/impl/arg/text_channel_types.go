@@ -27,7 +27,7 @@ var TextChannelAllowIDs = false
 // TextChannel will always fail if used in a direct message.
 //
 // Go type: *discord.Channel
-var TextChannel = new(textChannel)
+var TextChannel Type = new(textChannel)
 
 type textChannel struct{}
 
