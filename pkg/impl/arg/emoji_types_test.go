@@ -1,8 +1,8 @@
 package arg
 
 import (
+	"fmt"
 	"math"
-	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -114,7 +114,7 @@ func TestEmoji_Parse(t *testing.T) {
 		},
 		{
 			name:         "custom emoji id range error",
-			raw:          "<:abc:" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
+			raw:          fmt.Sprintf("<:abc:%v9>", uint64(math.MaxUint64)),
 			guild:        true,
 			customEmojis: true,
 			expectArg:    emojiInvalidError,

@@ -1,9 +1,9 @@
 package arg
 
 import (
+	"fmt"
 	"math"
 	"net/http"
-	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -90,7 +90,7 @@ func TestUser_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
 			ctx := &Context{
-				Raw:  "<@" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
+				Raw:  fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
 				Kind: KindArg,
 			}
 

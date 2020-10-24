@@ -1,8 +1,8 @@
 package arg
 
 import (
+	"fmt"
 	"math"
-	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -85,7 +85,7 @@ func TestRole_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "<@&" + strconv.FormatUint(math.MaxUint64, 10) + "9>",
+				Raw:  fmt.Sprintf("<@&%d9>", uint64(math.MaxUint64)),
 				Kind: KindArg,
 			}
 
