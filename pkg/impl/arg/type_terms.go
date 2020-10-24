@@ -412,7 +412,7 @@ var (
 		"args.types.text_channel.errors.invalid", "{{.raw}} is not a valid text channel.")
 
 	textChannelInvalidMentionWithRawError = i18n.NewFallbackConfig(
-		"args.types.text_channel.errors.invalid_mention_with_args",
+		"args.types.text_channel.errors.invalid_mention_with_raw",
 		"{{.raw}} is not a valid mention of a text channel.")
 
 	textChannelInvalidMentionErrorArg = i18n.NewFallbackConfig(
