@@ -21,7 +21,7 @@ var TextChannelAllowIDs = false
 // TextChannel
 // =====================================================================================
 
-// TextChannel is the Type used for guild id channels and news channels.
+// TextChannel is the Type used for guild text channels and news channels.
 // The channel must be on the same guild as the invoking one.
 //
 // TextChannel will always fail if used in a direct message.
@@ -102,5 +102,58 @@ func (t textChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
 }
 
 func (t textChannel) Default() interface{} {
+	return (*discord.Channel)(nil)
+}
+
+// =============================================================================
+// TextChannelID
+// =====================================================================================
+
+// TextChannelID is the Type used for ids of guild text and news channels.
+// The channel must be on the same guild as the invoking one.
+//
+// TextChannel will always fail if used in a direct message.
+//
+// Go type: *discord.Channel
+var TextChannelID Type = new(textChannelID)
+
+type textChannelID struct{}
+
+func (t textChannelID) Name(l *i18n.Localizer) string {
+	name, _ := l.Localize(textChannelIDName) // we have a fallback
+	return name
+}
+
+func (t textChannelID) Description(l *i18n.Localizer) string {
+	desc, _ := l.Localize(textChannelIDDescription) // we have a fallback
+	return desc
+}
+
+func (t textChannelID) Parse(s *state.State, ctx *Context) (interface{}, error) {
+	err := restriction.ChannelTypes(plugin.GuildChannels)(s, ctx.Context)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := discord.ParseSnowflake(ctx.Raw)
+	if err != nil {
+		return nil, newArgParsingErr(channelIDInvalidError, ctx, nil)
+	}
+
+	c, err := s.Channel(discord.ChannelID(id))
+	if err != nil {
+		return nil, newArgParsingErr(channelIDInvalidError, ctx, nil)
+	}
+
+	if c.GuildID != ctx.GuildID {
+		return nil, newArgParsingErr(textChannelIDGuildNotMatchingError, ctx, nil)
+	} else if c.Type != discord.GuildText && c.Type != discord.GuildNews {
+		return nil, newArgParsingErr(textChannelIDInvalidTypeError, ctx, nil)
+	}
+
+	return c, nil
+}
+
+func (t textChannelID) Default() interface{} {
 	return (*discord.Channel)(nil)
 }

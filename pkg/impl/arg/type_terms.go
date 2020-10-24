@@ -435,6 +435,14 @@ var (
 // TextChannelID
 // =====================================================================================
 
+// ================================ Meta Data ================================
+
+var (
+	textChannelIDName        = i18n.NewFallbackConfig("args.types.text_channel_id.name", "Text Channel ID")
+	textChannelIDDescription = i18n.NewFallbackConfig(
+		"args.types.text_channel_id.description", "The id of a text or announcement channel.")
+)
+
 // ================================ Errors ================================
 
 var (
