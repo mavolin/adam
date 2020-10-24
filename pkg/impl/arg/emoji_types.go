@@ -63,40 +63,46 @@ func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return &discord.Emoji{Name: ctx.Raw}, nil
 	}
 
-	if !e.customEmojis {
-		return nil, newArgParsingErr(emojiOnlyUnicodeErrorArg, emojiOnlyUnicodeErrorFlag, ctx, nil)
-	} else if ctx.GuildID == 0 {
-		return nil, newArgParsingErr(emojiCustomEmojiInDMError, emojiCustomEmojiInDMError, ctx, nil)
-	}
-
 	if matches := customEmojiRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 3 {
+		if !e.customEmojis {
+			return nil, newArgParsingErr2(emojiCustomEmojiErrorArg, emojiCustomEmojiErrorFlag, ctx, nil)
+		} else if ctx.GuildID == 0 {
+			return nil, newArgParsingErr2(emojiCustomEmojiInDMError, emojiCustomEmojiInDMError, ctx, nil)
+		}
+
 		rawID := matches[2]
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+			return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
 		}
 
 		emoji, err := s.Emoji(ctx.GuildID, discord.EmojiID(id))
 		if err != nil {
-			return nil, newArgParsingErr(emojiNoAccessError, emojiNoAccessError, ctx, nil)
+			return nil, newArgParsingErr(emojiNoAccessError, ctx, nil)
 		}
 
 		return emoji, nil
 	}
 
 	if !EmojiAllowIDs {
-		return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+		return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
 	}
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+		return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
+	}
+
+	if !e.customEmojis {
+		return nil, newArgParsingErr2(emojiCustomEmojiErrorArg, emojiCustomEmojiErrorFlag, ctx, nil)
+	} else if ctx.GuildID == 0 {
+		return nil, newArgParsingErr(emojiCustomEmojiInDMError, ctx, nil)
 	}
 
 	emoji, err := s.Emoji(ctx.GuildID, discord.EmojiID(id))
 	if err != nil {
-		return nil, newArgParsingErr(emojiIDNoAccessErrorArg, emojiIDNoAccessErrorFlag, ctx, nil)
+		return nil, newArgParsingErr2(emojiIDNoAccessErrorArg, emojiIDNoAccessErrorFlag, ctx, nil)
 	}
 
 	return emoji, nil
@@ -140,7 +146,7 @@ func (r rawEmoji) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		return matches[1] + ":" + matches[2], nil
 	}
 
-	return nil, newArgParsingErr(emojiInvalidError, emojiInvalidError, ctx, nil)
+	return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
 }
 
 func (r rawEmoji) Default() interface{} {

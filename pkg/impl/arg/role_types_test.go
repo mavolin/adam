@@ -159,19 +159,13 @@ func TestRole_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "abc",
-				Kind: KindArg,
+				Raw: "abc",
 			}
 
 			expect := roleInvalidWithRaw
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Role.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-			ctx.Kind = KindFlag
-
-			_, actual = Role.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 

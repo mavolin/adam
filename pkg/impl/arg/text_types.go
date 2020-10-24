@@ -73,12 +73,12 @@ func (t Text) Description(l *i18n.Localizer) string {
 
 func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	if uint(len(ctx.Raw)) < t.MinLength {
-		return nil, newArgParsingErr(
+		return nil, newArgParsingErr2(
 			textBelowMinLengthErrorArg, textBelowMinLengthErrorFlag, ctx, map[string]interface{}{
 				"min": t.MinLength,
 			})
 	} else if t.MaxLength > 0 && uint(len(ctx.Raw)) > t.MaxLength {
-		return nil, newArgParsingErr(
+		return nil, newArgParsingErr2(
 			textAboveMaxLengthErrorArg, textAboveMaxLengthErrorFlag, ctx, map[string]interface{}{
 				"max": t.MaxLength,
 			})
@@ -91,7 +91,7 @@ func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 			t.RegexpErrorFlag = regexpNotMatchingErrorFlag
 		}
 
-		return nil, newArgParsingErr(t.RegexpErrorArg, t.RegexpErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgParsingErr2(t.RegexpErrorArg, t.RegexpErrorFlag, ctx, map[string]interface{}{
 			"regexp": t.Regexp.String(),
 		})
 	}
@@ -182,7 +182,7 @@ func (l Link) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 			l.RegexpErrorFlag = linkInvalidErrorFlag
 		}
 
-		return nil, newArgParsingErr(l.RegexpErrorArg, l.RegexpErrorFlag, ctx, nil)
+		return nil, newArgParsingErr2(l.RegexpErrorArg, l.RegexpErrorFlag, ctx, nil)
 	}
 
 	return ctx.Raw, nil
@@ -278,12 +278,12 @@ func (id AlphanumericID) Description(l *i18n.Localizer) string {
 
 func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	if uint(len(ctx.Raw)) < id.MinLength {
-		return nil, newArgParsingErr(
+		return nil, newArgParsingErr2(
 			idBelowMinLengthErrorArg, idBelowMinLengthErrorFlag, ctx, map[string]interface{}{
 				"min": id.MinLength,
 			})
 	} else if id.MaxLength > 0 && uint(len(ctx.Raw)) > id.MaxLength {
-		return nil, newArgParsingErr(
+		return nil, newArgParsingErr2(
 			idAboveMaxLengthErrorArg, idAboveMaxLengthErrorFlag, ctx, map[string]interface{}{
 				"max": id.MaxLength,
 			})
@@ -296,7 +296,7 @@ func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error
 			id.RegexpErrorFlag = regexpNotMatchingErrorFlag
 		}
 
-		return nil, newArgParsingErr(id.RegexpErrorArg, id.RegexpErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgParsingErr2(id.RegexpErrorArg, id.RegexpErrorFlag, ctx, map[string]interface{}{
 			"regexp": id.Regexp.String(),
 		})
 	}

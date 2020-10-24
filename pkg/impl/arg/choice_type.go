@@ -61,7 +61,7 @@ func (c Choice) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		}
 	}
 
-	return nil, newArgParsingErr(choiceInvalidErrorArg, choiceInvalidErrorFlag, ctx, nil)
+	return nil, newArgParsingErr(choiceInvalidError, ctx, nil)
 }
 
 // Default tries to derive the default type from the value of the first choice.
@@ -117,7 +117,7 @@ func (c LocalizedChoice) Parse(_ *state.State, ctx *Context) (interface{}, error
 		}
 	}
 
-	return nil, newArgParsingErr(choiceInvalidErrorArg, choiceInvalidErrorFlag, ctx, nil)
+	return nil, newArgParsingErr(choiceInvalidError, ctx, nil)
 }
 
 // Default tries to derive the default type from the value of the first choice.

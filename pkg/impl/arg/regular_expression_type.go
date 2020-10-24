@@ -34,7 +34,7 @@ func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, err
 
 	serr, ok := err.(*resyntax.Error)
 	if !ok {
-		return nil, newArgParsingErr(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, nil)
+		return nil, newArgParsingErr2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, nil)
 	}
 
 	placeholders := map[string]interface{}{
@@ -44,38 +44,38 @@ func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, err
 	switch serr.Code {
 	case resyntax.ErrInvalidCharClass:
 		return nil,
-			newArgParsingErr(regexpInvalidCharClassErrorArg, regexpInvalidCharClassErrorFlag, ctx, placeholders)
+			newArgParsingErr2(regexpInvalidCharClassErrorArg, regexpInvalidCharClassErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidCharRange:
 		return nil,
-			newArgParsingErr(regexpInvalidCharRangeErrorArg, regexpInvalidCharRangeErrorFlag, ctx, placeholders)
+			newArgParsingErr2(regexpInvalidCharRangeErrorArg, regexpInvalidCharRangeErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidEscape:
-		return nil, newArgParsingErr(regexpInvalidEscapeErrorArg, regexpInvalidEscapeErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpInvalidEscapeErrorArg, regexpInvalidEscapeErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidNamedCapture:
 		return nil,
-			newArgParsingErr(regexpInvalidNamedCaptureErrorArg, regexpInvalidNamedCaptureErrorFlag, ctx, placeholders)
+			newArgParsingErr2(regexpInvalidNamedCaptureErrorArg, regexpInvalidNamedCaptureErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidPerlOp:
-		return nil, newArgParsingErr(regexpInvalidPerlOpErrorArg, regexpInvalidPerlOpErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpInvalidPerlOpErrorArg, regexpInvalidPerlOpErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidRepeatOp:
-		return nil, newArgParsingErr(regexpInvalidRepeatOpErrorArg, regexpInvalidRepeatOpErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpInvalidRepeatOpErrorArg, regexpInvalidRepeatOpErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidRepeatSize:
 		return nil,
-			newArgParsingErr(regexpInvalidRepeatSizeErrorArg, regexpInvalidRepeatSizeErrorFlag, ctx, placeholders)
+			newArgParsingErr2(regexpInvalidRepeatSizeErrorArg, regexpInvalidRepeatSizeErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidUTF8:
-		return nil, newArgParsingErr(regexpInvalidUTF8ErrorArg, regexpInvalidUTF8ErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpInvalidUTF8ErrorArg, regexpInvalidUTF8ErrorFlag, ctx, placeholders)
 	case resyntax.ErrMissingBracket:
-		return nil, newArgParsingErr(regexpMissingBracketErrorArg, regexpMissingBracketErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpMissingBracketErrorArg, regexpMissingBracketErrorFlag, ctx, placeholders)
 	case resyntax.ErrMissingParen:
-		return nil, newArgParsingErr(regexpMissingParenErrorArg, regexpMissingParenErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpMissingParenErrorArg, regexpMissingParenErrorFlag, ctx, placeholders)
 	case resyntax.ErrMissingRepeatArgument:
 		return nil,
-			newArgParsingErr(regexpMissingRepeatArgErrorArg, regexpMissingRepeatArgErrorFlag, ctx, placeholders)
+			newArgParsingErr2(regexpMissingRepeatArgErrorArg, regexpMissingRepeatArgErrorFlag, ctx, placeholders)
 	case resyntax.ErrTrailingBackslash:
 		return nil,
-			newArgParsingErr(regexpTrailingBackslashErrorArg, regexpTrailingBackslashErrorFlag, ctx, placeholders)
+			newArgParsingErr2(regexpTrailingBackslashErrorArg, regexpTrailingBackslashErrorFlag, ctx, placeholders)
 	case resyntax.ErrUnexpectedParen:
-		return nil, newArgParsingErr(regexpUnexpectedParenErrorArg, regexpUnexpectedParenErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpUnexpectedParenErrorArg, regexpUnexpectedParenErrorFlag, ctx, placeholders)
 	default:
-		return nil, newArgParsingErr(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, placeholders)
+		return nil, newArgParsingErr2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, placeholders)
 	}
 }
 

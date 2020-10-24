@@ -58,26 +58,12 @@ func TestChoice_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		choice := Choice{{Name: "abc"}}
 
-		ctx := &Context{
-			Raw:  "def",
-			Kind: KindArg,
-		}
+		ctx := &Context{Raw: "def"}
 
-		expect := choiceInvalidErrorArg
+		expect := choiceInvalidError
 		expect.Placeholders = attachDefaultPlaceholders(expect, ctx)
 
 		_, actual := choice.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-		ctx = &Context{
-			Raw:  "def",
-			Kind: KindFlag,
-		}
-
-		expect = choiceInvalidErrorFlag
-		expect.Placeholders = attachDefaultPlaceholders(expect, ctx)
-
-		_, actual = choice.Parse(nil, ctx)
 		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 	})
 }
@@ -150,28 +136,13 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 			Context: &plugin.Context{
 				Localizer: mock.NoOpLocalizer,
 			},
-			Raw:  "jkl",
-			Kind: KindArg,
+			Raw: "jkl",
 		}
 
-		expect := choiceInvalidErrorArg
+		expect := choiceInvalidError
 		expect.Placeholders = attachDefaultPlaceholders(expect, ctx)
 
 		_, actual := choice.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-		ctx = &Context{
-			Context: &plugin.Context{
-				Localizer: mock.NoOpLocalizer,
-			},
-			Raw:  "jkl",
-			Kind: KindFlag,
-		}
-
-		expect = choiceInvalidErrorFlag
-		expect.Placeholders = attachDefaultPlaceholders(expect, ctx)
-
-		_, actual = choice.Parse(nil, ctx)
 		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 	})
 }

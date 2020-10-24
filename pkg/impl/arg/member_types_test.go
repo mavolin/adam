@@ -199,19 +199,13 @@ func TestMember_Parse(t *testing.T) {
 						},
 					},
 				},
-				Raw:  "abc",
-				Kind: KindArg,
+				Raw: "abc",
 			}
 
 			expect := userInvalidWithRaw
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := Member.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-			ctx.Kind = KindFlag
-
-			_, actual = Member.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 

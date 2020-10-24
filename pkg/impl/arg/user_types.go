@@ -41,7 +41,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
 		}
 
 		for _, m := range ctx.Mentions {
@@ -52,7 +52,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		user, err := s.User(discord.UserID(id))
 		if err != nil {
-			return nil, newArgParsingErr(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
+			return nil, newArgParsingErr2(userInvalidMentionArg, userInvalidMentionFlag, ctx, nil)
 		}
 
 		return user, nil
@@ -60,12 +60,12 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidWithRaw, userInvalidWithRaw, ctx, nil)
+		return nil, newArgParsingErr(userInvalidWithRaw, ctx, nil)
 	}
 
 	user, err := s.User(discord.UserID(id))
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr2(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
 	}
 
 	return user, nil
@@ -99,12 +99,12 @@ func (u userID) Description(l *i18n.Localizer) string {
 func (u userID) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	uid, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidIDWithRaw, userInvalidIDWithRaw, ctx, nil)
+		return nil, newArgParsingErr(userInvalidIDWithRaw, ctx, nil)
 	}
 
 	user, err := s.User(discord.UserID(uid))
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
+		return nil, newArgParsingErr2(userInvalidIDArg, userInvalidIDFlag, ctx, nil)
 	}
 
 	return user, nil

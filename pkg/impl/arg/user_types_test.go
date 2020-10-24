@@ -154,20 +154,12 @@ func TestUser_Parse(t *testing.T) {
 		})
 
 		t.Run("not id", func(t *testing.T) {
-			ctx := &Context{
-				Raw:  "abc",
-				Kind: KindArg,
-			}
+			ctx := &Context{Raw: "abc"}
 
 			expect := userInvalidWithRaw
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
 			_, actual := User.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
-
-			ctx.Kind = KindFlag
-
-			_, actual = User.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
