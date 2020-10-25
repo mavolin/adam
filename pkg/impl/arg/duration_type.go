@@ -37,15 +37,6 @@ func (d Duration) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-var durationUnits = map[string]int64{
-	"s":   int64(time.Second),
-	"min": int64(time.Minute),
-	"h":   int64(time.Hour),
-	"d":   int64(24 * time.Hour),
-	"w":   int64(7 * 24 * time.Hour),
-	"m":   int64(30 * 24 * time.Hour),
-}
-
 func (d Duration) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := duration.Parse(ctx.Raw)
 	if perr, ok := err.(*duration.ParseError); ok {
