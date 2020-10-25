@@ -1,4 +1,4 @@
-package durationutil
+package duration
 
 import (
 	"fmt"
@@ -37,10 +37,10 @@ type ParseError struct {
 
 func (p ParseError) Error() string {
 	if p.Code == ErrInvalidUnit {
-		return "durationutil: " + fmt.Sprintf(string(ErrInvalidUnit), p.Val) + ": " + p.RawDuration
+		return "duration: " + fmt.Sprintf(string(ErrInvalidUnit), p.Val) + ": " + p.RawDuration
 	}
 
-	return "durationutil: " + string(p.Code) + ": " + p.RawDuration
+	return "duration: " + string(p.Code) + ": " + p.RawDuration
 }
 
 // Parse parses the passed duration.

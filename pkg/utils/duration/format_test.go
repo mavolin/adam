@@ -1,4 +1,4 @@
-package durationutil
+package duration
 
 import (
 	"testing"

@@ -1,9 +1,9 @@
-// Package durationutil provides utilities for interacting with durations.
+// Package duration provides utilities for interacting with durations.
 //
-// In contrast to the functions provided by the time package, durationutil also
+// In contrast to the functions provided by the time package, duration also
 // supports the units Day, Week, Month and Year, but does not provide support
 // for units smaller than a millisecond.
-package durationutil
+package duration
 
 import "time"
 
