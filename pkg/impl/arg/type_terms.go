@@ -116,6 +116,56 @@ var (
 )
 
 // =============================================================================
+// Duration
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	durationName        = i18n.NewFallbackConfig("args.types.duration.name", "Duration")
+	durationDescription = i18n.NewFallbackConfig(
+		"args.types.duration.description", "A timespan. For example: 1h 3 min 4s.\n"+
+			"Available units are `s` for seconds, `min` for minutes, `h` for hours, `d` for days, "+
+			"`w` for weeks, and `m` for months (30 days).")
+)
+
+// ================================ Error ================================
+
+var (
+	durationInvalidError = i18n.NewFallbackConfig(
+		"args.types.duration.errors.invalid", "`{{.raw}}` is not a valid duration.")
+
+	durationSizeErrorArg = i18n.NewFallbackConfig(
+		"args.types.duration.errors.size.arg", "The duration in argument {{.position}} is too large.")
+	durationSizeErrorFlag = i18n.NewFallbackConfig(
+		"args.types.duration.errors.size.flag", "The duration in the `{{.used_name}}`-flag is too large.")
+
+	durationMissingUnitErrorArg = i18n.NewFallbackConfig(
+		"args.types.duration.errors.missing_unit.arg", "The duration in argument {{.position}} is missing a unit.")
+	durationMissingUnitErrorFlag = i18n.NewFallbackConfig(
+		"args.types.duration.errors.missing_unit.flag",
+		"The duration in the `{{.used_name}}`-flag is missing a unit.")
+
+	durationInvalidUnitError = i18n.NewFallbackConfig(
+		"args.types.duration.errors.invalid_unit",
+		"`{{.unit}}` is not a valid unit of time. Valid units are `ms`, `s`, `min`, `h`, `d`, `w`, `m` and `y`.")
+
+	durationBelowMinErrorArg = i18n.NewFallbackConfig(
+		"args.types.duration.errors.below_min.arg",
+		"Argument {{.position}} must be larger or equal to {{.min}}.")
+	durationBelowMinErrorFlag = i18n.NewFallbackConfig(
+		"args.types.duration.errors.below_min.flag",
+		"The `{{.used_name}}`-flag must be larger or equal to {{.min}}.")
+
+	durationAboveMaxErrorArg = i18n.NewFallbackConfig(
+		"args.types.duration.errors.below_min.arg",
+		"Argument {{.position}} must be smaller or equal to {{.max}}.")
+	durationAboveMaxErrorFlag = i18n.NewFallbackConfig(
+		"args.types.duration.errors.below_min.flag",
+		"The `{{.used_name}}`-flag must be smaller or equal to {{.max}}.")
+)
+
+// =============================================================================
 // Text
 // =====================================================================================
 
