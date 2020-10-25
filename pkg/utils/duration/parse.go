@@ -102,6 +102,12 @@ func (p *parser) parse() (time.Duration, error) {
 		}
 
 		val *= unitMul
+		if val < 0 { // overflow
+			return 0, &ParseError{
+				Code:        ErrSize,
+				RawDuration: string(p.raw),
+			}
+		}
 
 		if frac > 0 {
 			val += int64(float64(frac) * (float64(unitMul) / float64(scale)))
