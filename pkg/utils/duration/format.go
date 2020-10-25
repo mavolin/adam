@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Format formats the passed duration.
+// Format formats the passed duration rounded to milliseconds.
 // Individual Values are separated.
 //
 // For example: '1h 10s'
