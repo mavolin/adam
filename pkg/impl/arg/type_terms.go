@@ -176,11 +176,10 @@ var (
 	timeDescription = i18n.NewFallbackConfig(
 		"args.type.time.description",
 		"A 24-hour formatted time, e.g. `13:01`. Optionally, you can add the offset from UTC behind, "+
-			"e.g. `13:01 +0200` to use the Germany's daylight time.")
+			"e.g. `13:01 +0200` to use Germany's daylight time.")
 )
 
-// SetDefaultTimeDescription allows you to update the default time
-// description.
+// SetDefaultTimeDescription allows you to update the default time description.
 // Updating the description is not concurrent safe.
 func SetDefaultTimeDescription(description string) {
 	timeDescription.Fallback.Other = description
@@ -198,12 +197,50 @@ var (
 
 	timeRequireUTCOffsetError = i18n.NewFallbackConfig(
 		"args.types.time.errors.require_utc_offset",
-		"You need to add an offset to the time, e.g. `13:01 +0200` to use the Germany's daylight time.")
+		"You need to add an UTC offset to the time, e.g. `13:01 +0200` to use the Germany's daylight time.")
 
 	timeBeforeMinError = i18n.NewFallbackConfig(
 		"args.types.time.errors.before_min", "The time may not be before {{.min}}.")
 	timeAfterMaxError = i18n.NewFallbackConfig(
 		"args.types.time.errors.after_max", "The time may not be after {{.max}}.")
+)
+
+// =============================================================================
+// Date
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	dateName        = i18n.NewFallbackConfig("args.types.date.name", "Date")
+	dateDescription = i18n.NewFallbackConfig(
+		"args.types.date.description",
+		"A date, e.g. `2020-10-31. Optionally, you can add the offset from UTC behind, "+
+			"e.g. `13:01 +0100` to use Britain's daylight time.")
+)
+
+// SetDefaultDateDescription allows you to update the default date description.
+// Updating the description is not concurrent safe.
+func SetDefaultDateDescription(description string) {
+	dateDescription.Fallback.Other = description
+}
+
+var (
+	dateInvalidErrorArg = i18n.NewFallbackConfig(
+		"args.types.date.errors.invalid.arg",
+		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31` or `2020-10-31 -0100`.")
+	dateInvalidErrorFlag = i18n.NewFallbackConfig(
+		"args.types.date.errors.invalid.flag",
+		"The date you used as `{{.used_name}}`-flag is invalid. Please use a date like `2020-10-31` or `2020-10-31 -0100`.")
+
+	dateRequireUTCOffsetError = i18n.NewFallbackConfig(
+		"args.types.date.errors.require_utc_offset",
+		"You need to add an UTC offset to the date, e.g. `13:01 +0100` to use the Britain's daylight time.")
+
+	dateBeforeMinError = i18n.NewFallbackConfig(
+		"args.types.date.errors.before_min", "The date may not be before {{.min}}.")
+	dateAfterMaxError = i18n.NewFallbackConfig(
+		"args.types.date.errors.after_max", "The date may not be after {{.max}}.")
 )
 
 // =============================================================================
@@ -213,8 +250,8 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	textName        = i18n.NewFallbackConfig("args.types.id.name", "Text")
-	textDescription = i18n.NewFallbackConfig("args.types.id.description", "A id.")
+	textName        = i18n.NewFallbackConfig("args.types.text.name", "Text")
+	textDescription = i18n.NewFallbackConfig("args.types.text.description", "A text.")
 )
 
 // ================================ Errors ================================
@@ -263,7 +300,7 @@ var (
 
 var (
 	idName        = i18n.NewFallbackConfig("args.types.id.name", "ID")
-	idDescription = i18n.NewFallbackConfig("args.types.id.name", "The unique id of something.")
+	idDescription = i18n.NewFallbackConfig("args.types.id.name", "An id.")
 )
 
 // ================================ Errors ================================
