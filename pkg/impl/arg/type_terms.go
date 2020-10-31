@@ -200,10 +200,10 @@ var (
 		"args.types.time.errors.require_utc_offset",
 		"You need to add an offset to the time, e.g. `13:01 +0200` to use the Germany's daylight time.")
 
-	timeBelowMinError = i18n.NewFallbackConfig(
-		"args.types.time.errors.below_min", "The time may not be before {{.min}}.")
-	timeAboveMaxError = i18n.NewFallbackConfig(
-		"args.types.time.errors.above_max", "The time may not be after {{.max}}.")
+	timeBeforeMinError = i18n.NewFallbackConfig(
+		"args.types.time.errors.before_min", "The time may not be before {{.min}}.")
+	timeAfterMaxError = i18n.NewFallbackConfig(
+		"args.types.time.errors.after_max", "The time may not be after {{.max}}.")
 )
 
 // =============================================================================
