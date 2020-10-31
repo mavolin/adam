@@ -166,6 +166,47 @@ var (
 )
 
 // =============================================================================
+// Time
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	timeName        = i18n.NewFallbackConfig("args.types.time.name", "Time")
+	timeDescription = i18n.NewFallbackConfig(
+		"args.type.time.description",
+		"A 24-hour formatted time, e.g. `13:01`. Optionally, you can add the offset from UTC behind, "+
+			"e.g. `13:01 +0200` to use the Germany's daylight time.")
+)
+
+// SetDefaultTimeDescription allows you to update the default time
+// description.
+// Updating the description is not concurrent safe.
+func SetDefaultTimeDescription(description string) {
+	timeDescription.Fallback.Other = description
+}
+
+// ================================ Errors ================================
+
+var (
+	timeInvalidErrorArg = i18n.NewFallbackConfig(
+		"args.types.time.errors.invalid.arg",
+		"The time in argument {{.position}} is invalid. Please use a time like `13:01` or `13:01 -0200`.")
+	timeInvalidErrorFlag = i18n.NewFallbackConfig(
+		"args.types.time.errors.invalid.flag",
+		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01` or `13:01 -0200`.")
+
+	timeRequireUTCOffsetError = i18n.NewFallbackConfig(
+		"args.types.time.errors.require_utc_offset",
+		"You need to add an offset to the time, e.g. `13:01 +0200` to use the Germany's daylight time.")
+
+	timeBelowMinError = i18n.NewFallbackConfig(
+		"args.types.time.errors.below_min", "The time may not be before {{.min}}.")
+	timeAboveMaxError = i18n.NewFallbackConfig(
+		"args.types.time.errors.above_max", "The time may not be after {{.max}}.")
+)
+
+// =============================================================================
 // Text
 // =====================================================================================
 

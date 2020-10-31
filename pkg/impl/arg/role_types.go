@@ -13,8 +13,6 @@ import (
 
 // RoleAllowIDs is a global flag that allows you to specify whether Roles
 // may also be noted as plain Snowflakes.
-//
-// Defaults to true.
 var RoleAllowIDs = true
 
 // =============================================================================
@@ -90,49 +88,5 @@ func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 }
 
 func (r role) Default() interface{} {
-	return (*discord.Role)(nil)
-}
-
-// =============================================================================
-// RoleID
-// =====================================================================================
-
-// RoleID is the same Type as Role, but it only accepts role ids.
-//
-// Go type: *discord.Role
-var RoleID Type = new(roleID)
-
-type roleID struct{}
-
-func (r roleID) Name(l *i18n.Localizer) string {
-	name, _ := l.Localize(roleIDName) // we have a fallback
-	return name
-}
-
-func (r roleID) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(roleIDDescription) // we have a fallback
-	return desc
-}
-
-func (r roleID) Parse(s *state.State, ctx *Context) (interface{}, error) {
-	err := restriction.ChannelTypes(plugin.GuildChannels)(s, ctx.Context)
-	if err != nil {
-		return nil, err
-	}
-
-	rid, err := discord.ParseSnowflake(ctx.Raw)
-	if err != nil {
-		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
-	}
-
-	role, err := s.Role(ctx.GuildID, discord.RoleID(rid))
-	if err != nil {
-		return nil, newArgParsingErr(roleIDInvalidError, ctx, nil)
-	}
-
-	return role, nil
-}
-
-func (r roleID) Default() interface{} {
 	return (*discord.Role)(nil)
 }

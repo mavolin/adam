@@ -189,40 +189,217 @@ func TestUser_Parse(t *testing.T) {
 	})
 }
 
-func TestUserID_Parse(t *testing.T) {
+func TestMember_Parse(t *testing.T) {
+	successCases := []struct {
+		name string
+
+		ctx *Context
+
+		expect *discord.Member
+	}{
+		{
+			name: "mention fallback",
+			ctx: &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: "<@456>",
+			},
+			expect: &discord.Member{
+				User: discord.User{ID: 456},
+			},
+		},
+		{
+			name: "id",
+			ctx: &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: "456",
+			},
+			expect: &discord.Member{
+				User: discord.User{ID: 456},
+			},
+		},
+	}
+
 	t.Run("success", func(t *testing.T) {
-		m, s := state.NewMocker(t)
+		for _, c := range successCases {
+			t.Run(c.name, func(t *testing.T) {
+				m, s := state.NewMocker(t)
 
-		ctx := &Context{Raw: "456"}
+				m.Member(c.ctx.GuildID, *c.expect)
 
-		expect := &discord.User{ID: 456}
+				actual, err := Member.Parse(s, c.ctx)
+				require.NoError(t, err)
+				assert.Equal(t, c.expect, actual)
 
-		m.User(*expect)
+				m.Eval()
+			})
+		}
 
-		actual, err := UserID.Parse(s, ctx)
-		require.NoError(t, err)
-		assert.Equal(t, expect, actual)
+		t.Run("mention", func(t *testing.T) {
+			expect := &discord.Member{
+				User: discord.User{ID: 456},
+				Deaf: true,
+			}
 
-		m.Eval()
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+								Mentions: []discord.GuildUser{
+									{
+										User:   discord.User{ID: 456},
+										Member: &discord.Member{Deaf: true},
+									},
+								},
+							},
+						},
+					},
+				},
+				Raw: expect.User.Mention(),
+			}
+
+			actual, err := Member.Parse(nil, ctx)
+			require.NoError(t, err)
+			assert.Equal(t, expect, actual)
+		})
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		t.Run("invalid id", func(t *testing.T) {
-			ctx := &Context{Raw: "abc"}
+		t.Run("mention id range", func(t *testing.T) {
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw:  fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
+				Kind: KindArg,
+			}
 
-			expect := userIDInvalidError
+			expect := userInvalidMentionErrorArg
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
-			_, actual := UserID.Parse(nil, ctx)
+			_, actual := Member.Parse(nil, ctx)
+			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+
+			ctx.Kind = KindFlag
+
+			expect = userInvalidMentionErrorFlag
+			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+			_, actual = Member.Parse(nil, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 		})
 
-		t.Run("user not found", func(t *testing.T) {
+		t.Run("mention member not found", func(t *testing.T) {
+			srcMocker, _ := state.NewMocker(t)
+
+			var userID discord.UserID = 456
+
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw:  userID.Mention(),
+				Kind: KindArg,
+			}
+
+			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
+				Status:  http.StatusNotFound,
+				Code:    10013, // unknown user
+				Message: "Unknown user",
+			})
+
+			expect := userInvalidMentionErrorArg
+			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+			m, s := state.CloneMocker(srcMocker, t)
+
+			_, actual := Member.Parse(s, ctx)
+			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+
+			m.Eval()
+
+			ctx.Kind = KindFlag
+
+			expect = userInvalidMentionErrorFlag
+			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+			m, s = state.CloneMocker(srcMocker, t)
+
+			_, actual = Member.Parse(s, ctx)
+			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+
+			m.Eval()
+		})
+
+		t.Run("not id", func(t *testing.T) {
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: "abc",
+			}
+
+			expect := userInvalidError
+			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+			_, actual := Member.Parse(nil, ctx)
+			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+		})
+
+		t.Run("id user not found", func(t *testing.T) {
 			m, s := state.NewMocker(t)
 
-			ctx := &Context{Raw: "456"}
+			var userID discord.UserID = 456
 
-			m.Error(http.MethodGet, "/users/456", httputil.HTTPError{
+			ctx := &Context{
+				Context: &plugin.Context{
+					MessageCreateEvent: &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: discord.Message{
+								GuildID: 123,
+							},
+						},
+					},
+				},
+				Raw: userID.String(),
+			}
+
+			m.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
@@ -231,7 +408,7 @@ func TestUserID_Parse(t *testing.T) {
 			expect := userIDInvalidError
 			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
 
-			_, actual := UserID.Parse(s, ctx)
+			_, actual := Member.Parse(s, ctx)
 			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 
 			m.Eval()
