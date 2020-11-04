@@ -248,7 +248,7 @@ var (
 
 	dateRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
 		"args.types.date.errors.require_utc_offset.arg",
-		"You need to add an UTC offset to the date in argument {{.postion}}, "+
+		"You need to add an UTC offset to the date in argument {{.position}}, "+
 			"e.g. `13:01 +0100` to use the Britain's daylight time.")
 	dateRequireUTCOffsetErrorFlag = i18n.NewFallbackConfig(
 		"args.types.date.errors.require_utc_offset.flag",
@@ -429,17 +429,9 @@ var (
 		"args.types.user.errors.no_access",
 		"{{.raw}} is either not an emoji or I'm unable to access it. "+
 			"Make sure to only use emojis from this server.")
-)
 
-// =============================================================================
-// EmojiID
-// =====================================================================================
-
-// ================================ Errors ================================
-
-var (
 	emojiIDNoAccessError = i18n.NewFallbackConfig(
-		"args.types.emoji_id.errors.no_access",
+		"args.types.emoji.errors.id_no_access",
 		"{{.raw}} is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
 			"Make sure to only use emojis from this server.")
 )
@@ -461,18 +453,6 @@ var (
 )
 
 // =============================================================================
-// MemberID
-// =====================================================================================
-
-// ================================ Meta Data ================================
-
-var (
-	memberIDName        = i18n.NewFallbackConfig("args.types.member_id.name", "Member ID")
-	memberIDDescription = i18n.NewFallbackConfig(
-		"args.types.member_id.description", "The id of a server member. For example 123456789098765432.")
-)
-
-// =============================================================================
 // User
 // =====================================================================================
 
@@ -491,6 +471,9 @@ var (
 var (
 	userInvalidError = i18n.NewFallbackConfig("args.types.user.errors.invalid", "{{.raw}} is not a user.")
 
+	userIDInvalidError = i18n.NewFallbackConfig(
+		"args.types.user.errors.id_invalid", "{{.raw}} is not a valid user id.")
+
 	userInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid user mention.")
 
@@ -500,25 +483,6 @@ var (
 	userInvalidMentionErrorFlag = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention.flag",
 		"The mention in the `{{.used_name}}`-flag is invalid. Make sure the user is still on the server.")
-)
-
-// =============================================================================
-// UserID
-// =====================================================================================
-
-// ================================ Meta Data ================================
-
-var (
-	userIDName        = i18n.NewFallbackConfig("args.types.user_id.name", "User ID")
-	userIDDescription = i18n.NewFallbackConfig(
-		"args.types.user_id.description", "The id of a user. For example 123456789098765432.")
-)
-
-// ================================ Errors ================================
-
-var (
-	userIDInvalidError = i18n.NewFallbackConfig(
-		"args.types.user_id.errors.invalid", "{{.raw}} is not a valid user id.")
 )
 
 // =============================================================================
@@ -542,6 +506,9 @@ var (
 var (
 	roleInvalidError = i18n.NewFallbackConfig("args.types.role.errors.invalid", "{{.raw}} is not a role.")
 
+	roleIDInvalidError = i18n.NewFallbackConfig(
+		"args.types.role.errors.id_invalid", "{{.raw}} is not a valid role id.")
+
 	roleInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
 
@@ -554,25 +521,6 @@ var (
 )
 
 // =============================================================================
-// RoleID
-// =====================================================================================
-
-// ================================ Meta Data ================================
-
-var (
-	roleIDName        = i18n.NewFallbackConfig("args.types.role_id.name", "Role ID")
-	roleIDDescription = i18n.NewFallbackConfig(
-		"args.types.role_id.description", "The id of a role. For example 123456789098765432")
-)
-
-// ================================ Errors ================================
-
-var (
-	roleIDInvalidError = i18n.NewFallbackConfig(
-		"args.types.role_id.errors.invalid", "{{.raw}} is not a valid role id.")
-)
-
-// =============================================================================
 // Channels
 // =====================================================================================
 
@@ -580,7 +528,7 @@ var (
 
 var (
 	channelIDInvalidError = i18n.NewFallbackConfig(
-		"args.types.channel_id.errors.invalid",
+		"args.types.channel.errors.id_invalid",
 		"{{.raw}} is not a valid channel id.")
 )
 
@@ -622,33 +570,17 @@ var (
 		"args.types.text_channel.errors.guild_not_matching",
 		"{{.raw}} is not a channel from this server.")
 
-	textChannelInvalidTypeError = i18n.NewFallbackConfig(
-		"args.types.text_channel.errors.invalid_type",
-		"{{.raw}} is neither a id nor an announcement channel.")
-)
-
-// =============================================================================
-// TextChannelID
-// =====================================================================================
-
-// ================================ Meta Data ================================
-
-var (
-	textChannelIDName        = i18n.NewFallbackConfig("args.types.text_channel_id.name", "Text Channel ID")
-	textChannelIDDescription = i18n.NewFallbackConfig(
-		"args.types.text_channel_id.description", "The id of a text or announcement channel.")
-)
-
-// ================================ Errors ================================
-
-var (
 	textChannelIDGuildNotMatchingError = i18n.NewFallbackConfig(
-		"args.types.text_channel_id.errors.guild_not_matching",
+		"args.types.text_channel.errors.id_guild_not_matching",
 		"The id {{.raw}} belongs to a channel from another server.")
 
+	textChannelInvalidTypeError = i18n.NewFallbackConfig(
+		"args.types.text_channel.errors.invalid_type",
+		"{{.raw}} isn't a text channel.")
+
 	textChannelIDInvalidTypeError = i18n.NewFallbackConfig(
-		"args.types.text_channel_id.errors.invalid_type",
-		"The id {{.raw}} belongs to neither a id nor an announcement channel.")
+		"args.types.text_channel.errors.id_invalid_type",
+		"The id {{.raw}} doesn't belong to a text channel.")
 )
 
 // =============================================================================
