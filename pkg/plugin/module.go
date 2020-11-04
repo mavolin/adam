@@ -1,8 +1,6 @@
 package plugin
 
-import (
-	"github.com/mavolin/adam/pkg/i18n"
-)
+import "github.com/mavolin/adam/pkg/i18n"
 
 type (
 	// Module is the abstraction of a module.

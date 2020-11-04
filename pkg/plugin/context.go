@@ -1,8 +1,6 @@
 package plugin
 
 import (
-	"time"
-
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
@@ -41,8 +39,6 @@ type Context struct {
 	// Prefix is the prefix of the bot in the guild.
 	// If the guild has prefixes disabled, Prefix will be empty.
 	Prefix string
-	// Location is the timezone of the guild.
-	Location *time.Location
 
 	// BotOwnerIDs contains the ids of the bot owners.
 	BotOwnerIDs []discord.UserID
