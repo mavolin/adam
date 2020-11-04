@@ -78,7 +78,7 @@ func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		}
 
 		if loc == nil {
-			return nil, newArgParsingErr(timeRequireUTCOffsetError, ctx, nil)
+			return nil, newArgParsingErr2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
 		}
 
 		parsed, err = time.ParseInLocation(timeFormat, ctx.Raw, loc)
@@ -91,11 +91,11 @@ func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
-		return nil, newArgParsingErr(timeBeforeMinError, ctx, map[string]interface{}{
+		return nil, newArgParsingErr2(timeBeforeMinErrorArg, timeBeforeMinErrorFlag, ctx, map[string]interface{}{
 			"min": t.Min.In(parsed.Location()).Format(timeFormat),
 		})
 	} else if !t.Max.IsZero() && parsed.After(t.Max) {
-		return nil, newArgParsingErr(timeAfterMaxError, ctx, map[string]interface{}{
+		return nil, newArgParsingErr2(timeAfterMaxErrorArg, timeAfterMaxErrorFlag, ctx, map[string]interface{}{
 			"max": t.Max.In(parsed.Location()).Format(timeFormat),
 		})
 	}
@@ -163,11 +163,6 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		err    error
 	)
 
-	switch {
-	case len(ctx.Raw) == len(dateFormat) && t.RequireTimezone:
-
-	}
-
 	if len(ctx.Raw) == len(dateFormat) {
 		loc := DefaultLocation
 
@@ -181,7 +176,7 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 
 		if loc == nil {
 			if t.RequireTimezone {
-				return nil, newArgParsingErr(dateRequireUTCOffsetError, ctx, nil)
+				return nil, newArgParsingErr2(dateRequireUTCOffsetErrorArg, dateRequireUTCOffsetErrorFlag, ctx, nil)
 			}
 
 			loc = time.UTC
@@ -197,12 +192,12 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
-		return nil, newArgParsingErr(dateBeforeMinError, ctx, map[string]interface{}{
-			"min": t.Min.In(parsed.Location()).Format(timeFormat),
+		return nil, newArgParsingErr2(dateBeforeMinErrorArg, dateBeforeMinErrorFlag, ctx, map[string]interface{}{
+			"min": t.Min.In(parsed.Location()).Format(dateFormat),
 		})
 	} else if !t.Max.IsZero() && parsed.After(t.Max) {
-		return nil, newArgParsingErr(dateAfterMaxError, ctx, map[string]interface{}{
-			"max": t.Max.In(parsed.Location()).Format(timeFormat),
+		return nil, newArgParsingErr2(dateAfterMaxErrorArg, dateAfterMaxErrorFlag, ctx, map[string]interface{}{
+			"max": t.Max.In(parsed.Location()).Format(dateFormat),
 		})
 	}
 
@@ -210,5 +205,92 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 }
 
 func (t Date) Default() interface{} {
+	return time.Time{}
+}
+
+// =============================================================================
+// DateTime
+// =====================================================================================
+
+// DateTime is the type used for combinations of a date and a time.
+//
+// A DateTime can either be specified without a UTC offset following the format
+// of '2006-01-02 15:04', or with a UTC offset: '2006-01-02 15:04 -0700'.
+// In the first case, DefaultLocation will be assumed as time zone, unless
+// the context has a variable called "location" that is of type *time.Location.
+// If both are nil, UTC offsets will be required.
+//
+// Go type: time.Time
+type DateTime struct {
+	// Min is the inclusive minimum date.
+	Min time.Time
+	// Max is the inclusive maximum time.
+	Max time.Time
+}
+
+var (
+	// SimpleDateTime is a DateTime with no bounds
+	SimpleDateTime Type = new(DateTime)
+)
+
+func (t DateTime) Name(l *i18n.Localizer) string {
+	name, _ := l.Localize(dateTimeName) // we have a fallback
+	return name
+}
+
+func (t DateTime) Description(l *i18n.Localizer) string {
+	desc, _ := l.Localize(dateTimeDescription) // we have a fallback
+	return desc
+}
+
+var (
+	dateTimeFormat       = "2006-01-02 15:04"
+	dateTimeFormatWithTZ = "2006-01-02 15:04 -0700"
+)
+
+func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+	var (
+		parsed time.Time
+		err    error
+	)
+
+	if len(ctx.Raw) == len(dateTimeFormat) {
+		loc := DefaultLocation
+
+		if len(LocationKey) > 0 {
+			if val := ctx.Get(LocationKey); val != nil {
+				if customLoc, ok := val.(*time.Location); ok && customLoc != nil {
+					loc = customLoc
+				}
+			}
+		}
+
+		if loc == nil {
+			return nil, newArgParsingErr2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
+		}
+
+		parsed, err = time.ParseInLocation(dateTimeFormat, ctx.Raw, loc)
+	} else if len(ctx.Raw) == len(dateTimeFormatWithTZ) {
+		parsed, err = time.Parse(dateTimeFormatWithTZ, ctx.Raw)
+	}
+
+	if err != nil || parsed.IsZero() {
+		return nil, newArgParsingErr2(dateTimeInvalidErrorArg, dateTimeInvalidErrorFlag, ctx, nil)
+	}
+
+	if !t.Min.IsZero() && parsed.Before(t.Min) {
+		return nil, newArgParsingErr2(dateBeforeMinErrorArg, dateBeforeMinErrorFlag, ctx, map[string]interface{}{
+			"min": t.Min.In(parsed.Location()).Format(dateTimeFormat),
+		})
+	} else if !t.Max.IsZero() && parsed.After(t.Max) {
+		return nil, newArgParsingErr2(dateAfterMaxErrorArg, dateAfterMaxErrorFlag, ctx, map[string]interface{}{
+			"max": t.Max.In(parsed.Location()).Format(dateTimeFormat),
+		})
+	}
+
+	return parsed, nil
+}
+
+func (t DateTime) Default() interface{} {
 	return time.Time{}
 }

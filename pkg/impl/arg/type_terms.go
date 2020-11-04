@@ -195,14 +195,26 @@ var (
 		"args.types.time.errors.invalid.flag",
 		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01` or `13:01 -0200`.")
 
-	timeRequireUTCOffsetError = i18n.NewFallbackConfig(
-		"args.types.time.errors.require_utc_offset",
-		"You need to add an UTC offset to the time, e.g. `13:01 +0200` to use the Germany's daylight time.")
+	timeRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
+		"args.types.time.errors.require_utc_offset.arg",
+		"You need to add an UTC offset to the time in argument {{.position}}, "+
+			"e.g. `13:01 +0200` to use the Germany's daylight time.")
+	timeRequireUTCOffsetErrorFlag = i18n.NewFallbackConfig(
+		"args.types.time.errors.require_utc_offset.flag",
+		"You need to add an UTC offset to the time used as `{{.used_name}}`-flag, "+
+			"e.g. `13:01 +0200` to use the Germany's daylight time.")
 
-	timeBeforeMinError = i18n.NewFallbackConfig(
-		"args.types.time.errors.before_min", "The time may not be before {{.min}}.")
-	timeAfterMaxError = i18n.NewFallbackConfig(
-		"args.types.time.errors.after_max", "The time may not be after {{.max}}.")
+	timeBeforeMinErrorArg = i18n.NewFallbackConfig(
+		"args.types.time.errors.before_min.arg", "The time in argument {{.position}} may not be before {{.min}}.")
+	timeBeforeMinErrorFlag = i18n.NewFallbackConfig(
+		"args.types.time.errors.before_min.flag",
+		"The time you used as the `{{.used_name}}`-flag may not be before {{.min}}.")
+
+	timeAfterMaxErrorArg = i18n.NewFallbackConfig(
+		"args.types.time.errors.after_max.arg", "The time in argument {{.position}} may not be after {{.max}}.")
+	timeAfterMaxErrorFlag = i18n.NewFallbackConfig(
+		"args.types.time.errors.after_max.flag",
+		"The time you used as the `{{.used_name}}`-flag may not be after {{.max}}.")
 )
 
 // =============================================================================
@@ -215,7 +227,7 @@ var (
 	dateName        = i18n.NewFallbackConfig("args.types.date.name", "Date")
 	dateDescription = i18n.NewFallbackConfig(
 		"args.types.date.description",
-		"A date, e.g. `2020-10-31. Optionally, you can add the offset from UTC behind, "+
+		"A date, e.g. `2020-10-31`. Optionally, you can add the offset from UTC behind, "+
 			"e.g. `13:01 +0100` to use Britain's daylight time.")
 )
 
@@ -231,16 +243,54 @@ var (
 		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31` or `2020-10-31 -0100`.")
 	dateInvalidErrorFlag = i18n.NewFallbackConfig(
 		"args.types.date.errors.invalid.flag",
-		"The date you used as `{{.used_name}}`-flag is invalid. Please use a date like `2020-10-31` or `2020-10-31 -0100`.")
+		"The date you used as `{{.used_name}}`-flag is invalid. "+
+			"Please use a date like `2020-10-31` or `2020-10-31 +0100`.")
 
-	dateRequireUTCOffsetError = i18n.NewFallbackConfig(
-		"args.types.date.errors.require_utc_offset",
-		"You need to add an UTC offset to the date, e.g. `13:01 +0100` to use the Britain's daylight time.")
+	dateRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
+		"args.types.date.errors.require_utc_offset.arg",
+		"You need to add an UTC offset to the date in argument {{.postion}}, "+
+			"e.g. `13:01 +0100` to use the Britain's daylight time.")
+	dateRequireUTCOffsetErrorFlag = i18n.NewFallbackConfig(
+		"args.types.date.errors.require_utc_offset.flag",
+		"You need to add an UTC offset to the date used as `{{.used_name}}`-flag, "+
+			"e.g. `13:01 +0100` to use the Britain's daylight time.")
 
-	dateBeforeMinError = i18n.NewFallbackConfig(
-		"args.types.date.errors.before_min", "The date may not be before {{.min}}.")
-	dateAfterMaxError = i18n.NewFallbackConfig(
-		"args.types.date.errors.after_max", "The date may not be after {{.max}}.")
+	dateBeforeMinErrorArg = i18n.NewFallbackConfig(
+		"args.types.date.errors.before_min.arg", "The date in argument {{.position}} may not be before {{.min}}.")
+	dateBeforeMinErrorFlag = i18n.NewFallbackConfig(
+		"args.types.date.errors.before_min.flag",
+		"The date you used as `{{.used_name}}`-flag may not be before {{.min}}.")
+
+	dateAfterMaxErrorArg = i18n.NewFallbackConfig(
+		"args.types.date.errors.after_max.arg", "The date in argument {{.position}} may not be after {{.max}}.")
+	dateAfterMaxErrorFlag = i18n.NewFallbackConfig(
+		"args.types.date.errors.after_max.flag",
+		"The date you used as `{{.used_name}}`-flag may not be after {{.max}}.")
+)
+
+// =============================================================================
+// DateTime
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	dateTimeName        = i18n.NewFallbackConfig("args.types.date_time.name", "Date and Time")
+	dateTimeDescription = i18n.NewFallbackConfig(
+		"args.types.date_time.description",
+		"A date with time, e.g. `2020-10-31 13:01`. Optionally, you can add the offset from UTC behind, "+
+			"e.g. `2020-10-31 13:01 -0700` to use Vancouver's daylight time.")
+)
+
+var (
+	dateTimeInvalidErrorArg = i18n.NewFallbackConfig(
+		"args.types.date_time.errors.invalid.arg",
+		"The date/time combination in argument {{.position}} is invalid. "+
+			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 -0700`.")
+	dateTimeInvalidErrorFlag = i18n.NewFallbackConfig(
+		"args.types.date_time.errors.invalid.flag",
+		"The date/time combination you used as `{{.used_name}}`-flag is invalid. "+
+			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 -0700`.")
 )
 
 // =============================================================================

@@ -87,8 +87,8 @@ func TestTime_Parse(t *testing.T) {
 			raw:             "13:01",
 			location:        nil,
 			defaultLocation: nil,
-			expectArg:       timeRequireUTCOffsetError,
-			expectFlag:      timeRequireUTCOffsetError,
+			expectArg:       timeRequireUTCOffsetErrorArg,
+			expectFlag:      timeRequireUTCOffsetErrorFlag,
 		},
 		{
 			name:            "invalid",
@@ -102,11 +102,11 @@ func TestTime_Parse(t *testing.T) {
 			raw:      "13:01",
 			min:      time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC),
 			location: time.UTC,
-			expectArg: timeBeforeMinError.
+			expectArg: timeBeforeMinErrorArg.
 				WithPlaceholders(map[string]interface{}{
 					"min": time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC).Format(timeFormat),
 				}),
-			expectFlag: timeBeforeMinError.
+			expectFlag: timeBeforeMinErrorFlag.
 				WithPlaceholders(map[string]interface{}{
 					"min": time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC).Format(timeFormat),
 				}),
@@ -118,11 +118,11 @@ func TestTime_Parse(t *testing.T) {
 			max:             time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC),
 			location:        time.UTC,
 			defaultLocation: nil,
-			expectArg: timeAfterMaxError.
+			expectArg: timeAfterMaxErrorArg.
 				WithPlaceholders(map[string]interface{}{
 					"max": time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC).Format(timeFormat),
 				}),
-			expectFlag: timeAfterMaxError.
+			expectFlag: timeAfterMaxErrorFlag.
 				WithPlaceholders(map[string]interface{}{
 					"max": time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC).Format(timeFormat),
 				}),
@@ -205,7 +205,7 @@ func TestDate_Parse(t *testing.T) {
 			expect:          time.Date(2020, 10, 31, 0, 0, 0, 0, time.FixedZone("", 7200)),
 		},
 		{
-			name:            "no timezone",
+			name:            "require no timezone",
 			raw:             "2020-10-31",
 			location:        nil,
 			defaultLocation: nil,
@@ -259,8 +259,8 @@ func TestDate_Parse(t *testing.T) {
 			requireTimezone: true,
 			location:        nil,
 			defaultLocation: nil,
-			expectArg:       dateRequireUTCOffsetError,
-			expectFlag:      dateRequireUTCOffsetError,
+			expectArg:       dateRequireUTCOffsetErrorArg,
+			expectFlag:      dateRequireUTCOffsetErrorFlag,
 		},
 		{
 			name:            "invalid",
@@ -274,29 +274,27 @@ func TestDate_Parse(t *testing.T) {
 			raw:      "2020-10-31",
 			min:      time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC),
 			location: time.UTC,
-			expectArg: dateBeforeMinError.
+			expectArg: dateBeforeMinErrorArg.
 				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(timeFormat),
+					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateFormat),
 				}),
-			expectFlag: dateBeforeMinError.
+			expectFlag: dateBeforeMinErrorFlag.
 				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(timeFormat),
+					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateFormat),
 				}),
 		},
 		{
-			name:            "after max",
-			raw:             "2020-10-31",
-			min:             time.Time{},
-			max:             time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC),
-			location:        time.UTC,
-			defaultLocation: nil,
-			expectArg: dateAfterMaxError.
+			name:     "after max",
+			raw:      "2020-10-31",
+			max:      time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC),
+			location: time.UTC,
+			expectArg: dateAfterMaxErrorArg.
 				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(2020, 10, 31, 0, 0, 0, 0, time.UTC).Format(timeFormat),
+					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateFormat),
 				}),
-			expectFlag: dateAfterMaxError.
+			expectFlag: dateAfterMaxErrorFlag.
 				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(2020, 10, 31, 0, 0, 0, 0, time.UTC).Format(timeFormat),
+					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateFormat),
 				}),
 		},
 	}
@@ -310,6 +308,160 @@ func TestDate_Parse(t *testing.T) {
 					RequireTimezone: c.requireTimezone,
 					Min:             c.min,
 					Max:             c.max,
+				}
+
+				ctx := &Context{
+					Context: &plugin.Context{
+						MessageCreateEvent: &state.MessageCreateEvent{
+							Base: state.NewBase(),
+						},
+					},
+					Raw:  c.raw,
+					Kind: KindArg,
+				}
+
+				ctx.Set(LocationKey, c.location)
+
+				expect := c.expectArg
+				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+				_, actual := ti.Parse(nil, ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+
+				ctx.Kind = KindFlag
+
+				expect = c.expectFlag
+				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+				_, actual = ti.Parse(nil, ctx)
+				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			})
+		}
+	})
+}
+
+func TestDateTime_Parse(t *testing.T) {
+	successCases := []struct {
+		name string
+
+		raw             string
+		location        *time.Location
+		defaultLocation *time.Location
+
+		expect time.Time
+	}{
+		{
+			name:            "default timezone",
+			raw:             "2020-10-31 13:01",
+			location:        nil,
+			defaultLocation: time.UTC,
+			expect:          time.Date(2020, 10, 31, 13, 1, 0, 0, time.UTC),
+		},
+		{
+			name:            "context timezone",
+			raw:             "2020-10-31 13:01",
+			location:        time.FixedZone("CET", 200),
+			defaultLocation: nil,
+			expect:          time.Date(2020, 10, 31, 13, 1, 0, 0, time.FixedZone("CET", 200)),
+		},
+		{
+			name:            "utc offset",
+			raw:             "2020-10-31 13:01 +0200",
+			location:        nil,
+			defaultLocation: nil,
+			expect:          time.Date(2020, 10, 31, 13, 1, 0, 0, time.FixedZone("", 7200)),
+		},
+	}
+
+	t.Run("success", func(t *testing.T) {
+		for _, c := range successCases {
+			t.Run(c.name, func(t *testing.T) {
+				DefaultLocation = c.defaultLocation
+
+				ctx := &Context{
+					Context: &plugin.Context{
+						MessageCreateEvent: &state.MessageCreateEvent{
+							Base: state.NewBase(),
+						},
+					},
+					Raw: c.raw,
+				}
+
+				ctx.Set(LocationKey, c.location)
+
+				actual, err := SimpleDateTime.Parse(nil, ctx)
+				require.NoError(t, err)
+				require.IsType(t, time.Time{}, actual)
+				if !assert.True(t, c.expect.Equal(actual.(time.Time))) { // produce a diff
+					assert.Equal(t, c.expect, actual)
+				}
+			})
+		}
+	})
+
+	failureCases := []struct {
+		name string
+
+		raw             string
+		min, max        time.Time
+		location        *time.Location
+		defaultLocation *time.Location
+
+		expectArg, expectFlag *i18n.Config
+	}{
+		{
+			name:            "require offset",
+			raw:             "2020-10-31 13:01",
+			location:        nil,
+			defaultLocation: nil,
+			expectArg:       timeRequireUTCOffsetErrorArg,
+			expectFlag:      timeRequireUTCOffsetErrorFlag,
+		},
+		{
+			name:            "invalid",
+			raw:             "abc",
+			defaultLocation: time.UTC,
+			expectArg:       dateTimeInvalidErrorArg,
+			expectFlag:      dateTimeInvalidErrorFlag,
+		},
+		{
+			name:     "before min",
+			raw:      "2020-10-31 13:01",
+			min:      time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC),
+			location: time.UTC,
+			expectArg: dateBeforeMinErrorArg.
+				WithPlaceholders(map[string]interface{}{
+					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
+				}),
+			expectFlag: dateBeforeMinErrorFlag.
+				WithPlaceholders(map[string]interface{}{
+					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
+				}),
+		},
+		{
+			name:     "after max",
+			raw:      "2020-10-31 13:01",
+			max:      time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC),
+			location: time.UTC,
+			expectArg: dateAfterMaxErrorArg.
+				WithPlaceholders(map[string]interface{}{
+					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
+				}),
+			expectFlag: dateAfterMaxErrorFlag.
+				WithPlaceholders(map[string]interface{}{
+					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
+				}),
+		},
+	}
+
+	t.Run("failure", func(t *testing.T) {
+		for _, c := range failureCases {
+			t.Run(c.name, func(t *testing.T) {
+				DefaultLocation = c.defaultLocation
+
+				ti := &DateTime{
+					Min: c.min,
+					Max: c.max,
 				}
 
 				ctx := &Context{
