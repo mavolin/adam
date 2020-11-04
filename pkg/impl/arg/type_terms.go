@@ -294,6 +294,24 @@ var (
 )
 
 // =============================================================================
+// TimeZone
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	timeZoneName        = i18n.NewFallbackConfig("args.types.time_zone.name", "Time Zone")
+	timeZoneDescription = i18n.NewFallbackConfig(
+		"args.types.time_zone.description",
+		"The name of a IANA time zone, e.g. America/New_York.")
+)
+
+// ================================ Errors ================================
+
+var timeZoneInvalidError = i18n.NewFallbackConfig(
+	"args.types.time_zone.errors.invalid", "{{.raw}} is not a valid IANA time zone name.")
+
+// =============================================================================
 // Text
 // =====================================================================================
 

@@ -1,6 +1,7 @@
 package arg
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -491,5 +492,31 @@ func TestDateTime_Parse(t *testing.T) {
 				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 			})
 		}
+	})
+}
+
+func TestTimeZone_Parse(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ctx := &Context{Raw: "America/New_York"}
+
+		expect, err := time.LoadLocation("America/New_York")
+		if err != nil {
+			fmt.Println("aborting TestTimeZone_Parse: no timezone data available")
+			return // test os doesn't have timezone data
+		}
+
+		actual, err := TimeZone.Parse(nil, ctx)
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		ctx := &Context{Raw: "not a timezone"}
+
+		expect := timeZoneInvalidError
+		expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+
+		_, actual := TimeZone.Parse(nil, ctx)
+		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
 	})
 }

@@ -294,3 +294,43 @@ func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 func (t DateTime) Default() interface{} {
 	return time.Time{}
 }
+
+// =============================================================================
+// Location
+// =====================================================================================
+
+// TimeZone is the Type used for time zones.
+// A time zone is the name of a time zone in the IANA time zone database.
+//
+// You must ensure that time zone information is available on your system,
+// refer to time.LoadLocation for more information.
+// Alternatively, you can import time/tzdata to add timezone data to the
+// executable.
+//
+// Go type: *time.Location
+var TimeZone Type = new(timeZone)
+
+type timeZone struct{}
+
+func (z timeZone) Name(l *i18n.Localizer) string {
+	name, _ := l.Localize(timeZoneName) // we have a fallback
+	return name
+}
+
+func (z timeZone) Description(l *i18n.Localizer) string {
+	desc, _ := l.Localize(timeZoneDescription) // we have a fallback
+	return desc
+}
+
+func (z timeZone) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+	parsed, err := time.LoadLocation(ctx.Raw)
+	if err != nil {
+		return nil, newArgParsingErr(timeZoneInvalidError, ctx, nil)
+	}
+
+	return parsed, nil
+}
+
+func (z timeZone) Default() interface{} {
+	return (*time.Location)(nil)
+}
