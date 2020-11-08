@@ -10,18 +10,34 @@ import (
 // identical.
 func New(text string) error { return errors.New(text) }
 
-// NewWithStack returns an error that formats as the given text and stores the
-// stack trace of the caller chain.
+// NewWithStack returns an new InternalError with an error with the passed text
+// as cause.
 // Each call to NewWithStack returns a distinct error value even if the text is
 // identical.
 func NewWithStack(text string) error { return withStack(New(text)) }
 
-// NewWithStackf returns an error that formats as the given text and stores the
-// stack trace of the caller chain.
+// NewWithStackf returns an InternalError with an error that formats as the
+// passed text as cause.
 // Each call to NewWithStackf returns a distinct error value even if the text
 // is identical.
 func NewWithStackf(format string, args ...interface{}) error {
 	return withStack(New(fmt.Sprintf(format, args...)))
+}
+
+// NewSilent returns a new SilentError with an error with the passed text as
+// cause.
+// Each call to NewWithStack returns a distinct error value even if the text is
+// identical.
+func NewSilent(text string) error {
+	return Silent(New(text))
+}
+
+// NewSilentf returns a SilentError with an error that formats as the passed
+// text as cause.
+// Each call to NewSilentf returns a distinct error value even if the text
+// is identical.
+func NewSilentf(format string, args ...interface{}) error {
+	return Silent(New(fmt.Sprintf(format, args...)))
 }
 
 // Unwrap returns the result of calling the Unwrap method on err, if err's

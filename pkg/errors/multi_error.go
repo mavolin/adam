@@ -52,12 +52,12 @@ func AppendSilent(err1, err2 error) error {
 		}
 
 		serr2 := Silent(err2)
-		serr2.(*SilentError).stack = serr2.(*SilentError).stack[1:]
+		serr2.(*SilentError).stack = serr2.(*SilentError).stack[:len(serr2.(*SilentError).stack)-1]
 
 		return append(err1Typed, serr2)
 	} else if err, ok := err2.(multiError); ok {
 		serr1 := Silent(err1)
-		serr1.(*SilentError).stack = serr1.(*SilentError).stack[1:]
+		serr1.(*SilentError).stack = serr1.(*SilentError).stack[:len(serr1.(*SilentError).stack)-1]
 
 		return append(multiError{serr1}, err...)
 	}
@@ -111,18 +111,40 @@ func Combine(errs ...error) error {
 // CombineSilent is the same as Combine, but wraps all errors that are not of
 // type multiError as a SilentError.
 func CombineSilent(errs ...error) error {
+	if len(errs) == 0 {
+		return nil
+	} else if len(errs) == 1 {
+		return Silent(errs[0])
+	}
+
+	var n int
+
 	for i, err := range errs {
-		if _, ok := err.(multiError); !ok {
+		if merr, ok := err.(multiError); ok {
+			n += len(merr)
+		} else {
 			silent := Silent(err)
 			if len(silent.(*SilentError).stack) > 1 {
 				silent.(*SilentError).stack = silent.(*SilentError).stack[:len(silent.(*SilentError).stack)-1]
 			}
 
 			errs[i] = silent
+			n++
 		}
 	}
 
-	return Combine(errs...)
+	merr := make(multiError, 0, len(errs))
+
+	for _, err := range errs {
+		if sub, ok := err.(multiError); ok {
+			merr = append(merr, sub...)
+		} else {
+			merr = append(merr, err)
+		}
+
+	}
+
+	return merr
 }
 
 // RetrieveErrors converts the passed errors to a single error.

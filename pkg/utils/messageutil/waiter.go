@@ -32,33 +32,26 @@ var (
 // should not continue waiting for a reply.
 var Canceled = errors.NewInformationalError("canceled")
 
-type (
-	// Waiter is the type used to await messages
-	// Wait can be cancelled either by the user by using a cancel keyword or
-	// using a cancel reaction.
-	// Furthermore, wait may be cancelled by the Waiter if the initial timeout
-	// expires and the user is not typing or the user stopped typing and the
-	// typing timeout expired.
-	Waiter struct {
-		state *state.State
-		ctx   *plugin.Context
+// Waiter is the type used to await messages
+// Wait can be cancelled either by the user by using a cancel keyword or
+// using a cancel reaction.
+// Furthermore, wait may be cancelled by the Waiter if the initial timeout
+// expires and the user is not typing or the user stopped typing and the
+// typing timeout expired.
+type Waiter struct {
+	state *state.State
+	ctx   *plugin.Context
 
-		caseSensitive bool
-		noAutoReact   bool
+	caseSensitive bool
+	noAutoReact   bool
 
-		cancelKeywords  []*i18nutil.Text
-		cancelReactions []cancelReaction
+	cancelKeywords  []*i18nutil.Text
+	cancelReactions []reaction
 
-		maxTimeout time.Duration
+	maxTimeout time.Duration
 
-		middlewares []interface{}
-	}
-
-	cancelReaction struct {
-		messageID discord.MessageID
-		reaction  api.Emoji
-	}
-)
+	middlewares []interface{}
+}
 
 // NewWaiter creates a new reply waiter using the passed state and context.
 // It will wait for a message from the message author in the channel the
@@ -166,21 +159,19 @@ func (w *Waiter) WithMaxTimeout(max time.Duration) *Waiter {
 	return w
 }
 
-// WithCancelReaction adds the passed reaction to the cancel reactions.
-// The passed message must be in the same channel, that a message is being
-// waited for.
-// If the user filtered for reacts with this reaction Await will return
+// WithCancelReaction adds the passed cancel reaction.
+// If the user reacts with the passed emoji, Await will return with error
 // Canceled.
-func (w *Waiter) WithCancelReaction(messageID discord.MessageID, reaction api.Emoji) *Waiter {
-	w.cancelReactions = append(w.cancelReactions, cancelReaction{
+func (w *Waiter) WithCancelReaction(messageID discord.MessageID, react api.Emoji) *Waiter {
+	w.cancelReactions = append(w.cancelReactions, reaction{
 		messageID: messageID,
-		reaction:  reaction,
+		reaction:  react,
 	})
 
 	return w
 }
 
-// copy creates a copy of the Waiter.
+// Copy creates a copy of the Waiter.
 func (w *Waiter) Copy() (cp *Waiter) {
 	cp = &Waiter{
 		caseSensitive: w.caseSensitive,
@@ -191,7 +182,7 @@ func (w *Waiter) Copy() (cp *Waiter) {
 	cp.cancelKeywords = make([]*i18nutil.Text, len(w.cancelKeywords))
 	copy(cp.cancelKeywords, w.cancelKeywords)
 
-	cp.cancelReactions = make([]cancelReaction, len(w.cancelReactions))
+	cp.cancelReactions = make([]reaction, len(w.cancelReactions))
 	copy(cp.cancelReactions, w.cancelReactions)
 
 	cp.middlewares = make([]interface{}, len(w.middlewares))
@@ -205,8 +196,7 @@ func (w *Waiter) Copy() (cp *Waiter) {
 // and the typing timeout is reached. Note you need the typing intent to
 // monitor typing.
 //
-// If one of the timeouts is reached, a *errors.UserInfo containing a timeout
-// info message will be returned.
+// If one of the timeouts is reached, a *TimeoutError will be returned.
 // If the user cancels the reply, Canceled will be returned.
 //
 // Besides that, a reply can also be canceled through a middleware.
@@ -294,7 +284,7 @@ func (w *Waiter) handleMessages(ctx context.Context, result chan<- interface{}) 
 			return
 		}
 
-		if err := invokeMiddlewares(s, e, w.middlewares); err != nil {
+		if err := invokeMessageMiddlewares(s, e, w.middlewares); err != nil {
 			sendResult(ctx, result, err)
 			return
 		}
@@ -394,18 +384,12 @@ func (w *Waiter) watchTimeout(
 			case <-t.C:
 				maxTimer.Stop()
 
-				result <- errors.NewUserInfol(timeoutInfo.
-					WithPlaceholders(timeoutInfoPlaceholders{
-						ResponseUserMention: w.ctx.Author.Mention(),
-					}))
+				result <- TimeoutError{UserID: w.ctx.Author.ID}
 				return
 			case <-maxTimer.C:
 				t.Stop()
 
-				result <- errors.NewUserInfol(timeoutInfo.
-					WithPlaceholders(timeoutInfoPlaceholders{
-						ResponseUserMention: w.ctx.Author.Mention(),
-					}))
+				result <- TimeoutError{UserID: w.ctx.Author.ID}
 				return
 			}
 		}

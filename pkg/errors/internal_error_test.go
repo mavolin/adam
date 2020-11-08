@@ -22,7 +22,18 @@ func TestWithStack(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("handler", func(t *testing.T) {
+	t.Run("silent error", func(t *testing.T) {
+		cause := New("abc")
+
+		err := WithStack(Silent(cause))
+		unwrapper := err.(interface {
+			Unwrap() error
+		})
+
+		assert.Equal(t, cause, unwrapper.Unwrap())
+	})
+
+	t.Run("Interface", func(t *testing.T) {
 		cause := NewWithStack("abc")
 
 		err := WithStack(cause)
