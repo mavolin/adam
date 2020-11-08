@@ -43,11 +43,11 @@ type (
 		state *state.State
 		ctx   *plugin.Context
 
-		caseSensitive  bool
-		cancelKeywords []*i18nutil.Text
+		caseSensitive bool
+		noAutoReact   bool
 
+		cancelKeywords  []*i18nutil.Text
 		cancelReactions []cancelReaction
-		noAutoReact     bool
 
 		maxTimeout time.Duration
 
