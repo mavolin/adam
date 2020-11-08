@@ -1,4 +1,4 @@
-package reply
+package messageutil
 
 import (
 	"context"
@@ -38,15 +38,6 @@ func invokeMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares 
 	return nil
 }
 
-// sendResult blocks until it can send a result or the passed context.Context
-// gets canceled.
-func sendResult(ctx context.Context, result chan<- interface{}, val interface{}) {
-	select {
-	case <-ctx.Done():
-	case result <- val:
-	}
-}
-
 func handleErr(err error) error {
 	if err == nil {
 		return nil
@@ -55,4 +46,13 @@ func handleErr(err error) error {
 	}
 
 	return err
+}
+
+// sendResult blocks until it can send a result or the passed context.Context
+// gets canceled.
+func sendResult(ctx context.Context, result chan<- interface{}, val interface{}) {
+	select {
+	case <-ctx.Done():
+	case result <- val:
+	}
 }

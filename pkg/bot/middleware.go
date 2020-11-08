@@ -12,9 +12,8 @@ import (
 var ErrNotAMiddleware = errors.New("the passed func does not resemble a valid middleware")
 
 type (
-	// CommandFunc is the Invoke function of a plugin.Command.
-	// It doesn't have the reply return value, as the reply will already be
-	// sent, after the first next is called.
+	// CommandFunc is the signature of the Invoke function of a plugin.Command,
+	// without the reply (interface{}) return.
 	CommandFunc func(s *state.State, ctx *plugin.Context) error
 	// MiddlewareFunc is the function of a middleware.
 	MiddlewareFunc func(next CommandFunc) CommandFunc
@@ -32,7 +31,7 @@ type Middlewarer interface {
 // to provide middleware capabilities.
 // It implements Middlewarer.
 //
-// MiddlewareManagers zero value is guaranteed to function properly.
+// MiddlewareManagers zero value is an empty MiddlewareManager.
 type MiddlewareManager struct {
 	middlewares []MiddlewareFunc
 	mutex       sync.RWMutex
@@ -145,4 +144,13 @@ func (m *MiddlewareManager) Middlewares() (cp []MiddlewareFunc) {
 	copy(cp, m.middlewares)
 
 	return
+}
+
+func (m *MiddlewareManager) Copy() *MiddlewareManager {
+	cp := new(MiddlewareManager)
+	cp.middlewares = make([]MiddlewareFunc, len(m.middlewares))
+
+	copy(cp.middlewares, m.middlewares)
+
+	return cp
 }

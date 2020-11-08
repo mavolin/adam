@@ -1,4 +1,4 @@
-package reply
+package messageutil
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 )
 
 func TestWaiter_Await(t *testing.T) {
-	t.Run("timeout", func(t *testing.T) {
+	t.Run("initial timeout", func(t *testing.T) {
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
@@ -54,12 +54,12 @@ func TestWaiter_Await(t *testing.T) {
 		}
 
 		expect := errors.NewUserInfol(timeoutInfo.
-			WithPlaceholders(&timeoutInfoPlaceholders{
+			WithPlaceholders(timeoutInfoPlaceholders{
 				ResponseUserMention: ctx.Author.Mention(),
 			}))
 
 		msg, actual := NewWaiter(s, ctx).
-			Await(1)
+			Await(1, 1)
 		assert.Nil(t, msg)
 		assert.Equal(t, expect, actual)
 
