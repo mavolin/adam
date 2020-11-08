@@ -53,10 +53,7 @@ func TestWaiter_Await(t *testing.T) {
 			Replier: replier.WrapState(s, 0, 123),
 		}
 
-		expect := errors.NewUserInfol(timeoutInfo.
-			WithPlaceholders(timeoutInfoPlaceholders{
-				ResponseUserMention: ctx.Author.Mention(),
-			}))
+		expect := &TimeoutError{UserID: ctx.Author.ID}
 
 		msg, actual := NewWaiter(s, ctx).
 			Await(1, 1)

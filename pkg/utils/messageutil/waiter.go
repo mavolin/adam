@@ -211,8 +211,7 @@ func (w *Waiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Me
 // and the typing timeout is reached. Note you need the typing intent to
 // monitor typing.
 //
-// If one of the timeouts is reached, a *errors.UserInfo containing a timeout
-// info message will be returned.
+// If one of the timeouts is reached, a *TimeoutError will be returned.
 // If the user cancels the reply, Canceled will be returned.
 // If the context expires, context.Canceled will be returned.
 //
@@ -384,12 +383,12 @@ func (w *Waiter) watchTimeout(
 			case <-t.C:
 				maxTimer.Stop()
 
-				result <- TimeoutError{UserID: w.ctx.Author.ID}
+				result <- &TimeoutError{UserID: w.ctx.Author.ID}
 				return
 			case <-maxTimer.C:
 				t.Stop()
 
-				result <- TimeoutError{UserID: w.ctx.Author.ID}
+				result <- &TimeoutError{UserID: w.ctx.Author.ID}
 				return
 			}
 		}
