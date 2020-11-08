@@ -1,4 +1,4 @@
-package reply
+package messageutil
 
 import (
 	"context"

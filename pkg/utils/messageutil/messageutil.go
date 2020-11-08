@@ -1,5 +1,5 @@
-// Package reply provides utilities for handling replies
-package reply
+// Package messageutil provides utilities for awaiting replies and reactions.
+package messageutil
 
 import (
 	"time"

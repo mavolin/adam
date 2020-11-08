@@ -1,4 +1,4 @@
-package reply
+package messageutil
 
 import "github.com/mavolin/adam/pkg/i18n"
 
