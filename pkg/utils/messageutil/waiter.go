@@ -32,7 +32,7 @@ var (
 // should not continue waiting for a reply.
 var Canceled = errors.NewInformationalError("canceled")
 
-// Waiter is the type used to await messages
+// A Waiter is used to await messages.
 // Wait can be cancelled either by the user by using a cancel keyword or
 // using a cancel reaction.
 // Furthermore, wait may be cancelled by the Waiter if the initial timeout
@@ -41,6 +41,9 @@ var Canceled = errors.NewInformationalError("canceled")
 type Waiter struct {
 	state *state.State
 	ctx   *plugin.Context
+
+	userID    discord.UserID
+	channelID discord.ChannelID
 
 	caseSensitive bool
 	noAutoReact   bool
@@ -58,10 +61,14 @@ type Waiter struct {
 // command was invoked in.
 // Additionally, the ReplyMiddlewares stored in the Context will be added to
 // the waiter.
+// ctx.Author will be assumed as the user allowed to make the reply and
+// ctx.ChannelID will be assumed as the channel the reply will be made in.
 func NewWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 	w = &Waiter{
 		state:      s,
 		ctx:        ctx,
+		userID:     ctx.Author.ID,
+		channelID:  ctx.ChannelID,
 		maxTimeout: MaxTimeout,
 	}
 
@@ -76,10 +83,26 @@ func NewDefaultWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 	w = DefaultWaiter.Copy()
 	w.state = s
 	w.ctx = ctx
+	w.userID = ctx.Author.ID
+	w.channelID = ctx.ChannelID
 
 	w.WithMiddlewares(ctx.ReplyMiddlewares...)
 
 	return
+}
+
+// WithUser changes the user that is expected to reply to the user with the
+// passed id.
+func (w *Waiter) WithUser(id discord.UserID) *Waiter {
+	w.userID = id
+	return w
+}
+
+// InChannel changes the channel to listen for the reply to the channel with
+// the passed id.
+func (w *Waiter) InChannel(id discord.ChannelID) *Waiter {
+	w.channelID = id
+	return w
 }
 
 // CaseSensitive makes the cancel keywords check case sensitive.
@@ -239,14 +262,14 @@ func (w *Waiter) AwaitWithContext(
 
 	result := make(chan interface{})
 
-	awaitCleanup, err := w.handleMessages(ctx, result)
+	msgCleanup, err := w.handleMessages(ctx, result)
 	if err != nil {
 		return nil, err
 	}
 
-	defer awaitCleanup()
+	defer msgCleanup()
 
-	if !w.noAutoReact && len(w.cancelReactions) > 0 {
+	if len(w.cancelReactions) > 0 {
 		reactCleanup, err := w.handleCancelReactions(ctx, result)
 		if err != nil {
 			return nil, err
@@ -279,7 +302,7 @@ func (w *Waiter) AwaitWithContext(
 
 func (w *Waiter) handleMessages(ctx context.Context, result chan<- interface{}) (func(), error) {
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageCreateEvent) {
-		if e.ChannelID != w.ctx.ChannelID || e.Author.ID != w.ctx.Author.ID { // not the message we are waiting for
+		if e.ChannelID != w.channelID || e.Author.ID != w.ctx.Author.ID { // not the message we are waiting for
 			return
 		}
 
@@ -309,19 +332,18 @@ func (w *Waiter) handleMessages(ctx context.Context, result chan<- interface{}) 
 }
 
 func (w *Waiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
-	for _, r := range w.cancelReactions {
-		if err := w.state.React(w.ctx.ChannelID, r.messageID, r.reaction); err != nil {
-			w.ctx.HandleErrorSilent(err)
+	if !w.noAutoReact {
+		for _, r := range w.cancelReactions {
+			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
+				w.ctx.HandleErrorSilent(err)
+			}
 		}
 	}
 
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
 		for _, r := range w.cancelReactions {
 			if e.MessageID == r.messageID && e.Emoji.APIString() == r.reaction && e.UserID == w.ctx.Author.ID {
-				select {
-				case result <- Canceled:
-				case <-ctx.Done():
-				}
+				sendResult(ctx, result, Canceled)
 				return
 			}
 		}
@@ -336,7 +358,7 @@ func (w *Waiter) handleCancelReactions(ctx context.Context, result chan<- interf
 		if !w.noAutoReact {
 			go func() {
 				for _, r := range w.cancelReactions {
-					err := w.state.DeleteReactions(w.ctx.ChannelID, r.messageID, r.reaction)
+					err := w.state.DeleteReactions(w.channelID, r.messageID, r.reaction)
 					if err != nil {
 						w.ctx.HandleErrorSilent(err)
 					}
@@ -353,7 +375,7 @@ func (w *Waiter) watchTimeout(
 	typing := make(chan struct{})
 
 	rm, err = w.state.AddHandler(func(s *state.State, e *state.TypingStartEvent) {
-		if e.ChannelID != w.ctx.ChannelID || e.UserID != w.ctx.Author.ID {
+		if e.ChannelID != w.channelID || e.UserID != w.ctx.Author.ID {
 			return
 		}
 
