@@ -11,7 +11,9 @@ import (
 )
 
 // Await awaits a reply using the default waiter.
-func Await(s *state.State, ctx *plugin.Context, timeout time.Duration) (*discord.Message, error) {
+func Await(
+	s *state.State, ctx *plugin.Context, initialTimeout, typingTimeout time.Duration,
+) (*discord.Message, error) {
 	return NewDefaultWaiter(s, ctx).
-		Await(timeout)
+		Await(initialTimeout, typingTimeout)
 }

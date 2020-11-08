@@ -1,6 +1,8 @@
 package reply
 
 import (
+	"time"
+
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
@@ -8,7 +10,6 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/emoji"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
@@ -17,11 +18,12 @@ var (
 	// DefaultWaiter must not be used directly to handleMessages reply.
 	DefaultWaiter = &Waiter{
 		cancelKeywords: []*i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
+		maxTimeout:     MaxTimeout,
 	}
 
-	// TimeExtensionReaction is the reaction used to prolong the wait for a
-	// reply, if a time extension is possible.
-	TimeExtensionReaction = emoji.CheckMarkButton
+	// MaxTimeout is the default maximum amount of time a Waiter will wait,
+	// even if a user is still typing.
+	MaxTimeout = 30 * time.Minute
 )
 
 // Canceled is the error that gets returned, if a user signals the bot
@@ -29,26 +31,23 @@ var (
 var Canceled = errors.NewInformationalError("canceled")
 
 type (
-	// Waiter is used to handleMessages a reply from the user.
-	// It filters responses by user and channel.
-	// Additionally, Waiter provides several ways for an user to abort waiting
-	// for a reply.
+	// Waiter is the type used to await messages
+	// Wait can be cancelled either by the user by using a cancel keyword or
+	// using a cancel reaction.
+	// Furthermore, wait may be cancelled by the Waiter if the initial timeout
+	// expires and the user is not typing or the user stopped typing and the
+	// typing timeout expired.
 	Waiter struct {
 		state *state.State
 		ctx   *plugin.Context
 
-		caseSensitive bool
-		noAutoReact   bool
-		// timeExtensions is the number of extension the user will be given.
-		// the following values are accepted
-		//
-		//		• timeExtensions < 0:  unlimited
-		//		• timeExtensions == 0: none
-		// 		• timeExtensions > 0: timeExtension times
-		timeExtensions int
+		caseSensitive  bool
+		cancelKeywords []*i18nutil.Text
 
-		cancelKeywords  []*i18nutil.Text
 		cancelReactions []cancelReaction
+		noAutoReact     bool
+
+		maxTimeout time.Duration
 
 		middlewares []interface{}
 	}
@@ -66,8 +65,9 @@ type (
 // the waiter.
 func NewWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 	w = &Waiter{
-		state: s,
-		ctx:   ctx,
+		state:      s,
+		ctx:        ctx,
+		maxTimeout: MaxTimeout,
 	}
 
 	w.WithMiddlewares(ctx.ReplyMiddlewares...)
@@ -78,7 +78,7 @@ func NewWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 // NewDefaultWaiter creates a new default waiter using the DefaultWaiter
 // variable as a template.
 func NewDefaultWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
-	w = DefaultWaiter.copy()
+	w = DefaultWaiter.Copy()
 	w.state = s
 	w.ctx = ctx
 
@@ -97,18 +97,6 @@ func (w *Waiter) CaseSensitive() *Waiter {
 // with their respective emojis.
 func (w *Waiter) NoAutoReact() *Waiter {
 	w.noAutoReact = true
-	return w
-}
-
-// WithTimeExtensions sets the amount of time extensions the user will be
-// given.
-// 0 equals to unlimited.
-func (w *Waiter) WithTimeExtensions(qty uint) *Waiter {
-	if qty == 0 {
-		w.timeExtensions = -1 // internally, unlimited is stored as -1
-	}
-
-	w.timeExtensions = int(qty)
 	return w
 }
 
@@ -152,7 +140,7 @@ func (w *Waiter) WithCancelKeyword(keyword string) *Waiter {
 	return w
 }
 
-// WithCancelKeywordk adds the passed keyword to the cancel keywords.
+// WithCancelKeywordl adds the passed keyword to the cancel keywords.
 // If the user filtered for writes this keyword Await will return Canceled.
 func (w *Waiter) WithCancelKeywordl(keyword *i18n.Config) *Waiter {
 	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewTextl(keyword))
@@ -163,6 +151,17 @@ func (w *Waiter) WithCancelKeywordl(keyword *i18n.Config) *Waiter {
 // If the user filtered for writes this keyword Await will return Canceled.
 func (w *Waiter) WithCancelKeywordlt(keyword i18n.Term) *Waiter {
 	return w.WithCancelKeywordl(keyword.AsConfig())
+}
+
+// WithMaxTimeout changes the maximum timeout of the waiter to max.
+// The maximum timeout is the timeout after which the Waiter will exit, even if
+// the user is still typing.
+func (w *Waiter) WithMaxTimeout(max time.Duration) *Waiter {
+	if w.maxTimeout > 0 {
+		w.maxTimeout = max
+	}
+
+	return w
 }
 
 // WithCancelReaction adds the passed reaction to the cancel reactions.
@@ -180,13 +179,11 @@ func (w *Waiter) WithCancelReaction(messageID discord.MessageID, reaction api.Em
 }
 
 // copy creates a copy of the Waiter.
-func (w *Waiter) copy() (cp *Waiter) {
+func (w *Waiter) Copy() (cp *Waiter) {
 	cp = &Waiter{
-		state:          w.state,
-		ctx:            w.ctx,
-		caseSensitive:  w.caseSensitive,
-		noAutoReact:    w.noAutoReact,
-		timeExtensions: w.timeExtensions,
+		caseSensitive: w.caseSensitive,
+		noAutoReact:   w.noAutoReact,
+		maxTimeout:    w.maxTimeout,
 	}
 
 	cp.cancelKeywords = make([]*i18nutil.Text, len(w.cancelKeywords))
@@ -199,18 +196,4 @@ func (w *Waiter) copy() (cp *Waiter) {
 	copy(cp.middlewares, w.middlewares)
 
 	return
-}
-
-// Reset resets Waiter.
-// Await may never be called on waiters that were resetted.
-// This is meant for use of DefaultWaiter only.
-func (w *Waiter) Reset() {
-	w.state = nil
-	w.ctx = nil
-
-	w.caseSensitive = false
-	w.noAutoReact = false
-	w.timeExtensions = 0
-	w.cancelKeywords = nil
-	w.cancelReactions = nil
 }

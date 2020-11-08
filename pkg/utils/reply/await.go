@@ -11,20 +11,38 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 )
 
-// Await awaits a reply of the user until the passed timout is reached.
-// If they responds, the reply is returned.
+// Await awaits a reply of the user until the user signals cancellation, the
+// initial timeout expires and the user is not typing or the user stops typing
+// and the typing timeout is reached. Note you need the typing intent to
+// monitor typing.
 //
-// If the timeout passes and time extension are enabled, the timeout will be
-// reset until the user responds, or the limit of of time extensions is
-// reached, if set.
-// Otherwise, a UserInfo containing a timeout info will be returned.
-//
+// If one of the timeouts is reached, a *errors.UserInfo containing a timeout
+// info message will be returned.
 // If the user cancels the reply, Canceled will be returned.
 //
 // Besides that, a reply can also be canceled through a middleware.
 // If one the middlewares returns state.Filtered, errors.Abort will be
 // returned.
-func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
+func (w *Waiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Message, error) {
+	return w.AwaitWithContext(context.Background(), initialTimeout, typingTimeout)
+}
+
+// Await awaits a reply of the user until the user signals cancellation, the
+// initial timeout expires and the user is not typing or the user stops typing
+// and the typing timeout is reached. Note you need the typing intent to
+// monitor typing.
+//
+// If one of the timeouts is reached, a *errors.UserInfo containing a timeout
+// info message will be returned.
+// If the user cancels the reply, Canceled will be returned.
+// If the context expires, context.Canceled will be returned.
+//
+// Besides that, a reply can also be canceled through a middleware.
+// If one the middlewares returns state.Filtered, errors.Abort will be
+// returned.
+func (w *Waiter) AwaitWithContext(
+	ctx context.Context, initialTimeout, typingTimeout time.Duration,
+) (*discord.Message, error) {
 	perms, err := w.ctx.SelfPermissions()
 	if err != nil {
 		return nil, err
@@ -34,12 +52,11 @@ func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
 	// time extensions are enabled or we have cancel reactions.
 	if !perms.Has(discord.PermissionSendMessages) {
 		return nil, errors.NewInsufficientBotPermissionsError(discord.PermissionSendMessages)
-	} else if (w.timeExtensions != 0 || (!w.noAutoReact && len(w.cancelReactions) > 0)) &&
-		!perms.Has(discord.PermissionAddReactions) {
+	} else if !w.noAutoReact && len(w.cancelReactions) > 0 && !perms.Has(discord.PermissionAddReactions) {
 		return nil, errors.NewInsufficientBotPermissionsError(discord.PermissionAddReactions)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	result := make(chan interface{})
@@ -60,17 +77,25 @@ func (w *Waiter) Await(timeout time.Duration) (*discord.Message, error) {
 		defer reactCleanup()
 	}
 
-	w.watchTimeout(ctx, timeout, w.timeExtensions, result)
+	timeoutCleanup, err := w.watchTimeout(ctx, initialTimeout, typingTimeout, result)
+	if err != nil {
+		return nil, err
+	}
 
-	r := <-result
+	defer timeoutCleanup()
 
-	switch r := r.(type) {
-	case *discord.Message:
-		return r, nil
-	case error:
-		return nil, r
-	default: // this should never happen
-		return nil, errors.NewWithStack("reply: unexpected return value of result channel")
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case r := <-result:
+		switch r := r.(type) {
+		case *discord.Message:
+			return r, nil
+		case error:
+			return nil, r
+		default: // this should never happen
+			return nil, errors.NewWithStack("reply: unexpected return value of result channel")
+		}
 	}
 }
 
@@ -130,21 +155,40 @@ func (w *Waiter) handleCancelReactions(ctx context.Context, result chan<- interf
 	return func() {
 		rm()
 
-		go func() {
-			for _, r := range w.cancelReactions {
-				err := w.state.DeleteReactions(w.ctx.ChannelID, r.messageID, r.reaction)
-				if err != nil {
-					w.ctx.HandleErrorSilent(err)
+		if !w.noAutoReact {
+			go func() {
+				for _, r := range w.cancelReactions {
+					err := w.state.DeleteReactions(w.ctx.ChannelID, r.messageID, r.reaction)
+					if err != nil {
+						w.ctx.HandleErrorSilent(err)
+					}
 				}
-			}
-		}()
+			}()
+		}
 	}, nil
 }
 
 func (w *Waiter) watchTimeout(
-	ctx context.Context, timeout time.Duration, timeExtensions int, result chan<- interface{},
-) {
-	t := time.NewTimer(timeout)
+	ctx context.Context, initialTimeout, typingTimeout time.Duration, result chan<- interface{},
+) (rm func(), err error) {
+	maxTimer := time.NewTimer(w.maxTimeout)
+	typing := make(chan struct{})
+
+	rm, err = w.state.AddHandler(func(s *state.State, e *state.TypingStartEvent) {
+		if e.ChannelID != w.ctx.ChannelID || e.UserID != w.ctx.Author.ID {
+			return
+		}
+
+		select {
+		case typing <- struct{}{}:
+		case <-ctx.Done():
+		}
+	})
+	if err != nil {
+		return
+	}
+
+	t := time.NewTimer(initialTimeout)
 
 	go func() {
 		for {
@@ -152,97 +196,31 @@ func (w *Waiter) watchTimeout(
 			case <-ctx.Done():
 				t.Stop()
 				return
-			case <-t.C:
-			}
+			case <-typing:
+				if !t.Stop() {
+					<-t.C
+				}
 
-			if timeExtensions == 0 {
-				err := errors.NewUserInfol(timeoutInfo.
-					WithPlaceholders(&timeoutInfoPlaceholders{
+				t.Reset(typingTimeout)
+			case <-t.C:
+				maxTimer.Stop()
+
+				result <- errors.NewUserInfol(timeoutInfo.
+					WithPlaceholders(timeoutInfoPlaceholders{
 						ResponseUserMention: w.ctx.Author.Mention(),
 					}))
-				sendResult(ctx, result, err)
+				return
+			case <-maxTimer.C:
+				t.Stop()
+
+				result <- errors.NewUserInfol(timeoutInfo.
+					WithPlaceholders(timeoutInfoPlaceholders{
+						ResponseUserMention: w.ctx.Author.Mention(),
+					}))
 				return
 			}
-
-			if timeExtensions > 0 {
-				timeExtensions--
-			}
-
-			if err := w.askForTimeExtension(ctx); err != nil {
-				sendResult(ctx, result, err)
-				return
-			}
-			// else if err == nil: the user passed time extension check or the context was canceled
-
-			t.Reset(timeout)
-		}
-	}()
-}
-
-func (w *Waiter) askForTimeExtension(ctx context.Context) error {
-	msg, err := w.sendTimeExtensionMessage()
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		err := w.state.DeleteMessage(msg.ChannelID, msg.ID)
-		if err != nil {
-			w.ctx.HandleErrorSilent(err)
 		}
 	}()
 
-	react := make(chan struct{})
-
-	rm, err := w.state.AddHandler(func(_ *state.State, e *state.MessageReactionAddEvent) {
-		if e.MessageID == msg.ID && e.UserID == w.ctx.Author.ID && e.Emoji.APIString() == TimeExtensionReaction {
-			select {
-			case <-ctx.Done():
-			case react <- struct{}{}:
-			}
-		}
-	})
-	if err != nil { // this should never happen
-		return errors.WithStack(err)
-	}
-
-	defer rm()
-
-	select {
-	case <-time.After(8 * time.Second):
-		return errors.NewUserInfol(timeoutInfo.
-			WithPlaceholders(&timeoutInfoPlaceholders{
-				ResponseUserMention: w.ctx.Author.Mention(),
-			}))
-	case <-react:
-		return nil
-	case <-ctx.Done():
-		return nil
-	}
-}
-
-func (w *Waiter) sendTimeExtensionMessage() (*discord.Message, error) {
-	embed, err := errors.NewCustomUserInfo().
-		WithSimpleTitlel(timeExtensionTitle).
-		WithDescriptionl(timeExtensionDescription.
-			WithPlaceholders(&timeExtensionDescriptionPlaceholders{
-				ResponseUserMention:   w.ctx.Author.Mention(),
-				TimeExtensionReaction: TimeExtensionReaction,
-			})).
-		Embed(w.ctx.Localizer)
-	if err != nil {
-		return nil, err
-	}
-
-	msg, err := w.ctx.ReplyEmbed(embed)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = w.state.React(msg.ChannelID, msg.ID, TimeExtensionReaction); err != nil {
-		// attempt to delete if something failed.
-		err = w.state.DeleteMessage(msg.ChannelID, msg.ID)
-	}
-
-	return msg, errors.WithStack(err)
+	return
 }
