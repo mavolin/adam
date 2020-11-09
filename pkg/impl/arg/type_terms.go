@@ -341,6 +341,26 @@ var (
 )
 
 // =============================================================================
+// Code
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	codeName        = i18n.NewFallbackConfig("args.types.code.name", "Code")
+	codeDescription = i18n.NewFallbackConfig("args.types.code.description", "A code block.")
+)
+
+// ================================ Errors ================================
+
+var (
+	codeInvalidArg = i18n.NewFallbackConfig(
+		"args.types.code.errors.invalid.arg", "Argument {{.position}} is not a valid code block.")
+	codeInvalidFlag = i18n.NewFallbackConfig(
+		"args.types.code.errors.invalid.flag", "The `{{.used_name}}`-flag doesn't contain a valid code block.")
+)
+
+// =============================================================================
 // Link
 // =====================================================================================
 
