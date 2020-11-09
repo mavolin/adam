@@ -53,12 +53,9 @@ func TestWaiter_Await(t *testing.T) {
 			Replier: replier.WrapState(s, 0, 123),
 		}
 
-		expect := errors.NewUserInfol(timeoutInfo.
-			WithPlaceholders(timeoutInfoPlaceholders{
-				ResponseUserMention: ctx.Author.Mention(),
-			}))
+		expect := &TimeoutError{UserID: ctx.Author.ID}
 
-		msg, actual := NewWaiter(s, ctx).
+		msg, actual := NewReplyWaiter(s, ctx).
 			Await(1, 1)
 		assert.Nil(t, msg)
 		assert.Equal(t, expect, actual)
@@ -72,13 +69,13 @@ func TestWaiter_handleMessages(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		waiter *Waiter
+		waiter *ReplyWaiter
 		e      *state.MessageCreateEvent
 		expect interface{}
 	}{
 		{
 			name: "middleware block",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
@@ -94,7 +91,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "channel not matching",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
 						Message: discord.Message{
@@ -115,7 +112,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "author not matching",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
 						Message: discord.Message{
@@ -140,7 +137,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "canceled - case sensitive",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
@@ -159,7 +156,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "not canceled - case sensitive",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
@@ -180,7 +177,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "canceled - case insensitive",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
@@ -198,7 +195,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "success",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
@@ -256,13 +253,13 @@ func TestWaiter_handleMessages(t *testing.T) {
 func TestWaiter_handleCancelReactions(t *testing.T) {
 	testCases := []struct {
 		name   string
-		waiter *Waiter
+		waiter *ReplyWaiter
 		e      *state.MessageReactionAddEvent
 		expect interface{}
 	}{
 		{
 			name: "message id not matching",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
 						Message: discord.Message{
@@ -281,7 +278,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		},
 		{
 			name: "emoji not matching",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
 						Message: discord.Message{
@@ -303,7 +300,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		},
 		{
 			name: "user id not matching",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
 						Message: discord.Message{
@@ -325,7 +322,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		},
 		{
 			name: "success",
-			waiter: NewWaiter(nil, &plugin.Context{
+			waiter: NewReplyWaiter(nil, &plugin.Context{
 				MessageCreateEvent: &state.MessageCreateEvent{
 					MessageCreateEvent: &gateway.MessageCreateEvent{
 						Message: discord.Message{

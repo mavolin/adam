@@ -93,6 +93,14 @@ issues:
         - golint
         - stylecheck
       text: should not use dot imports
+    # part of type switch; can't be replaced
+    - path: ^pkg/utils/messageutil/utils.go$
+      linters: dupl
+      text: ^\d+-\d+ lines are duplicate of `pkg/utils/messageutil/utils.go:\d+-\d+`$
+    # no point in splitting up
+    - path: ^pkg/utils/messageutil/reaction_waiter.go$
+      linters: gocognit
+      text: ^cognitive complexity \d+ of func `\(\*ReactionWaiter\).handleReactions` is high \(> \d+\)$
     # resolving inheritance, not complicated, just long
     - path: ^pkg/plugin/registered_(command|module).go$
       linters:

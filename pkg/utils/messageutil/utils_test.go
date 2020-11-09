@@ -36,7 +36,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 
 		m.On("1", s, e)
 
-		err := invokeMiddlewares(s, e, []interface{}{middleware})
+		err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 		assert.NoError(t, err)
 
 		m.AssertExpectations(t)
@@ -56,7 +56,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 				On("1", s, e).
 				Return(nil)
 
-			err := invokeMiddlewares(s, e, []interface{}{middleware})
+			err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 			assert.NoError(t, err)
 
 			m.AssertExpectations(t)
@@ -75,7 +75,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 				On("1", s, e).
 				Return(testErr)
 
-			err := invokeMiddlewares(s, e, []interface{}{middleware})
+			err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 			assert.Equal(t, testErr, err)
 
 			m.AssertExpectations(t)
@@ -91,7 +91,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 
 		m.On("1", s, e.Base)
 
-		err := invokeMiddlewares(s, e, []interface{}{middleware})
+		err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 		assert.NoError(t, err)
 
 		m.AssertExpectations(t)
@@ -111,7 +111,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 				On("1", s, e.Base).
 				Return(nil)
 
-			err := invokeMiddlewares(s, e, []interface{}{middleware})
+			err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 			assert.NoError(t, err)
 
 			m.AssertExpectations(t)
@@ -130,7 +130,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 				On("1", s, e.Base).
 				Return(testErr)
 
-			err := invokeMiddlewares(s, e, []interface{}{middleware})
+			err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 			assert.Equal(t, testErr, err)
 
 			m.AssertExpectations(t)
@@ -146,7 +146,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 
 		m.On("1", s, e)
 
-		err := invokeMiddlewares(s, e, []interface{}{middleware})
+		err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 		assert.NoError(t, err)
 
 		m.AssertExpectations(t)
@@ -166,7 +166,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 				On("1", s, e).
 				Return(nil)
 
-			err := invokeMiddlewares(s, e, []interface{}{middleware})
+			err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 			assert.NoError(t, err)
 
 			m.AssertExpectations(t)
@@ -183,7 +183,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 
 			m.On("1", s, e).Return(testErr)
 
-			err := invokeMiddlewares(s, e, []interface{}{middleware})
+			err := invokeMessageMiddlewares(s, e, []interface{}{middleware})
 			assert.Equal(t, testErr, err)
 
 			m.AssertExpectations(t)

@@ -57,8 +57,7 @@ func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 				continue
 			}
 
-			switch err := err.(type) {
-			case *errors.RestrictionError:
+			if rerr := new(errors.RestrictionError); errors.As(err, &rerr) {
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
 				if errors.Is(err, errors.DefaultRestrictionError) {
@@ -67,26 +66,23 @@ func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 					return err
 				}
 
-				missing.restrictions = append(missing.restrictions, err)
-			case *EmbeddableError:
-				embeddable = err
+				missing.restrictions = append(missing.restrictions, rerr)
+			} else if eerr := new(EmbeddableError); errors.As(err, &eerr) {
+				embeddable = eerr
 
-				if errors.Is(err.EmbeddableVersion, errors.DefaultRestrictionError) {
+				if errors.Is(eerr.EmbeddableVersion, errors.DefaultRestrictionError) {
 					return err
 				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
 					return err
 				}
 
-				missing.restrictions = append(missing.restrictions, err.EmbeddableVersion)
-
-			// we can just merge
-			case *allError:
-				missing.restrictions = append(missing.restrictions, err.restrictions...)
-				missing.anys = append(missing.anys, err.anys...)
-			// there will always be 2 or more func in the error
-			case *anyError:
-				missing.anys = append(missing.anys, err)
-			default:
+				missing.restrictions = append(missing.restrictions, eerr.EmbeddableVersion)
+			} else if aerr := new(allError); errors.As(err, &aerr) { // we can just merge
+				missing.restrictions = append(missing.restrictions, aerr.restrictions...)
+				missing.anys = append(missing.anys, aerr.anys...)
+			} else if aerr := new(anyError); errors.As(err, &aerr) {
+				missing.anys = append(missing.anys, aerr)
+			} else {
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
 				return err
@@ -153,8 +149,7 @@ func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 				return nil
 			}
 
-			switch err := err.(type) {
-			case *errors.RestrictionError:
+			if rerr := new(errors.RestrictionError); errors.As(err, &rerr) {
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
 				if errors.Is(err, errors.DefaultRestrictionError) {
@@ -163,23 +158,21 @@ func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 					return err
 				}
 
-				missing.restrictions = append(missing.restrictions, err)
-			case *EmbeddableError:
-				if errors.Is(err.EmbeddableVersion, errors.DefaultRestrictionError) {
+				missing.restrictions = append(missing.restrictions, rerr)
+			} else if eerr := new(EmbeddableError); errors.As(err, &eerr) {
+				if errors.Is(eerr.EmbeddableVersion, errors.DefaultRestrictionError) {
 					return err
 				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
 					return err
 				}
 
-				missing.restrictions = append(missing.restrictions, err.EmbeddableVersion)
-			// we can just merge
-			case *anyError:
-				missing.restrictions = append(missing.restrictions, err.restrictions...)
-				missing.alls = append(missing.alls, err.alls...)
-			// there will always be 2 or more funcs in the error
-			case *allError:
-				missing.alls = append(missing.alls, err)
-			default:
+				missing.restrictions = append(missing.restrictions, eerr.EmbeddableVersion)
+			} else if aerr := new(anyError); errors.As(err, &aerr) { // we can just merge
+				missing.restrictions = append(missing.restrictions, aerr.restrictions...)
+				missing.alls = append(missing.alls, aerr.alls...)
+			} else if aerr := new(allError); errors.As(err, &aerr) {
+				missing.alls = append(missing.alls, aerr)
+			} else {
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
 				return err

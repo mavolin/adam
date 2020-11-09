@@ -10,10 +10,10 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// Await awaits a reply using the default waiter.
-func Await(
+// AwaitReply awaits a reply using the default waiter.
+func AwaitReply(
 	s *state.State, ctx *plugin.Context, initialTimeout, typingTimeout time.Duration,
 ) (*discord.Message, error) {
-	return NewDefaultWaiter(s, ctx).
+	return NewReplyWaiterFromDefault(s, ctx).
 		Await(initialTimeout, typingTimeout)
 }

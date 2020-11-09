@@ -8,7 +8,7 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 )
 
-func invokeMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares []interface{}) error {
+func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares []interface{}) error {
 	for _, m := range middlewares {
 		switch m := m.(type) {
 		case func(*state.State, interface{}):
@@ -28,6 +28,36 @@ func invokeMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares 
 		case func(*state.State, *state.MessageCreateEvent):
 			m(s, e)
 		case func(*state.State, *state.MessageCreateEvent) error:
+			err := handleErr(m(s, e))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func invokeReactionAddMiddlewares(s *state.State, e *state.MessageReactionAddEvent, middlewares []interface{}) error {
+	for _, m := range middlewares {
+		switch m := m.(type) {
+		case func(*state.State, interface{}):
+			m(s, e)
+		case func(*state.State, interface{}) error:
+			err := handleErr(m(s, e))
+			if err != nil {
+				return err
+			}
+		case func(*state.State, *state.Base):
+			m(s, e.Base)
+		case func(*state.State, *state.Base) error:
+			err := handleErr(m(s, e.Base))
+			if err != nil {
+				return err
+			}
+		case func(*state.State, *state.MessageReactionAddEvent):
+			m(s, e)
+		case func(*state.State, *state.MessageReactionAddEvent) error:
 			err := handleErr(m(s, e))
 			if err != nil {
 				return err

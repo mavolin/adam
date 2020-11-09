@@ -19,14 +19,16 @@ import (
 // Arguments
 //
 // Arguments are space separated.
-// To use arguments with whitespace, quotes, both single and double can be
+// To use arguments with whitespace quotes, both single and double, can be
 // used.
-// Additionally, lines of code as well as code blocks will also be parsed as a
+// Additionally, lines of code as well as code blocks will be parsed as a
 // single argument.
 //
-// Escapes are only permitted, if using double quotes.
-// Valid escapes are '\\' and '\"', all other combinations will be interpreted
-// literally, to make usage easier for users unaware of shell notation.
+// Escapes
+//
+// Escapes are only permitted if using double quotes.
+// Valid escapes are '\\' and '\"', all other combinations will be parsed
+// literally to make usage easier for users unaware of escapes.
 type ShellwordConfig struct {
 	// RequiredArgs contains the required arguments.
 	RequiredArgs []RequiredArg

@@ -46,10 +46,19 @@ func Silent(err error) error {
 
 // WrapSilent wraps the passed error with passed message, enriches the
 // error with a stack trace, and marks the error as log-only.
+// If the passed error is an InternalError or a SilentError WrapSilent will
+// unwrap it first.
 // The returned error will print as '$message: $err.Error()'.
 func WrapSilent(err error, message string) error {
 	if err == nil {
 		return nil
+	}
+
+	switch typedErr := err.(type) {
+	case *SilentError:
+		err = typedErr.Unwrap()
+	case *InternalError:
+		err = typedErr.Unwrap()
 	}
 
 	return &SilentError{
