@@ -131,7 +131,6 @@ func Wrapf(err error, format string, args ...interface{}) error {
 
 // WithDescription creates an internal error from the passed error with the
 // passed description.
-// The description will be sent instead of a generic error message.
 func WithDescription(err error, description string) error {
 	if err == nil {
 		return nil
@@ -156,7 +155,6 @@ func WithDescription(err error, description string) error {
 
 // WithDescription creates an internal error from the passed error using
 // the formatted description.
-// The description will be sent instead of a generic error message.
 func WithDescriptionf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
@@ -181,7 +179,6 @@ func WithDescriptionf(err error, format string, args ...interface{}) error {
 
 // WithDescriptionl creates an internal error from the passed cause using the
 // localized description.
-// The description will be sent instead of a generic error message.
 func WithDescriptionl(err error, description *i18n.Config) error {
 	if err == nil {
 		return nil
@@ -206,7 +203,6 @@ func WithDescriptionl(err error, description *i18n.Config) error {
 
 // WithDescriptionlt creates an internal error from the passed cause using the
 // message generated from the passed term.
-// The description will be sent instead of a generic error message.
 func WithDescriptionlt(err error, description i18n.Term) error {
 	if err == nil {
 		return nil
