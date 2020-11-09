@@ -16,14 +16,14 @@ import (
 )
 
 var (
-	// DefaultWaiter is the waiter used for NewDefaultWaiter.
-	// DefaultWaiter must not be used directly to handleMessages reply.
-	DefaultWaiter = &Waiter{
+	// DefaultReplyWaiter is the waiter used for NewReplyWaiterFromDefault.
+	// DefaultReplyWaiter must not be used directly to handleMessages reply.
+	DefaultReplyWaiter = &ReplyWaiter{
 		cancelKeywords: []*i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
 		maxTimeout:     MaxTimeout,
 	}
 
-	// MaxTimeout is the default maximum amount of time a Waiter will wait,
+	// MaxTimeout is the default maximum amount of time a ReplyWaiter will wait,
 	// even if a user is still typing.
 	MaxTimeout = 30 * time.Minute
 )
@@ -32,13 +32,13 @@ var (
 // should not continue waiting for a reply.
 var Canceled = errors.NewInformationalError("canceled")
 
-// A Waiter is used to await messages.
+// A ReplyWaiter is used to await messages.
 // Wait can be cancelled either by the user by using a cancel keyword or
 // using a cancel reaction.
-// Furthermore, wait may be cancelled by the Waiter if the initial timeout
+// Furthermore, wait may be cancelled by the ReplyWaiter if the initial timeout
 // expires and the user is not typing or the user stopped typing and the
 // typing timeout expired.
-type Waiter struct {
+type ReplyWaiter struct {
 	state *state.State
 	ctx   *plugin.Context
 
@@ -56,15 +56,15 @@ type Waiter struct {
 	middlewares []interface{}
 }
 
-// NewWaiter creates a new reply waiter using the passed state and context.
+// NewReplyWaiter creates a new reply waiter using the passed state and context.
 // It will wait for a message from the message author in the channel the
 // command was invoked in.
 // Additionally, the ReplyMiddlewares stored in the Context will be added to
 // the waiter.
 // ctx.Author will be assumed as the user allowed to make the reply and
 // ctx.ChannelID will be assumed as the channel the reply will be made in.
-func NewWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
-	w = &Waiter{
+func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
+	w = &ReplyWaiter{
 		state:      s,
 		ctx:        ctx,
 		userID:     ctx.Author.ID,
@@ -77,10 +77,10 @@ func NewWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 	return w
 }
 
-// NewDefaultWaiter creates a new default waiter using the DefaultWaiter
+// NewReplyWaiterFromDefault creates a new default waiter using the DefaultReplyWaiter
 // variable as a template.
-func NewDefaultWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
-	w = DefaultWaiter.Copy()
+func NewReplyWaiterFromDefault(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
+	w = DefaultReplyWaiter.Copy()
 	w.state = s
 	w.ctx = ctx
 	w.userID = ctx.Author.ID
@@ -93,27 +93,27 @@ func NewDefaultWaiter(s *state.State, ctx *plugin.Context) (w *Waiter) {
 
 // WithUser changes the user that is expected to reply to the user with the
 // passed id.
-func (w *Waiter) WithUser(id discord.UserID) *Waiter {
+func (w *ReplyWaiter) WithUser(id discord.UserID) *ReplyWaiter {
 	w.userID = id
 	return w
 }
 
 // InChannel changes the channel to listen for the reply to the channel with
 // the passed id.
-func (w *Waiter) InChannel(id discord.ChannelID) *Waiter {
+func (w *ReplyWaiter) InChannel(id discord.ChannelID) *ReplyWaiter {
 	w.channelID = id
 	return w
 }
 
 // CaseSensitive makes the cancel keywords check case sensitive.
-func (w *Waiter) CaseSensitive() *Waiter {
+func (w *ReplyWaiter) CaseSensitive() *ReplyWaiter {
 	w.caseSensitive = true
 	return w
 }
 
 // NoAutoReact disables the automatic reaction of the cancel reaction messages
 // with their respective emojis.
-func (w *Waiter) NoAutoReact() *Waiter {
+func (w *ReplyWaiter) NoAutoReact() *ReplyWaiter {
 	w.noAutoReact = true
 	return w
 }
@@ -128,7 +128,7 @@ func (w *Waiter) NoAutoReact() *Waiter {
 //		• func(*state.State, *state.Base) error
 //		• func(*state.State, *state.MessageCreateEvent)
 //		• func(*state.State, *state.MessageCreateEvent) error
-func (w *Waiter) WithMiddlewares(middlewares ...interface{}) *Waiter {
+func (w *ReplyWaiter) WithMiddlewares(middlewares ...interface{}) *ReplyWaiter {
 	if len(w.middlewares) == 0 {
 		w.middlewares = make([]interface{}, 0, len(middlewares))
 	}
@@ -152,29 +152,29 @@ func (w *Waiter) WithMiddlewares(middlewares ...interface{}) *Waiter {
 }
 
 // WithCancelKeyword adds the passed keyword to the cancel keywords.
-// If the user filtered for writes this keyword Await will return Canceled.
-func (w *Waiter) WithCancelKeyword(keyword string) *Waiter {
+// If the user filtered for writes this keyword AwaitReply will return Canceled.
+func (w *ReplyWaiter) WithCancelKeyword(keyword string) *ReplyWaiter {
 	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewText(keyword))
 	return w
 }
 
 // WithCancelKeywordl adds the passed keyword to the cancel keywords.
-// If the user filtered for writes this keyword Await will return Canceled.
-func (w *Waiter) WithCancelKeywordl(keyword *i18n.Config) *Waiter {
+// If the user filtered for writes this keyword AwaitReply will return Canceled.
+func (w *ReplyWaiter) WithCancelKeywordl(keyword *i18n.Config) *ReplyWaiter {
 	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewTextl(keyword))
 	return w
 }
 
 // WithCancelKeywordlt adds the passed keyword to the cancel keywords.
-// If the user filtered for writes this keyword Await will return Canceled.
-func (w *Waiter) WithCancelKeywordlt(keyword i18n.Term) *Waiter {
+// If the user filtered for writes this keyword AwaitReply will return Canceled.
+func (w *ReplyWaiter) WithCancelKeywordlt(keyword i18n.Term) *ReplyWaiter {
 	return w.WithCancelKeywordl(keyword.AsConfig())
 }
 
 // WithMaxTimeout changes the maximum timeout of the waiter to max.
-// The maximum timeout is the timeout after which the Waiter will exit, even if
+// The maximum timeout is the timeout after which the ReplyWaiter will exit, even if
 // the user is still typing.
-func (w *Waiter) WithMaxTimeout(max time.Duration) *Waiter {
+func (w *ReplyWaiter) WithMaxTimeout(max time.Duration) *ReplyWaiter {
 	if w.maxTimeout > 0 {
 		w.maxTimeout = max
 	}
@@ -183,9 +183,9 @@ func (w *Waiter) WithMaxTimeout(max time.Duration) *Waiter {
 }
 
 // WithCancelReaction adds the passed cancel reaction.
-// If the user reacts with the passed emoji, Await will return with error
+// If the user reacts with the passed emoji, AwaitReply will return with error
 // Canceled.
-func (w *Waiter) WithCancelReaction(messageID discord.MessageID, react api.Emoji) *Waiter {
+func (w *ReplyWaiter) WithCancelReaction(messageID discord.MessageID, react api.Emoji) *ReplyWaiter {
 	w.cancelReactions = append(w.cancelReactions, reaction{
 		messageID: messageID,
 		reaction:  react,
@@ -194,9 +194,9 @@ func (w *Waiter) WithCancelReaction(messageID discord.MessageID, react api.Emoji
 	return w
 }
 
-// Copy creates a copy of the Waiter.
-func (w *Waiter) Copy() (cp *Waiter) {
-	cp = &Waiter{
+// Copy creates a copy of the ReplyWaiter.
+func (w *ReplyWaiter) Copy() (cp *ReplyWaiter) {
+	cp = &ReplyWaiter{
 		caseSensitive: w.caseSensitive,
 		noAutoReact:   w.noAutoReact,
 		maxTimeout:    w.maxTimeout,
@@ -214,7 +214,7 @@ func (w *Waiter) Copy() (cp *Waiter) {
 	return
 }
 
-// Await awaits a reply of the user until the user signals cancellation, the
+// AwaitReply awaits a reply of the user until the user signals cancellation, the
 // initial timeout expires and the user is not typing or the user stops typing
 // and the typing timeout is reached. Note you need the typing intent to
 // monitor typing.
@@ -225,11 +225,11 @@ func (w *Waiter) Copy() (cp *Waiter) {
 // Besides that, a reply can also be canceled through a middleware.
 // If one the middlewares returns state.Filtered, errors.Abort will be
 // returned.
-func (w *Waiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Message, error) {
+func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Message, error) {
 	return w.AwaitWithContext(context.Background(), initialTimeout, typingTimeout)
 }
 
-// Await awaits a reply of the user until the user signals cancellation, the
+// AwaitReply awaits a reply of the user until the user signals cancellation, the
 // initial timeout expires and the user is not typing or the user stops typing
 // and the typing timeout is reached. Note you need the typing intent to
 // monitor typing.
@@ -241,7 +241,7 @@ func (w *Waiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Me
 // Besides that, a reply can also be canceled through a middleware.
 // If one the middlewares returns state.Filtered, errors.Abort will be
 // returned.
-func (w *Waiter) AwaitWithContext(
+func (w *ReplyWaiter) AwaitWithContext(
 	ctx context.Context, initialTimeout, typingTimeout time.Duration,
 ) (*discord.Message, error) {
 	perms, err := w.ctx.SelfPermissions()
@@ -300,7 +300,7 @@ func (w *Waiter) AwaitWithContext(
 	}
 }
 
-func (w *Waiter) handleMessages(ctx context.Context, result chan<- interface{}) (func(), error) {
+func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interface{}) (func(), error) {
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageCreateEvent) {
 		if e.ChannelID != w.channelID || e.Author.ID != w.ctx.Author.ID { // not the message we are waiting for
 			return
@@ -331,7 +331,7 @@ func (w *Waiter) handleMessages(ctx context.Context, result chan<- interface{}) 
 	return rm, errors.WithStack(err)
 }
 
-func (w *Waiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
+func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
 	if !w.noAutoReact {
 		for _, r := range w.cancelReactions {
 			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
@@ -368,7 +368,7 @@ func (w *Waiter) handleCancelReactions(ctx context.Context, result chan<- interf
 	}, nil
 }
 
-func (w *Waiter) watchTimeout(
+func (w *ReplyWaiter) watchTimeout(
 	ctx context.Context, initialTimeout, typingTimeout time.Duration, result chan<- interface{},
 ) (rm func(), err error) {
 	maxTimer := time.NewTimer(w.maxTimeout)
