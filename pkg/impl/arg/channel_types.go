@@ -11,8 +11,8 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// TextChannelAllowIDs is a global flag that allows you to specify whether
-// TextChannels may also be noted as plain Snowflakes.
+// TextChannelAllowIDs is a global flag that defines whether TextChannels may
+// also be noted as plain Snowflakes.
 var TextChannelAllowIDs = false
 
 // =============================================================================

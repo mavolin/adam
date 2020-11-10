@@ -11,8 +11,8 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// MemberAllowIDs is a global flag that allows you to specify whether Members
-// may also be noted as plain Snowflakes.
+// MemberAllowIDs is a global flag that defines whether Members may also be
+// noted as plain Snowflakes.
 var MemberAllowIDs = true
 
 // =============================================================================
