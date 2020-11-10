@@ -36,16 +36,16 @@ type Context struct {
 	// InvokedCommand is the RegisteredCommand that is being invoked.
 	InvokedCommand *RegisteredCommand
 
-	// Prefix is the prefix of the bot in the guild.
-	// If the guild has prefixes disabled, Prefix will be empty.
-	Prefix string
+	// Prefixes contains the prefixes of the bot in the guild.
+	// Length may be 0, if the guild allows the use of mentions only.
+	Prefixes []string
 
 	// BotOwnerIDs contains the ids of the bot owners.
 	BotOwnerIDs []discord.UserID
 
 	// ReplyMiddlewares contains the middlewares that should be used when
 	// awaiting a reply.
-	// These following types are permitted:
+	// The following types are permitted:
 	//		• func(*state.State, interface{})
 	//		• func(*state.State, interface{}) error
 	//		• func(*state.State, *state.Base)
