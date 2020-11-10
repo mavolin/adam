@@ -5,8 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/adam/pkg/errors"
 )
 
 func TestCode_Parse(t *testing.T) {
@@ -94,18 +92,15 @@ func TestCode_Parse(t *testing.T) {
 			Kind: KindArg,
 		}
 
-		expect := codeInvalidArg
-		expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+		expect := newArgParsingErr(codeInvalidErrorArg, ctx, nil)
 
 		_, actual := Code.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+		assert.Equal(t, expect, actual)
 
 		ctx.Kind = KindFlag
-
-		expect = codeInvalidFlag
-		expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+		expect = newArgParsingErr(codeInvalidErrorFlag, ctx, nil)
 
 		_, actual = Code.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+		assert.Equal(t, expect, actual)
 	})
 }

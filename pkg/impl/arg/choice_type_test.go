@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -60,11 +59,10 @@ func TestChoice_Parse(t *testing.T) {
 
 		ctx := &Context{Raw: "def"}
 
-		expect := choiceInvalidError
-		expect.Placeholders = attachDefaultPlaceholders(expect, ctx)
+		expect := newArgParsingErr(choiceInvalidError, ctx, nil)
 
 		_, actual := choice.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+		assert.Equal(t, expect, actual)
 	})
 }
 
@@ -139,11 +137,10 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 			Raw: "jkl",
 		}
 
-		expect := choiceInvalidError
-		expect.Placeholders = attachDefaultPlaceholders(expect, ctx)
+		expect := newArgParsingErr(choiceInvalidError, ctx, nil)
 
 		_, actual := choice.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+		assert.Equal(t, expect, actual)
 	})
 }
 

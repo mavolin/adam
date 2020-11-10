@@ -2,6 +2,7 @@ package arg
 
 import (
 	"regexp"
+	"time"
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"

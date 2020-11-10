@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -94,19 +93,16 @@ func TestUser_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := userInvalidMentionErrorArg
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
 
 			_, actual := User.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
-
-			expect = userInvalidMentionErrorFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = User.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 		})
 
 		t.Run("mention user not found", func(t *testing.T) {
@@ -130,25 +126,22 @@ func TestUser_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := userInvalidMentionErrorArg
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
 
 			m, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := User.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 
 			ctx.Kind = KindFlag
-
-			expect = userInvalidMentionErrorFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
 
 			_, actual = User.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 		})
@@ -156,11 +149,10 @@ func TestUser_Parse(t *testing.T) {
 		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{Raw: "abc"}
 
-			expect := userInvalidError
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userInvalidError, ctx, nil)
 
 			_, actual := User.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 		})
 
 		t.Run("id user not found", func(t *testing.T) {
@@ -178,11 +170,10 @@ func TestUser_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := userIDInvalidError
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userIDInvalidError, ctx, nil)
 
 			_, actual := User.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 		})
@@ -297,19 +288,16 @@ func TestMember_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := userInvalidMentionErrorArg
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
 
 			_, actual := Member.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
-
-			expect = userInvalidMentionErrorFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = Member.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 		})
 
 		t.Run("mention member not found", func(t *testing.T) {
@@ -337,25 +325,22 @@ func TestMember_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := userInvalidMentionErrorArg
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
 
 			m, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := Member.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 
 			ctx.Kind = KindFlag
-
-			expect = userInvalidMentionErrorFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
 
 			_, actual = Member.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 		})
@@ -374,11 +359,10 @@ func TestMember_Parse(t *testing.T) {
 				Raw: "abc",
 			}
 
-			expect := userInvalidError
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userInvalidError, ctx, nil)
 
 			_, actual := Member.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 		})
 
 		t.Run("id user not found", func(t *testing.T) {
@@ -405,11 +389,10 @@ func TestMember_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := userIDInvalidError
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(userIDInvalidError, ctx, nil)
 
 			_, actual := Member.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 		})

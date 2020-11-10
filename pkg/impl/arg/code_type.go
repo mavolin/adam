@@ -74,7 +74,7 @@ func (c code) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		}, nil
 	}
 
-	return nil, newArgParsingErr2(codeInvalidArg, codeInvalidFlag, ctx, nil)
+	return nil, newArgParsingErr2(codeInvalidErrorArg, codeInvalidErrorFlag, ctx, nil)
 }
 
 func (c code) Default() interface{} {

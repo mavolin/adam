@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
@@ -115,31 +114,23 @@ func TestRegularExpression_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(string(c.name), func(t *testing.T) {
-				c.expectArg = c.expectArg.
-					WithPlaceholders(map[string]interface{}{
-						"expression": c.expression,
-					})
-
-				c.expectFlag = c.expectFlag.
-					WithPlaceholders(map[string]interface{}{
-						"expression": c.expression,
-					})
-
 				ctx := &Context{
 					Raw:  c.raw,
 					Kind: KindArg,
 				}
 
-				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
-				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+				placeholders := map[string]interface{}{"expression": c.expression}
+
+				expect := newArgParsingErr(c.expectArg, ctx, placeholders)
 
 				_, actual := RegularExpression.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
+				expect = newArgParsingErr(c.expectFlag, ctx, placeholders)
 
 				_, actual = RegularExpression.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})
