@@ -41,29 +41,36 @@ var (
 // Additionally, there is a 1.5 second margin for network delays.
 var typingInterval = 11 * time.Second
 
-// A ReplyWaiter is used to await messages.
-// Wait can be cancelled either by the user by using a cancel keyword or
-// using a cancel reaction.
-// Furthermore, wait may be cancelled by the ReplyWaiter if the initial timeout
-// expires and the user is not typing or the user stopped typing and the
-// typing timeout expired.
-type ReplyWaiter struct {
-	state *state.State
-	ctx   *plugin.Context
+type (
+	// A ReplyWaiter is used to await messages.
+	// Wait can be cancelled either by the user by using a cancel keyword or
+	// using a cancel reaction.
+	// Furthermore, wait may be cancelled by the ReplyWaiter if the initial timeout
+	// expires and the user is not typing or the user stopped typing and the
+	// typing timeout expired.
+	ReplyWaiter struct {
+		state *state.State
+		ctx   *plugin.Context
 
-	userID    discord.UserID
-	channelID discord.ChannelID
+		userID    discord.UserID
+		channelID discord.ChannelID
 
-	caseSensitive bool
-	noAutoReact   bool
+		caseSensitive bool
+		noAutoReact   bool
 
-	cancelKeywords  []*i18nutil.Text
-	cancelReactions []reaction
+		cancelKeywords  []*i18nutil.Text
+		cancelReactions []cancelReaction
 
-	maxTimeout time.Duration
+		maxTimeout time.Duration
 
-	middlewares []interface{}
-}
+		middlewares []interface{}
+	}
+
+	cancelReaction struct {
+		messageID discord.MessageID
+		reaction  api.Emoji
+	}
+)
 
 // NewReplyWaiter creates a new reply waiter using the passed state and context.
 // It will wait for a message from the message author in the channel the
@@ -195,7 +202,7 @@ func (w *ReplyWaiter) WithMaxTimeout(max time.Duration) *ReplyWaiter {
 // If the user reacts with the passed emoji, AwaitReply will return with error
 // Canceled.
 func (w *ReplyWaiter) WithCancelReaction(messageID discord.MessageID, react api.Emoji) *ReplyWaiter {
-	w.cancelReactions = append(w.cancelReactions, reaction{
+	w.cancelReactions = append(w.cancelReactions, cancelReaction{
 		messageID: messageID,
 		reaction:  react,
 	})
@@ -214,7 +221,7 @@ func (w *ReplyWaiter) Copy() (cp *ReplyWaiter) {
 	cp.cancelKeywords = make([]*i18nutil.Text, len(w.cancelKeywords))
 	copy(cp.cancelKeywords, w.cancelKeywords)
 
-	cp.cancelReactions = make([]reaction, len(w.cancelReactions))
+	cp.cancelReactions = make([]cancelReaction, len(w.cancelReactions))
 	copy(cp.cancelReactions, w.cancelReactions)
 
 	cp.middlewares = make([]interface{}, len(w.middlewares))

@@ -48,7 +48,7 @@ func TestReactionWaiter_Await(t *testing.T) {
 
 		expect := &TimeoutError{UserID: ctx.Author.ID}
 
-		_, actual := NewReactionWaiter(s, ctx).
+		_, actual := NewReactionWaiter(s, ctx, 123).
 			Await(1)
 		assert.Equal(t, expect, actual)
 

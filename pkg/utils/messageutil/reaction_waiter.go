@@ -21,17 +21,13 @@ type (
 		ctx   *plugin.Context
 
 		userID    discord.UserID
+		messageID discord.MessageID
 		channelID discord.ChannelID
 
-		reactions, cancelReactions []reaction
+		reactions, cancelReactions []api.Emoji
 		noAutoReact                bool
 
 		middlewares []interface{}
-	}
-
-	reaction struct {
-		messageID discord.MessageID
-		reaction  api.Emoji
 	}
 )
 
@@ -39,11 +35,12 @@ type (
 // and plugin.Context.
 // ctx.Author will be assumed as the user to make the reaction in
 // ctx.ChannelID.
-func NewReactionWaiter(s *state.State, ctx *plugin.Context) *ReactionWaiter {
+func NewReactionWaiter(s *state.State, ctx *plugin.Context, messageID discord.MessageID) *ReactionWaiter {
 	return &ReactionWaiter{
 		state:     s,
 		ctx:       ctx,
 		userID:    ctx.Author.ID,
+		messageID: messageID,
 		channelID: ctx.ChannelID,
 	}
 }
@@ -61,12 +58,8 @@ func (w *ReactionWaiter) InChannel(id discord.ChannelID) *ReactionWaiter {
 }
 
 // WithReaction adds the passed reaction to the wait list.
-func (w *ReactionWaiter) WithReaction(messageID discord.MessageID, react api.Emoji) *ReactionWaiter {
-	w.reactions = append(w.reactions, reaction{
-		messageID: messageID,
-		reaction:  react,
-	})
-
+func (w *ReactionWaiter) WithReaction(reaction api.Emoji) *ReactionWaiter {
+	w.reactions = append(w.reactions, reaction)
 	return w
 }
 
@@ -112,12 +105,8 @@ func (w *ReactionWaiter) WithMiddleware(middlewares ...interface{}) *ReactionWai
 // WithCancelReaction adds the passed cancel reaction.
 // If the user reacts with the passed emoji, AwaitReply will return with error
 // Canceled.
-func (w *ReactionWaiter) WithCancelReaction(messageID discord.MessageID, react api.Emoji) *ReactionWaiter {
-	w.cancelReactions = append(w.cancelReactions, reaction{
-		messageID: messageID,
-		reaction:  react,
-	})
-
+func (w *ReactionWaiter) WithCancelReaction(reaction api.Emoji) *ReactionWaiter {
+	w.cancelReactions = append(w.cancelReactions, reaction)
 	return w
 }
 
@@ -127,10 +116,10 @@ func (w *ReactionWaiter) Copy() (cp *ReactionWaiter) {
 		noAutoReact: w.noAutoReact,
 	}
 
-	cp.reactions = make([]reaction, len(w.reactions))
+	cp.reactions = make([]api.Emoji, len(w.reactions))
 	copy(cp.reactions, w.reactions)
 
-	cp.cancelReactions = make([]reaction, len(w.cancelReactions))
+	cp.cancelReactions = make([]api.Emoji, len(w.cancelReactions))
 	copy(cp.cancelReactions, w.cancelReactions)
 
 	cp.middlewares = make([]interface{}, len(w.middlewares))
@@ -203,20 +192,20 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
 	if !w.noAutoReact {
 		for _, r := range w.reactions {
-			if err := w.state.React(w.ctx.ChannelID, r.messageID, r.reaction); err != nil {
+			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
 				w.ctx.HandleErrorSilent(err)
 			}
 		}
 
 		for _, r := range w.cancelReactions {
-			if err := w.state.React(w.ctx.ChannelID, r.messageID, r.reaction); err != nil {
+			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
 				w.ctx.HandleErrorSilent(err)
 			}
 		}
 	}
 
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
-		if e.UserID != w.userID {
+		if e.UserID != w.userID || e.MessageID != w.messageID {
 			return
 		}
 
@@ -226,14 +215,14 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 		}
 
 		for _, r := range w.reactions {
-			if e.MessageID == r.messageID && e.Emoji.APIString() == r.reaction {
-				sendResult(ctx, result, r.reaction)
+			if e.Emoji.APIString() == r {
+				sendResult(ctx, result, r)
 				return
 			}
 		}
 
 		for _, r := range w.cancelReactions {
-			if e.MessageID == r.messageID && e.Emoji.APIString() == r.reaction {
+			if e.Emoji.APIString() == r {
 				sendResult(ctx, result, Canceled)
 				return
 			}
@@ -249,14 +238,14 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 		if !w.noAutoReact {
 			go func() {
 				for _, r := range w.reactions {
-					err := w.state.DeleteReactions(w.ctx.ChannelID, r.messageID, r.reaction)
+					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
 						w.ctx.HandleErrorSilent(err)
 					}
 				}
 
 				for _, r := range w.cancelReactions {
-					err := w.state.DeleteReactions(w.ctx.ChannelID, r.messageID, r.reaction)
+					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
 						w.ctx.HandleErrorSilent(err)
 					}
