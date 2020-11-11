@@ -367,14 +367,6 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 }
 
 func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
-	if !w.noAutoReact {
-		for _, r := range w.cancelReactions {
-			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
-				w.ctx.HandleErrorSilent(err)
-			}
-		}
-	}
-
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
 		if e.UserID != w.userID {
 			return
@@ -389,6 +381,14 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 	})
 	if err != nil { // this should never happen
 		return nil, errors.WithStack(err)
+	}
+
+	if !w.noAutoReact {
+		for _, r := range w.cancelReactions {
+			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
+				w.ctx.HandleErrorSilent(err)
+			}
+		}
 	}
 
 	return func() {

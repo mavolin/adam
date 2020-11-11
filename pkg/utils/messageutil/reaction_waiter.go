@@ -195,20 +195,6 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 }
 
 func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
-	if !w.noAutoReact {
-		for _, r := range w.reactions {
-			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
-				w.ctx.HandleErrorSilent(err)
-			}
-		}
-
-		for _, r := range w.cancelReactions {
-			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
-				w.ctx.HandleErrorSilent(err)
-			}
-		}
-	}
-
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
 		if e.UserID != w.userID || e.MessageID != w.messageID {
 			return
@@ -235,6 +221,20 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 	})
 	if err != nil { // this should never happen
 		return nil, errors.WithStack(err)
+	}
+
+	if !w.noAutoReact {
+		for _, r := range w.reactions {
+			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
+				w.ctx.HandleErrorSilent(err)
+			}
+		}
+
+		for _, r := range w.cancelReactions {
+			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
+				w.ctx.HandleErrorSilent(err)
+			}
+		}
 	}
 
 	return func() {
