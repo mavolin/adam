@@ -198,14 +198,16 @@ func (w *ReplyWaiter) WithMaxTimeout(max time.Duration) *ReplyWaiter {
 	return w
 }
 
-// WithCancelReaction adds the passed cancel reaction.
+// WithCancelReactions adds the passed cancel reaction.
 // If the user reacts with the passed emoji, AwaitReply will return with error
 // Canceled.
-func (w *ReplyWaiter) WithCancelReaction(messageID discord.MessageID, react api.Emoji) *ReplyWaiter {
-	w.cancelReactions = append(w.cancelReactions, cancelReaction{
-		messageID: messageID,
-		reaction:  react,
-	})
+func (w *ReplyWaiter) WithCancelReactions(messageID discord.MessageID, reactions ...api.Emoji) *ReplyWaiter {
+	for _, r := range reactions {
+		w.cancelReactions = append(w.cancelReactions, cancelReaction{
+			messageID: messageID,
+			reaction:  r,
+		})
+	}
 
 	return w
 }

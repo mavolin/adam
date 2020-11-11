@@ -357,7 +357,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 			reaction := "🍆"
 
 			c.waiter.
-				WithCancelReaction(reactionMessageID, reaction)
+				WithCancelReactions(reactionMessageID, reaction)
 
 			m.React(c.waiter.ctx.ChannelID, reactionMessageID, reaction)
 

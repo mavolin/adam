@@ -57,9 +57,17 @@ func (w *ReactionWaiter) InChannel(id discord.ChannelID) *ReactionWaiter {
 	return w
 }
 
-// WithReaction adds the passed reaction to the wait list.
-func (w *ReactionWaiter) WithReaction(reaction api.Emoji) *ReactionWaiter {
-	w.reactions = append(w.reactions, reaction)
+// WithReactions adds the passed reaction to the wait list.
+func (w *ReactionWaiter) WithReactions(reactions ...api.Emoji) *ReactionWaiter {
+	w.reactions = append(w.reactions, reactions...)
+	return w
+}
+
+// WithCancelReactions adds the passed cancel reaction.
+// If the user reacts with the passed emoji, AwaitReply will return with error
+// Canceled.
+func (w *ReactionWaiter) WithCancelReactions(reactions ...api.Emoji) *ReactionWaiter {
+	w.cancelReactions = append(w.cancelReactions, reactions...)
 	return w
 }
 
@@ -99,14 +107,6 @@ func (w *ReactionWaiter) WithMiddleware(middlewares ...interface{}) *ReactionWai
 		w.middlewares = append(w.middlewares, m)
 	}
 
-	return w
-}
-
-// WithCancelReaction adds the passed cancel reaction.
-// If the user reacts with the passed emoji, AwaitReply will return with error
-// Canceled.
-func (w *ReactionWaiter) WithCancelReaction(reaction api.Emoji) *ReactionWaiter {
-	w.cancelReactions = append(w.cancelReactions, reaction)
 	return w
 }
 
