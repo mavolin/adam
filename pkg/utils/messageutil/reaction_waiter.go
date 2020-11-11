@@ -10,6 +10,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 )
 
 type (
@@ -26,6 +27,7 @@ type (
 
 		reactions, cancelReactions []api.Emoji
 		noAutoReact                bool
+		noAutoDelete               bool
 
 		middlewares []interface{}
 	}
@@ -71,9 +73,16 @@ func (w *ReactionWaiter) WithCancelReactions(reactions ...api.Emoji) *ReactionWa
 	return w
 }
 
-// NoAutoReact disables automatic reaction.
+// NoAutoReact disables automatic reaction and deletion of the reactions.
 func (w *ReactionWaiter) NoAutoReact() *ReactionWaiter {
 	w.noAutoReact = true
+	w.noAutoDelete = true
+	return w
+}
+
+// NoAutoReact disables the automatic deletion of the reactions.
+func (w *ReactionWaiter) NoAutoDelete() *ReactionWaiter {
+	w.noAutoDelete = true
 	return w
 }
 
@@ -231,11 +240,16 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 	return func() {
 		rm()
 
-		if !w.noAutoReact {
+		if !w.noAutoDelete {
 			go func() {
 				for _, r := range w.reactions {
 					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
+						// someone else deleted the resource we are accessing
+						if discorderr.InRange(err, discorderr.UnknownResource) {
+							return
+						}
+
 						w.ctx.HandleErrorSilent(err)
 					}
 				}
@@ -243,6 +257,11 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 				for _, r := range w.cancelReactions {
 					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
+						// someone else deleted the resource we are accessing
+						if discorderr.InRange(err, discorderr.UnknownResource) {
+							return
+						}
+
 						w.ctx.HandleErrorSilent(err)
 					}
 				}

@@ -190,29 +190,3 @@ func Test_invokeMiddlewares(t *testing.T) {
 		})
 	})
 }
-
-func Test_handleErr(t *testing.T) {
-	testCases := []struct {
-		name   string
-		err    error
-		expect error
-	}{
-		{
-			name:   "filtered",
-			err:    state.Filtered,
-			expect: errors.Abort,
-		},
-		{
-			name:   "not filtered",
-			err:    errors.New("abc"),
-			expect: errors.New("abc"),
-		},
-	}
-
-	for _, c := range testCases {
-		t.Run(c.name, func(t *testing.T) {
-			actual := handleErr(c.err)
-			assert.Equal(t, c.expect, actual)
-		})
-	}
-}

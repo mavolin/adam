@@ -12,6 +12,7 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
@@ -398,6 +399,11 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 				for _, r := range w.cancelReactions {
 					err := w.state.DeleteReactions(w.channelID, r.messageID, r.reaction)
 					if err != nil {
+						// someone else deleted the resource we are accessing
+						if discorderr.InRange(err, discorderr.UnknownResource) {
+							return
+						}
+
 						w.ctx.HandleErrorSilent(err)
 					}
 				}
