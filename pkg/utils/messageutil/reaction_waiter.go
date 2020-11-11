@@ -63,9 +63,9 @@ func (w *ReactionWaiter) WithReactions(reactions ...api.Emoji) *ReactionWaiter {
 	return w
 }
 
-// WithCancelReactions adds the passed cancel reaction.
-// If the user reacts with the passed emoji, AwaitReply will return with error
-// Canceled.
+// WithCancelReactions adds the passed cancel reactions.
+// If the user reacts with one of the passed emojis, AwaitReply will return
+// errors.Abort.
 func (w *ReactionWaiter) WithCancelReactions(reactions ...api.Emoji) *ReactionWaiter {
 	w.cancelReactions = append(w.cancelReactions, reactions...)
 	return w
@@ -132,11 +132,9 @@ func (w *ReactionWaiter) Copy() (cp *ReactionWaiter) {
 // timeout expires.
 //
 // If the timeout is reached, a *TimeoutError will be returned.
-// If the user cancels the wait, Canceled will be returned.
+// If the user cancels the wait, errors.Abort will be returned.
 //
 // Besides that, the Wait can also be canceled through a middleware.
-// If one the middlewares returns state.Filtered, errors.Abort will be
-// returned.
 func (w *ReactionWaiter) Await(timeout time.Duration) (api.Emoji, error) {
 	return w.AwaitWithContext(context.Background(), timeout)
 }
@@ -145,11 +143,9 @@ func (w *ReactionWaiter) Await(timeout time.Duration) (api.Emoji, error) {
 // cancellation, the timeout expires or the context expires.
 //
 // If the timeout is reached, a *TimeoutError will be returned.
-// If the user cancels the wait, Canceled will be returned.
+// If the user cancels the wait, errors.Abort will be returned.
 //
 // Besides that, the Wait can also be canceled through a middleware.
-// If one the middlewares returns state.Filtered, errors.Abort will be
-// returned.
 func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Duration) (api.Emoji, error) {
 	perms, err := w.ctx.SelfPermissions()
 	if err != nil {
@@ -223,7 +219,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 
 		for _, r := range w.cancelReactions {
 			if e.Emoji.APIString() == r {
-				sendResult(ctx, result, Canceled)
+				sendResult(ctx, result, errors.Abort)
 				return
 			}
 		}

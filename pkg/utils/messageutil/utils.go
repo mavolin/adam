@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/mavolin/disstate/v2/pkg/state"
-
-	"github.com/mavolin/adam/pkg/errors"
 )
 
 func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares []interface{}) error {
@@ -14,22 +12,19 @@ func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middl
 		case func(*state.State, interface{}):
 			m(s, e)
 		case func(*state.State, interface{}) error:
-			err := handleErr(m(s, e))
-			if err != nil {
+			if err := m(s, e); err != nil {
 				return err
 			}
 		case func(*state.State, *state.Base):
 			m(s, e.Base)
 		case func(*state.State, *state.Base) error:
-			err := handleErr(m(s, e.Base))
-			if err != nil {
+			if err := m(s, e.Base); err != nil {
 				return err
 			}
 		case func(*state.State, *state.MessageCreateEvent):
 			m(s, e)
 		case func(*state.State, *state.MessageCreateEvent) error:
-			err := handleErr(m(s, e))
-			if err != nil {
+			if err := m(s, e); err != nil {
 				return err
 			}
 		}
@@ -44,38 +39,25 @@ func invokeReactionAddMiddlewares(s *state.State, e *state.MessageReactionAddEve
 		case func(*state.State, interface{}):
 			m(s, e)
 		case func(*state.State, interface{}) error:
-			err := handleErr(m(s, e))
-			if err != nil {
+			if err := m(s, e); err != nil {
 				return err
 			}
 		case func(*state.State, *state.Base):
 			m(s, e.Base)
 		case func(*state.State, *state.Base) error:
-			err := handleErr(m(s, e.Base))
-			if err != nil {
+			if err := m(s, e.Base); err != nil {
 				return err
 			}
 		case func(*state.State, *state.MessageReactionAddEvent):
 			m(s, e)
 		case func(*state.State, *state.MessageReactionAddEvent) error:
-			err := handleErr(m(s, e))
-			if err != nil {
+			if err := m(s, e); err != nil {
 				return err
 			}
 		}
 	}
 
 	return nil
-}
-
-func handleErr(err error) error {
-	if err == nil {
-		return nil
-	} else if err == state.Filtered {
-		return errors.Abort
-	}
-
-	return err
 }
 
 // sendResult blocks until it can send a result or the passed context.Context

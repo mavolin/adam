@@ -142,7 +142,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
 			}).
-				WithCancelKeyword("aBc").
+				WithCancelKeywords("aBc").
 				CaseSensitive(),
 			e: &state.MessageCreateEvent{
 				Base: state.NewBase(),
@@ -152,7 +152,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 					},
 				},
 			},
-			expect: Canceled,
+			expect: errors.Abort,
 		},
 		{
 			name: "not canceled - case sensitive",
@@ -161,7 +161,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
 			}).
-				WithCancelKeyword("aBc").
+				WithCancelKeywords("aBc").
 				CaseSensitive(),
 			e: &state.MessageCreateEvent{
 				Base: state.NewBase(),
@@ -182,7 +182,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 					MessageCreateEvent: new(gateway.MessageCreateEvent),
 				},
 			}).
-				WithCancelKeyword("aBc"),
+				WithCancelKeywords("aBc"),
 			e: &state.MessageCreateEvent{
 				Base: state.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -191,7 +191,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 					},
 				},
 			},
-			expect: Canceled,
+			expect: errors.Abort,
 		},
 		{
 			name: "success",
@@ -344,7 +344,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 					},
 				},
 			},
-			expect: Canceled,
+			expect: errors.Abort,
 		},
 	}
 

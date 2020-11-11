@@ -20,16 +20,12 @@ var (
 	// DefaultReplyWaiter must not be used directly to handleMessages reply.
 	DefaultReplyWaiter = &ReplyWaiter{
 		cancelKeywords: []*i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
-		maxTimeout:     MaxTimeout,
+		maxTimeout:     ReplyMaxTimeout,
 	}
 
-	// MaxTimeout is the default maximum amount of time a ReplyWaiter will wait,
+	// ReplyMaxTimeout is the default maximum amount of time a ReplyWaiter will wait,
 	// even if a user is still typing.
-	MaxTimeout = 30 * time.Minute
-
-	// Canceled is the error that gets returned, if a user signals the bot
-	// should not continue waiting for a reply.
-	Canceled = errors.NewInformationalError("canceled")
+	ReplyMaxTimeout = 30 * time.Minute
 )
 
 // typingInterval is the interval in which the client of the user sends the
@@ -45,9 +41,9 @@ type (
 	// A ReplyWaiter is used to await messages.
 	// Wait can be cancelled either by the user by using a cancel keyword or
 	// using a cancel reaction.
-	// Furthermore, wait may be cancelled by the ReplyWaiter if the initial timeout
-	// expires and the user is not typing or the user stopped typing and the
-	// typing timeout expired.
+	// Furthermore, wait may be cancelled by the ReplyWaiter if the initial
+	// timeout expires and the user is not typing or the user stopped typing
+	// and the typing timeout expired.
 	ReplyWaiter struct {
 		state *state.State
 		ctx   *plugin.Context
@@ -72,7 +68,8 @@ type (
 	}
 )
 
-// NewReplyWaiter creates a new reply waiter using the passed state and context.
+// NewReplyWaiter creates a new reply waiter using the passed state and
+// context.
 // It will wait for a message from the message author in the channel the
 // command was invoked in.
 // Additionally, the ReplyMiddlewares stored in the Context will be added to
@@ -85,7 +82,7 @@ func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 		ctx:        ctx,
 		userID:     ctx.Author.ID,
 		channelID:  ctx.ChannelID,
-		maxTimeout: MaxTimeout,
+		maxTimeout: ReplyMaxTimeout,
 	}
 
 	w.WithMiddlewares(ctx.ReplyMiddlewares...)
@@ -167,24 +164,51 @@ func (w *ReplyWaiter) WithMiddlewares(middlewares ...interface{}) *ReplyWaiter {
 	return w
 }
 
-// WithCancelKeyword adds the passed keyword to the cancel keywords.
-// If the user filtered for writes this keyword AwaitReply will return Canceled.
-func (w *ReplyWaiter) WithCancelKeyword(keyword string) *ReplyWaiter {
-	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewText(keyword))
+// WithCancelKeywords adds the passed keywords to the cancel keywords.
+// If the user filtered for writes one of the keywords AwaitReply will return
+// errors.Abort.
+func (w *ReplyWaiter) WithCancelKeywords(keywords ...string) *ReplyWaiter {
+	for _, k := range keywords {
+		w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewText(k))
+	}
+
 	return w
 }
 
-// WithCancelKeywordl adds the passed keyword to the cancel keywords.
-// If the user filtered for writes this keyword AwaitReply will return Canceled.
-func (w *ReplyWaiter) WithCancelKeywordl(keyword *i18n.Config) *ReplyWaiter {
-	w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewTextl(keyword))
+// WithCancelKeywordsl adds the passed keywords to the cancel keywords.
+// If the user filtered for writes one of the keywords AwaitReply will return
+// errors.Abort.
+func (w *ReplyWaiter) WithCancelKeywordsl(keywords ...*i18n.Config) *ReplyWaiter {
+	for _, k := range keywords {
+		w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewTextl(k))
+	}
+
 	return w
 }
 
-// WithCancelKeywordlt adds the passed keyword to the cancel keywords.
-// If the user filtered for writes this keyword AwaitReply will return Canceled.
-func (w *ReplyWaiter) WithCancelKeywordlt(keyword i18n.Term) *ReplyWaiter {
-	return w.WithCancelKeywordl(keyword.AsConfig())
+// WithCancelKeywordslt adds the passed keywords to the cancel keywords.
+// If the user filtered for writes one of the keywords AwaitReply will return
+// errors.Abort.
+func (w *ReplyWaiter) WithCancelKeywordslt(keywords ...i18n.Term) *ReplyWaiter {
+	for _, k := range keywords {
+		w.WithCancelKeywordsl(k.AsConfig())
+	}
+
+	return w
+}
+
+// WithCancelReactions adds the passed cancel reactions.
+// If the user reacts with one of the passed emojis, AwaitReply will return
+// errors.Abort.
+func (w *ReplyWaiter) WithCancelReactions(messageID discord.MessageID, reactions ...api.Emoji) *ReplyWaiter {
+	for _, r := range reactions {
+		w.cancelReactions = append(w.cancelReactions, cancelReaction{
+			messageID: messageID,
+			reaction:  r,
+		})
+	}
+
+	return w
 }
 
 // WithMaxTimeout changes the maximum timeout of the waiter to max.
@@ -193,20 +217,6 @@ func (w *ReplyWaiter) WithCancelKeywordlt(keyword i18n.Term) *ReplyWaiter {
 func (w *ReplyWaiter) WithMaxTimeout(max time.Duration) *ReplyWaiter {
 	if w.maxTimeout > 0 {
 		w.maxTimeout = max
-	}
-
-	return w
-}
-
-// WithCancelReactions adds the passed cancel reaction.
-// If the user reacts with the passed emoji, AwaitReply will return with error
-// Canceled.
-func (w *ReplyWaiter) WithCancelReactions(messageID discord.MessageID, reactions ...api.Emoji) *ReplyWaiter {
-	for _, r := range reactions {
-		w.cancelReactions = append(w.cancelReactions, cancelReaction{
-			messageID: messageID,
-			reaction:  r,
-		})
 	}
 
 	return w
@@ -238,7 +248,7 @@ func (w *ReplyWaiter) Copy() (cp *ReplyWaiter) {
 // monitor typing.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.
-// If the user cancels the reply, Canceled will be returned.
+// If the user cancels the reply, errors.Abort will be returned.
 //
 // The typing timeout will start after the user stops typing.
 // Because Discord sends the typing event in an interval of about 10 seconds,
@@ -246,8 +256,6 @@ func (w *ReplyWaiter) Copy() (cp *ReplyWaiter) {
 // status was not updated.
 //
 // Besides that, a reply can also be canceled through a middleware.
-// If one the middlewares returns state.Filtered, errors.Abort will be
-// returned.
 func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Message, error) {
 	return w.AwaitWithContext(context.Background(), initialTimeout, typingTimeout)
 }
@@ -258,7 +266,7 @@ func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*disco
 // monitor typing.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.
-// If the user cancels the reply, Canceled will be returned.
+// If the user cancels the reply, errors.Abort will be returned.
 // If the context expires, context.Canceled will be returned.
 //
 // The typing timeout will start after the user stops typing.
@@ -267,8 +275,6 @@ func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*disco
 // status was not updated.
 //
 // Besides that, a reply can also be canceled through a middleware.
-// If one the middlewares returns state.Filtered, errors.Abort will be
-// returned.
 func (w *ReplyWaiter) AwaitWithContext(
 	ctx context.Context, initialTimeout, typingTimeout time.Duration,
 ) (*discord.Message, error) {
@@ -348,7 +354,7 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 			}
 
 			if (w.caseSensitive && k == e.Content) || (!w.caseSensitive && strings.EqualFold(k, e.Content)) {
-				sendResult(ctx, result, Canceled)
+				sendResult(ctx, result, errors.Abort)
 				return
 			}
 		}
@@ -375,7 +381,7 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 
 		for _, r := range w.cancelReactions {
 			if e.MessageID == r.messageID && e.Emoji.APIString() == r.reaction {
-				sendResult(ctx, result, Canceled)
+				sendResult(ctx, result, errors.Abort)
 				return
 			}
 		}
