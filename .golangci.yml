@@ -36,7 +36,7 @@ linters:
 
 linters-settings:
   funlen:
-    lines: 70
+    lines: 75
     statements: 50
 
 issues:
@@ -83,16 +83,19 @@ issues:
       linters:
         - funlen
         - gocognit
+    # resolving inheritance, not complicated, just long
+    - path: ^pkg/plugin/registered_(command|module).go$
+      linters:
+        - funlen
+        - gocognit
+    # resolving positions is complex
+    - path: ^pkg/utils/channelutil/channelutil.go$
+      linters: gocognit
+      text: ^cognitive complexity \d+ of func `Resolve(Categories|Positions)` is high \(> \d+\)$
     # there would be no point in splitting this up
     - path: ^pkg/utils/embedutil/builder.go$
       linters: funlen
       text: ^Function 'Build' is too long \(\d+ > \d+\)$
-    # this is required to maintain readability
-    - path: ^pkg/utils/i18nutil/permission_terms.go$
-      linters:
-        - golint
-        - stylecheck
-      text: should not use dot imports
     # part of type switch; can't be replaced
     - path: ^pkg/utils/messageutil/utils.go$
       linters: dupl
@@ -101,8 +104,9 @@ issues:
     - path: ^pkg/utils/messageutil/reaction_waiter.go$
       linters: gocognit
       text: ^cognitive complexity \d+ of func `\(\*ReactionWaiter\).handleReactions` is high \(> \d+\)$
-    # resolving inheritance, not complicated, just long
-    - path: ^pkg/plugin/registered_(command|module).go$
+    # this is required to maintain readability
+    - path: ^pkg/utils/permutil/name_terms.go$
       linters:
-        - funlen
-        - gocognit
+        - golint
+        - stylecheck
+      text: should not use dot imports
