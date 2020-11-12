@@ -1,4 +1,4 @@
-package i18nutil
+package permutil
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ func TestPermissionNames(t *testing.T) {
 
 	perms := discord.PermissionAdministrator | discord.PermissionStream
 
-	actual := PermissionNames(perms)
+	actual := Names(perms)
 	assert.Equal(t, expect, actual)
 }
 
@@ -26,6 +26,6 @@ func TestPermissionNamesl(t *testing.T) {
 		on("permissions.view_channel", "View Channel").
 		build()
 
-	actual := PermissionNamesl(perms, l)
+	actual := Namesl(perms, l)
 	assert.Equal(t, expect, actual)
 }

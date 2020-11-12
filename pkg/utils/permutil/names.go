@@ -1,4 +1,4 @@
-package i18nutil
+package permutil
 
 import (
 	"sort"
@@ -8,16 +8,16 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
-// PermissionNames returns the sorted names of the passed discord.Permissions,
-// as found in the client.
-func PermissionNames(perms discord.Permissions) []string {
+// Names returns the sorted names of the passed discord.Permissions, as found
+// in the client.
+func Names(perms discord.Permissions) []string {
 	l := i18n.NewManager(nil).Localizer("")
-	return PermissionNamesl(perms, l)
+	return Namesl(perms, l)
 }
 
 // PermissionNamel returns the sorted and localized names of the passed
 // discord.Permissions, as found in the client.
-func PermissionNamesl(perms discord.Permissions, l *i18n.Localizer) (s []string) {
+func Namesl(perms discord.Permissions, l *i18n.Localizer) (s []string) {
 	for perm, c := range permissionConfigs {
 		if perms.Has(perm) {
 			permString, _ := l.Localize(c)

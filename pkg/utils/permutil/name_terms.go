@@ -1,4 +1,4 @@
-package i18nutil
+package permutil
 
 import (
 	. "github.com/diamondburned/arikawa/discord"

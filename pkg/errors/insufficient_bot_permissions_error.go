@@ -9,7 +9,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
+	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
 // InsufficientBotPermissionsError is the error returned if the bot does not
@@ -53,7 +53,7 @@ func (e *InsufficientBotPermissionsError) Description(l *i18n.Localizer) (desc s
 	}
 
 	if e.IsSinglePermission() {
-		missingNames := i18nutil.PermissionNamesl(e.MissingPermissions, l)
+		missingNames := permutil.Namesl(e.MissingPermissions, l)
 		if len(missingNames) == 0 {
 			return ""
 		}
@@ -74,7 +74,7 @@ func (e *InsufficientBotPermissionsError) Description(l *i18n.Localizer) (desc s
 // PermissionList returns a written bullet point list of the missing
 // permissions, as used if multiple permissions are missing.
 func (e *InsufficientBotPermissionsError) PermissionList(l *i18n.Localizer) string {
-	permNames := i18nutil.PermissionNamesl(e.MissingPermissions, l)
+	permNames := permutil.Namesl(e.MissingPermissions, l)
 	return "• " + strings.Join(permNames, "\n• ")
 }
 
