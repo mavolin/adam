@@ -1,15 +1,9 @@
 package arg
 
 import (
-	"sort"
-
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
 )
 
 const whitespace = " \t\n"
@@ -169,20 +163,3 @@ func fillPlaceholders(placeholders map[string]interface{}, ctx *Context) map[str
 
 	return placeholders
 }
-
-// insertChannelSorted inserts the passed channel into the passed slice channels
-// so that the positions of the channels are sorted in ascending order.
-func insertChannelSorted(c *discord.Channel, channels []*discord.Channel) []*discord.Channel {
-	i := sort.Search(len(channels), func(i int) bool { return channels[i].Position >= c.Position })
-
-	channels = append(channels, new(discord.Channel))
-	copy(channels[i+1:], channels[i:])
-
-	channels[i] = c
-
-	return channels
-}
-
-// chooserEmojis are the emojis used as options in a chooser embed.
-var chooserEmojis = []api.Emoji{emojiutil.Keycap1, emojiutil.Keycap2, emojiutil.Keycap3, emojiutil.Keycap4,
-	emojiutil.Keycap5, emojiutil.Keycap6, emojiutil.Keycap7, emojiutil.Keycap8, emojiutil.Keycap9, emojiutil.Keycap10}

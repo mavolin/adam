@@ -61,7 +61,7 @@ var (
 
 var (
 	choiceInvalidError = i18n.NewFallbackConfig(
-		"args.types.choice.errors.invalid", "{{.raw}} is not a valid choice.")
+		"args.types.choice.errors.invalid", "`{{.raw}}` is not a valid choice.")
 )
 
 // =============================================================================
@@ -84,21 +84,21 @@ var (
 
 // ================================ Integer Errors ================================
 
-var integerSyntaxError = i18n.NewFallbackConfig("args.types.integer.errors.syntax", "{{.raw}} is not an integer.")
+var integerSyntaxError = i18n.NewFallbackConfig("args.types.integer.errors.syntax", "`{{.raw}}` is not an integer.")
 
 // ================================ Decimal Errors ================================
 
-var decimalSyntaxError = i18n.NewFallbackConfig("args.types.decimal.errors.syntax", "{{.raw}} is not a decimal.")
+var decimalSyntaxError = i18n.NewFallbackConfig("args.types.decimal.errors.syntax", "`{{.raw}}` is not a decimal.")
 
 // ================================ Shared Errors ================================
 
 var (
 	numberBelowRangeError = i18n.NewFallbackConfig(
 		"args.types.number.errors.under_range",
-		"{{.raw}} is too small, try using a larger number.")
+		"`{{.raw}}` is too small, try using a larger number.")
 	numberOverRangeError = i18n.NewFallbackConfig(
 		"args.types.number.errors.over_range.arg",
-		"{{.raw}} is too large, try using a smaller number.")
+		"`{{.raw}}` is too large, try using a smaller number.")
 
 	numberBelowMinErrorArg = i18n.NewFallbackConfig(
 		"args.types.number.errors.below_min.arg",
@@ -309,7 +309,7 @@ var (
 // ================================ Errors ================================
 
 var timeZoneInvalidError = i18n.NewFallbackConfig(
-	"args.types.time_zone.errors.invalid", "{{.raw}} is not a valid IANA time zone name.")
+	"args.types.time_zone.errors.invalid", "`{{.raw}}` is not a valid IANA time zone name.")
 
 // =============================================================================
 // Text
@@ -354,9 +354,9 @@ var (
 // ================================ Errors ================================
 
 var (
-	codeInvalidArg = i18n.NewFallbackConfig(
+	codeInvalidErrorArg = i18n.NewFallbackConfig(
 		"args.types.code.errors.invalid.arg", "Argument {{.position}} is not a valid code block.")
-	codeInvalidFlag = i18n.NewFallbackConfig(
+	codeInvalidErrorFlag = i18n.NewFallbackConfig(
 		"args.types.code.errors.invalid.flag", "The `{{.used_name}}`-flag doesn't contain a valid code block.")
 )
 
@@ -433,7 +433,7 @@ var (
 // ================================ Errors ================================
 
 var (
-	emojiInvalidError = i18n.NewFallbackConfig("args.types.emoji.errors.invalid", "{{.raw}} is not an emoji.")
+	emojiInvalidError = i18n.NewFallbackConfig("args.types.emoji.errors.invalid", "`{{.raw}}` is not an emoji.")
 
 	emojiCustomEmojiInDMError = i18n.NewFallbackConfig(
 		"args.types.emoji.errors.custom_emoji_in_dm", "You can't use custom emojis in DMs.")
@@ -447,12 +447,12 @@ var (
 
 	emojiNoAccessError = i18n.NewFallbackConfig(
 		"args.types.user.errors.no_access",
-		"{{.raw}} is either not an emoji or I'm unable to access it. "+
+		"`{{.raw}}` is either not an emoji or I'm unable to access it. "+
 			"Make sure to only use emojis from this server.")
 
 	emojiIDNoAccessError = i18n.NewFallbackConfig(
 		"args.types.emoji.errors.id_no_access",
-		"{{.raw}} is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
+		"`{{.raw}}` is not a valid emoji id or I'm unable to access the emoji it belongs to. "+
 			"Make sure to only use emojis from this server.")
 )
 
@@ -489,10 +489,10 @@ var (
 // ================================ Errors ================================
 
 var (
-	userInvalidError = i18n.NewFallbackConfig("args.types.user.errors.invalid", "{{.raw}} is not a user.")
+	userInvalidError = i18n.NewFallbackConfig("args.types.user.errors.invalid", "`{{.raw}}` is not a user.")
 
 	userIDInvalidError = i18n.NewFallbackConfig(
-		"args.types.user.errors.id_invalid", "{{.raw}} is not a valid user id.")
+		"args.types.user.errors.id_invalid", "`{{.raw}}` is not a valid user id.")
 
 	userInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.user.errors.invalid_mention_with_raw", "{{.raw}} is not a valid user mention.")
@@ -524,10 +524,10 @@ var (
 // ================================ Errors ================================
 
 var (
-	roleInvalidError = i18n.NewFallbackConfig("args.types.role.errors.invalid", "{{.raw}} is not a role.")
+	roleInvalidError = i18n.NewFallbackConfig("args.types.role.errors.invalid", "`{{.raw}}` is not a role.")
 
 	roleIDInvalidError = i18n.NewFallbackConfig(
-		"args.types.role.errors.id_invalid", "{{.raw}} is not a valid role id.")
+		"args.types.role.errors.id_invalid", "`{{.raw}}` is not a valid role id.")
 
 	roleInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.role.errors.invalid_mention_with_raw", "{{.raw}} is not a valid role mention.")
@@ -549,7 +549,7 @@ var (
 var (
 	channelIDInvalidError = i18n.NewFallbackConfig(
 		"args.types.channel.errors.id_invalid",
-		"{{.raw}} is not a valid channel id.")
+		"`{{.raw}}` is not a valid channel id.")
 )
 
 // =============================================================================
@@ -573,11 +573,11 @@ var (
 
 var (
 	textChannelInvalidError = i18n.NewFallbackConfig(
-		"args.types.text_channel.errors.invalid", "{{.raw}} is not a valid id channel.")
+		"args.types.text_channel.errors.invalid", "`{{.raw}}` is not a valid id channel.")
 
 	textChannelInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention_with_raw",
-		"{{.raw}} is not a valid mention of a id channel.")
+		"`{{.raw}}` is not a valid mention of a id channel.")
 
 	textChannelInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_mention.arg",
@@ -588,19 +588,107 @@ var (
 
 	textChannelGuildNotMatchingError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.guild_not_matching",
-		"{{.raw}} is not a channel from this server.")
+		"`{{.raw}}` is not a channel from this server.")
 
 	textChannelIDGuildNotMatchingError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.id_guild_not_matching",
-		"The id {{.raw}} belongs to a channel from another server.")
+		"The id `{{.raw}}` belongs to a channel from another server.")
 
 	textChannelInvalidTypeError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.invalid_type",
-		"{{.raw}} isn't a text channel.")
+		"`{{.raw}}` isn't a text channel.")
 
 	textChannelIDInvalidTypeError = i18n.NewFallbackConfig(
 		"args.types.text_channel.errors.id_invalid_type",
-		"The id {{.raw}} doesn't belong to a text channel.")
+		"The id `{{.raw}}` doesn't belong to a text channel.")
+)
+
+// =============================================================================
+// Category
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	categoryName        = i18n.NewFallbackConfig("args.types.category.name", "Category")
+	categoryDescription = i18n.NewFallbackConfig(
+		"args.types.category.description",
+		"The name of a channel category or its id.")
+)
+
+// ================================ Chooser Data ================================
+
+var (
+	categoryChooserTitle = i18n.NewFallbackConfig("args.types.category.chooser.title", "Multiple Matches")
+
+	categoryChooserDescription = i18n.NewFallbackConfig(
+		"args.types.category.chooser.description",
+		"There are multiple categories that match the name you gave me. "+
+			"Please choose the correct one by reacting with the corresponding emoji, "+
+			"or react with {{.cancel_emoji}} to cancel.")
+
+	categoryChooserMatch = i18n.NewFallbackConfig(
+		"args.types.category.chooser.match",
+		"{{.emoji}}: **{{.channel_name}}** (position: {{.channel_position}})")
+
+	categoryChooserFullMatchesName = i18n.NewFallbackConfig(
+		"args.types.category.chooser.full_matches.name",
+		"Full Matches")
+
+	categoryChooserPartialMatchesName = i18n.NewFallbackConfig(
+		"args.types.category.chooser.partial_matches.name",
+		"Partial Matches")
+
+	categoryChooserTooManyPartialMatches = i18n.NewFallbackConfig(
+		"args.types.category.chooser.too_many_partial_matches",
+		"There are {{.num_partial_matches}} additional partial matches. "+
+			"Use the full name of the category or their id, to match any of these.")
+)
+
+type (
+	categoryChooserDescriptionPlaceholders struct {
+		CancelEmoji string
+	}
+
+	categoryChooserMatchPlaceholders struct {
+		Emoji           string
+		ChannelName     string
+		ChannelPosition int
+	}
+
+	categoryChooserTooManyPartialMatchesPlaceholders struct {
+		NumPartialMatches int
+	}
+)
+
+// ================================ Errors ================================
+
+var (
+	categoryNotFoundError = i18n.NewFallbackConfig(
+		"args.types.category.errors.not_found",
+		"I couldn't find a category with the name or id `{{.raw}}`. Make sure you spelled it correctly.")
+
+	categoryIDInvalidErrorArg = i18n.NewFallbackConfig(
+		"args.types.category.errors.id_invalid.arg",
+		"Argument {{.position}} is not a valid category id.")
+	categoryIDInvalidErrorFlag = i18n.NewFallbackConfig(
+		"args.types.category.errors.id_invalid.flag",
+		"The `{{.used_name}}`-flag doesn't contain a valid category id.")
+
+	categoryIDInvalidTypeError = i18n.NewFallbackConfig(
+		"args.types.category.errors.id_invalid_type",
+		"The id `{{.raw}}` doesn't belong to a category.")
+
+	categoryTooManyMatchesError = i18n.NewFallbackConfig(
+		"args.types.category.errors.too_many_matches",
+		"There are too many categories that match `{{.raw}}`. "+
+			"You can either (temporarily) rename the category and try again, or use the id of category instead.")
+
+	categoryTooManyPartialMatchesError = i18n.NewFallbackConfig(
+		"args.types.category.errors.too_many_partial_matches",
+		"There are too many categories that match `{{.raw}}`. "+
+			"You can either try to find the category by using their full name, "+
+			"or you can use the id of category instead.")
 )
 
 // =============================================================================
