@@ -19,7 +19,7 @@ const (
 	tripleBacktick
 )
 
-func (c groupingCharacter) Quote() string {
+func (c groupingCharacter) String() string {
 	switch c {
 	case singleQuote:
 		return "'"
@@ -203,7 +203,7 @@ func (p *shellwordParser) nextContent() (string, error) {
 	if gc != 0 {
 		return "", errors.NewArgumentParsingErrorl(groupNotClosedError.
 			WithPlaceholders(groupNotClosedErrorPlaceholders{
-				Quote: gc.Quote(),
+				Quote: gc.String(),
 			}))
 	}
 
