@@ -88,10 +88,6 @@ issues:
       linters:
         - funlen
         - gocognit
-    # resolving positions is complex
-    - path: ^pkg/utils/channelutil/channelutil.go$
-      linters: gocognit
-      text: ^cognitive complexity \d+ of func `Resolve(Categories|Positions)` is high \(> \d+\)$
     # there would be no point in splitting this up
     - path: ^pkg/utils/embedutil/builder.go$
       linters: funlen

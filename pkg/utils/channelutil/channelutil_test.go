@@ -1,6 +1,7 @@
 package channelutil
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -44,6 +45,9 @@ func TestResolvePositions(t *testing.T) {
 
 	actual := ResolvePositions(channels)
 	assert.Equal(t, expect, actual)
+	for i := 0; i < len(actual); i++ {
+		fmt.Println(actual[i].ID, expect[i].ID)
+	}
 }
 
 func TestResolveCategories(t *testing.T) {
