@@ -400,7 +400,7 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 					err := w.state.DeleteReactions(w.channelID, r.messageID, r.reaction)
 					if err != nil {
 						// someone else deleted the resource we are accessing
-						if discorderr.InRange(err, discorderr.UnknownResource) {
+						if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
 							return
 						}
 

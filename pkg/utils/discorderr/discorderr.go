@@ -7,6 +7,9 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 )
 
+// As calls errors.As(*httputil.HTTPError) on the passed error.
+// If errors.As returns true, As returns the httputil.HTTPError, otherwise As
+// returns nil.
 func As(err error) (herr *httputil.HTTPError) {
 	if errors.As(err, &herr) {
 		return
@@ -15,23 +18,20 @@ func As(err error) (herr *httputil.HTTPError) {
 	return nil
 }
 
-func Is(err error, code httputil.ErrorCode) bool {
-	herr := As(err)
-	if herr == nil {
-		return false
-	}
-
-	return herr.Code == code
+// Is is short for (err != nil && err.Code == code).
+func Is(err *httputil.HTTPError, code httputil.ErrorCode) bool {
+	return err != nil && err.Code == code
 }
 
-func InRange(err error, r CodeRange) bool {
-	herr := As(err)
-	if herr == nil {
+// InRange checks if the passed httputil.HTTPError's code is in the passed
+// CodeRange.
+func InRange(err *httputil.HTTPError, r CodeRange) bool {
+	if err == nil {
 		return false
 	}
 
 	for _, r := range r {
-		if herr.Code >= r[0] && herr.Code <= r[1] {
+		if err.Code >= r[0] && err.Code <= r[1] {
 			return true
 		}
 	}

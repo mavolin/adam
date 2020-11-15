@@ -202,7 +202,7 @@ func (c category) handleID(s *state.State, ctx *Context, id discord.ChannelID) (
 
 	// the channel name might be a num, and the arg we received was
 	// therefore not an id
-	if discorderr.Is(err, discorderr.UnknownChannel) {
+	if discorderr.Is(discorderr.As(err), discorderr.UnknownChannel) {
 		return nil, nil
 	}
 
@@ -284,7 +284,7 @@ func (c category) sendChooser(
 
 	defer func() {
 		err := s.DeleteMessage(msg.ChannelID, msg.ID)
-		if err != nil && discorderr.InRange(err, discorderr.UnknownResource) {
+		if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
 			ctx.HandleErrorSilent(err)
 		}
 	}()
