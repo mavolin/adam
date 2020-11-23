@@ -1,9 +1,9 @@
 package permutil
 
 import (
-	. "github.com/diamondburned/arikawa/discord"
+	. "github.com/diamondburned/arikawa/discord" //nolint: golint, stylecheck
 
-	. "github.com/mavolin/adam/pkg/i18n"
+	. "github.com/mavolin/adam/pkg/i18n" //nolint: golint, stylecheck
 )
 
 var permissionConfigs = map[Permissions]*Config{

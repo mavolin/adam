@@ -28,8 +28,8 @@ func Append(err1, err2 error) error {
 		}
 
 		return append(err1Typed, withStack(err2))
-	} else if err, ok := err2.(multiError); ok {
-		return append(multiError{withStack(err1)}, err...)
+	} else if err2Typed, ok := err2.(multiError); ok {
+		return append(multiError{withStack(err1)}, err2Typed...)
 	}
 
 	return multiError{withStack(err1), withStack(err2)}
@@ -55,11 +55,11 @@ func AppendSilent(err1, err2 error) error {
 		serr2.(*SilentError).stack = serr2.(*SilentError).stack[:len(serr2.(*SilentError).stack)-1]
 
 		return append(err1Typed, serr2)
-	} else if err, ok := err2.(multiError); ok {
+	} else if err2Typed, ok := err2.(multiError); ok {
 		serr1 := Silent(err1)
 		serr1.(*SilentError).stack = serr1.(*SilentError).stack[:len(serr1.(*SilentError).stack)-1]
 
-		return append(multiError{serr1}, err...)
+		return append(multiError{serr1}, err2Typed...)
 	}
 
 	serr1 := Silent(err1)
@@ -102,7 +102,6 @@ func Combine(errs ...error) error {
 		} else {
 			merr = append(merr, withStack(err))
 		}
-
 	}
 
 	return merr
@@ -141,7 +140,6 @@ func CombineSilent(errs ...error) error {
 		} else {
 			merr = append(merr, err)
 		}
-
 	}
 
 	return merr

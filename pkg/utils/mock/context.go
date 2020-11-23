@@ -189,7 +189,9 @@ func (h *ErrorHandler) HandleError(err error) {
 
 		err2 := err
 
-		for uerr, ok := err2.(interface{ Unwrap() error }); ok; uerr, ok = err2.(interface{ Unwrap() error }) {
+		type unwrapper interface{ Unwrap() error }
+
+		for uerr, ok := err2.(unwrapper); ok; uerr, ok = err2.(unwrapper) { //nolint: errorlint
 			err2 = uerr.Unwrap()
 
 			if reflect.DeepEqual(err2, expect) {
@@ -214,7 +216,9 @@ func (h *ErrorHandler) HandleErrorSilent(err error) {
 
 		err2 := err
 
-		for uerr, ok := err2.(interface{ Unwrap() error }); ok; uerr, ok = err2.(interface{ Unwrap() error }) {
+		type unwrapper interface{ Unwrap() error }
+
+		for uerr, ok := err2.(unwrapper); ok; uerr, ok = err2.(unwrapper) { //nolint: errorlint
 			err2 = uerr.Unwrap()
 
 			if reflect.DeepEqual(err2, expect) {

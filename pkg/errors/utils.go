@@ -14,7 +14,7 @@ type stackTracer interface {
 // stackTrace attempts to extract the stacktrace from the error.
 // If there is none, it will generate a stack trace.
 func stackTrace(err error, skip int) (stack []uintptr) {
-	if s, ok := err.(stackTracer); ok {
+	if s, ok := err.(stackTracer); ok { //nolint: errorlint
 		stack = s.StackTrace()
 	} else {
 		stack = errorutil.GenerateStackTrace(1 + skip)

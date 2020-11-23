@@ -29,8 +29,10 @@ var (
 	ChooserCancelEmoji = emojiutil.CrossMarkButton
 	// ChooserOptionEmojis are the emojis used as options in a chooser embed.
 	// It must contain at leas 2 emojis.
-	ChooserOptionEmojis = []api.Emoji{emojiutil.Keycap1, emojiutil.Keycap2, emojiutil.Keycap3, emojiutil.Keycap4,
-		emojiutil.Keycap5, emojiutil.Keycap6, emojiutil.Keycap7, emojiutil.Keycap8, emojiutil.Keycap9, emojiutil.Keycap10}
+	ChooserOptionEmojis = []api.Emoji{
+		emojiutil.Keycap1, emojiutil.Keycap2, emojiutil.Keycap3, emojiutil.Keycap4, emojiutil.Keycap5,
+		emojiutil.Keycap6, emojiutil.Keycap7, emojiutil.Keycap8, emojiutil.Keycap9, emojiutil.Keycap10,
+	}
 
 	// ChooserBuilder is the source embedutil.Builder used to create chooser
 	// embeds.

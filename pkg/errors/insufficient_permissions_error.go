@@ -82,13 +82,13 @@ func (e *InsufficientPermissionsError) Error() string {
 	return fmt.Sprintf("missingPermissions bot permissions: %d", e.MissingPermissions)
 }
 
-func (e *InsufficientPermissionsError) Is(err error) bool {
-	casted, ok := err.(*InsufficientPermissionsError)
-	if !ok {
+func (e *InsufficientPermissionsError) Is(target error) bool {
+	var typedTarget *InsufficientPermissionsError
+	if !As(target, &typedTarget) {
 		return false
 	}
 
-	return e.MissingPermissions == casted.MissingPermissions
+	return e.MissingPermissions == typedTarget.MissingPermissions
 }
 
 // Handle handles the InsufficientPermissionsError.

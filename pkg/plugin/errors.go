@@ -11,5 +11,4 @@ type informationalError struct {
 }
 
 func (e *informationalError) Error() string                       { return e.s }
-func (e *informationalError) Is(err error) bool                   { return e == err }
 func (e *informationalError) Handle(*state.State, *Context) error { return nil }

@@ -59,10 +59,8 @@ var (
 
 // ================================ Error ================================
 
-var (
-	choiceInvalidError = i18n.NewFallbackConfig(
-		"args.types.choice.errors.invalid", "`{{.raw}}` is not a valid choice.")
-)
+var choiceInvalidError = i18n.NewFallbackConfig(
+	"args.types.choice.errors.invalid", "`{{.raw}}` is not a valid choice.")
 
 // =============================================================================
 // Numbers
@@ -546,11 +544,9 @@ var (
 
 // ================================ Errors ================================
 
-var (
-	channelIDInvalidError = i18n.NewFallbackConfig(
-		"args.types.channel.errors.id_invalid",
-		"`{{.raw}}` is not a valid channel id.")
-)
+var channelIDInvalidError = i18n.NewFallbackConfig(
+	"args.types.channel.errors.id_invalid",
+	"`{{.raw}}` is not a valid channel id.")
 
 // =============================================================================
 // TextChannel

@@ -107,7 +107,7 @@ func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 // to use the command at all.
 //
 // It fails if the command is used in a direct message.
-func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
+func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint: gocognit
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if len(allowed) == 0 {
 			return nil
@@ -187,7 +187,7 @@ func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 // to use the command at all.
 //
 // It fails if the command is used in a direct message.
-func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
+func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint: gocognit
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if len(allowed) == 0 {
 			return nil

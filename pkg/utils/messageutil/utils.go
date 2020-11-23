@@ -6,6 +6,7 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 )
 
+//nolint: dupl
 func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares []interface{}) error {
 	for _, m := range middlewares {
 		switch m := m.(type) {
@@ -33,6 +34,7 @@ func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middl
 	return nil
 }
 
+//nolint: dupl
 func invokeReactionAddMiddlewares(s *state.State, e *state.MessageReactionAddEvent, middlewares []interface{}) error {
 	for _, m := range middlewares {
 		switch m := m.(type) {

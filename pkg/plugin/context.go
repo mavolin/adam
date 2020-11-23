@@ -89,7 +89,6 @@ func (c *Context) Reply(content string) (*discord.Message, error) {
 	return c.ReplyMessage(api.SendMessageData{
 		Content: content,
 	})
-
 }
 
 // Replyl replies with the message translated from the passed

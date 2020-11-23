@@ -1,108 +1,82 @@
 linters:
   disable-all: true
   enable:
-    - govet
-    - errcheck
-    - staticcheck
-    - unused
-    - gosimple
-    - structcheck
-    - varcheck
-    - ineffassign
-    - deadcode
-    - typecheck
+    - asciicheck
     - bodyclose
-    - golint
-    - stylecheck
-    - gosec
-    - interfacer
-    - unconvert
-    - dupl
-    - goconst
-    - gocyclo
-    - gocognit
-    - gofmt
-    - goimports
-    - maligned
-    - depguard
-    - misspell
-    - lll
-    - unparam
+    - deadcode
     - dogsled
-    - prealloc
-    - gocritic
-    - gochecknoinits
+    - dupl
+    - errcheck
+    - errorlint
+    - exhaustive
     - funlen
+    - gochecknoinits
+    - goconst
+    - gocognit
+    - gocritic
+    - gocyclo
+    - gofmt
+    - gofumpt
+    - goimports
+    - golint
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - maligned
+    - misspell
+    - nakedret
+    - prealloc
+    - rowserrcheck
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unconvert
+    - unused
+    - varcheck
+    - whitespace
 
 linters-settings:
   funlen:
-    lines: 75
-    statements: 50
+    lines: 80
+    statements: 55
+  gocognit:
+    min-complexity: 37
 
 issues:
   exclude-rules:
-    - path: _test\.go$
+    # prevent errors on //noinspection tags
+    - linters:
+        - gocritic
+        - gofumpt
+      source: "^\\s*//noinspection(?:[^\n]+)?$"
+    # prevent errors on type assertions with field access
+    - linters:
+        - errorlint
+      source: \w\.\(\*?\w+\)\.\w+
+    - linters:
+        - lll
+      source: //nolint
+    # io.EOF and sql.ErrNoRows should, by doc, never be wrapped
+    - linters:
+        - errorlint
+      source: "\\w+\\s*==\\s*(io.EOF|sql.ErrNoRows)"
+    - path: (?:_test|test_util)\.go$
       linters:
-        - gocyclo
-        - gocognit
-        - errcheck
+        - bodyclose
         - dupl
-        - gosec
+        - errcheck
+        - errorlint
+        - funlen
+        - gocognit
         - goconst
-        - funlen
-        - maligned
-    # test utilities might not fulfill all conventions, as they are just used
-    # for testing
-    - path: test_util\.go$
-      linters:
-        - golint
+        - gocyclo
+        - gosec
         - unparam
-    # handling is pretty similar
-    - path: ^pkg/errors/.+_error.go$
-      linters: dupl
-    # not a duplicate, but two types with delegate methods
-    - path: ^pkg/errors/user_(info|error).go$
-      linters: dupl
-    # parsers are long...
-    - path: ^pkg/impl/arg/.+_parser.go$
+    - path: ^pkg/errors.(?:internal|silent|multi)_error.go$
       linters:
-       - funlen
-       - gocognit
-    # consistency with newArgParsingErr2
-    - path: ^pkg/impl/arg/utils.go$
-      linters: unparam
-      text: "`newArgParsingErr` - `placeholders` always receives `nil`"
-    # Text and AlphanumericID are not duplicates, parsing is just similar
-    - path: ^pkg/impl/arg/text_types.go$
-      linters: dupl
-    # slight variations of the same logic
-    - path: ^pkg/impl/arg/time_types.go$
-      linters: dupl
-    # restriction functions tend to get long/complex
-    - path: ^pkg/impl/restriction/
-      linters:
-        - funlen
-        - gocognit
-    # resolving inheritance, not complicated, just long
-    - path: ^pkg/plugin/registered_(command|module).go$
-      linters:
-        - funlen
-        - gocognit
-    # there would be no point in splitting this up
-    - path: ^pkg/utils/embedutil/builder.go$
-      linters: funlen
-      text: ^Function 'Build' is too long \(\d+ > \d+\)$
-    # part of type switch; can't be replaced
-    - path: ^pkg/utils/messageutil/utils.go$
-      linters: dupl
-      text: ^\d+-\d+ lines are duplicate of `pkg/utils/messageutil/utils.go:\d+-\d+`$
-    # no point in splitting up
-    - path: ^pkg/utils/messageutil/reaction_waiter.go$
-      linters: gocognit
-      text: ^cognitive complexity \d+ of func `\(\*ReactionWaiter\).handleReactions` is high \(> \d+\)$
-    # this is required to maintain readability
-    - path: ^pkg/utils/permutil/name_terms.go$
-      linters:
-        - golint
-        - stylecheck
-      text: should not use dot imports
+        - errorlint

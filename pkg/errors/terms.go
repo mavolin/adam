@@ -35,10 +35,9 @@ var (
 
 // ================================ RestrictionError ================================
 
-var (
-	defaultRestrictionDesc = i18n.NewFallbackConfig("errors.restriction.description.default",
-		"👮 You are not allowed to use this command.")
-)
+var defaultRestrictionDesc = i18n.NewFallbackConfig(
+	"errors.restriction.description.default",
+	"👮 You are not allowed to use this command.")
 
 // ================================ InsufficientPermissionsError ================================
 

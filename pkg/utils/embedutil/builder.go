@@ -399,18 +399,18 @@ func (b *Builder) Clone() *Builder {
 }
 
 // Build builds the discord.Embed.
-func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
+func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) { //nolint: funlen
 	if b.title != nil {
 		e.Title, err = b.title.Get(l)
 		if err != nil {
-			return
+			return discord.Embed{}, err
 		}
 	}
 
 	if b.description != nil {
 		e.Description, err = b.description.Get(l)
 		if err != nil {
-			return
+			return discord.Embed{}, err
 		}
 	}
 
@@ -425,7 +425,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 
 		e.Footer.Text, err = b.footer.text.Get(l)
 		if err != nil {
-			return
+			return discord.Embed{}, err
 		}
 	}
 
@@ -449,7 +449,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 
 		e.Author.Name, err = b.author.name.Get(l)
 		if err != nil {
-			return
+			return discord.Embed{}, err
 		}
 	}
 
@@ -463,7 +463,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 		if f.name != nil {
 			name, err = f.name.Get(l)
 			if err != nil {
-				return
+				return discord.Embed{}, err
 			}
 		}
 
@@ -472,7 +472,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 		if f.value != nil {
 			value, err = f.value.Get(l)
 			if err != nil {
-				return
+				return discord.Embed{}, err
 			}
 		}
 
@@ -483,7 +483,7 @@ func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 		}
 	}
 
-	return
+	return e, err
 }
 
 // MustBuild is the same as Build, but panics if Build returns an error.
