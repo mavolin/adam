@@ -1,6 +1,8 @@
 package errors
 
-import "github.com/mavolin/adam/internal/errorutil"
+import (
+	"github.com/mavolin/adam/internal/errorutil"
+)
 
 // stackTracer is used internally to check if an error already has a
 // stacktrace.

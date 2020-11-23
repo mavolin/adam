@@ -12,33 +12,33 @@ import (
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
-// InsufficientBotPermissionsError is the error returned if the bot does not
+// InsufficientPermissionsError is the error returned if the bot does not
 // have sufficient permissions to execute a command.
-type InsufficientBotPermissionsError struct {
+type InsufficientPermissionsError struct {
 	// MissingPermissions are the missing permissions.
 	MissingPermissions discord.Permissions
 }
 
-var _ Interface = new(InsufficientBotPermissionsError)
+var _ Interface = new(InsufficientPermissionsError)
 
 // NewInsufficientBotPermissionError creates a new
-// InsufficientBotPermissionsError with the passed missing permissions.
+// InsufficientPermissionsError with the passed missing permissions.
 // If the missing permissions contain discord.PermissionAdministrator, all
 // other permissions will be discarded, as they are included in Administrator.
-func NewInsufficientBotPermissionsError(missing discord.Permissions) *InsufficientBotPermissionsError {
+func NewInsufficientBotPermissionsError(missing discord.Permissions) *InsufficientPermissionsError {
 	// if we require Administrator, we will automatically receive all other
 	// permissions once we get it
 	if missing.Has(discord.PermissionAdministrator) {
 		missing = discord.PermissionAdministrator
 	}
 
-	return &InsufficientBotPermissionsError{
+	return &InsufficientPermissionsError{
 		MissingPermissions: missing,
 	}
 }
 
 // IsSinglePermission checks if only a single permission is missing.
-func (e *InsufficientBotPermissionsError) IsSinglePermission() bool {
+func (e *InsufficientPermissionsError) IsSinglePermission() bool {
 	return (e.MissingPermissions & (e.MissingPermissions - 1)) == 0
 }
 
@@ -47,7 +47,7 @@ func (e *InsufficientBotPermissionsError) IsSinglePermission() bool {
 // Note that if IsSinglePermission returns true, the description will already
 // contain the missing permissions, which otherwise would need to be retrieved
 // via PermissionList.
-func (e *InsufficientBotPermissionsError) Description(l *i18n.Localizer) (desc string) {
+func (e *InsufficientPermissionsError) Description(l *i18n.Localizer) (desc string) {
 	if e.MissingPermissions == 0 {
 		return
 	}
@@ -59,13 +59,13 @@ func (e *InsufficientBotPermissionsError) Description(l *i18n.Localizer) (desc s
 		}
 
 		// we can ignore this error, as there is a fallback
-		desc, _ = l.Localize(insufficientBotPermissionsDescSingle.
+		desc, _ = l.Localize(insufficientPermissionsDescSingle.
 			WithPlaceholders(&insufficientBotPermissionsDescSinglePlaceholders{
 				MissingPermission: missingNames[0],
 			}))
 	} else {
 		// we can ignore this error, as there is a fallback
-		desc, _ = l.Localize(insufficientBotPermissionsDescMulti)
+		desc, _ = l.Localize(insufficientPermissionsDescMulti)
 	}
 
 	return
@@ -73,17 +73,17 @@ func (e *InsufficientBotPermissionsError) Description(l *i18n.Localizer) (desc s
 
 // PermissionList returns a written bullet point list of the missing
 // permissions, as used if multiple permissions are missing.
-func (e *InsufficientBotPermissionsError) PermissionList(l *i18n.Localizer) string {
+func (e *InsufficientPermissionsError) PermissionList(l *i18n.Localizer) string {
 	permNames := permutil.Namesl(e.MissingPermissions, l)
 	return "• " + strings.Join(permNames, "\n• ")
 }
 
-func (e *InsufficientBotPermissionsError) Error() string {
+func (e *InsufficientPermissionsError) Error() string {
 	return fmt.Sprintf("missingPermissions bot permissions: %d", e.MissingPermissions)
 }
 
-func (e *InsufficientBotPermissionsError) Is(err error) bool {
-	casted, ok := err.(*InsufficientBotPermissionsError)
+func (e *InsufficientPermissionsError) Is(err error) bool {
+	casted, ok := err.(*InsufficientPermissionsError)
 	if !ok {
 		return false
 	}
@@ -91,16 +91,26 @@ func (e *InsufficientBotPermissionsError) Is(err error) bool {
 	return e.MissingPermissions == casted.MissingPermissions
 }
 
-// Handle sends an error message stating the missing permissions.
-func (e *InsufficientBotPermissionsError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
-	embed := ErrorEmbed.Clone().
-		WithDescription(e.Description(ctx.Localizer))
+// Handle handles the InsufficientPermissionsError.
+// By default it sends an error embed stating the missing permissions.
+func (e *InsufficientPermissionsError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleInsufficientPermissionsError(e, s, ctx)
+}
 
-	if !e.IsSinglePermission() {
-		perms, _ := ctx.Localize(insufficientBotPermissionMissingMissingPermissionsFieldName)
-		embed.WithField(perms, e.PermissionList(ctx.Localizer))
+var HandleInsufficientPermissionsError = func(
+	ierr *InsufficientPermissionsError, _ *state.State, ctx *plugin.Context,
+) {
+	embed := ErrorEmbed.Clone().
+		WithDescription(ierr.Description(ctx.Localizer))
+
+	if !ierr.IsSinglePermission() {
+		perms, err := ctx.Localize(insufficientPermissionsMissingPermissionsFieldName)
+		if err != nil {
+			return
+		}
+
+		embed.WithField(perms, ierr.PermissionList(ctx.Localizer))
 	}
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
-	return
+	_, _ = ctx.ReplyEmbedBuilder(embed)
 }

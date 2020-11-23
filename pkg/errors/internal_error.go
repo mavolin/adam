@@ -9,6 +9,7 @@ import (
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
@@ -244,19 +245,32 @@ func (e *InternalError) Unwrap() error         { return e.cause }
 func (e *InternalError) StackTrace() []uintptr { return e.stack }
 
 // Handle logs the error and sends out an internal error embed.
-func (e *InternalError) Handle(_ *state.State, ctx *plugin.Context) error {
+func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleInternalError(e, s, ctx)
+}
+
+var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.Context) {
 	logstract.
 		WithFields(logstract.Fields{
 			"cmd_ident": ctx.InvokedCommand.Identifier,
-			"err":       e,
+			"err":       ierr.cause,
 		}).
-		Error("command returned with an error")
+		Error("internal error")
+
+	if derr := discorderr.As(ierr.Unwrap()); derr != nil {
+		switch {
+		case discorderr.Is(derr, discorderr.InsufficientPermissions):
+			ierr.desc = i18nutil.NewTextl(discordErrorInsufficientPermissions)
+		case discorderr.Is(derr, discorderr.TemporarilyDisabled):
+			ierr.desc = i18nutil.NewTextl(discordErrorFeatureTemporarilyDisabled)
+		case derr.Status >= 500:
+			ierr.desc = i18nutil.NewTextl(discordErrorServerError)
+		}
+	}
 
 	embed := ErrorEmbed.Clone().
 		WithSimpleTitlel(internalErrorTitle).
-		WithDescription(e.Description(ctx.Localizer))
+		WithDescription(ierr.Description(ctx.Localizer))
 
-	_, err := ctx.ReplyEmbedBuilder(embed)
-
-	return err
+	_, _ = ctx.ReplyEmbedBuilder(embed)
 }

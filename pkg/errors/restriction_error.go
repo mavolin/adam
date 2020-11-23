@@ -94,16 +94,21 @@ func (e *RestrictionError) Description(l *i18n.Localizer) (string, error) {
 
 func (e *RestrictionError) Error() string { return "restriction error" }
 
-// Handle sends an error embed with the description of the ThrottlingError.
-func (e *RestrictionError) Handle(_ *state.State, ctx *plugin.Context) error {
-	desc, err := e.Description(ctx.Localizer)
+// Handle handles the RestrictionError.
+// By default it sends an error embed with the description of the
+// RestrictionError.
+func (e *RestrictionError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleRestrictionError(e, s, ctx)
+}
+
+var HandleRestrictionError = func(rerr *RestrictionError, s *state.State, ctx *plugin.Context) {
+	desc, err := rerr.Description(ctx.Localizer)
 	if err != nil {
-		return err
+		return
 	}
 
 	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
-	return err
+	_, _ = ctx.ReplyEmbedBuilder(embed)
 }

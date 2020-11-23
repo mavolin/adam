@@ -47,6 +47,7 @@ func TestThrottlingError_Handle(t *testing.T) {
 	expectDesc := "abc"
 
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &plugin.Context{
 		MessageCreateEvent: &state.MessageCreateEvent{
@@ -71,8 +72,5 @@ func TestThrottlingError_Handle(t *testing.T) {
 
 	e := NewThrottlingError(expectDesc)
 
-	err := e.Handle(s, ctx)
-	require.NoError(t, err)
-
-	m.Eval()
+	e.Handle(s, ctx)
 }

@@ -435,7 +435,7 @@ func ChannelTypes(allowed plugin.ChannelTypes) plugin.RestrictionFunc {
 // only require constant.DMPermissions.
 //
 // Also note that the resulting plugin.RestrictionFunc won't return a
-// errors.InsufficientBotPermissionsError but a errors.RestrictionError.
+// errors.InsufficientPermissionsError but a errors.RestrictionError.
 func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if required == 0 {

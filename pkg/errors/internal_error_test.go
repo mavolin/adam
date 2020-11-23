@@ -8,7 +8,6 @@ import (
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -67,6 +66,7 @@ func TestWrap(t *testing.T) {
 
 		err := Wrap(cause, message)
 
+		//goland:noinspection GoNilness
 		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
 	})
 }
@@ -85,6 +85,7 @@ func TestWrapf(t *testing.T) {
 
 		err := Wrapf(cause, "def %s", "ghi")
 
+		//goland:noinspection GoNilness
 		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
 	})
 }
@@ -236,6 +237,7 @@ func TestInternalError_Handle(t *testing.T) {
 	expectDesc := "abc"
 
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &plugin.Context{
 		MessageCreateEvent: &state.MessageCreateEvent{
@@ -268,8 +270,5 @@ func TestInternalError_Handle(t *testing.T) {
 
 	e := WithDescription(New(""), expectDesc)
 
-	err := e.(*InternalError).Handle(s, ctx)
-	require.NoError(t, err)
-
-	m.Eval()
+	e.(*InternalError).Handle(s, ctx)
 }

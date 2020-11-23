@@ -62,11 +62,16 @@ func (e *InvalidChannelTypeError) Is(target error) bool {
 	return e.AllowedChannelTypes == casted.AllowedChannelTypes
 }
 
-// Handle sends an error message stating the allowed channel types permissions.
-func (e *InvalidChannelTypeError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
-	embed := ErrorEmbed.Clone().
-		WithDescription(e.Description(ctx.Localizer))
+// Handle handles the InvalidChannelTypeError.
+// By default it sends an error message stating the allowed channel types
+// permissions.
+func (e *InvalidChannelTypeError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleInvalidChannelTypeError(e, s, ctx)
+}
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
-	return
+var HandleInvalidChannelTypeError = func(ierr *InvalidChannelTypeError, s *state.State, ctx *plugin.Context) {
+	embed := ErrorEmbed.Clone().
+		WithDescription(ierr.Description(ctx.Localizer))
+
+	_, _ = ctx.ReplyEmbedBuilder(embed)
 }

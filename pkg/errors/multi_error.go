@@ -7,7 +7,7 @@ import (
 )
 
 // multiError is a combination of multiple errors.
-// They can be retrieved using RetrieveErrors function.
+// They can be retrieved using RetrieveMultiError function.
 type multiError []error
 
 var _ Interface = new(multiError)
@@ -147,9 +147,9 @@ func CombineSilent(errs ...error) error {
 	return merr
 }
 
-// RetrieveErrors converts the passed errors to a single error.
+// RetrieveMultiError converts the passed errors to a single error.
 // If the error is not of type multiError, it will return []error{err}.
-func RetrieveErrors(err error) []error {
+func RetrieveMultiError(err error) []error {
 	merr, ok := err.(multiError)
 	if ok {
 		return merr
@@ -168,15 +168,20 @@ func (merr multiError) Error() (s string) {
 	return
 }
 
-// Handle iterates over the errors and calls the context's error handler on
-// every one.
+// Handle handles the multi error.
+// By default it iterates over the errors and calls the context's error handler
+// on every one.
 // If one of the errors is an InternalError, i.e. if at least one error was not
 // added silently, it will be handled as such.
 // All other errors will be handled as a SilentError.
-func (merr multiError) Handle(_ *state.State, ctx *plugin.Context) error {
+func (merr multiError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleMultiError(merr, s, ctx)
+}
+
+var HandleMultiError = func(errs []error, s *state.State, ctx *plugin.Context) {
 	internal := false
 
-	for _, err := range merr {
+	for _, err := range errs {
 		if !internal {
 			if _, ok := err.(*InternalError); ok {
 				ctx.HandleError(err)
@@ -188,6 +193,4 @@ func (merr multiError) Handle(_ *state.State, ctx *plugin.Context) error {
 
 		ctx.HandleErrorSilent(err)
 	}
-
-	return nil
 }

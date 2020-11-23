@@ -73,8 +73,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 
 	e := NewArgumentParsingError(expectDesc)
 
-	err := e.Handle(nil, ctx)
-	require.NoError(t, err)
+	e.Handle(nil, ctx)
 
 	m.Eval()
 }

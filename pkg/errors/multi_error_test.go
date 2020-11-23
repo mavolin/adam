@@ -238,7 +238,7 @@ func TestRetrieveErrors(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := RetrieveErrors(c.err)
+			actual := RetrieveMultiError(c.err)
 			assert.Equal(t, c.expect, actual)
 		})
 	}

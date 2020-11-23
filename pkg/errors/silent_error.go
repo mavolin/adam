@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mavolin/disstate/v2/pkg/state"
-	"github.com/mavolin/logstract/pkg/logstract"
+	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -92,14 +92,19 @@ func (e *SilentError) Error() string         { return e.cause.Error() }
 func (e *SilentError) Unwrap() error         { return e.cause }
 func (e *SilentError) StackTrace() []uintptr { return e.stack }
 
-// Handle logs the error.
-func (e *SilentError) Handle(_ *state.State, ctx *plugin.Context) error {
-	logstract.
-		WithFields(logstract.Fields{
+// Handle handles the SilentError.
+// By default it logs the error.
+//
+// It will never return an error.
+func (e *SilentError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleSilentError(e, s, ctx)
+}
+
+var HandleSilentError = func(serr *SilentError, s *state.State, ctx *plugin.Context) {
+	log.
+		WithFields(log.Fields{
 			"cmd_ident": ctx.InvokedCommand.Identifier,
-			"err":       e,
+			"err":       serr.Unwrap().Error(),
 		}).
 		Error("command returned with error")
-
-	return nil
 }
