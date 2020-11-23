@@ -159,7 +159,7 @@ var (
 
 	// ================================ People & Body ================================
 
-	WavingHand = SkinTonedEmoji{
+	WavingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f44b",
 		LightSkin:       "\U0001f44b\U0001f3fb",
 		MediumLightSkin: "\U0001f44b\U0001f3fc",
@@ -167,7 +167,7 @@ var (
 		MediumDarkSkin:  "\U0001f44b\U0001f3fe",
 		DarkSkin:        "\U0001f44b\U0001f3ff",
 	}
-	RaisedBackOfHand = SkinTonedEmoji{
+	RaisedBackOfHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f91a",
 		LightSkin:       "\U0001f91a\U0001f3fb",
 		MediumLightSkin: "\U0001f91a\U0001f3fc",
@@ -175,7 +175,7 @@ var (
 		MediumDarkSkin:  "\U0001f91a\U0001f3fe",
 		DarkSkin:        "\U0001f91a\U0001f3ff",
 	}
-	HandWithFingersSplayed = SkinTonedEmoji{
+	HandWithFingersSplayed = SkinToneEmoji{
 		NeutralSkin:     "\U0001f590\ufe0f",
 		LightSkin:       "\U0001f590\U0001f3fb\ufe0f",
 		MediumLightSkin: "\U0001f590\U0001f3fc\ufe0f",
@@ -183,7 +183,7 @@ var (
 		MediumDarkSkin:  "\U0001f590\U0001f3fe\ufe0f",
 		DarkSkin:        "\U0001f590\U0001f3ff\ufe0f",
 	}
-	RaisedHand = SkinTonedEmoji{
+	RaisedHand = SkinToneEmoji{
 		NeutralSkin:     "\u270b",
 		LightSkin:       "\u270b\U0001f3fb",
 		MediumLightSkin: "\u270b\U0001f3fc",
@@ -191,7 +191,7 @@ var (
 		MediumDarkSkin:  "\u270b\U0001f3fe",
 		DarkSkin:        "\u270b\U0001f3ff",
 	}
-	VulcanSalute = SkinTonedEmoji{
+	VulcanSalute = SkinToneEmoji{
 		NeutralSkin:     "\U0001f596",
 		LightSkin:       "\U0001f596\U0001f3fb",
 		MediumLightSkin: "\U0001f596\U0001f3fc",
@@ -199,7 +199,7 @@ var (
 		MediumDarkSkin:  "\U0001f596\U0001f3fe",
 		DarkSkin:        "\U0001f596\U0001f3ff",
 	}
-	OKHand = SkinTonedEmoji{
+	OKHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f44c",
 		LightSkin:       "\U0001f44c\U0001f3fb",
 		MediumLightSkin: "\U0001f44c\U0001f3fc",
@@ -207,7 +207,7 @@ var (
 		MediumDarkSkin:  "\U0001f44c\U0001f3fe",
 		DarkSkin:        "\U0001f44c\U0001f3ff",
 	}
-	PinchedFingers = SkinTonedEmoji{
+	PinchedFingers = SkinToneEmoji{
 		NeutralSkin:     "\U0001f90c",
 		LightSkin:       "\U0001f90c\U0001f3fb",
 		MediumLightSkin: "\U0001f90c\U0001f3fc",
@@ -215,7 +215,7 @@ var (
 		MediumDarkSkin:  "\U0001f90c\U0001f3fe",
 		DarkSkin:        "\U0001f90c\U0001f3ff",
 	}
-	PinchingHand = SkinTonedEmoji{
+	PinchingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f90f",
 		LightSkin:       "\U0001f90f\U0001f3fb",
 		MediumLightSkin: "\U0001f90f\U0001f3fc",
@@ -223,7 +223,7 @@ var (
 		MediumDarkSkin:  "\U0001f90f\U0001f3fe",
 		DarkSkin:        "\U0001f90f\U0001f3ff",
 	}
-	VictoryHand = SkinTonedEmoji{
+	VictoryHand = SkinToneEmoji{
 		NeutralSkin:     "\u270c\ufe0f",
 		LightSkin:       "\u270c\U0001f3fb\ufe0f",
 		MediumLightSkin: "\u270c\U0001f3fc\ufe0f",
@@ -231,7 +231,7 @@ var (
 		MediumDarkSkin:  "\u270c\U0001f3fe\ufe0f",
 		DarkSkin:        "\u270c\U0001f3ff\ufe0f",
 	}
-	CrossedFingers = SkinTonedEmoji{
+	CrossedFingers = SkinToneEmoji{
 		NeutralSkin:     "\U0001f91e",
 		LightSkin:       "\U0001f91e\U0001f3fb",
 		MediumLightSkin: "\U0001f91e\U0001f3fc",
@@ -239,7 +239,7 @@ var (
 		MediumDarkSkin:  "\U0001f91e\U0001f3fe",
 		DarkSkin:        "\U0001f91e\U0001f3ff",
 	}
-	LoveYouGesture = SkinTonedEmoji{
+	LoveYouGesture = SkinToneEmoji{
 		NeutralSkin:     "\U0001f91f",
 		LightSkin:       "\U0001f91f\U0001f3fb",
 		MediumLightSkin: "\U0001f91f\U0001f3fc",
@@ -247,7 +247,7 @@ var (
 		MediumDarkSkin:  "\U0001f91f\U0001f3fe",
 		DarkSkin:        "\U0001f91f\U0001f3ff",
 	}
-	SignOfTheHorns = SkinTonedEmoji{
+	SignOfTheHorns = SkinToneEmoji{
 		NeutralSkin:     "\U0001f918",
 		LightSkin:       "\U0001f918\U0001f3fb",
 		MediumLightSkin: "\U0001f918\U0001f3fc",
@@ -255,7 +255,7 @@ var (
 		MediumDarkSkin:  "\U0001f918\U0001f3fe",
 		DarkSkin:        "\U0001f918\U0001f3ff",
 	}
-	CallMeHand = SkinTonedEmoji{
+	CallMeHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f919",
 		LightSkin:       "\U0001f919\U0001f3fb",
 		MediumLightSkin: "\U0001f919\U0001f3fc",
@@ -263,7 +263,7 @@ var (
 		MediumDarkSkin:  "\U0001f919\U0001f3fe",
 		DarkSkin:        "\U0001f919\U0001f3ff",
 	}
-	BackhandIndexPointingLeft = SkinTonedEmoji{
+	BackhandIndexPointingLeft = SkinToneEmoji{
 		NeutralSkin:     "\U0001f448",
 		LightSkin:       "\U0001f448\U0001f3fb",
 		MediumLightSkin: "\U0001f448\U0001f3fc",
@@ -271,7 +271,7 @@ var (
 		MediumDarkSkin:  "\U0001f448\U0001f3fe",
 		DarkSkin:        "\U0001f448\U0001f3ff",
 	}
-	BackhandIndexPointingRight = SkinTonedEmoji{
+	BackhandIndexPointingRight = SkinToneEmoji{
 		NeutralSkin:     "\U0001f449",
 		LightSkin:       "\U0001f449\U0001f3fb",
 		MediumLightSkin: "\U0001f449\U0001f3fc",
@@ -279,7 +279,7 @@ var (
 		MediumDarkSkin:  "\U0001f449\U0001f3fe",
 		DarkSkin:        "\U0001f449\U0001f3ff",
 	}
-	BackhandIndexPointingUp = SkinTonedEmoji{
+	BackhandIndexPointingUp = SkinToneEmoji{
 		NeutralSkin:     "\U0001f446",
 		LightSkin:       "\U0001f446\U0001f3fb",
 		MediumLightSkin: "\U0001f446\U0001f3fc",
@@ -287,7 +287,7 @@ var (
 		MediumDarkSkin:  "\U0001f446\U0001f3fe",
 		DarkSkin:        "\U0001f446\U0001f3ff",
 	}
-	MiddleFinger = SkinTonedEmoji{
+	MiddleFinger = SkinToneEmoji{
 		NeutralSkin:     "\U0001f595",
 		LightSkin:       "\U0001f595\U0001f3fb",
 		MediumLightSkin: "\U0001f595\U0001f3fc",
@@ -295,7 +295,7 @@ var (
 		MediumDarkSkin:  "\U0001f595\U0001f3fe",
 		DarkSkin:        "\U0001f595\U0001f3ff",
 	}
-	BackhandIndexPointingDown = SkinTonedEmoji{
+	BackhandIndexPointingDown = SkinToneEmoji{
 		NeutralSkin:     "\U0001f447",
 		LightSkin:       "\U0001f447\U0001f3fb",
 		MediumLightSkin: "\U0001f447\U0001f3fc",
@@ -303,7 +303,7 @@ var (
 		MediumDarkSkin:  "\U0001f447\U0001f3fe",
 		DarkSkin:        "\U0001f447\U0001f3ff",
 	}
-	IndexPointingUp = SkinTonedEmoji{
+	IndexPointingUp = SkinToneEmoji{
 		NeutralSkin:     "\u261d\ufe0f",
 		LightSkin:       "\u261d\U0001f3fb\ufe0f",
 		MediumLightSkin: "\u261d\U0001f3fc\ufe0f",
@@ -311,7 +311,7 @@ var (
 		MediumDarkSkin:  "\u261d\U0001f3fe\ufe0f",
 		DarkSkin:        "\u261d\U0001f3ff\ufe0f",
 	}
-	ThumbsUp = SkinTonedEmoji{
+	ThumbsUp = SkinToneEmoji{
 		NeutralSkin:     "\U0001f44d",
 		LightSkin:       "\U0001f44d\U0001f3fb",
 		MediumLightSkin: "\U0001f44d\U0001f3fc",
@@ -319,7 +319,7 @@ var (
 		MediumDarkSkin:  "\U0001f44d\U0001f3fe",
 		DarkSkin:        "\U0001f44d\U0001f3ff",
 	}
-	ThumbsDown = SkinTonedEmoji{
+	ThumbsDown = SkinToneEmoji{
 		NeutralSkin:     "\U0001f44e",
 		LightSkin:       "\U0001f44e\U0001f3fb",
 		MediumLightSkin: "\U0001f44e\U0001f3fc",
@@ -327,7 +327,7 @@ var (
 		MediumDarkSkin:  "\U0001f44e\U0001f3fe",
 		DarkSkin:        "\U0001f44e\U0001f3ff",
 	}
-	RaisedFist = SkinTonedEmoji{
+	RaisedFist = SkinToneEmoji{
 		NeutralSkin:     "\u270a",
 		LightSkin:       "\u270a\U0001f3fb",
 		MediumLightSkin: "\u270a\U0001f3fc",
@@ -335,7 +335,7 @@ var (
 		MediumDarkSkin:  "\u270a\U0001f3fe",
 		DarkSkin:        "\u270a\U0001f3ff",
 	}
-	OncomingFist = SkinTonedEmoji{
+	OncomingFist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f44a",
 		LightSkin:       "\U0001f44a\U0001f3fb",
 		MediumLightSkin: "\U0001f44a\U0001f3fc",
@@ -343,7 +343,7 @@ var (
 		MediumDarkSkin:  "\U0001f44a\U0001f3fe",
 		DarkSkin:        "\U0001f44a\U0001f3ff",
 	}
-	LeftFacingFist = SkinTonedEmoji{
+	LeftFacingFist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f91b",
 		LightSkin:       "\U0001f91b\U0001f3fb",
 		MediumLightSkin: "\U0001f91b\U0001f3fc",
@@ -351,7 +351,7 @@ var (
 		MediumDarkSkin:  "\U0001f91b\U0001f3fe",
 		DarkSkin:        "\U0001f91b\U0001f3ff",
 	}
-	RightFacingFist = SkinTonedEmoji{
+	RightFacingFist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f91c",
 		LightSkin:       "\U0001f91c\U0001f3fb",
 		MediumLightSkin: "\U0001f91c\U0001f3fc",
@@ -359,7 +359,7 @@ var (
 		MediumDarkSkin:  "\U0001f91c\U0001f3fe",
 		DarkSkin:        "\U0001f91c\U0001f3ff",
 	}
-	ClappingHands = SkinTonedEmoji{
+	ClappingHands = SkinToneEmoji{
 		NeutralSkin:     "\U0001f44f",
 		LightSkin:       "\U0001f44f\U0001f3fb",
 		MediumLightSkin: "\U0001f44f\U0001f3fc",
@@ -367,7 +367,7 @@ var (
 		MediumDarkSkin:  "\U0001f44f\U0001f3fe",
 		DarkSkin:        "\U0001f44f\U0001f3ff",
 	}
-	RaisingHands = SkinTonedEmoji{
+	RaisingHands = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64c",
 		LightSkin:       "\U0001f64c\U0001f3fb",
 		MediumLightSkin: "\U0001f64c\U0001f3fc",
@@ -375,7 +375,7 @@ var (
 		MediumDarkSkin:  "\U0001f64c\U0001f3fe",
 		DarkSkin:        "\U0001f64c\U0001f3ff",
 	}
-	OpenHands = SkinTonedEmoji{
+	OpenHands = SkinToneEmoji{
 		NeutralSkin:     "\U0001f450",
 		LightSkin:       "\U0001f450\U0001f3fb",
 		MediumLightSkin: "\U0001f450\U0001f3fc",
@@ -383,7 +383,7 @@ var (
 		MediumDarkSkin:  "\U0001f450\U0001f3fe",
 		DarkSkin:        "\U0001f450\U0001f3ff",
 	}
-	PalmsUpTogether = SkinTonedEmoji{
+	PalmsUpTogether = SkinToneEmoji{
 		NeutralSkin:     "\U0001f932",
 		LightSkin:       "\U0001f932\U0001f3fb",
 		MediumLightSkin: "\U0001f932\U0001f3fc",
@@ -392,7 +392,7 @@ var (
 		DarkSkin:        "\U0001f932\U0001f3ff",
 	}
 	Handshake   Emoji = "\U0001f91d"
-	FoldedHands       = SkinTonedEmoji{
+	FoldedHands       = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64f",
 		LightSkin:       "\U0001f64f\U0001f3fb",
 		MediumLightSkin: "\U0001f64f\U0001f3fc",
@@ -400,7 +400,7 @@ var (
 		MediumDarkSkin:  "\U0001f64f\U0001f3fe",
 		DarkSkin:        "\U0001f64f\U0001f3ff",
 	}
-	WritingHand = SkinTonedEmoji{
+	WritingHand = SkinToneEmoji{
 		NeutralSkin:     "\u270d\ufe0f",
 		LightSkin:       "\u270d\U0001f3fb\ufe0f",
 		MediumLightSkin: "\u270d\U0001f3fc\ufe0f",
@@ -408,7 +408,7 @@ var (
 		MediumDarkSkin:  "\u270d\U0001f3fe\ufe0f",
 		DarkSkin:        "\u270d\U0001f3ff\ufe0f",
 	}
-	NailPolish = SkinTonedEmoji{
+	NailPolish = SkinToneEmoji{
 		NeutralSkin:     "\U0001f485",
 		LightSkin:       "\U0001f485\U0001f3fb",
 		MediumLightSkin: "\U0001f485\U0001f3fc",
@@ -416,7 +416,7 @@ var (
 		MediumDarkSkin:  "\U0001f485\U0001f3fe",
 		DarkSkin:        "\U0001f485\U0001f3ff",
 	}
-	Selfie = SkinTonedEmoji{
+	Selfie = SkinToneEmoji{
 		NeutralSkin:     "\U0001f933",
 		LightSkin:       "\U0001f933\U0001f3fb",
 		MediumLightSkin: "\U0001f933\U0001f3fc",
@@ -424,7 +424,7 @@ var (
 		MediumDarkSkin:  "\U0001f933\U0001f3fe",
 		DarkSkin:        "\U0001f933\U0001f3ff",
 	}
-	FlexedBiceps = SkinTonedEmoji{
+	FlexedBiceps = SkinToneEmoji{
 		NeutralSkin:     "\U0001f4aa",
 		LightSkin:       "\U0001f4aa\U0001f3fb",
 		MediumLightSkin: "\U0001f4aa\U0001f3fc",
@@ -434,7 +434,7 @@ var (
 	}
 	MechanicalArm Emoji = "\U0001f9be"
 	MechanicalLeg Emoji = "\U0001f9bf"
-	Leg                 = SkinTonedEmoji{
+	Leg                 = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b5",
 		LightSkin:       "\U0001f9b5\U0001f3fb",
 		MediumLightSkin: "\U0001f9b5\U0001f3fc",
@@ -442,7 +442,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b5\U0001f3fe",
 		DarkSkin:        "\U0001f9b5\U0001f3ff",
 	}
-	Foot = SkinTonedEmoji{
+	Foot = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b6",
 		LightSkin:       "\U0001f9b6\U0001f3fb",
 		MediumLightSkin: "\U0001f9b6\U0001f3fc",
@@ -450,7 +450,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b6\U0001f3fe",
 		DarkSkin:        "\U0001f9b6\U0001f3ff",
 	}
-	Ear = SkinTonedEmoji{
+	Ear = SkinToneEmoji{
 		NeutralSkin:     "\U0001f442",
 		LightSkin:       "\U0001f442\U0001f3fb",
 		MediumLightSkin: "\U0001f442\U0001f3fc",
@@ -458,7 +458,7 @@ var (
 		MediumDarkSkin:  "\U0001f442\U0001f3fe",
 		DarkSkin:        "\U0001f442\U0001f3ff",
 	}
-	EarWithHearingAid = SkinTonedEmoji{
+	EarWithHearingAid = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9bb",
 		LightSkin:       "\U0001f9bb\U0001f3fb",
 		MediumLightSkin: "\U0001f9bb\U0001f3fc",
@@ -466,7 +466,7 @@ var (
 		MediumDarkSkin:  "\U0001f9bb\U0001f3fe",
 		DarkSkin:        "\U0001f9bb\U0001f3ff",
 	}
-	Nose = SkinTonedEmoji{
+	Nose = SkinToneEmoji{
 		NeutralSkin:     "\U0001f443",
 		LightSkin:       "\U0001f443\U0001f3fb",
 		MediumLightSkin: "\U0001f443\U0001f3fc",
@@ -483,7 +483,7 @@ var (
 	Eye             Emoji = "\U0001f441\ufe0f"
 	Tongue          Emoji = "\U0001f445"
 	Mouth           Emoji = "\U0001f444"
-	Baby                  = SkinTonedEmoji{
+	Baby                  = SkinToneEmoji{
 		NeutralSkin:     "\U0001f476",
 		LightSkin:       "\U0001f476\U0001f3fb",
 		MediumLightSkin: "\U0001f476\U0001f3fc",
@@ -491,7 +491,7 @@ var (
 		MediumDarkSkin:  "\U0001f476\U0001f3fe",
 		DarkSkin:        "\U0001f476\U0001f3ff",
 	}
-	Child = SkinTonedEmoji{
+	Child = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d2",
 		LightSkin:       "\U0001f9d2\U0001f3fb",
 		MediumLightSkin: "\U0001f9d2\U0001f3fc",
@@ -499,7 +499,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d2\U0001f3fe",
 		DarkSkin:        "\U0001f9d2\U0001f3ff",
 	}
-	Boy = SkinTonedEmoji{
+	Boy = SkinToneEmoji{
 		NeutralSkin:     "\U0001f466",
 		LightSkin:       "\U0001f466\U0001f3fb",
 		MediumLightSkin: "\U0001f466\U0001f3fc",
@@ -507,7 +507,7 @@ var (
 		MediumDarkSkin:  "\U0001f466\U0001f3fe",
 		DarkSkin:        "\U0001f466\U0001f3ff",
 	}
-	Girl = SkinTonedEmoji{
+	Girl = SkinToneEmoji{
 		NeutralSkin:     "\U0001f467",
 		LightSkin:       "\U0001f467\U0001f3fb",
 		MediumLightSkin: "\U0001f467\U0001f3fc",
@@ -515,7 +515,7 @@ var (
 		MediumDarkSkin:  "\U0001f467\U0001f3fe",
 		DarkSkin:        "\U0001f467\U0001f3ff",
 	}
-	Person = SkinTonedEmoji{
+	Person = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1",
 		LightSkin:       "\U0001f9d1\U0001f3fb",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc",
@@ -523,7 +523,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe",
 		DarkSkin:        "\U0001f9d1\U0001f3ff",
 	}
-	PersonBlondHair = SkinTonedEmoji{
+	PersonBlondHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f471",
 		LightSkin:       "\U0001f471\U0001f3fb",
 		MediumLightSkin: "\U0001f471\U0001f3fc",
@@ -531,7 +531,7 @@ var (
 		MediumDarkSkin:  "\U0001f471\U0001f3fe",
 		DarkSkin:        "\U0001f471\U0001f3ff",
 	}
-	Man = SkinTonedEmoji{
+	Man = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468",
 		LightSkin:       "\U0001f468\U0001f3fb",
 		MediumLightSkin: "\U0001f468\U0001f3fc",
@@ -539,7 +539,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe",
 		DarkSkin:        "\U0001f468\U0001f3ff",
 	}
-	ManBeard = SkinTonedEmoji{
+	ManBeard = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d4",
 		LightSkin:       "\U0001f9d4\U0001f3fb",
 		MediumLightSkin: "\U0001f9d4\U0001f3fc",
@@ -547,7 +547,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d4\U0001f3fe",
 		DarkSkin:        "\U0001f9d4\U0001f3ff",
 	}
-	ManRedHair = SkinTonedEmoji{
+	ManRedHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9b0",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f9b0",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f9b0",
@@ -555,7 +555,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f9b0",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f9b0",
 	}
-	ManCurlyHair = SkinTonedEmoji{
+	ManCurlyHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9b1",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f9b1",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f9b1",
@@ -563,7 +563,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f9b1",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f9b1",
 	}
-	ManWhiteHair = SkinTonedEmoji{
+	ManWhiteHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9b3",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f9b3",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f9b3",
@@ -571,7 +571,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f9b3",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f9b3",
 	}
-	ManBald = SkinTonedEmoji{
+	ManBald = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9b2",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f9b2",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f9b2",
@@ -579,7 +579,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f9b2",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f9b2",
 	}
-	Woman = SkinTonedEmoji{
+	Woman = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469",
 		LightSkin:       "\U0001f469\U0001f3fb",
 		MediumLightSkin: "\U0001f469\U0001f3fc",
@@ -587,7 +587,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe",
 		DarkSkin:        "\U0001f469\U0001f3ff",
 	}
-	WomanRedHair = SkinTonedEmoji{
+	WomanRedHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f9b0",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f9b0",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f9b0",
@@ -595,7 +595,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f9b0",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f9b0",
 	}
-	PersonRedHair = SkinTonedEmoji{
+	PersonRedHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f9b0",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f9b0",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f9b0",
@@ -603,7 +603,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f9b0",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f9b0",
 	}
-	WomanCurlyHair = SkinTonedEmoji{
+	WomanCurlyHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f9b1",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f9b1",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f9b1",
@@ -611,7 +611,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f9b1",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f9b1",
 	}
-	PersonCurlyHair = SkinTonedEmoji{
+	PersonCurlyHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f9b1",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f9b1",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f9b1",
@@ -619,7 +619,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f9b1",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f9b1",
 	}
-	WomanWhiteHair = SkinTonedEmoji{
+	WomanWhiteHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f9b3",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f9b3",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f9b3",
@@ -627,7 +627,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f9b3",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f9b3",
 	}
-	PersonWhiteHair = SkinTonedEmoji{
+	PersonWhiteHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f9b3",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f9b3",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f9b3",
@@ -635,7 +635,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f9b3",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f9b3",
 	}
-	WomanBald = SkinTonedEmoji{
+	WomanBald = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f9b2",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f9b2",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f9b2",
@@ -643,7 +643,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f9b2",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f9b2",
 	}
-	PersonBald = SkinTonedEmoji{
+	PersonBald = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f9b2",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f9b2",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f9b2",
@@ -651,7 +651,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f9b2",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f9b2",
 	}
-	WomanBlondHair = SkinTonedEmoji{
+	WomanBlondHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f471\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f471\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f471\U0001f3fc\u200d\u2640\ufe0f",
@@ -659,7 +659,7 @@ var (
 		MediumDarkSkin:  "\U0001f471\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f471\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	ManBlondHair = SkinTonedEmoji{
+	ManBlondHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f471\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f471\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f471\U0001f3fc\u200d\u2642\ufe0f",
@@ -667,7 +667,7 @@ var (
 		MediumDarkSkin:  "\U0001f471\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f471\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	OlderPerson = SkinTonedEmoji{
+	OlderPerson = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d3",
 		LightSkin:       "\U0001f9d3\U0001f3fb",
 		MediumLightSkin: "\U0001f9d3\U0001f3fc",
@@ -675,7 +675,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d3\U0001f3fe",
 		DarkSkin:        "\U0001f9d3\U0001f3ff",
 	}
-	OldMan = SkinTonedEmoji{
+	OldMan = SkinToneEmoji{
 		NeutralSkin:     "\U0001f474",
 		LightSkin:       "\U0001f474\U0001f3fb",
 		MediumLightSkin: "\U0001f474\U0001f3fc",
@@ -683,7 +683,7 @@ var (
 		MediumDarkSkin:  "\U0001f474\U0001f3fe",
 		DarkSkin:        "\U0001f474\U0001f3ff",
 	}
-	OldWoman = SkinTonedEmoji{
+	OldWoman = SkinToneEmoji{
 		NeutralSkin:     "\U0001f475",
 		LightSkin:       "\U0001f475\U0001f3fb",
 		MediumLightSkin: "\U0001f475\U0001f3fc",
@@ -691,7 +691,7 @@ var (
 		MediumDarkSkin:  "\U0001f475\U0001f3fe",
 		DarkSkin:        "\U0001f475\U0001f3ff",
 	}
-	PersonFrowning = SkinTonedEmoji{
+	PersonFrowning = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64d",
 		LightSkin:       "\U0001f64d\U0001f3fb",
 		MediumLightSkin: "\U0001f64d\U0001f3fc",
@@ -699,7 +699,7 @@ var (
 		MediumDarkSkin:  "\U0001f64d\U0001f3fe",
 		DarkSkin:        "\U0001f64d\U0001f3ff",
 	}
-	ManFrowning = SkinTonedEmoji{
+	ManFrowning = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64d\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f64d\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f64d\U0001f3fc\u200d\u2642\ufe0f",
@@ -707,7 +707,7 @@ var (
 		MediumDarkSkin:  "\U0001f64d\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f64d\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanFrowning = SkinTonedEmoji{
+	WomanFrowning = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64d\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f64d\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f64d\U0001f3fc\u200d\u2640\ufe0f",
@@ -715,7 +715,7 @@ var (
 		MediumDarkSkin:  "\U0001f64d\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f64d\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonPouting = SkinTonedEmoji{
+	PersonPouting = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64e",
 		LightSkin:       "\U0001f64e\U0001f3fb",
 		MediumLightSkin: "\U0001f64e\U0001f3fc",
@@ -723,7 +723,7 @@ var (
 		MediumDarkSkin:  "\U0001f64e\U0001f3fe",
 		DarkSkin:        "\U0001f64e\U0001f3ff",
 	}
-	ManPouting = SkinTonedEmoji{
+	ManPouting = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64e\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f64e\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f64e\U0001f3fc\u200d\u2642\ufe0f",
@@ -731,7 +731,7 @@ var (
 		MediumDarkSkin:  "\U0001f64e\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f64e\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanPouting = SkinTonedEmoji{
+	WomanPouting = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64e\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f64e\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f64e\U0001f3fc\u200d\u2640\ufe0f",
@@ -739,7 +739,7 @@ var (
 		MediumDarkSkin:  "\U0001f64e\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f64e\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonGesturingNO = SkinTonedEmoji{
+	PersonGesturingNO = SkinToneEmoji{
 		NeutralSkin:     "\U0001f645",
 		LightSkin:       "\U0001f645\U0001f3fb",
 		MediumLightSkin: "\U0001f645\U0001f3fc",
@@ -747,7 +747,7 @@ var (
 		MediumDarkSkin:  "\U0001f645\U0001f3fe",
 		DarkSkin:        "\U0001f645\U0001f3ff",
 	}
-	ManGesturingNO = SkinTonedEmoji{
+	ManGesturingNO = SkinToneEmoji{
 		NeutralSkin:     "\U0001f645\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f645\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f645\U0001f3fc\u200d\u2642\ufe0f",
@@ -755,7 +755,7 @@ var (
 		MediumDarkSkin:  "\U0001f645\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f645\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanGesturingNO = SkinTonedEmoji{
+	WomanGesturingNO = SkinToneEmoji{
 		NeutralSkin:     "\U0001f645\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f645\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f645\U0001f3fc\u200d\u2640\ufe0f",
@@ -763,7 +763,7 @@ var (
 		MediumDarkSkin:  "\U0001f645\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f645\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonGesturingOK = SkinTonedEmoji{
+	PersonGesturingOK = SkinToneEmoji{
 		NeutralSkin:     "\U0001f646",
 		LightSkin:       "\U0001f646\U0001f3fb",
 		MediumLightSkin: "\U0001f646\U0001f3fc",
@@ -771,7 +771,7 @@ var (
 		MediumDarkSkin:  "\U0001f646\U0001f3fe",
 		DarkSkin:        "\U0001f646\U0001f3ff",
 	}
-	ManGesturingOK = SkinTonedEmoji{
+	ManGesturingOK = SkinToneEmoji{
 		NeutralSkin:     "\U0001f646\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f646\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f646\U0001f3fc\u200d\u2642\ufe0f",
@@ -779,7 +779,7 @@ var (
 		MediumDarkSkin:  "\U0001f646\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f646\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanGesturingOK = SkinTonedEmoji{
+	WomanGesturingOK = SkinToneEmoji{
 		NeutralSkin:     "\U0001f646\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f646\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f646\U0001f3fc\u200d\u2640\ufe0f",
@@ -787,7 +787,7 @@ var (
 		MediumDarkSkin:  "\U0001f646\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f646\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonTippingHand = SkinTonedEmoji{
+	PersonTippingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f481",
 		LightSkin:       "\U0001f481\U0001f3fb",
 		MediumLightSkin: "\U0001f481\U0001f3fc",
@@ -795,7 +795,7 @@ var (
 		MediumDarkSkin:  "\U0001f481\U0001f3fe",
 		DarkSkin:        "\U0001f481\U0001f3ff",
 	}
-	ManTippingHand = SkinTonedEmoji{
+	ManTippingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f481\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f481\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f481\U0001f3fc\u200d\u2642\ufe0f",
@@ -803,7 +803,7 @@ var (
 		MediumDarkSkin:  "\U0001f481\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f481\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanTippingHand = SkinTonedEmoji{
+	WomanTippingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f481\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f481\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f481\U0001f3fc\u200d\u2640\ufe0f",
@@ -811,7 +811,7 @@ var (
 		MediumDarkSkin:  "\U0001f481\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f481\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonRaisingHand = SkinTonedEmoji{
+	PersonRaisingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64b",
 		LightSkin:       "\U0001f64b\U0001f3fb",
 		MediumLightSkin: "\U0001f64b\U0001f3fc",
@@ -819,7 +819,7 @@ var (
 		MediumDarkSkin:  "\U0001f64b\U0001f3fe",
 		DarkSkin:        "\U0001f64b\U0001f3ff",
 	}
-	ManRaisingHand = SkinTonedEmoji{
+	ManRaisingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64b\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f64b\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f64b\U0001f3fc\u200d\u2642\ufe0f",
@@ -827,7 +827,7 @@ var (
 		MediumDarkSkin:  "\U0001f64b\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f64b\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanRaisingHand = SkinTonedEmoji{
+	WomanRaisingHand = SkinToneEmoji{
 		NeutralSkin:     "\U0001f64b\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f64b\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f64b\U0001f3fc\u200d\u2640\ufe0f",
@@ -835,7 +835,7 @@ var (
 		MediumDarkSkin:  "\U0001f64b\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f64b\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	DeafPerson = SkinTonedEmoji{
+	DeafPerson = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9cf",
 		LightSkin:       "\U0001f9cf\U0001f3fb",
 		MediumLightSkin: "\U0001f9cf\U0001f3fc",
@@ -843,7 +843,7 @@ var (
 		MediumDarkSkin:  "\U0001f9cf\U0001f3fe",
 		DarkSkin:        "\U0001f9cf\U0001f3ff",
 	}
-	DeafMan = SkinTonedEmoji{
+	DeafMan = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9cf\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9cf\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9cf\U0001f3fc\u200d\u2642\ufe0f",
@@ -851,7 +851,7 @@ var (
 		MediumDarkSkin:  "\U0001f9cf\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9cf\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	DeafWoman = SkinTonedEmoji{
+	DeafWoman = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9cf\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9cf\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9cf\U0001f3fc\u200d\u2640\ufe0f",
@@ -859,7 +859,7 @@ var (
 		MediumDarkSkin:  "\U0001f9cf\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9cf\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonBowing = SkinTonedEmoji{
+	PersonBowing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f647",
 		LightSkin:       "\U0001f647\U0001f3fb",
 		MediumLightSkin: "\U0001f647\U0001f3fc",
@@ -867,7 +867,7 @@ var (
 		MediumDarkSkin:  "\U0001f647\U0001f3fe",
 		DarkSkin:        "\U0001f647\U0001f3ff",
 	}
-	ManBowing = SkinTonedEmoji{
+	ManBowing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f647\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f647\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f647\U0001f3fc\u200d\u2642\ufe0f",
@@ -875,7 +875,7 @@ var (
 		MediumDarkSkin:  "\U0001f647\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f647\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanBowing = SkinTonedEmoji{
+	WomanBowing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f647\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f647\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f647\U0001f3fc\u200d\u2640\ufe0f",
@@ -883,7 +883,7 @@ var (
 		MediumDarkSkin:  "\U0001f647\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f647\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonFacepalming = SkinTonedEmoji{
+	PersonFacepalming = SkinToneEmoji{
 		NeutralSkin:     "\U0001f926",
 		LightSkin:       "\U0001f926\U0001f3fb",
 		MediumLightSkin: "\U0001f926\U0001f3fc",
@@ -891,7 +891,7 @@ var (
 		MediumDarkSkin:  "\U0001f926\U0001f3fe",
 		DarkSkin:        "\U0001f926\U0001f3ff",
 	}
-	ManFacepalming = SkinTonedEmoji{
+	ManFacepalming = SkinToneEmoji{
 		NeutralSkin:     "\U0001f926\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f926\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f926\U0001f3fc\u200d\u2642\ufe0f",
@@ -899,7 +899,7 @@ var (
 		MediumDarkSkin:  "\U0001f926\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f926\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanFacepalming = SkinTonedEmoji{
+	WomanFacepalming = SkinToneEmoji{
 		NeutralSkin:     "\U0001f926\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f926\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f926\U0001f3fc\u200d\u2640\ufe0f",
@@ -907,7 +907,7 @@ var (
 		MediumDarkSkin:  "\U0001f926\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f926\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonShrugging = SkinTonedEmoji{
+	PersonShrugging = SkinToneEmoji{
 		NeutralSkin:     "\U0001f937",
 		LightSkin:       "\U0001f937\U0001f3fb",
 		MediumLightSkin: "\U0001f937\U0001f3fc",
@@ -915,7 +915,7 @@ var (
 		MediumDarkSkin:  "\U0001f937\U0001f3fe",
 		DarkSkin:        "\U0001f937\U0001f3ff",
 	}
-	ManShrugging = SkinTonedEmoji{
+	ManShrugging = SkinToneEmoji{
 		NeutralSkin:     "\U0001f937\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f937\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f937\U0001f3fc\u200d\u2642\ufe0f",
@@ -923,7 +923,7 @@ var (
 		MediumDarkSkin:  "\U0001f937\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f937\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanShrugging = SkinTonedEmoji{
+	WomanShrugging = SkinToneEmoji{
 		NeutralSkin:     "\U0001f937\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f937\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f937\U0001f3fc\u200d\u2640\ufe0f",
@@ -931,7 +931,7 @@ var (
 		MediumDarkSkin:  "\U0001f937\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f937\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	HealthWorker = SkinTonedEmoji{
+	HealthWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\u2695\ufe0f",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\u2695\ufe0f",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\u2695\ufe0f",
@@ -939,7 +939,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\u2695\ufe0f",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\u2695\ufe0f",
 	}
-	ManHealthWorker = SkinTonedEmoji{
+	ManHealthWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\u2695\ufe0f",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\u2695\ufe0f",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\u2695\ufe0f",
@@ -947,7 +947,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\u2695\ufe0f",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\u2695\ufe0f",
 	}
-	WomanHealthWorker = SkinTonedEmoji{
+	WomanHealthWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\u2695\ufe0f",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\u2695\ufe0f",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\u2695\ufe0f",
@@ -955,7 +955,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\u2695\ufe0f",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\u2695\ufe0f",
 	}
-	Student = SkinTonedEmoji{
+	Student = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f393",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f393",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f393",
@@ -963,7 +963,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f393",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f393",
 	}
-	ManStudent = SkinTonedEmoji{
+	ManStudent = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f393",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f393",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f393",
@@ -971,7 +971,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f393",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f393",
 	}
-	WomanStudent = SkinTonedEmoji{
+	WomanStudent = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f393",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f393",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f393",
@@ -979,7 +979,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f393",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f393",
 	}
-	Teacher = SkinTonedEmoji{
+	Teacher = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f3eb",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f3eb",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f3eb",
@@ -987,7 +987,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f3eb",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f3eb",
 	}
-	ManTeacher = SkinTonedEmoji{
+	ManTeacher = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f3eb",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f3eb",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f3eb",
@@ -995,7 +995,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f3eb",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f3eb",
 	}
-	WomanTeacher = SkinTonedEmoji{
+	WomanTeacher = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f3eb",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f3eb",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f3eb",
@@ -1003,7 +1003,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f3eb",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f3eb",
 	}
-	Judge = SkinTonedEmoji{
+	Judge = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\u2696\ufe0f",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\u2696\ufe0f",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\u2696\ufe0f",
@@ -1011,7 +1011,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\u2696\ufe0f",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\u2696\ufe0f",
 	}
-	ManJudge = SkinTonedEmoji{
+	ManJudge = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\u2696\ufe0f",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\u2696\ufe0f",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\u2696\ufe0f",
@@ -1019,7 +1019,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\u2696\ufe0f",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\u2696\ufe0f",
 	}
-	WomanJudge = SkinTonedEmoji{
+	WomanJudge = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\u2696\ufe0f",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\u2696\ufe0f",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\u2696\ufe0f",
@@ -1027,7 +1027,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\u2696\ufe0f",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\u2696\ufe0f",
 	}
-	Farmer = SkinTonedEmoji{
+	Farmer = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f33e",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f33e",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f33e",
@@ -1035,7 +1035,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f33e",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f33e",
 	}
-	ManFarmer = SkinTonedEmoji{
+	ManFarmer = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f33e",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f33e",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f33e",
@@ -1043,7 +1043,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f33e",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f33e",
 	}
-	WomanFarmer = SkinTonedEmoji{
+	WomanFarmer = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f33e",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f33e",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f33e",
@@ -1051,7 +1051,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f33e",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f33e",
 	}
-	Cook = SkinTonedEmoji{
+	Cook = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f373",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f373",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f373",
@@ -1059,7 +1059,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f373",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f373",
 	}
-	ManCook = SkinTonedEmoji{
+	ManCook = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f373",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f373",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f373",
@@ -1067,7 +1067,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f373",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f373",
 	}
-	WomanCook = SkinTonedEmoji{
+	WomanCook = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f373",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f373",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f373",
@@ -1075,7 +1075,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f373",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f373",
 	}
-	Mechanic = SkinTonedEmoji{
+	Mechanic = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f527",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f527",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f527",
@@ -1083,7 +1083,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f527",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f527",
 	}
-	ManMechanic = SkinTonedEmoji{
+	ManMechanic = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f527",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f527",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f527",
@@ -1091,7 +1091,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f527",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f527",
 	}
-	WomanMechanic = SkinTonedEmoji{
+	WomanMechanic = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f527",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f527",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f527",
@@ -1099,7 +1099,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f527",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f527",
 	}
-	FactoryWorker = SkinTonedEmoji{
+	FactoryWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f3ed",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f3ed",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f3ed",
@@ -1107,7 +1107,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f3ed",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f3ed",
 	}
-	ManFactoryWorker = SkinTonedEmoji{
+	ManFactoryWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f3ed",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f3ed",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f3ed",
@@ -1115,7 +1115,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f3ed",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f3ed",
 	}
-	WomanFactoryWorker = SkinTonedEmoji{
+	WomanFactoryWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f3ed",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f3ed",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f3ed",
@@ -1123,7 +1123,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f3ed",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f3ed",
 	}
-	OfficeWorker = SkinTonedEmoji{
+	OfficeWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f4bc",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f4bc",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f4bc",
@@ -1131,7 +1131,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f4bc",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f4bc",
 	}
-	ManOfficeWorker = SkinTonedEmoji{
+	ManOfficeWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f4bc",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f4bc",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f4bc",
@@ -1139,7 +1139,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f4bc",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f4bc",
 	}
-	WomanOfficeWorker = SkinTonedEmoji{
+	WomanOfficeWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f4bc",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f4bc",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f4bc",
@@ -1147,7 +1147,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f4bc",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f4bc",
 	}
-	Scientist = SkinTonedEmoji{
+	Scientist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f52c",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f52c",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f52c",
@@ -1155,7 +1155,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f52c",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f52c",
 	}
-	ManScientist = SkinTonedEmoji{
+	ManScientist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f52c",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f52c",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f52c",
@@ -1163,7 +1163,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f52c",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f52c",
 	}
-	WomanScientist = SkinTonedEmoji{
+	WomanScientist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f52c",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f52c",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f52c",
@@ -1171,7 +1171,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f52c",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f52c",
 	}
-	Technologist = SkinTonedEmoji{
+	Technologist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f4bb",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f4bb",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f4bb",
@@ -1179,7 +1179,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f4bb",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f4bb",
 	}
-	ManTechnologist = SkinTonedEmoji{
+	ManTechnologist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f4bb",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f4bb",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f4bb",
@@ -1187,7 +1187,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f4bb",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f4bb",
 	}
-	WomanTechnologist = SkinTonedEmoji{
+	WomanTechnologist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f4bb",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f4bb",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f4bb",
@@ -1195,7 +1195,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f4bb",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f4bb",
 	}
-	Singer = SkinTonedEmoji{
+	Singer = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f3a4",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f3a4",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f3a4",
@@ -1203,7 +1203,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f3a4",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f3a4",
 	}
-	ManSinger = SkinTonedEmoji{
+	ManSinger = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f3a4",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f3a4",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f3a4",
@@ -1211,7 +1211,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f3a4",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f3a4",
 	}
-	WomanSinger = SkinTonedEmoji{
+	WomanSinger = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f3a4",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f3a4",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f3a4",
@@ -1219,7 +1219,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f3a4",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f3a4",
 	}
-	Artist = SkinTonedEmoji{
+	Artist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f3a8",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f3a8",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f3a8",
@@ -1227,7 +1227,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f3a8",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f3a8",
 	}
-	ManArtist = SkinTonedEmoji{
+	ManArtist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f3a8",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f3a8",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f3a8",
@@ -1235,7 +1235,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f3a8",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f3a8",
 	}
-	WomanArtist = SkinTonedEmoji{
+	WomanArtist = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f3a8",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f3a8",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f3a8",
@@ -1243,7 +1243,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f3a8",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f3a8",
 	}
-	Pilot = SkinTonedEmoji{
+	Pilot = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\u2708\ufe0f",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\u2708\ufe0f",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\u2708\ufe0f",
@@ -1251,7 +1251,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\u2708\ufe0f",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\u2708\ufe0f",
 	}
-	ManPilot = SkinTonedEmoji{
+	ManPilot = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\u2708\ufe0f",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\u2708\ufe0f",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\u2708\ufe0f",
@@ -1259,7 +1259,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\u2708\ufe0f",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\u2708\ufe0f",
 	}
-	WomanPilot = SkinTonedEmoji{
+	WomanPilot = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\u2708\ufe0f",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\u2708\ufe0f",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\u2708\ufe0f",
@@ -1267,7 +1267,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\u2708\ufe0f",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\u2708\ufe0f",
 	}
-	Astronaut = SkinTonedEmoji{
+	Astronaut = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f680",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f680",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f680",
@@ -1275,7 +1275,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f680",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f680",
 	}
-	ManAstronaut = SkinTonedEmoji{
+	ManAstronaut = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f680",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f680",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f680",
@@ -1283,7 +1283,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f680",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f680",
 	}
-	WomanAstronaut = SkinTonedEmoji{
+	WomanAstronaut = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f680",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f680",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f680",
@@ -1291,7 +1291,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f680",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f680",
 	}
-	Firefighter = SkinTonedEmoji{
+	Firefighter = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f692",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f692",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f692",
@@ -1299,7 +1299,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f692",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f692",
 	}
-	ManFirefighter = SkinTonedEmoji{
+	ManFirefighter = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f692",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f692",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f692",
@@ -1307,7 +1307,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f692",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f692",
 	}
-	WomanFirefighter = SkinTonedEmoji{
+	WomanFirefighter = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f692",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f692",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f692",
@@ -1315,7 +1315,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f692",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f692",
 	}
-	PoliceOfficer = SkinTonedEmoji{
+	PoliceOfficer = SkinToneEmoji{
 		NeutralSkin:     "\U0001f46e",
 		LightSkin:       "\U0001f46e\U0001f3fb",
 		MediumLightSkin: "\U0001f46e\U0001f3fc",
@@ -1323,7 +1323,7 @@ var (
 		MediumDarkSkin:  "\U0001f46e\U0001f3fe",
 		DarkSkin:        "\U0001f46e\U0001f3ff",
 	}
-	ManPoliceOfficer = SkinTonedEmoji{
+	ManPoliceOfficer = SkinToneEmoji{
 		NeutralSkin:     "\U0001f46e\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f46e\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f46e\U0001f3fc\u200d\u2642\ufe0f",
@@ -1331,7 +1331,7 @@ var (
 		MediumDarkSkin:  "\U0001f46e\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f46e\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanPoliceOfficer = SkinTonedEmoji{
+	WomanPoliceOfficer = SkinToneEmoji{
 		NeutralSkin:     "\U0001f46e\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f46e\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f46e\U0001f3fc\u200d\u2640\ufe0f",
@@ -1339,7 +1339,7 @@ var (
 		MediumDarkSkin:  "\U0001f46e\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f46e\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Detective = SkinTonedEmoji{
+	Detective = SkinToneEmoji{
 		NeutralSkin:     "\U0001f575\ufe0f",
 		LightSkin:       "\U0001f575\U0001f3fb\ufe0f",
 		MediumLightSkin: "\U0001f575\U0001f3fc\ufe0f",
@@ -1347,7 +1347,7 @@ var (
 		MediumDarkSkin:  "\U0001f575\U0001f3fe\ufe0f",
 		DarkSkin:        "\U0001f575\U0001f3ff\ufe0f",
 	}
-	ManDetective = SkinTonedEmoji{
+	ManDetective = SkinToneEmoji{
 		NeutralSkin:     "\U0001f575\ufe0f\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f575\U0001f3fb\ufe0f\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f575\U0001f3fc\ufe0f\u200d\u2642\ufe0f",
@@ -1355,7 +1355,7 @@ var (
 		MediumDarkSkin:  "\U0001f575\U0001f3fe\ufe0f\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f575\U0001f3ff\ufe0f\u200d\u2642\ufe0f",
 	}
-	WomanDetective = SkinTonedEmoji{
+	WomanDetective = SkinToneEmoji{
 		NeutralSkin:     "\U0001f575\ufe0f\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f575\U0001f3fb\ufe0f\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f575\U0001f3fc\ufe0f\u200d\u2640\ufe0f",
@@ -1363,7 +1363,7 @@ var (
 		MediumDarkSkin:  "\U0001f575\U0001f3fe\ufe0f\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f575\U0001f3ff\ufe0f\u200d\u2640\ufe0f",
 	}
-	Guard = SkinTonedEmoji{
+	Guard = SkinToneEmoji{
 		NeutralSkin:     "\U0001f482",
 		LightSkin:       "\U0001f482\U0001f3fb",
 		MediumLightSkin: "\U0001f482\U0001f3fc",
@@ -1371,7 +1371,7 @@ var (
 		MediumDarkSkin:  "\U0001f482\U0001f3fe",
 		DarkSkin:        "\U0001f482\U0001f3ff",
 	}
-	ManGuard = SkinTonedEmoji{
+	ManGuard = SkinToneEmoji{
 		NeutralSkin:     "\U0001f482\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f482\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f482\U0001f3fc\u200d\u2642\ufe0f",
@@ -1379,7 +1379,7 @@ var (
 		MediumDarkSkin:  "\U0001f482\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f482\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanGuard = SkinTonedEmoji{
+	WomanGuard = SkinToneEmoji{
 		NeutralSkin:     "\U0001f482\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f482\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f482\U0001f3fc\u200d\u2640\ufe0f",
@@ -1387,7 +1387,7 @@ var (
 		MediumDarkSkin:  "\U0001f482\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f482\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Ninja = SkinTonedEmoji{
+	Ninja = SkinToneEmoji{
 		NeutralSkin:     "\U0001f977",
 		LightSkin:       "\U0001f977\U0001f3fb",
 		MediumLightSkin: "\U0001f977\U0001f3fc",
@@ -1395,7 +1395,7 @@ var (
 		MediumDarkSkin:  "\U0001f977\U0001f3fe",
 		DarkSkin:        "\U0001f977\U0001f3ff",
 	}
-	ConstructionWorker = SkinTonedEmoji{
+	ConstructionWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f477",
 		LightSkin:       "\U0001f477\U0001f3fb",
 		MediumLightSkin: "\U0001f477\U0001f3fc",
@@ -1403,7 +1403,7 @@ var (
 		MediumDarkSkin:  "\U0001f477\U0001f3fe",
 		DarkSkin:        "\U0001f477\U0001f3ff",
 	}
-	ManConstructionWorker = SkinTonedEmoji{
+	ManConstructionWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f477\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f477\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f477\U0001f3fc\u200d\u2642\ufe0f",
@@ -1411,7 +1411,7 @@ var (
 		MediumDarkSkin:  "\U0001f477\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f477\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanConstructionWorker = SkinTonedEmoji{
+	WomanConstructionWorker = SkinToneEmoji{
 		NeutralSkin:     "\U0001f477\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f477\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f477\U0001f3fc\u200d\u2640\ufe0f",
@@ -1419,7 +1419,7 @@ var (
 		MediumDarkSkin:  "\U0001f477\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f477\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Prince = SkinTonedEmoji{
+	Prince = SkinToneEmoji{
 		NeutralSkin:     "\U0001f934",
 		LightSkin:       "\U0001f934\U0001f3fb",
 		MediumLightSkin: "\U0001f934\U0001f3fc",
@@ -1427,7 +1427,7 @@ var (
 		MediumDarkSkin:  "\U0001f934\U0001f3fe",
 		DarkSkin:        "\U0001f934\U0001f3ff",
 	}
-	Princess = SkinTonedEmoji{
+	Princess = SkinToneEmoji{
 		NeutralSkin:     "\U0001f478",
 		LightSkin:       "\U0001f478\U0001f3fb",
 		MediumLightSkin: "\U0001f478\U0001f3fc",
@@ -1435,7 +1435,7 @@ var (
 		MediumDarkSkin:  "\U0001f478\U0001f3fe",
 		DarkSkin:        "\U0001f478\U0001f3ff",
 	}
-	PersonWearingTurban = SkinTonedEmoji{
+	PersonWearingTurban = SkinToneEmoji{
 		NeutralSkin:     "\U0001f473",
 		LightSkin:       "\U0001f473\U0001f3fb",
 		MediumLightSkin: "\U0001f473\U0001f3fc",
@@ -1443,7 +1443,7 @@ var (
 		MediumDarkSkin:  "\U0001f473\U0001f3fe",
 		DarkSkin:        "\U0001f473\U0001f3ff",
 	}
-	ManWearingTurban = SkinTonedEmoji{
+	ManWearingTurban = SkinToneEmoji{
 		NeutralSkin:     "\U0001f473\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f473\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f473\U0001f3fc\u200d\u2642\ufe0f",
@@ -1451,7 +1451,7 @@ var (
 		MediumDarkSkin:  "\U0001f473\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f473\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanWearingTurban = SkinTonedEmoji{
+	WomanWearingTurban = SkinToneEmoji{
 		NeutralSkin:     "\U0001f473\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f473\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f473\U0001f3fc\u200d\u2640\ufe0f",
@@ -1459,7 +1459,7 @@ var (
 		MediumDarkSkin:  "\U0001f473\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f473\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonWithSkullcap = SkinTonedEmoji{
+	PersonWithSkullcap = SkinToneEmoji{
 		NeutralSkin:     "\U0001f472",
 		LightSkin:       "\U0001f472\U0001f3fb",
 		MediumLightSkin: "\U0001f472\U0001f3fc",
@@ -1467,7 +1467,7 @@ var (
 		MediumDarkSkin:  "\U0001f472\U0001f3fe",
 		DarkSkin:        "\U0001f472\U0001f3ff",
 	}
-	WomanWithHeadscarf = SkinTonedEmoji{
+	WomanWithHeadscarf = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d5",
 		LightSkin:       "\U0001f9d5\U0001f3fb",
 		MediumLightSkin: "\U0001f9d5\U0001f3fc",
@@ -1475,7 +1475,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d5\U0001f3fe",
 		DarkSkin:        "\U0001f9d5\U0001f3ff",
 	}
-	PersonInTuxedo = SkinTonedEmoji{
+	PersonInTuxedo = SkinToneEmoji{
 		NeutralSkin:     "\U0001f935",
 		LightSkin:       "\U0001f935\U0001f3fb",
 		MediumLightSkin: "\U0001f935\U0001f3fc",
@@ -1483,7 +1483,7 @@ var (
 		MediumDarkSkin:  "\U0001f935\U0001f3fe",
 		DarkSkin:        "\U0001f935\U0001f3ff",
 	}
-	ManInTuxedo = SkinTonedEmoji{
+	ManInTuxedo = SkinToneEmoji{
 		NeutralSkin:     "\U0001f935\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f935\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f935\U0001f3fc\u200d\u2642\ufe0f",
@@ -1491,7 +1491,7 @@ var (
 		MediumDarkSkin:  "\U0001f935\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f935\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanInTuxedo = SkinTonedEmoji{
+	WomanInTuxedo = SkinToneEmoji{
 		NeutralSkin:     "\U0001f935\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f935\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f935\U0001f3fc\u200d\u2640\ufe0f",
@@ -1499,7 +1499,7 @@ var (
 		MediumDarkSkin:  "\U0001f935\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f935\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonWithVeil = SkinTonedEmoji{
+	PersonWithVeil = SkinToneEmoji{
 		NeutralSkin:     "\U0001f470",
 		LightSkin:       "\U0001f470\U0001f3fb",
 		MediumLightSkin: "\U0001f470\U0001f3fc",
@@ -1507,7 +1507,7 @@ var (
 		MediumDarkSkin:  "\U0001f470\U0001f3fe",
 		DarkSkin:        "\U0001f470\U0001f3ff",
 	}
-	ManWithVeil = SkinTonedEmoji{
+	ManWithVeil = SkinToneEmoji{
 		NeutralSkin:     "\U0001f470\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f470\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f470\U0001f3fc\u200d\u2642\ufe0f",
@@ -1515,7 +1515,7 @@ var (
 		MediumDarkSkin:  "\U0001f470\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f470\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanWithVeil = SkinTonedEmoji{
+	WomanWithVeil = SkinToneEmoji{
 		NeutralSkin:     "\U0001f470\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f470\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f470\U0001f3fc\u200d\u2640\ufe0f",
@@ -1523,7 +1523,7 @@ var (
 		MediumDarkSkin:  "\U0001f470\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f470\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PregnantWoman = SkinTonedEmoji{
+	PregnantWoman = SkinToneEmoji{
 		NeutralSkin:     "\U0001f930",
 		LightSkin:       "\U0001f930\U0001f3fb",
 		MediumLightSkin: "\U0001f930\U0001f3fc",
@@ -1531,7 +1531,7 @@ var (
 		MediumDarkSkin:  "\U0001f930\U0001f3fe",
 		DarkSkin:        "\U0001f930\U0001f3ff",
 	}
-	BreastFeeding = SkinTonedEmoji{
+	BreastFeeding = SkinToneEmoji{
 		NeutralSkin:     "\U0001f931",
 		LightSkin:       "\U0001f931\U0001f3fb",
 		MediumLightSkin: "\U0001f931\U0001f3fc",
@@ -1539,7 +1539,7 @@ var (
 		MediumDarkSkin:  "\U0001f931\U0001f3fe",
 		DarkSkin:        "\U0001f931\U0001f3ff",
 	}
-	WomanFeedingBaby = SkinTonedEmoji{
+	WomanFeedingBaby = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f37c",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f37c",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f37c",
@@ -1547,7 +1547,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f37c",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f37c",
 	}
-	ManFeedingBaby = SkinTonedEmoji{
+	ManFeedingBaby = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f37c",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f37c",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f37c",
@@ -1555,7 +1555,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f37c",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f37c",
 	}
-	PersonFeedingBaby = SkinTonedEmoji{
+	PersonFeedingBaby = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f37c",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f37c",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f37c",
@@ -1563,7 +1563,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f37c",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f37c",
 	}
-	BabyAngel = SkinTonedEmoji{
+	BabyAngel = SkinToneEmoji{
 		NeutralSkin:     "\U0001f47c",
 		LightSkin:       "\U0001f47c\U0001f3fb",
 		MediumLightSkin: "\U0001f47c\U0001f3fc",
@@ -1571,7 +1571,7 @@ var (
 		MediumDarkSkin:  "\U0001f47c\U0001f3fe",
 		DarkSkin:        "\U0001f47c\U0001f3ff",
 	}
-	SantaClaus = SkinTonedEmoji{
+	SantaClaus = SkinToneEmoji{
 		NeutralSkin:     "\U0001f385",
 		LightSkin:       "\U0001f385\U0001f3fb",
 		MediumLightSkin: "\U0001f385\U0001f3fc",
@@ -1579,7 +1579,7 @@ var (
 		MediumDarkSkin:  "\U0001f385\U0001f3fe",
 		DarkSkin:        "\U0001f385\U0001f3ff",
 	}
-	MrsClaus = SkinTonedEmoji{
+	MrsClaus = SkinToneEmoji{
 		NeutralSkin:     "\U0001f936",
 		LightSkin:       "\U0001f936\U0001f3fb",
 		MediumLightSkin: "\U0001f936\U0001f3fc",
@@ -1587,7 +1587,7 @@ var (
 		MediumDarkSkin:  "\U0001f936\U0001f3fe",
 		DarkSkin:        "\U0001f936\U0001f3ff",
 	}
-	MxClaus = SkinTonedEmoji{
+	MxClaus = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f384",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f384",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f384",
@@ -1595,7 +1595,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f384",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f384",
 	}
-	Superhero = SkinTonedEmoji{
+	Superhero = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b8",
 		LightSkin:       "\U0001f9b8\U0001f3fb",
 		MediumLightSkin: "\U0001f9b8\U0001f3fc",
@@ -1603,7 +1603,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b8\U0001f3fe",
 		DarkSkin:        "\U0001f9b8\U0001f3ff",
 	}
-	ManSuperhero = SkinTonedEmoji{
+	ManSuperhero = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b8\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9b8\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9b8\U0001f3fc\u200d\u2642\ufe0f",
@@ -1611,7 +1611,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b8\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9b8\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanSuperhero = SkinTonedEmoji{
+	WomanSuperhero = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b8\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9b8\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9b8\U0001f3fc\u200d\u2640\ufe0f",
@@ -1619,7 +1619,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b8\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9b8\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Supervillain = SkinTonedEmoji{
+	Supervillain = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b9",
 		LightSkin:       "\U0001f9b9\U0001f3fb",
 		MediumLightSkin: "\U0001f9b9\U0001f3fc",
@@ -1627,7 +1627,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b9\U0001f3fe",
 		DarkSkin:        "\U0001f9b9\U0001f3ff",
 	}
-	ManSupervillain = SkinTonedEmoji{
+	ManSupervillain = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b9\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9b9\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9b9\U0001f3fc\u200d\u2642\ufe0f",
@@ -1635,7 +1635,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b9\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9b9\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanSupervillain = SkinTonedEmoji{
+	WomanSupervillain = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9b9\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9b9\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9b9\U0001f3fc\u200d\u2640\ufe0f",
@@ -1643,7 +1643,7 @@ var (
 		MediumDarkSkin:  "\U0001f9b9\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9b9\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Mage = SkinTonedEmoji{
+	Mage = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d9",
 		LightSkin:       "\U0001f9d9\U0001f3fb",
 		MediumLightSkin: "\U0001f9d9\U0001f3fc",
@@ -1651,7 +1651,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d9\U0001f3fe",
 		DarkSkin:        "\U0001f9d9\U0001f3ff",
 	}
-	ManMage = SkinTonedEmoji{
+	ManMage = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d9\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9d9\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9d9\U0001f3fc\u200d\u2642\ufe0f",
@@ -1659,7 +1659,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d9\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9d9\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanMage = SkinTonedEmoji{
+	WomanMage = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d9\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9d9\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9d9\U0001f3fc\u200d\u2640\ufe0f",
@@ -1667,7 +1667,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d9\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9d9\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Fairy = SkinTonedEmoji{
+	Fairy = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9da",
 		LightSkin:       "\U0001f9da\U0001f3fb",
 		MediumLightSkin: "\U0001f9da\U0001f3fc",
@@ -1675,7 +1675,7 @@ var (
 		MediumDarkSkin:  "\U0001f9da\U0001f3fe",
 		DarkSkin:        "\U0001f9da\U0001f3ff",
 	}
-	ManFairy = SkinTonedEmoji{
+	ManFairy = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9da\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9da\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9da\U0001f3fc\u200d\u2642\ufe0f",
@@ -1683,7 +1683,7 @@ var (
 		MediumDarkSkin:  "\U0001f9da\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9da\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanFairy = SkinTonedEmoji{
+	WomanFairy = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9da\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9da\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9da\U0001f3fc\u200d\u2640\ufe0f",
@@ -1691,7 +1691,7 @@ var (
 		MediumDarkSkin:  "\U0001f9da\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9da\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Vampire = SkinTonedEmoji{
+	Vampire = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9db",
 		LightSkin:       "\U0001f9db\U0001f3fb",
 		MediumLightSkin: "\U0001f9db\U0001f3fc",
@@ -1699,7 +1699,7 @@ var (
 		MediumDarkSkin:  "\U0001f9db\U0001f3fe",
 		DarkSkin:        "\U0001f9db\U0001f3ff",
 	}
-	ManVampire = SkinTonedEmoji{
+	ManVampire = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9db\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9db\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9db\U0001f3fc\u200d\u2642\ufe0f",
@@ -1707,7 +1707,7 @@ var (
 		MediumDarkSkin:  "\U0001f9db\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9db\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanVampire = SkinTonedEmoji{
+	WomanVampire = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9db\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9db\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9db\U0001f3fc\u200d\u2640\ufe0f",
@@ -1715,7 +1715,7 @@ var (
 		MediumDarkSkin:  "\U0001f9db\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9db\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Merperson = SkinTonedEmoji{
+	Merperson = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9dc",
 		LightSkin:       "\U0001f9dc\U0001f3fb",
 		MediumLightSkin: "\U0001f9dc\U0001f3fc",
@@ -1723,7 +1723,7 @@ var (
 		MediumDarkSkin:  "\U0001f9dc\U0001f3fe",
 		DarkSkin:        "\U0001f9dc\U0001f3ff",
 	}
-	Merman = SkinTonedEmoji{
+	Merman = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9dc\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9dc\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9dc\U0001f3fc\u200d\u2642\ufe0f",
@@ -1731,7 +1731,7 @@ var (
 		MediumDarkSkin:  "\U0001f9dc\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9dc\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	Mermaid = SkinTonedEmoji{
+	Mermaid = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9dc\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9dc\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9dc\U0001f3fc\u200d\u2640\ufe0f",
@@ -1739,7 +1739,7 @@ var (
 		MediumDarkSkin:  "\U0001f9dc\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9dc\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	Elf = SkinTonedEmoji{
+	Elf = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9dd",
 		LightSkin:       "\U0001f9dd\U0001f3fb",
 		MediumLightSkin: "\U0001f9dd\U0001f3fc",
@@ -1747,7 +1747,7 @@ var (
 		MediumDarkSkin:  "\U0001f9dd\U0001f3fe",
 		DarkSkin:        "\U0001f9dd\U0001f3ff",
 	}
-	ManElf = SkinTonedEmoji{
+	ManElf = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9dd\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9dd\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9dd\U0001f3fc\u200d\u2642\ufe0f",
@@ -1755,7 +1755,7 @@ var (
 		MediumDarkSkin:  "\U0001f9dd\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9dd\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanElf = SkinTonedEmoji{
+	WomanElf = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9dd\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9dd\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9dd\U0001f3fc\u200d\u2640\ufe0f",
@@ -1769,7 +1769,7 @@ var (
 	Zombie               Emoji = "\U0001f9df"
 	ManZombie            Emoji = "\U0001f9df\u200d\u2642\ufe0f"
 	WomanZombie          Emoji = "\U0001f9df\u200d\u2640\ufe0f"
-	PersonGettingMassage       = SkinTonedEmoji{
+	PersonGettingMassage       = SkinToneEmoji{
 		NeutralSkin:     "\U0001f486",
 		LightSkin:       "\U0001f486\U0001f3fb",
 		MediumLightSkin: "\U0001f486\U0001f3fc",
@@ -1777,7 +1777,7 @@ var (
 		MediumDarkSkin:  "\U0001f486\U0001f3fe",
 		DarkSkin:        "\U0001f486\U0001f3ff",
 	}
-	ManGettingMassage = SkinTonedEmoji{
+	ManGettingMassage = SkinToneEmoji{
 		NeutralSkin:     "\U0001f486\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f486\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f486\U0001f3fc\u200d\u2642\ufe0f",
@@ -1785,7 +1785,7 @@ var (
 		MediumDarkSkin:  "\U0001f486\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f486\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanGettingMassage = SkinTonedEmoji{
+	WomanGettingMassage = SkinToneEmoji{
 		NeutralSkin:     "\U0001f486\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f486\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f486\U0001f3fc\u200d\u2640\ufe0f",
@@ -1793,7 +1793,7 @@ var (
 		MediumDarkSkin:  "\U0001f486\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f486\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonGettingHaircut = SkinTonedEmoji{
+	PersonGettingHaircut = SkinToneEmoji{
 		NeutralSkin:     "\U0001f487",
 		LightSkin:       "\U0001f487\U0001f3fb",
 		MediumLightSkin: "\U0001f487\U0001f3fc",
@@ -1801,7 +1801,7 @@ var (
 		MediumDarkSkin:  "\U0001f487\U0001f3fe",
 		DarkSkin:        "\U0001f487\U0001f3ff",
 	}
-	ManGettingHaircut = SkinTonedEmoji{
+	ManGettingHaircut = SkinToneEmoji{
 		NeutralSkin:     "\U0001f487\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f487\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f487\U0001f3fc\u200d\u2642\ufe0f",
@@ -1809,7 +1809,7 @@ var (
 		MediumDarkSkin:  "\U0001f487\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f487\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanGettingHaircut = SkinTonedEmoji{
+	WomanGettingHaircut = SkinToneEmoji{
 		NeutralSkin:     "\U0001f487\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f487\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f487\U0001f3fc\u200d\u2640\ufe0f",
@@ -1817,7 +1817,7 @@ var (
 		MediumDarkSkin:  "\U0001f487\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f487\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonWalking = SkinTonedEmoji{
+	PersonWalking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b6",
 		LightSkin:       "\U0001f6b6\U0001f3fb",
 		MediumLightSkin: "\U0001f6b6\U0001f3fc",
@@ -1825,7 +1825,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b6\U0001f3fe",
 		DarkSkin:        "\U0001f6b6\U0001f3ff",
 	}
-	ManWalking = SkinTonedEmoji{
+	ManWalking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b6\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f6b6\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f6b6\U0001f3fc\u200d\u2642\ufe0f",
@@ -1833,7 +1833,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b6\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f6b6\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanWalking = SkinTonedEmoji{
+	WomanWalking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b6\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f6b6\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f6b6\U0001f3fc\u200d\u2640\ufe0f",
@@ -1841,7 +1841,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b6\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f6b6\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonStanding = SkinTonedEmoji{
+	PersonStanding = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9cd",
 		LightSkin:       "\U0001f9cd\U0001f3fb",
 		MediumLightSkin: "\U0001f9cd\U0001f3fc",
@@ -1849,7 +1849,7 @@ var (
 		MediumDarkSkin:  "\U0001f9cd\U0001f3fe",
 		DarkSkin:        "\U0001f9cd\U0001f3ff",
 	}
-	ManStanding = SkinTonedEmoji{
+	ManStanding = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9cd\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9cd\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9cd\U0001f3fc\u200d\u2642\ufe0f",
@@ -1857,7 +1857,7 @@ var (
 		MediumDarkSkin:  "\U0001f9cd\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9cd\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanStanding = SkinTonedEmoji{
+	WomanStanding = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9cd\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9cd\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9cd\U0001f3fc\u200d\u2640\ufe0f",
@@ -1865,7 +1865,7 @@ var (
 		MediumDarkSkin:  "\U0001f9cd\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9cd\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonKneeling = SkinTonedEmoji{
+	PersonKneeling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9ce",
 		LightSkin:       "\U0001f9ce\U0001f3fb",
 		MediumLightSkin: "\U0001f9ce\U0001f3fc",
@@ -1873,7 +1873,7 @@ var (
 		MediumDarkSkin:  "\U0001f9ce\U0001f3fe",
 		DarkSkin:        "\U0001f9ce\U0001f3ff",
 	}
-	ManKneeling = SkinTonedEmoji{
+	ManKneeling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9ce\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9ce\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9ce\U0001f3fc\u200d\u2642\ufe0f",
@@ -1881,7 +1881,7 @@ var (
 		MediumDarkSkin:  "\U0001f9ce\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9ce\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanKneeling = SkinTonedEmoji{
+	WomanKneeling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9ce\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9ce\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9ce\U0001f3fc\u200d\u2640\ufe0f",
@@ -1889,7 +1889,7 @@ var (
 		MediumDarkSkin:  "\U0001f9ce\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9ce\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonWithWhiteCane = SkinTonedEmoji{
+	PersonWithWhiteCane = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f9af",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f9af",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f9af",
@@ -1897,7 +1897,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f9af",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f9af",
 	}
-	ManWithWhiteCane = SkinTonedEmoji{
+	ManWithWhiteCane = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9af",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f9af",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f9af",
@@ -1905,7 +1905,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f9af",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f9af",
 	}
-	WomanWithWhiteCane = SkinTonedEmoji{
+	WomanWithWhiteCane = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f9af",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f9af",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f9af",
@@ -1913,7 +1913,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f9af",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f9af",
 	}
-	PersonInMotorizedWheelchair = SkinTonedEmoji{
+	PersonInMotorizedWheelchair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f9bc",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f9bc",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f9bc",
@@ -1921,7 +1921,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f9bc",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f9bc",
 	}
-	ManInMotorizedWheelchair = SkinTonedEmoji{
+	ManInMotorizedWheelchair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9bc",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f9bc",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f9bc",
@@ -1929,7 +1929,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f9bc",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f9bc",
 	}
-	WomanInMotorizedWheelchair = SkinTonedEmoji{
+	WomanInMotorizedWheelchair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f9bc",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f9bc",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f9bc",
@@ -1937,7 +1937,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f9bc",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f9bc",
 	}
-	PersonInManualWheelchair = SkinTonedEmoji{
+	PersonInManualWheelchair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f9bd",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f9bd",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f9bd",
@@ -1945,7 +1945,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f9bd",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f9bd",
 	}
-	ManInManualWheelchair = SkinTonedEmoji{
+	ManInManualWheelchair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9bd",
 		LightSkin:       "\U0001f468\U0001f3fb\u200d\U0001f9bd",
 		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\U0001f9bd",
@@ -1953,7 +1953,7 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\U0001f9bd",
 		DarkSkin:        "\U0001f468\U0001f3ff\u200d\U0001f9bd",
 	}
-	WomanInManualWheelchair = SkinTonedEmoji{
+	WomanInManualWheelchair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f469\u200d\U0001f9bd",
 		LightSkin:       "\U0001f469\U0001f3fb\u200d\U0001f9bd",
 		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\U0001f9bd",
@@ -1961,7 +1961,7 @@ var (
 		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\U0001f9bd",
 		DarkSkin:        "\U0001f469\U0001f3ff\u200d\U0001f9bd",
 	}
-	PersonRunning = SkinTonedEmoji{
+	PersonRunning = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c3",
 		LightSkin:       "\U0001f3c3\U0001f3fb",
 		MediumLightSkin: "\U0001f3c3\U0001f3fc",
@@ -1969,7 +1969,7 @@ var (
 		MediumDarkSkin:  "\U0001f3c3\U0001f3fe",
 		DarkSkin:        "\U0001f3c3\U0001f3ff",
 	}
-	ManRunning = SkinTonedEmoji{
+	ManRunning = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c3\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f3c3\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f3c3\U0001f3fc\u200d\u2642\ufe0f",
@@ -1977,7 +1977,7 @@ var (
 		MediumDarkSkin:  "\U0001f3c3\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f3c3\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanRunning = SkinTonedEmoji{
+	WomanRunning = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c3\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f3c3\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f3c3\U0001f3fc\u200d\u2640\ufe0f",
@@ -1985,7 +1985,7 @@ var (
 		MediumDarkSkin:  "\U0001f3c3\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f3c3\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	WomanDancing = SkinTonedEmoji{
+	WomanDancing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f483",
 		LightSkin:       "\U0001f483\U0001f3fb",
 		MediumLightSkin: "\U0001f483\U0001f3fc",
@@ -1993,7 +1993,7 @@ var (
 		MediumDarkSkin:  "\U0001f483\U0001f3fe",
 		DarkSkin:        "\U0001f483\U0001f3ff",
 	}
-	ManDancing = SkinTonedEmoji{
+	ManDancing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f57a",
 		LightSkin:       "\U0001f57a\U0001f3fb",
 		MediumLightSkin: "\U0001f57a\U0001f3fc",
@@ -2001,7 +2001,7 @@ var (
 		MediumDarkSkin:  "\U0001f57a\U0001f3fe",
 		DarkSkin:        "\U0001f57a\U0001f3ff",
 	}
-	PersonInSuitLevitating = SkinTonedEmoji{
+	PersonInSuitLevitating = SkinToneEmoji{
 		NeutralSkin:     "\U0001f574\ufe0f",
 		LightSkin:       "\U0001f574\U0001f3fb\ufe0f",
 		MediumLightSkin: "\U0001f574\U0001f3fc\ufe0f",
@@ -2012,7 +2012,7 @@ var (
 	PeopleWithBunnyEars Emoji = "\U0001f46f"
 	MenWithBunnyEars    Emoji = "\U0001f46f\u200d\u2642\ufe0f"
 	WomenWithBunnyEars  Emoji = "\U0001f46f\u200d\u2640\ufe0f"
-	PersonInSteamyRoom        = SkinTonedEmoji{
+	PersonInSteamyRoom        = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d6",
 		LightSkin:       "\U0001f9d6\U0001f3fb",
 		MediumLightSkin: "\U0001f9d6\U0001f3fc",
@@ -2020,7 +2020,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d6\U0001f3fe",
 		DarkSkin:        "\U0001f9d6\U0001f3ff",
 	}
-	ManInSteamyRoom = SkinTonedEmoji{
+	ManInSteamyRoom = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d6\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9d6\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9d6\U0001f3fc\u200d\u2642\ufe0f",
@@ -2028,7 +2028,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d6\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9d6\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanInSteamyRoom = SkinTonedEmoji{
+	WomanInSteamyRoom = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d6\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9d6\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9d6\U0001f3fc\u200d\u2640\ufe0f",
@@ -2036,7 +2036,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d6\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9d6\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonClimbing = SkinTonedEmoji{
+	PersonClimbing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d7",
 		LightSkin:       "\U0001f9d7\U0001f3fb",
 		MediumLightSkin: "\U0001f9d7\U0001f3fc",
@@ -2044,7 +2044,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d7\U0001f3fe",
 		DarkSkin:        "\U0001f9d7\U0001f3ff",
 	}
-	ManClimbing = SkinTonedEmoji{
+	ManClimbing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d7\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9d7\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9d7\U0001f3fc\u200d\u2642\ufe0f",
@@ -2052,7 +2052,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d7\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9d7\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanClimbing = SkinTonedEmoji{
+	WomanClimbing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d7\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9d7\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9d7\U0001f3fc\u200d\u2640\ufe0f",
@@ -2061,7 +2061,7 @@ var (
 		DarkSkin:        "\U0001f9d7\U0001f3ff\u200d\u2640\ufe0f",
 	}
 	PersonFencing Emoji = "\U0001f93a"
-	HorseRacing         = SkinTonedEmoji{
+	HorseRacing         = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c7",
 		LightSkin:       "\U0001f3c7\U0001f3fb",
 		MediumLightSkin: "\U0001f3c7\U0001f3fc",
@@ -2070,7 +2070,7 @@ var (
 		DarkSkin:        "\U0001f3c7\U0001f3ff",
 	}
 	Skier       Emoji = "\u26f7\ufe0f"
-	Snowboarder       = SkinTonedEmoji{
+	Snowboarder       = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c2",
 		LightSkin:       "\U0001f3c2\U0001f3fb",
 		MediumLightSkin: "\U0001f3c2\U0001f3fc",
@@ -2078,7 +2078,7 @@ var (
 		MediumDarkSkin:  "\U0001f3c2\U0001f3fe",
 		DarkSkin:        "\U0001f3c2\U0001f3ff",
 	}
-	PersonGolfing = SkinTonedEmoji{
+	PersonGolfing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3cc\ufe0f",
 		LightSkin:       "\U0001f3cc\U0001f3fb\ufe0f",
 		MediumLightSkin: "\U0001f3cc\U0001f3fc\ufe0f",
@@ -2086,7 +2086,7 @@ var (
 		MediumDarkSkin:  "\U0001f3cc\U0001f3fe\ufe0f",
 		DarkSkin:        "\U0001f3cc\U0001f3ff\ufe0f",
 	}
-	ManGolfing = SkinTonedEmoji{
+	ManGolfing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3cc\ufe0f\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f3cc\U0001f3fb\ufe0f\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f3cc\U0001f3fc\ufe0f\u200d\u2642\ufe0f",
@@ -2094,7 +2094,7 @@ var (
 		MediumDarkSkin:  "\U0001f3cc\U0001f3fe\ufe0f\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f3cc\U0001f3ff\ufe0f\u200d\u2642\ufe0f",
 	}
-	WomanGolfing = SkinTonedEmoji{
+	WomanGolfing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3cc\ufe0f\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f3cc\U0001f3fb\ufe0f\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f3cc\U0001f3fc\ufe0f\u200d\u2640\ufe0f",
@@ -2102,7 +2102,7 @@ var (
 		MediumDarkSkin:  "\U0001f3cc\U0001f3fe\ufe0f\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f3cc\U0001f3ff\ufe0f\u200d\u2640\ufe0f",
 	}
-	PersonSurfing = SkinTonedEmoji{
+	PersonSurfing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c4",
 		LightSkin:       "\U0001f3c4\U0001f3fb",
 		MediumLightSkin: "\U0001f3c4\U0001f3fc",
@@ -2110,7 +2110,7 @@ var (
 		MediumDarkSkin:  "\U0001f3c4\U0001f3fe",
 		DarkSkin:        "\U0001f3c4\U0001f3ff",
 	}
-	ManSurfing = SkinTonedEmoji{
+	ManSurfing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c4\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f3c4\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f3c4\U0001f3fc\u200d\u2642\ufe0f",
@@ -2118,7 +2118,7 @@ var (
 		MediumDarkSkin:  "\U0001f3c4\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f3c4\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanSurfing = SkinTonedEmoji{
+	WomanSurfing = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3c4\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f3c4\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f3c4\U0001f3fc\u200d\u2640\ufe0f",
@@ -2126,7 +2126,7 @@ var (
 		MediumDarkSkin:  "\U0001f3c4\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f3c4\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonRowingBoat = SkinTonedEmoji{
+	PersonRowingBoat = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6a3",
 		LightSkin:       "\U0001f6a3\U0001f3fb",
 		MediumLightSkin: "\U0001f6a3\U0001f3fc",
@@ -2134,7 +2134,7 @@ var (
 		MediumDarkSkin:  "\U0001f6a3\U0001f3fe",
 		DarkSkin:        "\U0001f6a3\U0001f3ff",
 	}
-	ManRowingBoat = SkinTonedEmoji{
+	ManRowingBoat = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6a3\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f6a3\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f6a3\U0001f3fc\u200d\u2642\ufe0f",
@@ -2142,7 +2142,7 @@ var (
 		MediumDarkSkin:  "\U0001f6a3\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f6a3\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanRowingBoat = SkinTonedEmoji{
+	WomanRowingBoat = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6a3\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f6a3\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f6a3\U0001f3fc\u200d\u2640\ufe0f",
@@ -2150,7 +2150,7 @@ var (
 		MediumDarkSkin:  "\U0001f6a3\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f6a3\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonSwimming = SkinTonedEmoji{
+	PersonSwimming = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3ca",
 		LightSkin:       "\U0001f3ca\U0001f3fb",
 		MediumLightSkin: "\U0001f3ca\U0001f3fc",
@@ -2158,7 +2158,7 @@ var (
 		MediumDarkSkin:  "\U0001f3ca\U0001f3fe",
 		DarkSkin:        "\U0001f3ca\U0001f3ff",
 	}
-	ManSwimming = SkinTonedEmoji{
+	ManSwimming = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3ca\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f3ca\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f3ca\U0001f3fc\u200d\u2642\ufe0f",
@@ -2166,7 +2166,7 @@ var (
 		MediumDarkSkin:  "\U0001f3ca\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f3ca\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanSwimming = SkinTonedEmoji{
+	WomanSwimming = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3ca\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f3ca\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f3ca\U0001f3fc\u200d\u2640\ufe0f",
@@ -2174,7 +2174,7 @@ var (
 		MediumDarkSkin:  "\U0001f3ca\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f3ca\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonBouncingBall = SkinTonedEmoji{
+	PersonBouncingBall = SkinToneEmoji{
 		NeutralSkin:     "\u26f9\ufe0f",
 		LightSkin:       "\u26f9\U0001f3fb\ufe0f",
 		MediumLightSkin: "\u26f9\U0001f3fc\ufe0f",
@@ -2182,7 +2182,7 @@ var (
 		MediumDarkSkin:  "\u26f9\U0001f3fe\ufe0f",
 		DarkSkin:        "\u26f9\U0001f3ff\ufe0f",
 	}
-	ManBouncingBall = SkinTonedEmoji{
+	ManBouncingBall = SkinToneEmoji{
 		NeutralSkin:     "\u26f9\ufe0f\u200d\u2642\ufe0f",
 		LightSkin:       "\u26f9\U0001f3fb\ufe0f\u200d\u2642\ufe0f",
 		MediumLightSkin: "\u26f9\U0001f3fc\ufe0f\u200d\u2642\ufe0f",
@@ -2190,7 +2190,7 @@ var (
 		MediumDarkSkin:  "\u26f9\U0001f3fe\ufe0f\u200d\u2642\ufe0f",
 		DarkSkin:        "\u26f9\U0001f3ff\ufe0f\u200d\u2642\ufe0f",
 	}
-	WomanBouncingBall = SkinTonedEmoji{
+	WomanBouncingBall = SkinToneEmoji{
 		NeutralSkin:     "\u26f9\ufe0f\u200d\u2640\ufe0f",
 		LightSkin:       "\u26f9\U0001f3fb\ufe0f\u200d\u2640\ufe0f",
 		MediumLightSkin: "\u26f9\U0001f3fc\ufe0f\u200d\u2640\ufe0f",
@@ -2198,7 +2198,7 @@ var (
 		MediumDarkSkin:  "\u26f9\U0001f3fe\ufe0f\u200d\u2640\ufe0f",
 		DarkSkin:        "\u26f9\U0001f3ff\ufe0f\u200d\u2640\ufe0f",
 	}
-	PersonLiftingWeights = SkinTonedEmoji{
+	PersonLiftingWeights = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3cb\ufe0f",
 		LightSkin:       "\U0001f3cb\U0001f3fb\ufe0f",
 		MediumLightSkin: "\U0001f3cb\U0001f3fc\ufe0f",
@@ -2206,7 +2206,7 @@ var (
 		MediumDarkSkin:  "\U0001f3cb\U0001f3fe\ufe0f",
 		DarkSkin:        "\U0001f3cb\U0001f3ff\ufe0f",
 	}
-	ManLiftingWeights = SkinTonedEmoji{
+	ManLiftingWeights = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3cb\ufe0f\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f3cb\U0001f3fb\ufe0f\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f3cb\U0001f3fc\ufe0f\u200d\u2642\ufe0f",
@@ -2214,7 +2214,7 @@ var (
 		MediumDarkSkin:  "\U0001f3cb\U0001f3fe\ufe0f\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f3cb\U0001f3ff\ufe0f\u200d\u2642\ufe0f",
 	}
-	WomanLiftingWeights = SkinTonedEmoji{
+	WomanLiftingWeights = SkinToneEmoji{
 		NeutralSkin:     "\U0001f3cb\ufe0f\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f3cb\U0001f3fb\ufe0f\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f3cb\U0001f3fc\ufe0f\u200d\u2640\ufe0f",
@@ -2222,7 +2222,7 @@ var (
 		MediumDarkSkin:  "\U0001f3cb\U0001f3fe\ufe0f\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f3cb\U0001f3ff\ufe0f\u200d\u2640\ufe0f",
 	}
-	PersonBiking = SkinTonedEmoji{
+	PersonBiking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b4",
 		LightSkin:       "\U0001f6b4\U0001f3fb",
 		MediumLightSkin: "\U0001f6b4\U0001f3fc",
@@ -2230,7 +2230,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b4\U0001f3fe",
 		DarkSkin:        "\U0001f6b4\U0001f3ff",
 	}
-	ManBiking = SkinTonedEmoji{
+	ManBiking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b4\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f6b4\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f6b4\U0001f3fc\u200d\u2642\ufe0f",
@@ -2238,7 +2238,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b4\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f6b4\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanBiking = SkinTonedEmoji{
+	WomanBiking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b4\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f6b4\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f6b4\U0001f3fc\u200d\u2640\ufe0f",
@@ -2246,7 +2246,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b4\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f6b4\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonMountainBiking = SkinTonedEmoji{
+	PersonMountainBiking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b5",
 		LightSkin:       "\U0001f6b5\U0001f3fb",
 		MediumLightSkin: "\U0001f6b5\U0001f3fc",
@@ -2254,7 +2254,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b5\U0001f3fe",
 		DarkSkin:        "\U0001f6b5\U0001f3ff",
 	}
-	ManMountainBiking = SkinTonedEmoji{
+	ManMountainBiking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b5\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f6b5\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f6b5\U0001f3fc\u200d\u2642\ufe0f",
@@ -2262,7 +2262,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b5\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f6b5\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanMountainBiking = SkinTonedEmoji{
+	WomanMountainBiking = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6b5\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f6b5\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f6b5\U0001f3fc\u200d\u2640\ufe0f",
@@ -2270,7 +2270,7 @@ var (
 		MediumDarkSkin:  "\U0001f6b5\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f6b5\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonCartwheeling = SkinTonedEmoji{
+	PersonCartwheeling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f938",
 		LightSkin:       "\U0001f938\U0001f3fb",
 		MediumLightSkin: "\U0001f938\U0001f3fc",
@@ -2278,7 +2278,7 @@ var (
 		MediumDarkSkin:  "\U0001f938\U0001f3fe",
 		DarkSkin:        "\U0001f938\U0001f3ff",
 	}
-	ManCartwheeling = SkinTonedEmoji{
+	ManCartwheeling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f938\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f938\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f938\U0001f3fc\u200d\u2642\ufe0f",
@@ -2286,7 +2286,7 @@ var (
 		MediumDarkSkin:  "\U0001f938\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f938\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanCartwheeling = SkinTonedEmoji{
+	WomanCartwheeling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f938\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f938\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f938\U0001f3fc\u200d\u2640\ufe0f",
@@ -2297,7 +2297,7 @@ var (
 	PeopleWrestling        Emoji = "\U0001f93c"
 	MenWrestling           Emoji = "\U0001f93c\u200d\u2642\ufe0f"
 	WomenWrestling         Emoji = "\U0001f93c\u200d\u2640\ufe0f"
-	PersonPlayingWaterPolo       = SkinTonedEmoji{
+	PersonPlayingWaterPolo       = SkinToneEmoji{
 		NeutralSkin:     "\U0001f93d",
 		LightSkin:       "\U0001f93d\U0001f3fb",
 		MediumLightSkin: "\U0001f93d\U0001f3fc",
@@ -2305,7 +2305,7 @@ var (
 		MediumDarkSkin:  "\U0001f93d\U0001f3fe",
 		DarkSkin:        "\U0001f93d\U0001f3ff",
 	}
-	ManPlayingWaterPolo = SkinTonedEmoji{
+	ManPlayingWaterPolo = SkinToneEmoji{
 		NeutralSkin:     "\U0001f93d\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f93d\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f93d\U0001f3fc\u200d\u2642\ufe0f",
@@ -2313,7 +2313,7 @@ var (
 		MediumDarkSkin:  "\U0001f93d\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f93d\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanPlayingWaterPolo = SkinTonedEmoji{
+	WomanPlayingWaterPolo = SkinToneEmoji{
 		NeutralSkin:     "\U0001f93d\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f93d\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f93d\U0001f3fc\u200d\u2640\ufe0f",
@@ -2321,7 +2321,7 @@ var (
 		MediumDarkSkin:  "\U0001f93d\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f93d\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonPlayingHandball = SkinTonedEmoji{
+	PersonPlayingHandball = SkinToneEmoji{
 		NeutralSkin:     "\U0001f93e",
 		LightSkin:       "\U0001f93e\U0001f3fb",
 		MediumLightSkin: "\U0001f93e\U0001f3fc",
@@ -2329,7 +2329,7 @@ var (
 		MediumDarkSkin:  "\U0001f93e\U0001f3fe",
 		DarkSkin:        "\U0001f93e\U0001f3ff",
 	}
-	ManPlayingHandball = SkinTonedEmoji{
+	ManPlayingHandball = SkinToneEmoji{
 		NeutralSkin:     "\U0001f93e\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f93e\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f93e\U0001f3fc\u200d\u2642\ufe0f",
@@ -2337,7 +2337,7 @@ var (
 		MediumDarkSkin:  "\U0001f93e\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f93e\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanPlayingHandball = SkinTonedEmoji{
+	WomanPlayingHandball = SkinToneEmoji{
 		NeutralSkin:     "\U0001f93e\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f93e\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f93e\U0001f3fc\u200d\u2640\ufe0f",
@@ -2345,7 +2345,7 @@ var (
 		MediumDarkSkin:  "\U0001f93e\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f93e\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonJuggling = SkinTonedEmoji{
+	PersonJuggling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f939",
 		LightSkin:       "\U0001f939\U0001f3fb",
 		MediumLightSkin: "\U0001f939\U0001f3fc",
@@ -2353,7 +2353,7 @@ var (
 		MediumDarkSkin:  "\U0001f939\U0001f3fe",
 		DarkSkin:        "\U0001f939\U0001f3ff",
 	}
-	ManJuggling = SkinTonedEmoji{
+	ManJuggling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f939\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f939\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f939\U0001f3fc\u200d\u2642\ufe0f",
@@ -2361,7 +2361,7 @@ var (
 		MediumDarkSkin:  "\U0001f939\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f939\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanJuggling = SkinTonedEmoji{
+	WomanJuggling = SkinToneEmoji{
 		NeutralSkin:     "\U0001f939\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f939\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f939\U0001f3fc\u200d\u2640\ufe0f",
@@ -2369,7 +2369,7 @@ var (
 		MediumDarkSkin:  "\U0001f939\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f939\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonInLotusPosition = SkinTonedEmoji{
+	PersonInLotusPosition = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d8",
 		LightSkin:       "\U0001f9d8\U0001f3fb",
 		MediumLightSkin: "\U0001f9d8\U0001f3fc",
@@ -2377,7 +2377,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d8\U0001f3fe",
 		DarkSkin:        "\U0001f9d8\U0001f3ff",
 	}
-	ManInLotusPosition = SkinTonedEmoji{
+	ManInLotusPosition = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d8\u200d\u2642\ufe0f",
 		LightSkin:       "\U0001f9d8\U0001f3fb\u200d\u2642\ufe0f",
 		MediumLightSkin: "\U0001f9d8\U0001f3fc\u200d\u2642\ufe0f",
@@ -2385,7 +2385,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d8\U0001f3fe\u200d\u2642\ufe0f",
 		DarkSkin:        "\U0001f9d8\U0001f3ff\u200d\u2642\ufe0f",
 	}
-	WomanInLotusPosition = SkinTonedEmoji{
+	WomanInLotusPosition = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d8\u200d\u2640\ufe0f",
 		LightSkin:       "\U0001f9d8\U0001f3fb\u200d\u2640\ufe0f",
 		MediumLightSkin: "\U0001f9d8\U0001f3fc\u200d\u2640\ufe0f",
@@ -2393,7 +2393,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d8\U0001f3fe\u200d\u2640\ufe0f",
 		DarkSkin:        "\U0001f9d8\U0001f3ff\u200d\u2640\ufe0f",
 	}
-	PersonTakingBath = SkinTonedEmoji{
+	PersonTakingBath = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6c0",
 		LightSkin:       "\U0001f6c0\U0001f3fb",
 		MediumLightSkin: "\U0001f6c0\U0001f3fc",
@@ -2401,7 +2401,7 @@ var (
 		MediumDarkSkin:  "\U0001f6c0\U0001f3fe",
 		DarkSkin:        "\U0001f6c0\U0001f3ff",
 	}
-	PersonInBed = SkinTonedEmoji{
+	PersonInBed = SkinToneEmoji{
 		NeutralSkin:     "\U0001f6cc",
 		LightSkin:       "\U0001f6cc\U0001f3fb",
 		MediumLightSkin: "\U0001f6cc\U0001f3fc",
@@ -2409,7 +2409,7 @@ var (
 		MediumDarkSkin:  "\U0001f6cc\U0001f3fe",
 		DarkSkin:        "\U0001f6cc\U0001f3ff",
 	}
-	PeopleHoldingHands = SkinTonedEmoji{
+	PeopleHoldingHands = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d1\u200d\U0001f91d\u200d\U0001f9d1",
 		LightSkin:       "\U0001f9d1\U0001f3fb\u200d\U0001f91d\u200d\U0001f9d1",
 		MediumLightSkin: "\U0001f9d1\U0001f3fc\u200d\U0001f91d\u200d\U0001f9d1",
@@ -2417,7 +2417,7 @@ var (
 		MediumDarkSkin:  "\U0001f9d1\U0001f3fe\u200d\U0001f91d\u200d\U0001f9d1",
 		DarkSkin:        "\U0001f9d1\U0001f3ff\u200d\U0001f91d\u200d\U0001f9d1",
 	}
-	WomenHoldingHands = SkinTonedEmoji{
+	WomenHoldingHands = SkinToneEmoji{
 		NeutralSkin:     "\U0001f46d",
 		LightSkin:       "\U0001f46d\U0001f3fb",
 		MediumLightSkin: "\U0001f46d\U0001f3fc",
@@ -2425,7 +2425,7 @@ var (
 		MediumDarkSkin:  "\U0001f46d\U0001f3fe",
 		DarkSkin:        "\U0001f46d\U0001f3ff",
 	}
-	WomanAndManHoldingHands = SkinTonedEmoji{
+	WomanAndManHoldingHands = SkinToneEmoji{
 		NeutralSkin:     "\U0001f46b",
 		LightSkin:       "\U0001f46b\U0001f3fb",
 		MediumLightSkin: "\U0001f46b\U0001f3fc",
@@ -2433,7 +2433,7 @@ var (
 		MediumDarkSkin:  "\U0001f46b\U0001f3fe",
 		DarkSkin:        "\U0001f46b\U0001f3ff",
 	}
-	MenHoldingHands = SkinTonedEmoji{
+	MenHoldingHands = SkinToneEmoji{
 		NeutralSkin:     "\U0001f46c",
 		LightSkin:       "\U0001f46c\U0001f3fb",
 		MediumLightSkin: "\U0001f46c\U0001f3fc",

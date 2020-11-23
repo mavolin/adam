@@ -13,8 +13,8 @@ type (
 	// Emoji is an emoji.
 	Emoji = string
 
-	// SkinTonedEmoji is an emoji that has different skin tones.
-	SkinTonedEmoji struct {
+	// SkinToneEmoji is an emoji that has different skin tones.
+	SkinToneEmoji struct {
 		// NeutralSkin is the emoji with neutral skin color.
 		NeutralSkin Emoji
 		// LightSkin is the emoji with light skin color.
