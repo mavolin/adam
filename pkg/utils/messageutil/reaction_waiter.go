@@ -246,7 +246,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
 						// someone else deleted the resource we are accessing
-						if discorderr.InRange(err, discorderr.UnknownResource) {
+						if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
 							return
 						}
 
@@ -258,7 +258,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
 						// someone else deleted the resource we are accessing
-						if discorderr.InRange(err, discorderr.UnknownResource) {
+						if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
 							return
 						}
 
