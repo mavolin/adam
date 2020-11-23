@@ -2,9 +2,9 @@
 package discorderr
 
 import (
-	"github.com/diamondburned/arikawa/utils/httputil"
+	"errors"
 
-	"github.com/mavolin/adam/pkg/errors"
+	"github.com/diamondburned/arikawa/utils/httputil"
 )
 
 // As calls errors.As(*httputil.HTTPError) on the passed error.
