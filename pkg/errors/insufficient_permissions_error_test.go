@@ -7,7 +7,6 @@ import (
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -17,7 +16,7 @@ func TestNewInsufficientBotPermissionsError(t *testing.T) {
 	t.Run("regular permissions", func(t *testing.T) {
 		perms := discord.PermissionViewChannel | discord.PermissionManageEmojis
 
-		expect := &InsufficientBotPermissionsError{
+		expect := &InsufficientPermissionsError{
 			MissingPermissions: perms,
 		}
 
@@ -27,7 +26,7 @@ func TestNewInsufficientBotPermissionsError(t *testing.T) {
 	})
 
 	t.Run("regular permissions", func(t *testing.T) {
-		expect := &InsufficientBotPermissionsError{
+		expect := &InsufficientPermissionsError{
 			MissingPermissions: discord.PermissionAdministrator,
 		}
 
@@ -65,6 +64,7 @@ func TestInsufficientBotPermissionsError_Is(t *testing.T) {
 func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 	t.Run("single permission", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		ctx := &plugin.Context{
 			MessageCreateEvent: &state.MessageCreateEvent{
@@ -90,14 +90,12 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 		e := NewInsufficientBotPermissionsError(discord.PermissionStream)
 
-		err := e.Handle(s, ctx)
-		require.NoError(t, err)
-
-		m.Eval()
+		e.Handle(s, ctx)
 	})
 
 	t.Run("multiple permissions", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		ctx := &plugin.Context{
 			MessageCreateEvent: &state.MessageCreateEvent{
@@ -124,9 +122,6 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 		e := NewInsufficientBotPermissionsError(discord.PermissionViewAuditLog | discord.PermissionStream)
 
-		err := e.Handle(s, ctx)
-		require.NoError(t, err)
-
-		m.Eval()
+		e.Handle(s, ctx)
 	})
 }

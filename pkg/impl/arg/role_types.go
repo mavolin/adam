@@ -11,8 +11,8 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// RoleAllowIDs is a global flag that allows you to specify whether Roles
-// may also be noted as plain Snowflakes.
+// RoleAllowIDs is a global flag that defines whether Roles may also be noted
+// as plain Snowflakes.
 var RoleAllowIDs = true
 
 // =============================================================================

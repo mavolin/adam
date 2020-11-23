@@ -2,6 +2,7 @@ package arg
 
 import (
 	"fmt"
+	"math"
 	"testing"
 	"time"
 
@@ -9,10 +10,101 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/duration"
 )
+
+func TestDuration_Parse(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		expect := 1*duration.Week + 3*duration.Day
+
+		ctx := &Context{Raw: "1w 3d"}
+
+		actual, err := SimpleDuration.Parse(nil, ctx)
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+	})
+
+	failureCases := []struct {
+		name string
+
+		duration Type
+		raw      string
+
+		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
+	}{
+		{
+			name:       "size",
+			duration:   SimpleDuration,
+			raw:        fmt.Sprintf("%dh", int64(math.MaxInt64)),
+			expectArg:  durationSizeErrorArg,
+			expectFlag: durationSizeErrorFlag,
+		},
+		{
+			name:       "syntax",
+			duration:   SimpleDuration,
+			raw:        "abc",
+			expectArg:  durationInvalidError,
+			expectFlag: durationInvalidError,
+		},
+		{
+			name:       "missing unit",
+			duration:   SimpleDuration,
+			raw:        "123 456h",
+			expectArg:  durationMissingUnitErrorArg,
+			expectFlag: durationMissingUnitErrorFlag,
+		},
+		{
+			name:         "invalid unit",
+			duration:     SimpleDuration,
+			raw:          "123abc",
+			expectArg:    durationInvalidUnitError,
+			expectFlag:   durationInvalidUnitError,
+			placeholders: map[string]interface{}{"unit": "abc"},
+		},
+		{
+			name:         "below min",
+			duration:     Duration{Min: 5 * time.Second},
+			raw:          "4s",
+			expectArg:    durationBelowMinErrorArg,
+			expectFlag:   durationBelowMinErrorFlag,
+			placeholders: map[string]interface{}{"min": "5s"},
+		},
+		{
+			name:         "above max",
+			duration:     Duration{Max: 5 * time.Second},
+			raw:          "6s",
+			expectArg:    durationAboveMaxErrorArg,
+			expectFlag:   durationAboveMaxErrorFlag,
+			placeholders: map[string]interface{}{"max": "5s"},
+		},
+	}
+
+	t.Run("failure", func(t *testing.T) {
+		for _, c := range failureCases {
+			t.Run(c.name, func(t *testing.T) {
+				ctx := &Context{
+					Raw:  c.raw,
+					Kind: KindArg,
+				}
+
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+
+				_, actual := c.duration.Parse(nil, ctx)
+				assert.Equal(t, expect, actual)
+
+				ctx.Kind = KindFlag
+
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+
+				_, actual = c.duration.Parse(nil, ctx)
+				assert.Equal(t, expect, actual)
+			})
+		}
+	})
+}
 
 func TestTime_Parse(t *testing.T) {
 	successCases := []struct {
@@ -82,6 +174,7 @@ func TestTime_Parse(t *testing.T) {
 		defaultLocation *time.Location
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
 			name:            "require offset",
@@ -99,18 +192,15 @@ func TestTime_Parse(t *testing.T) {
 			expectFlag:      timeInvalidErrorFlag,
 		},
 		{
-			name:     "before min",
-			raw:      "13:01",
-			min:      time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC),
-			location: time.UTC,
-			expectArg: timeBeforeMinErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC).Format(timeFormat),
-				}),
-			expectFlag: timeBeforeMinErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC).Format(timeFormat),
-				}),
+			name:       "before min",
+			raw:        "13:01",
+			min:        time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC),
+			location:   time.UTC,
+			expectArg:  timeBeforeMinErrorArg,
+			expectFlag: timeBeforeMinErrorFlag,
+			placeholders: map[string]interface{}{
+				"min": time.Date(0, 1, 1, 14, 0, 0, 0, time.UTC).Format(timeFormat),
+			},
 		},
 		{
 			name:            "after max",
@@ -119,14 +209,11 @@ func TestTime_Parse(t *testing.T) {
 			max:             time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC),
 			location:        time.UTC,
 			defaultLocation: nil,
-			expectArg: timeAfterMaxErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC).Format(timeFormat),
-				}),
-			expectFlag: timeAfterMaxErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC).Format(timeFormat),
-				}),
+			expectArg:       timeAfterMaxErrorArg,
+			expectFlag:      timeAfterMaxErrorFlag,
+			placeholders: map[string]interface{}{
+				"max": time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC).Format(timeFormat),
+			},
 		},
 	}
 
@@ -152,19 +239,16 @@ func TestTime_Parse(t *testing.T) {
 
 				ctx.Set(LocationKey, c.location)
 
-				expect := c.expectArg
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
 				_, actual := ti.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-
-				expect = c.expectFlag
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})
@@ -253,6 +337,7 @@ func TestDate_Parse(t *testing.T) {
 		defaultLocation *time.Location
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
 			name:            "require offset",
@@ -271,32 +356,26 @@ func TestDate_Parse(t *testing.T) {
 			expectFlag:      dateInvalidErrorFlag,
 		},
 		{
-			name:     "before min",
-			raw:      "2020-10-31",
-			min:      time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC),
-			location: time.UTC,
-			expectArg: dateBeforeMinErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateFormat),
-				}),
-			expectFlag: dateBeforeMinErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateFormat),
-				}),
+			name:       "before min",
+			raw:        "2020-10-31",
+			min:        time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC),
+			location:   time.UTC,
+			expectArg:  dateBeforeMinErrorArg,
+			expectFlag: dateBeforeMinErrorFlag,
+			placeholders: map[string]interface{}{
+				"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateFormat),
+			},
 		},
 		{
-			name:     "after max",
-			raw:      "2020-10-31",
-			max:      time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC),
-			location: time.UTC,
-			expectArg: dateAfterMaxErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateFormat),
-				}),
-			expectFlag: dateAfterMaxErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateFormat),
-				}),
+			name:       "after max",
+			raw:        "2020-10-31",
+			max:        time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC),
+			location:   time.UTC,
+			expectArg:  dateAfterMaxErrorArg,
+			expectFlag: dateAfterMaxErrorFlag,
+			placeholders: map[string]interface{}{
+				"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateFormat),
+			},
 		},
 	}
 
@@ -323,19 +402,16 @@ func TestDate_Parse(t *testing.T) {
 
 				ctx.Set(LocationKey, c.location)
 
-				expect := c.expectArg
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
 				_, actual := ti.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-
-				expect = c.expectFlag
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})
@@ -409,6 +485,7 @@ func TestDateTime_Parse(t *testing.T) {
 		defaultLocation *time.Location
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
 			name:            "require offset",
@@ -426,32 +503,26 @@ func TestDateTime_Parse(t *testing.T) {
 			expectFlag:      dateTimeInvalidErrorFlag,
 		},
 		{
-			name:     "before min",
-			raw:      "2020-10-31 13:01",
-			min:      time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC),
-			location: time.UTC,
-			expectArg: dateBeforeMinErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
-				}),
-			expectFlag: dateBeforeMinErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
-				}),
+			name:       "before min",
+			raw:        "2020-10-31 13:01",
+			min:        time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC),
+			location:   time.UTC,
+			expectArg:  dateBeforeMinErrorArg,
+			expectFlag: dateBeforeMinErrorFlag,
+			placeholders: map[string]interface{}{
+				"min": time.Date(2020, 11, 1, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
+			},
 		},
 		{
-			name:     "after max",
-			raw:      "2020-10-31 13:01",
-			max:      time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC),
-			location: time.UTC,
-			expectArg: dateAfterMaxErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
-				}),
-			expectFlag: dateAfterMaxErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
-				}),
+			name:       "after max",
+			raw:        "2020-10-31 13:01",
+			max:        time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC),
+			location:   time.UTC,
+			expectArg:  dateAfterMaxErrorArg,
+			expectFlag: dateAfterMaxErrorFlag,
+			placeholders: map[string]interface{}{
+				"max": time.Date(2020, 10, 29, 0, 0, 0, 0, time.UTC).Format(dateTimeFormat),
+			},
 		},
 	}
 
@@ -477,19 +548,16 @@ func TestDateTime_Parse(t *testing.T) {
 
 				ctx.Set(LocationKey, c.location)
 
-				expect := c.expectArg
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
 				_, actual := ti.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-
-				expect = c.expectFlag
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})
@@ -513,10 +581,9 @@ func TestTimeZone_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		ctx := &Context{Raw: "not a timezone"}
 
-		expect := timeZoneInvalidError
-		expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+		expect := newArgParsingErr(timeZoneInvalidError, ctx, nil)
 
 		_, actual := TimeZone.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+		assert.Equal(t, expect, actual)
 	})
 }

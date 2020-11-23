@@ -22,9 +22,7 @@ var _ Interface = new(UserError)
 // NewCustomUserError creates a new UserError using the ErrorEmbed as a
 // template.
 func NewCustomUserError() *UserError {
-	return &UserError{
-		embed: ErrorEmbed.Clone(),
-	}
+	return &UserError{embed: ErrorEmbed.Clone()}
 }
 
 // NewUserError creates a new UserError with the passed description.
@@ -294,8 +292,12 @@ func (e *UserError) Embed(l *i18n.Localizer) (discord.Embed, error) {
 
 func (e *UserError) Error() string { return "user error" }
 
-// Handle sends the error embed.
-func (e *UserError) Handle(_ *state.State, ctx *plugin.Context) (err error) {
-	_, err = ctx.ReplyEmbedBuilder(e.embed)
-	return
+// Handle handles the UserError.
+// By default it sends the error embed.
+func (e *UserError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleUserError(e, s, ctx)
+}
+
+var HandleUserError = func(uerr *UserError, s *state.State, ctx *plugin.Context) {
+	_, _ = ctx.ReplyEmbedBuilder(uerr.embed)
 }

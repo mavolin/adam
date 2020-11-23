@@ -48,16 +48,21 @@ func (e *ThrottlingError) Description(l *i18n.Localizer) (string, error) {
 
 func (e *ThrottlingError) Error() string { return "throttling error" }
 
-// Handle sends an info embed with the description of the ThrottlingError.
-func (e *ThrottlingError) Handle(_ *state.State, ctx *plugin.Context) error {
-	desc, err := e.Description(ctx.Localizer)
+// Handle handles the ThrottlingError.
+// By default it sends an info embed with the description of the
+// ThrottlingError.
+func (e *ThrottlingError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleThrottlingError(e, s, ctx)
+}
+
+var HandleThrottlingError = func(terr *ThrottlingError, s *state.State, ctx *plugin.Context) {
+	desc, err := terr.Description(ctx.Localizer)
 	if err != nil {
-		return err
+		return
 	}
 
 	embed := InfoEmbed.Clone().
 		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
-	return err
+	_, _ = ctx.ReplyEmbedBuilder(embed)
 }

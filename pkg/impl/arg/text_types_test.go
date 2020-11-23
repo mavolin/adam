@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -67,45 +66,31 @@ func TestText_Parse(t *testing.T) {
 		raw string
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
-			name: "below min",
-			text: Text{MinLength: 3},
-			raw:  "ab",
-			expectArg: textBelowMinLengthErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": uint(3),
-				}),
-			expectFlag: textBelowMinLengthErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": uint(3),
-				}),
+			name:         "below min",
+			text:         Text{MinLength: 3},
+			raw:          "ab",
+			expectArg:    textBelowMinLengthErrorArg,
+			expectFlag:   textBelowMinLengthErrorFlag,
+			placeholders: map[string]interface{}{"min": uint(3)},
 		},
 		{
-			name: "above max",
-			text: Text{MaxLength: 3},
-			raw:  "abcd",
-			expectArg: textAboveMaxLengthErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": uint(3),
-				}),
-			expectFlag: textAboveMaxLengthErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": uint(3),
-				}),
+			name:         "above max",
+			text:         Text{MaxLength: 3},
+			raw:          "abcd",
+			expectArg:    textAboveMaxLengthErrorArg,
+			expectFlag:   textAboveMaxLengthErrorFlag,
+			placeholders: map[string]interface{}{"max": uint(3)},
 		},
 		{
-			name: "regexp not matching",
-			text: Text{Regexp: regexp.MustCompile("abc")},
-			raw:  "def",
-			expectArg: regexpNotMatchingErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
-			expectFlag: regexpNotMatchingErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
+			name:         "regexp not matching",
+			text:         Text{Regexp: regexp.MustCompile("abc")},
+			raw:          "def",
+			expectArg:    regexpNotMatchingErrorArg,
+			expectFlag:   regexpNotMatchingErrorFlag,
+			placeholders: map[string]interface{}{"regexp": "abc"},
 		},
 		{
 			name: "regexp not matching - custom error",
@@ -114,15 +99,10 @@ func TestText_Parse(t *testing.T) {
 				RegexpErrorArg:  i18n.NewFallbackConfig("arg", "arg"),
 				RegexpErrorFlag: i18n.NewFallbackConfig("flag", "flag"),
 			},
-			raw: "def",
-			expectArg: i18n.NewFallbackConfig("arg", "arg").
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
-			expectFlag: i18n.NewFallbackConfig("flag", "flag").
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
+			raw:          "def",
+			expectArg:    i18n.NewFallbackConfig("arg", "arg"),
+			expectFlag:   i18n.NewFallbackConfig("flag", "flag"),
+			placeholders: map[string]interface{}{"regexp": "abc"},
 		},
 	}
 
@@ -134,17 +114,16 @@ func TestText_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
 				_, actual := c.text.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-
-				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.text.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})
@@ -205,17 +184,16 @@ func TestLink_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, nil)
 
 				_, actual := c.link.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-
-				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, nil)
 
 				_, actual = c.link.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})
@@ -319,45 +297,31 @@ func TestAlphanumericID_Parse(t *testing.T) {
 		raw string
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
-			name: "below min",
-			id:   &AlphanumericID{MinLength: 3},
-			raw:  "ab",
-			expectArg: idBelowMinLengthErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": uint(3),
-				}),
-			expectFlag: idBelowMinLengthErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": uint(3),
-				}),
+			name:         "below min",
+			id:           &AlphanumericID{MinLength: 3},
+			raw:          "ab",
+			expectArg:    idBelowMinLengthErrorArg,
+			expectFlag:   idBelowMinLengthErrorFlag,
+			placeholders: map[string]interface{}{"min": uint(3)},
 		},
 		{
-			name: "above max",
-			id:   &AlphanumericID{MaxLength: 3},
-			raw:  "abcd",
-			expectArg: idAboveMaxLengthErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": uint(3),
-				}),
-			expectFlag: idAboveMaxLengthErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": uint(3),
-				}),
+			name:         "above max",
+			id:           &AlphanumericID{MaxLength: 3},
+			raw:          "abcd",
+			expectArg:    idAboveMaxLengthErrorArg,
+			expectFlag:   idAboveMaxLengthErrorFlag,
+			placeholders: map[string]interface{}{"max": uint(3)},
 		},
 		{
-			name: "regexp not matching",
-			id:   &AlphanumericID{Regexp: regexp.MustCompile("abc")},
-			raw:  "def",
-			expectArg: regexpNotMatchingErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
-			expectFlag: regexpNotMatchingErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
+			name:         "regexp not matching",
+			id:           &AlphanumericID{Regexp: regexp.MustCompile("abc")},
+			raw:          "def",
+			expectArg:    regexpNotMatchingErrorArg,
+			expectFlag:   regexpNotMatchingErrorFlag,
+			placeholders: map[string]interface{}{"regexp": "abc"},
 		},
 		{
 			name: "regexp not matching - custom error",
@@ -366,15 +330,10 @@ func TestAlphanumericID_Parse(t *testing.T) {
 				RegexpErrorArg:  i18n.NewFallbackConfig("arg", "arg"),
 				RegexpErrorFlag: i18n.NewFallbackConfig("flag", "flag"),
 			},
-			raw: "def",
-			expectArg: i18n.NewFallbackConfig("arg", "arg").
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
-			expectFlag: i18n.NewFallbackConfig("flag", "flag").
-				WithPlaceholders(map[string]interface{}{
-					"regexp": "abc",
-				}),
+			raw:          "def",
+			expectArg:    i18n.NewFallbackConfig("arg", "arg"),
+			expectFlag:   i18n.NewFallbackConfig("flag", "flag"),
+			placeholders: map[string]interface{}{"regexp": "abc"},
 		},
 	}
 
@@ -386,17 +345,16 @@ func TestAlphanumericID_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
 				_, actual := c.id.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-
-				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.id.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})

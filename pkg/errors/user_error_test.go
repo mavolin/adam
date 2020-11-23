@@ -6,7 +6,6 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
-	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -17,6 +16,7 @@ func TestUserError_Handle(t *testing.T) {
 		expectDesc := "abc"
 
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		ctx := &plugin.Context{
 			MessageCreateEvent: &state.MessageCreateEvent{
@@ -41,10 +41,7 @@ func TestUserError_Handle(t *testing.T) {
 
 		e := NewUserError(expectDesc)
 
-		err := e.Handle(s, ctx)
-		require.NoError(t, err)
-
-		m.Eval()
+		e.Handle(s, ctx)
 	})
 
 	t.Run("with embed", func(t *testing.T) {
@@ -55,6 +52,7 @@ func TestUserError_Handle(t *testing.T) {
 		)
 
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		ctx := &plugin.Context{
 			MessageCreateEvent: &state.MessageCreateEvent{
@@ -81,9 +79,6 @@ func TestUserError_Handle(t *testing.T) {
 		e := NewUserError(expectDesc).
 			WithField(expectFieldName, expectFieldValue)
 
-		err := e.Handle(s, ctx)
-		require.NoError(t, err)
-
-		m.Eval()
+		e.Handle(s, ctx)
 	})
 }

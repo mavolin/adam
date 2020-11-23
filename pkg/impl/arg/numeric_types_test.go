@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -33,6 +32,7 @@ func TestInteger_Parse(t *testing.T) {
 		raw string
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
 			name:       "invalid syntax",
@@ -59,71 +59,59 @@ func TestInteger_Parse(t *testing.T) {
 			expectFlag: numberBelowRangeError,
 		},
 		{
-			name: "below min",
-			min:  -3,
-			max:  0,
-			raw:  "-4",
-			expectArg: numberBelowMinErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": -3,
-				}),
-			expectFlag: numberBelowMinErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": -3,
-				}),
+			name:         "below min",
+			min:          -3,
+			max:          0,
+			raw:          "-4",
+			expectArg:    numberBelowMinErrorArg,
+			expectFlag:   numberBelowMinErrorFlag,
+			placeholders: map[string]interface{}{"min": -3},
 		},
 		{
-			name: "above max",
-			min:  0,
-			max:  5,
-			raw:  "6",
-			expectArg: numberAboveMaxErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": 5,
-				}),
-			expectFlag: numberAboveMaxErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": 5,
-				}),
+			name:         "above max",
+			min:          0,
+			max:          5,
+			raw:          "6",
+			expectArg:    numberAboveMaxErrorArg,
+			expectFlag:   numberAboveMaxErrorFlag,
+			placeholders: map[string]interface{}{"max": 5},
 		},
 	}
 
-	for _, c := range failureCases {
-		t.Run(c.name, func(t *testing.T) {
-			var i Type
+	t.Run("failure", func(t *testing.T) {
+		for _, c := range failureCases {
+			t.Run(c.name, func(t *testing.T) {
+				var i Type
 
-			switch {
-			case c.min != 0 && c.max != 0:
-				i = IntegerWithBounds(c.min, c.max)
-			case c.min != 0:
-				i = IntegerWithMin(c.min)
-			case c.max != 0:
-				i = IntegerWithMax(c.max)
-			default:
-				i = SimpleInteger
-			}
+				switch {
+				case c.min != 0 && c.max != 0:
+					i = IntegerWithBounds(c.min, c.max)
+				case c.min != 0:
+					i = IntegerWithMin(c.min)
+				case c.max != 0:
+					i = IntegerWithMax(c.max)
+				default:
+					i = SimpleInteger
+				}
 
-			ctx := &Context{
-				Raw:  c.raw,
-				Kind: KindArg,
-			}
+				ctx := &Context{
+					Raw:  c.raw,
+					Kind: KindArg,
+				}
 
-			c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
-			_, actual := i.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				_, actual := i.Parse(nil, ctx)
+				assert.Equal(t, expect, actual)
 
-			ctx = &Context{
-				Raw:  c.raw,
-				Kind: KindFlag,
-			}
+				ctx.Kind = KindFlag
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
-			c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
-
-			_, actual = i.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
-		})
-	}
+				_, actual = i.Parse(nil, ctx)
+				assert.Equal(t, expect, actual)
+			})
+		}
+	})
 }
 
 func TestDecimal_Parse(t *testing.T) {
@@ -144,6 +132,7 @@ func TestDecimal_Parse(t *testing.T) {
 		raw string
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
 			name:       "invalid syntax",
@@ -170,32 +159,22 @@ func TestDecimal_Parse(t *testing.T) {
 			expectFlag: numberBelowRangeError,
 		},
 		{
-			name: "below min",
-			min:  -3.4,
-			max:  0,
-			raw:  "-3.5",
-			expectArg: numberBelowMinErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": -3.4,
-				}),
-			expectFlag: numberBelowMinErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": -3.4,
-				}),
+			name:         "below min",
+			min:          -3.4,
+			max:          0,
+			raw:          "-3.5",
+			expectArg:    numberBelowMinErrorArg,
+			expectFlag:   numberBelowMinErrorFlag,
+			placeholders: map[string]interface{}{"min": -3.4},
 		},
 		{
-			name: "above max",
-			min:  0,
-			max:  5.2,
-			raw:  "5.3",
-			expectArg: numberAboveMaxErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": 5.2,
-				}),
-			expectFlag: numberAboveMaxErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": 5.2,
-				}),
+			name:         "above max",
+			min:          0,
+			max:          5.2,
+			raw:          "5.3",
+			expectArg:    numberAboveMaxErrorArg,
+			expectFlag:   numberAboveMaxErrorFlag,
+			placeholders: map[string]interface{}{"max": 5.2},
 		},
 	}
 
@@ -217,20 +196,16 @@ func TestDecimal_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+			expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
 			_, actual := d.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+			assert.Equal(t, expect, actual)
 
-			ctx = &Context{
-				Raw:  c.raw,
-				Kind: KindFlag,
-			}
-
-			c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+			ctx.Kind = KindFlag
+			expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
 			_, actual = d.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+			assert.Equal(t, expect, actual)
 		})
 	}
 }
@@ -327,32 +302,23 @@ func TestNumericID_Parse(t *testing.T) {
 		raw string
 
 		expectArg, expectFlag *i18n.Config
+		placeholders          map[string]interface{}
 	}{
 		{
-			name: "below min",
-			id:   NumericID{MinLength: 3},
-			raw:  "12",
-			expectArg: idBelowMinLengthErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"min": uint(3),
-				}),
-			expectFlag: idBelowMinLengthErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"min": uint(3),
-				}),
+			name:         "below min",
+			id:           NumericID{MinLength: 3},
+			raw:          "12",
+			expectArg:    idBelowMinLengthErrorArg,
+			expectFlag:   idBelowMinLengthErrorFlag,
+			placeholders: map[string]interface{}{"min": uint(3)},
 		},
 		{
-			name: "above max",
-			id:   NumericID{MaxLength: 3},
-			raw:  "1234",
-			expectArg: idAboveMaxLengthErrorArg.
-				WithPlaceholders(map[string]interface{}{
-					"max": uint(3),
-				}),
-			expectFlag: idAboveMaxLengthErrorFlag.
-				WithPlaceholders(map[string]interface{}{
-					"max": uint(3),
-				}),
+			name:         "above max",
+			id:           NumericID{MaxLength: 3},
+			raw:          "1234",
+			expectArg:    idAboveMaxLengthErrorArg,
+			expectFlag:   idAboveMaxLengthErrorFlag,
+			placeholders: map[string]interface{}{"max": uint(3)},
 		},
 		{
 			name:       "not a number",
@@ -371,20 +337,16 @@ func TestNumericID_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
 
 				_, actual := c.id.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				assert.Equal(t, expect, actual)
 
-				ctx = &Context{
-					Raw:  c.raw,
-					Kind: KindFlag,
-				}
-
-				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+				ctx.Kind = KindFlag
+				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.id.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 	})

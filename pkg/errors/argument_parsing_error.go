@@ -47,18 +47,21 @@ func (e *ArgumentParsingError) Description(l *i18n.Localizer) (string, error) {
 
 func (e *ArgumentParsingError) Error() string { return "argument parsing error" }
 
-// Handle send an error embed containing a description of which arg/flag was
-// faulty and an optional reason for the error, in the channel the command
-// was sent in.
-func (e *ArgumentParsingError) Handle(_ *state.State, ctx *plugin.Context) error {
-	desc, err := e.Description(ctx.Localizer)
+// Handle handles the ArgumentParsingError.
+// By default it sends an error embed containing a description of which
+// arg/flag was faulty in the channel the command was sent in.
+func (e *ArgumentParsingError) Handle(s *state.State, ctx *plugin.Context) {
+	HandleArgumentParsingError(e, s, ctx)
+}
+
+var HandleArgumentParsingError = func(aerr *ArgumentParsingError, _ *state.State, ctx *plugin.Context) {
+	desc, err := aerr.Description(ctx.Localizer)
 	if err != nil {
-		return err
+		return
 	}
 
 	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
-	return err
+	_, _ = ctx.ReplyEmbedBuilder(embed)
 }

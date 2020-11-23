@@ -7,7 +7,6 @@ import (
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -40,6 +39,7 @@ func TestInvalidChannelError_Is(t *testing.T) {
 
 func TestInvalidChannelTypeError_Handle(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &plugin.Context{
 		MessageCreateEvent: &state.MessageCreateEvent{
@@ -67,8 +67,5 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 
 	e := NewInvalidChannelTypeError(plugin.GuildChannels)
 
-	err := e.Handle(s, ctx)
-	require.NoError(t, err)
-
-	m.Eval()
+	e.Handle(s, ctx)
 }

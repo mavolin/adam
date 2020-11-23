@@ -295,7 +295,10 @@ func (i *UserInfo) Embed(l *i18n.Localizer) (discord.Embed, error) {
 func (i *UserInfo) Error() string { return "user info" }
 
 // Handle sends the info embed.
-func (i *UserInfo) Handle(_ *state.State, ctx *plugin.Context) (err error) {
-	_, err = ctx.ReplyEmbedBuilder(i.embed)
-	return
+func (i *UserInfo) Handle(s *state.State, ctx *plugin.Context) {
+	HandleUserInfo(i, s, ctx)
+}
+
+var HandleUserInfo = func(info *UserInfo, s *state.State, ctx *plugin.Context) {
+	_, _ = ctx.ReplyEmbedBuilder(info.embed)
 }

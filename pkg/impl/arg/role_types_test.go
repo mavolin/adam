@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -89,19 +88,16 @@ func TestRole_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := roleInvalidMentionErrorArg
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(roleInvalidMentionErrorArg, ctx, nil)
 
 			_, actual := Role.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
-
-			expect = roleInvalidMentionErrorFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect = newArgParsingErr(roleInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = Role.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 		})
 
 		t.Run("mention role not found", func(t *testing.T) {
@@ -125,25 +121,22 @@ func TestRole_Parse(t *testing.T) {
 
 			srcMocker.Roles(ctx.GuildID, []discord.Role{})
 
-			expect := roleInvalidMentionErrorArg
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(roleInvalidMentionErrorArg, ctx, nil)
 
 			m, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := Role.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 
 			ctx.Kind = KindFlag
-
-			expect = roleInvalidMentionErrorFlag
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect = newArgParsingErr(roleInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
 
 			_, actual = Role.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 		})
@@ -162,11 +155,10 @@ func TestRole_Parse(t *testing.T) {
 				Raw: "abc",
 			}
 
-			expect := roleInvalidError
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(roleInvalidError, ctx, nil)
 
 			_, actual := Role.Parse(nil, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 		})
 
 		t.Run("role id not found", func(t *testing.T) {
@@ -187,11 +179,10 @@ func TestRole_Parse(t *testing.T) {
 
 			m.Roles(ctx.GuildID, []discord.Role{})
 
-			expect := roleIDInvalidError
-			expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+			expect := newArgParsingErr(roleIDInvalidError, ctx, nil)
 
 			_, actual := Role.Parse(s, ctx)
-			assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+			assert.Equal(t, expect, actual)
 
 			m.Eval()
 		})

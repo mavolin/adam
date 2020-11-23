@@ -10,8 +10,8 @@ import (
 	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
 )
 
-// EmojiAllowIDs is a global flag that allows you to specify whether Emojis
-// may also be noted as plain Snowflakes.
+// EmojiAllowIDs is a global flag that defines whether Emojis may also be noted
+// as plain Snowflakes.
 var EmojiAllowIDs = false
 
 // =============================================================================

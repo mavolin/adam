@@ -16,6 +16,5 @@ import (
 type Interface interface {
 	error
 	// Handle handles the error.
-	// If the Interface itself encounters an error, it may return it.
-	Handle(s *state.State, ctx *plugin.Context) error
+	Handle(s *state.State, ctx *plugin.Context)
 }

@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
@@ -203,17 +202,17 @@ func TestEmoji_Parse(t *testing.T) {
 				emoji := new(emoji)
 				emoji.customEmojis = c.customEmojis
 
-				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, nil)
 
 				_, actual := emoji.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
 
-				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, nil)
 
 				_, actual = emoji.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 
@@ -239,23 +238,23 @@ func TestEmoji_Parse(t *testing.T) {
 
 				srcMocker.Emojis(ctx.GuildID, []discord.Emoji{})
 
-				c.expectArg.Placeholders = attachDefaultPlaceholders(c.expectArg.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, nil)
 
 				m, s := state.CloneMocker(srcMocker, t)
 
 				_, actual := Emoji.Parse(s, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectArg), actual)
+				assert.Equal(t, expect, actual)
 
 				m.Eval()
 
 				ctx.Kind = KindFlag
 
-				c.expectFlag.Placeholders = attachDefaultPlaceholders(c.expectFlag.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
 
 				_, actual = Emoji.Parse(s, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(c.expectFlag), actual)
+				assert.Equal(t, expect, actual)
 
 				m.Eval()
 			})
@@ -298,10 +297,9 @@ func TestRawEmoji_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		ctx := &Context{Raw: "abc"}
 
-		expect := emojiInvalidError
-		expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+		expect := newArgParsingErr(emojiInvalidError, ctx, nil)
 
 		_, actual := RawEmoji.Parse(nil, ctx)
-		assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+		assert.Equal(t, expect, actual)
 	})
 }

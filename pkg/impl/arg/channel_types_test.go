@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -208,19 +207,16 @@ func TestTextChannel_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := c.expectArg
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, nil)
 
 				_, actual := TextChannel.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-
-				expect = c.expectFlag
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, nil)
 
 				_, actual = TextChannel.Parse(nil, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 			})
 		}
 
@@ -249,25 +245,22 @@ func TestTextChannel_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := c.expectArg
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, nil)
 
 				m, s := state.CloneMocker(srcMocker, t)
 
 				_, actual := TextChannel.Parse(s, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				m.Eval()
 
 				ctx.Kind = KindFlag
-
-				expect = c.expectFlag
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectFlag, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
 
 				_, actual = TextChannel.Parse(s, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				m.Eval()
 			})
@@ -294,25 +287,22 @@ func TestTextChannel_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := c.expectArg
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect := newArgParsingErr(c.expectArg, ctx, nil)
 
 				m, s := state.CloneMocker(srcMocker, t)
 
 				_, actual := TextChannel.Parse(s, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				m.Eval()
 
 				ctx.Kind = KindFlag
-
-				expect = c.expectFlag
-				expect.Placeholders = attachDefaultPlaceholders(expect.Placeholders, ctx)
+				expect = newArgParsingErr(c.expectArg, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
 
 				_, actual = TextChannel.Parse(s, ctx)
-				assert.Equal(t, errors.NewArgumentParsingErrorl(expect), actual)
+				assert.Equal(t, expect, actual)
 
 				m.Eval()
 			})
