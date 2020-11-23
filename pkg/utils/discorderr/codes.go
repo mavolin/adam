@@ -120,6 +120,8 @@ const (
 	// channel, as it is required for Community guilds.
 	ChannelRequiredForCommunityGuild httputil.ErrorCode = 50074
 
+	InvalidSticker httputil.ErrorCode = 50081
+
 	ReactionBlocked httputil.ErrorCode = 90001
 
 	APIResourceOverloaded httputil.ErrorCode = 130000
