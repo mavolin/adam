@@ -194,7 +194,7 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 	}
 }
 
-func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
+func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) { //nolint: gocognit
 	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
 		if e.UserID != w.userID || e.MessageID != w.messageID {
 			return

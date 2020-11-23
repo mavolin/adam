@@ -31,7 +31,6 @@ func genArgsInfo(
 		info.Optional[i], err = optionalArgInfo(arg, l)
 		if err != nil {
 			return plugin.ArgsInfo{}, err
-
 		}
 	}
 

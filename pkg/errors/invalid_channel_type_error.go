@@ -54,12 +54,12 @@ func (e *InvalidChannelTypeError) Error() string {
 }
 
 func (e *InvalidChannelTypeError) Is(target error) bool {
-	casted, ok := target.(*InvalidChannelTypeError)
-	if !ok {
+	var typedTarget *InvalidChannelTypeError
+	if !As(target, &typedTarget) {
 		return false
 	}
 
-	return e.AllowedChannelTypes == casted.AllowedChannelTypes
+	return e.AllowedChannelTypes == typedTarget.AllowedChannelTypes
 }
 
 // Handle handles the InvalidChannelTypeError.

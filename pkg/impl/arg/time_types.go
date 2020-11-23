@@ -5,6 +5,7 @@ import (
 
 	"github.com/mavolin/disstate/v2/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/duration"
 )
@@ -57,7 +58,9 @@ func (d Duration) Description(l *i18n.Localizer) string {
 
 func (d Duration) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := duration.Parse(ctx.Raw)
-	if perr, ok := err.(*duration.ParseError); ok {
+
+	var perr *duration.ParseError
+	if errors.As(err, &perr) {
 		switch perr.Code {
 		case duration.ErrSize:
 			return nil, newArgParsingErr2(durationSizeErrorArg, durationSizeErrorFlag, ctx, nil)
@@ -67,7 +70,9 @@ func (d Duration) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 			return nil, newArgParsingErr(durationInvalidUnitError, ctx, map[string]interface{}{
 				"unit": perr.Val,
 			})
-		default: // also case duration.ErrSyntax
+		case duration.ErrSyntax:
+			fallthrough
+		default:
 			return nil, newArgParsingErr(durationInvalidError, ctx, nil)
 		}
 	} else if err != nil {
@@ -129,7 +134,7 @@ var (
 	timeFormatWithTZ = "15:04 -0700"
 )
 
-func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint: dupl // errors differ
 	var (
 		parsed time.Time
 		err    error
@@ -297,10 +302,8 @@ type DateTime struct {
 	Max time.Time
 }
 
-var (
-	// SimpleDateTime is a DateTime with no bounds
-	SimpleDateTime Type = new(DateTime)
-)
+// SimpleDateTime is a DateTime with no bounds
+var SimpleDateTime Type = new(DateTime)
 
 func (t DateTime) Name(l *i18n.Localizer) string {
 	name, _ := l.Localize(dateTimeName) // we have a fallback
@@ -317,7 +320,7 @@ var (
 	dateTimeFormatWithTZ = "2006-01-02 15:04 -0700"
 )
 
-func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl // errors differ
 	var (
 		parsed time.Time
 		err    error

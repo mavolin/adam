@@ -431,7 +431,7 @@ func (w *ReplyWaiter) watchTimeout(
 			}
 		})
 		if err != nil {
-			return
+			return nil, err
 		}
 	} else {
 		rm = func() {}
@@ -459,5 +459,5 @@ func (w *ReplyWaiter) watchTimeout(
 		}
 	}()
 
-	return
+	return rm, err
 }

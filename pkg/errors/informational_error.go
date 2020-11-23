@@ -33,5 +33,4 @@ func NewInformationalError(s string) *InformationalError {
 }
 
 func (e *InformationalError) Error() string                        { return e.s }
-func (e *InformationalError) Is(err error) bool                    { return e == err }
 func (e *InformationalError) Handle(*state.State, *plugin.Context) {}

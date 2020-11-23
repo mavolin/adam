@@ -1,4 +1,4 @@
-package errors
+package errors //nolint: dupl
 
 import (
 	"github.com/mavolin/disstate/v2/pkg/state"

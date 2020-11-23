@@ -125,7 +125,6 @@ func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 		EmbeddableVersion: errors.NewRestrictionError(embeddableDesc),
 		DefaultVersion:    errors.NewRestrictionError(defaultDesc),
 	}
-
 }
 
 // newInsufficientBotPermissions creates a new error containing the missing

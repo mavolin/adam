@@ -12,9 +12,11 @@ type raw struct {
 	desc *i18nutil.Text
 }
 
-// Raw is a plugin.ArgConfig that returns the arguments as
-var Raw plugin.ArgConfig = new(raw)
-var _ plugin.ArgsInfoer = new(raw)
+var (
+	// Raw is a plugin.ArgConfig that returns the arguments as
+	Raw plugin.ArgConfig  = new(raw)
+	_   plugin.ArgsInfoer = new(raw)
+)
 
 // RawWithDescription creates a argument config for raw arguments, that uses
 // the passed description as argument config.

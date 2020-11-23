@@ -1,6 +1,7 @@
 package arg
 
 import (
+	"errors"
 	"regexp"
 	resyntax "regexp/syntax"
 
@@ -32,16 +33,16 @@ func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, err
 		return compiled, nil
 	}
 
-	serr, ok := err.(*resyntax.Error)
-	if !ok {
+	var regerr *resyntax.Error
+	if !errors.As(err, &regerr) {
 		return nil, newArgParsingErr2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, nil)
 	}
 
 	placeholders := map[string]interface{}{
-		"expression": serr.Expr,
+		"expression": regerr.Expr,
 	}
 
-	switch serr.Code {
+	switch regerr.Code {
 	case resyntax.ErrInvalidCharClass:
 		return nil,
 			newArgParsingErr2(regexpInvalidCharClassErrorArg, regexpInvalidCharClassErrorFlag, ctx, placeholders)
@@ -74,6 +75,8 @@ func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, err
 			newArgParsingErr2(regexpTrailingBackslashErrorArg, regexpTrailingBackslashErrorFlag, ctx, placeholders)
 	case resyntax.ErrUnexpectedParen:
 		return nil, newArgParsingErr2(regexpUnexpectedParenErrorArg, regexpUnexpectedParenErrorFlag, ctx, placeholders)
+	case resyntax.ErrInternalError:
+		fallthrough
 	default:
 		return nil, newArgParsingErr2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, placeholders)
 	}

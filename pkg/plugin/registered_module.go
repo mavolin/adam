@@ -295,7 +295,7 @@ func fillSubcommands(parent *RegisteredModule, repos []Repository) {
 	}
 }
 
-func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d CommandDefaults) []*RegisteredCommand {
+func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d CommandDefaults) []*RegisteredCommand { //nolint: funlen
 	var (
 		id Identifier
 

@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/mavolin/adam/internal/errorutil"
@@ -36,10 +37,10 @@ func (e *NoTranslationGeneratedError) StackTrace() []uintptr { return e.s }
 
 // Is checks if the error matches the passed error.
 func (e *NoTranslationGeneratedError) Is(target error) bool {
-	casted, ok := target.(*NoTranslationGeneratedError)
-	if !ok {
+	var typedTarget *NoTranslationGeneratedError
+	if !errors.As(target, &typedTarget) {
 		return false
 	}
 
-	return e.Term == casted.Term
+	return e.Term == typedTarget.Term
 }

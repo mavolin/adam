@@ -58,9 +58,11 @@ type Text struct {
 	RegexpErrorFlag *i18n.Config
 }
 
-// SimpleText is a Text with no length boundaries and no regular expression.
-var SimpleText Type = new(Text)
-var _ Type = Text{}
+var (
+	// SimpleText is a Text with no length boundaries and no regular expression.
+	SimpleText Type = new(Text)
+	_          Type = Text{}
+)
 
 func (t Text) Name(l *i18n.Localizer) string {
 	name, _ := l.Localize(textName) // we have a fallback
@@ -72,7 +74,7 @@ func (t Text) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint: dupl
 	if uint(len(ctx.Raw)) < t.MinLength {
 		return nil, newArgParsingErr2(
 			textBelowMinLengthErrorArg, textBelowMinLengthErrorFlag, ctx, map[string]interface{}{
@@ -158,9 +160,11 @@ type Link struct {
 	RegexpErrorFlag *i18n.Config
 }
 
-// SimpleLink is a link that uses no custom regular expression.
-var SimpleLink Type = new(Link)
-var _ Type = Link{}
+var (
+	// SimpleLink is a link that uses no custom regular expression.
+	SimpleLink Type = new(Link)
+	_          Type = Link{}
+)
 
 func (l Link) Name(loc *i18n.Localizer) string {
 	name, _ := loc.Localize(linkName) // we have a fallback
@@ -252,8 +256,10 @@ type AlphanumericID struct {
 	RegexpErrorFlag *i18n.Config
 }
 
-var SimpleAlphanumericID Type = new(AlphanumericID)
-var _ Type = AlphanumericID{}
+var (
+	SimpleAlphanumericID Type = new(AlphanumericID)
+	_                    Type = AlphanumericID{}
+)
 
 func (id AlphanumericID) Name(l *i18n.Localizer) string {
 	if id.CustomName != nil {
@@ -279,7 +285,7 @@ func (id AlphanumericID) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint: dupl
 	if uint(len(ctx.Raw)) < id.MinLength {
 		return nil, newArgParsingErr2(
 			idBelowMinLengthErrorArg, idBelowMinLengthErrorFlag, ctx, map[string]interface{}{

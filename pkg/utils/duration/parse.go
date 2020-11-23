@@ -257,7 +257,7 @@ func (p *parser) nextFraction() (frac int64, scale int, err error) {
 		}
 	}
 
-	return
+	return frac, scale, nil
 }
 
 func (p *parser) nextUnit() (unit string, err error) {

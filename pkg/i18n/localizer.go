@@ -206,13 +206,14 @@ func (l *Localizer) Localize(c *Config) (s string, err error) {
 			continue
 		}
 
+		//goland:noinspection GoNilness // see if above for-loop
 		placeholders[k] = v
 	}
 
 	if l.f != nil { // try the user-defined translator first, if there is one
 		s, err = l.f(c.Term, placeholders, c.Plural)
 		if err == nil {
-			return
+			return s, err
 		}
 	}
 
@@ -227,7 +228,7 @@ func (l *Localizer) Localize(c *Config) (s string, err error) {
 		return string(c.Term), err
 	}
 
-	return
+	return s, err
 }
 
 // LocalizeTerm is a short for

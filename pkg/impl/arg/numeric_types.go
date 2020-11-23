@@ -8,6 +8,7 @@ import (
 
 	"github.com/mavolin/disstate/v2/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
@@ -69,7 +70,8 @@ func (i Integer) Description(l *i18n.Localizer) string {
 func (i Integer) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := strconv.Atoi(ctx.Raw)
 	if err != nil {
-		if nerr, ok := err.(*strconv.NumError); ok && nerr.Err == strconv.ErrRange {
+		var nerr *strconv.NumError
+		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint: errorlint
 			if strings.HasPrefix(ctx.Raw, "-") {
 				return nil, newArgParsingErr(numberBelowRangeError, ctx, nil)
 			}
@@ -152,7 +154,8 @@ func (i Decimal) Description(l *i18n.Localizer) string {
 func (i Decimal) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := strconv.ParseFloat(ctx.Raw, 64)
 	if err != nil || math.IsInf(parsed, 0) || math.IsNaN(parsed) {
-		if nerr, ok := err.(*strconv.NumError); ok && nerr.Err == strconv.ErrRange {
+		var nerr *strconv.NumError
+		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint: errorlint
 			if strings.HasPrefix(ctx.Raw, "-") {
 				return nil, newArgParsingErr(numberBelowRangeError, ctx, nil)
 			}
@@ -214,10 +217,12 @@ type NumericID struct {
 	MaxLength uint
 }
 
-// SimpleNumericID is a NumericID with no length boundaries and no custom name
-// or description.
-var SimpleNumericID Type = new(NumericID)
-var _ Type = NumericID{}
+var (
+	// SimpleNumericID is a NumericID with no length boundaries and no custom name
+	// or description.
+	SimpleNumericID Type = new(NumericID)
+	_               Type = NumericID{}
+)
 
 func (id NumericID) Name(l *i18n.Localizer) string {
 	if id.CustomName != nil {

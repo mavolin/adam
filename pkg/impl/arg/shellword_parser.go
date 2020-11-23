@@ -128,7 +128,7 @@ func (p *shellwordParser) skipWhitespace() {
 	}
 }
 
-func (p *shellwordParser) nextContent() (string, error) {
+func (p *shellwordParser) nextContent() (string, error) { //nolint: gocognit
 	var (
 		gc       groupingCharacter
 		upEscape bool

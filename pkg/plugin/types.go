@@ -30,7 +30,7 @@ const (
 
 // Has checks if the passed discord.ChannelType is found in the ChannelTypes.
 func (t ChannelTypes) Has(target discord.ChannelType) bool {
-	switch target {
+	switch target { //nolint: exhaustive // other types handled in default
 	case discord.GuildText:
 		return t&GuildTextChannels == GuildTextChannels
 	case discord.DirectMessage:

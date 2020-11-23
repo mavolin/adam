@@ -38,8 +38,10 @@ type CommaConfig struct {
 	Flags []Flag
 }
 
-var _ plugin.ArgConfig = CommaConfig{}
-var _ plugin.ArgsInfoer = CommaConfig{}
+var (
+	_ plugin.ArgConfig  = CommaConfig{}
+	_ plugin.ArgsInfoer = CommaConfig{}
+)
 
 func (c CommaConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	parser := newCommaParser(args, c, s, ctx)
