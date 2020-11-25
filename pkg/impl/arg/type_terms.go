@@ -692,6 +692,31 @@ var (
 )
 
 // =============================================================================
+// Command
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	commandName        = i18n.NewFallbackConfig("args.types.command.name", "Command")
+	commandDescription = i18n.NewFallbackConfig(
+		"args.types.command.description", "A command invoke without it's prefix.")
+)
+
+// ================================ Errors ================================
+
+var (
+	commandNotFound = i18n.NewFallbackConfig(
+		"args.types.command.errors.not_found",
+		"I don't know any commands by the name of {{.invoke}}. Make sure you spelled it right.")
+
+	commandNotFoundCommandsUnavailable = i18n.NewFallbackConfig(
+		"args.types.command.errors.not_found.commands_unavailable",
+		"I couldn't find any commands by the name of {{.invoke}}, "+
+			"but I don't have access to some commands right now. Try again later or check your spelling.")
+)
+
+// =============================================================================
 // RegularExpression
 // =====================================================================================
 
