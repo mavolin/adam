@@ -77,11 +77,87 @@ func TestCommand_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgParsingErr(commandNotFoundCommandsUnavailable, ctx, map[string]interface{}{
+			expect := newArgParsingErr(commandNotFoundProvidersUnavailable, ctx, map[string]interface{}{
 				"invoke": ctx.Raw,
 			})
 
 			_, actual := Command.Parse(nil, ctx)
+			assert.Equal(t, expect, actual)
+		})
+	})
+}
+
+func TestModule_Parse(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ctx := &Context{
+			Raw: "abc",
+			Context: &plugin.Context{
+				Provider: mock.PluginProvider{
+					PluginRepositoriesReturn: []plugin.Repository{
+						{
+							ProviderName: "built_in",
+							Modules: []plugin.Module{
+								mock.Module{
+									ModuleMeta: mock.ModuleMeta{
+										Name: "abc",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		expect := ctx.FindModule(ctx.Raw)
+		assert.NotNil(t, expect)
+
+		actual, err := Module.Parse(nil, ctx)
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		t.Run("unknown command", func(t *testing.T) {
+			ctx := &Context{
+				Raw: "abc",
+				Context: &plugin.Context{
+					Provider: mock.PluginProvider{
+						PluginRepositoriesReturn: []plugin.Repository{
+							{ProviderName: "built_in"},
+						},
+					},
+				},
+			}
+
+			expect := newArgParsingErr(moduleNotFound, ctx, map[string]interface{}{
+				"invoke": ctx.Raw,
+			})
+
+			_, actual := Module.Parse(nil, ctx)
+			assert.Equal(t, expect, actual)
+		})
+
+		t.Run("unknown command - some commands unavailable", func(t *testing.T) {
+			ctx := &Context{
+				Raw: "abc",
+				Context: &plugin.Context{
+					Provider: mock.PluginProvider{
+						UnavailablePluginProvidersReturn: []plugin.UnavailablePluginProvider{
+							{
+								Name:  "abc",
+								Error: errors.New("oh no, it didn't work"),
+							},
+						},
+					},
+				},
+			}
+
+			expect := newArgParsingErr(moduleNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+				"invoke": ctx.Raw,
+			})
+
+			_, actual := Module.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 		})
 	})

@@ -710,8 +710,34 @@ var (
 		"args.types.command.errors.not_found",
 		"I don't know any commands by the name of {{.invoke}}. Make sure you spelled it right.")
 
-	commandNotFoundCommandsUnavailable = i18n.NewFallbackConfig(
-		"args.types.command.errors.not_found.commands_unavailable",
+	commandNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
+		"args.types.command.errors.not_found.providers_unavailable",
+		"I couldn't find any commands by the name of {{.invoke}}, "+
+			"but I don't have access to some commands right now. Try again later or check your spelling.")
+)
+
+// =============================================================================
+// Module
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	moduleName        = i18n.NewFallbackConfig("args.types.module.name", "Module")
+	moduleDescription = i18n.NewFallbackConfig(
+		"args.types.module.description",
+		"A module invoke, without the bot's prefix. Submodules are separated with a space.")
+)
+
+// ================================ Errors ================================
+
+var (
+	moduleNotFound = i18n.NewFallbackConfig(
+		"args.types.module.errors.not_found",
+		"I don't know any commands by the name of {{.invoke}}. Make sure you spelled it right.")
+
+	moduleNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
+		"args.types.module.errors.not_found.providers_unavailable",
 		"I couldn't find any commands by the name of {{.invoke}}, "+
 			"but I don't have access to some commands right now. Try again later or check your spelling.")
 )
