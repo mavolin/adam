@@ -30,10 +30,10 @@ import (
 // Valid escapes are '\\' and '\"', all other combinations will be parsed
 // literally to make usage easier for users unaware of escapes.
 type ShellwordConfig struct {
-	// RequiredArgs contains the required arguments.
-	RequiredArgs []RequiredArg
-	// OptionalArgs contains the optional arguments.
-	OptionalArgs []OptionalArg
+	// Required contains the required arguments.
+	Required []RequiredArg
+	// Optional contains the optional arguments.
+	Optional []OptionalArg
 	// Variadic specifies whether the last possibly specifiable argument is
 	// variadic.
 	Variadic bool
@@ -53,7 +53,7 @@ func (c ShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context)
 }
 
 func (c ShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
-	info, err := genArgsInfo(l, c.RequiredArgs, c.OptionalArgs, c.Flags, c.Variadic)
+	info, err := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
 	if err != nil {
 		return nil
 	}

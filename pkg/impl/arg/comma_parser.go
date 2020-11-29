@@ -21,8 +21,8 @@ type commaParser struct {
 
 func newCommaParser(args string, cfg CommaConfig, s *state.State, ctx *plugin.Context) *commaParser {
 	return &commaParser{
-		helper: newParseHelper(cfg.RequiredArgs, cfg.OptionalArgs, cfg.Flags, cfg.Variadic, s, ctx),
-		lexer:  newCommaLexer(args, len(cfg.RequiredArgs), len(cfg.Flags) > 0),
+		helper: newParseHelper(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
+		lexer:  newCommaLexer(args, len(cfg.Required), len(cfg.Flags) > 0),
 	}
 }
 

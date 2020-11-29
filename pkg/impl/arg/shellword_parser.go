@@ -47,7 +47,7 @@ type shellwordParser struct {
 
 func newShellwordParser(args string, cfg ShellwordConfig, s *state.State, ctx *plugin.Context) *shellwordParser {
 	p := &shellwordParser{
-		helper: newParseHelper(cfg.RequiredArgs, cfg.OptionalArgs, cfg.Flags, cfg.Variadic, s, ctx),
+		helper: newParseHelper(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
 		raw:    []rune(args),
 	}
 
