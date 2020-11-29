@@ -36,12 +36,12 @@ func (c command) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
 		return nil, newArgParsingErr(commandNotFoundProvidersUnavailable, ctx, map[string]interface{}{
-			"invoke": plugin.IdentifierFromInvoke(ctx.Raw).AsInvoke(), // remove whitespaces
+			"invoke": ctx.Raw,
 		})
 	}
 
 	return nil, newArgParsingErr(commandNotFound, ctx, map[string]interface{}{
-		"invoke": plugin.IdentifierFromInvoke(ctx.Raw).AsInvoke(), // remove whitespaces
+		"invoke": ctx.Raw,
 	})
 }
 
@@ -71,22 +71,68 @@ func (m module) Description(l *i18n.Localizer) string {
 }
 
 func (m module) Parse(_ *state.State, ctx *Context) (interface{}, error) {
-	cmd := ctx.FindModule(ctx.Raw)
-	if cmd != nil {
-		return cmd, nil
+	mod := ctx.FindModule(ctx.Raw)
+	if mod != nil {
+		return mod, nil
 	}
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
 		return nil, newArgParsingErr(moduleNotFoundProvidersUnavailable, ctx, map[string]interface{}{
-			"invoke": plugin.IdentifierFromInvoke(ctx.Raw).AsInvoke(), // remove whitespaces
+			"invoke": ctx.Raw,
 		})
 	}
 
 	return nil, newArgParsingErr(moduleNotFound, ctx, map[string]interface{}{
-		"invoke": plugin.IdentifierFromInvoke(ctx.Raw).AsInvoke(), // remove whitespaces
+		"invoke": ctx.Raw,
 	})
 }
 
 func (m module) Default() interface{} {
 	return (*plugin.RegisteredModule)(nil)
+}
+
+// =============================================================================
+// Plugin
+// =====================================================================================
+
+// Plugin is the type used for plugins, i.e. Commands and Modules.
+// The generated data is guaranteed to be of one of the two go types.
+// Fallback for default will be interface{} nil.
+//
+// Go types: *plugin.RegisteredCommand or *plugin.RegisteredModule
+var Plugin Type = new(pluginType)
+
+type pluginType struct{}
+
+func (p pluginType) Name(l *i18n.Localizer) string {
+	name, _ := l.Localize(pluginName) // we have a fallback
+	return name
+}
+
+func (p pluginType) Description(l *i18n.Localizer) string {
+	desc, _ := l.Localize(pluginDescription) // we have a fallback
+	return desc
+}
+
+func (p pluginType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+	if cmd := ctx.FindCommand(ctx.Raw); cmd != nil {
+		return cmd, nil
+	} else if mod := ctx.FindModule(ctx.Raw); mod != nil {
+		return mod, nil
+	}
+
+	if len(ctx.UnavailablePluginProviders()) > 0 {
+		return nil, newArgParsingErr(pluginNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+			"invoke": ctx.Raw,
+		})
+	}
+
+	return nil, newArgParsingErr(pluginNotFound, ctx, map[string]interface{}{
+		"invoke": ctx.Raw,
+	})
+}
+
+func (p pluginType) Default() interface{} {
+	// return interface{} nil, as described in type doc
+	return nil
 }
