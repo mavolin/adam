@@ -52,7 +52,7 @@ type MiddlewareManager struct {
 //		• func(*state.State, *state.MessageUpdateEvent)
 //		• func(*state.State, *state.MessageUpdateEvent) error
 //		• func(next CommandFunc) CommandFunc
-func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
+func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen,gocognit
 	var mf MiddlewareFunc
 
 	switch f := f.(type) {
