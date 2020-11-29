@@ -82,7 +82,7 @@ type CommandDefaults struct {
 
 // GenerateRegisteredCommands generates top-level RegisteredCommands from the
 // passed Repositories.
-func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nolint: gocognit
+func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nolint:gocognit
 	var maxLen int
 
 	for _, repo := range repos {

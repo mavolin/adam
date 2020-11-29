@@ -39,7 +39,7 @@ func (e *EmbeddableError) Error() string                            { return e.D
 // For this list to be created, the error must either be of type
 // *errors.RestrictionError or *EmbeddableError, or must be a nested All or
 // Any.
-func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint: gocognit
+func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:gocognit
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
 			return nil

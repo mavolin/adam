@@ -27,7 +27,7 @@ var (
 		DefaultVersion:    errors.New("yza"),
 	}
 
-	unexpectedErrorFuncReturn = errors.New("bcd") //nolint: golint // just for testing
+	unexpectedErrorFuncReturn = errors.New("bcd") //nolint:golint // just for testing
 )
 
 func errorFunc1(*state.State, *plugin.Context) error          { return errorFuncReturn1 }

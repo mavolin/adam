@@ -399,7 +399,7 @@ func (b *Builder) Clone() *Builder {
 }
 
 // Build builds the discord.Embed.
-func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) { //nolint: funlen
+func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) { //nolint:funlen
 	if b.title != nil {
 		e.Title, err = b.title.Get(l)
 		if err != nil {

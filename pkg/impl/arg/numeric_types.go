@@ -71,7 +71,7 @@ func (i Integer) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := strconv.Atoi(ctx.Raw)
 	if err != nil {
 		var nerr *strconv.NumError
-		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint: errorlint
+		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint:errorlint
 			if strings.HasPrefix(ctx.Raw, "-") {
 				return nil, newArgParsingErr(numberBelowRangeError, ctx, nil)
 			}
@@ -155,7 +155,7 @@ func (i Decimal) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := strconv.ParseFloat(ctx.Raw, 64)
 	if err != nil || math.IsInf(parsed, 0) || math.IsNaN(parsed) {
 		var nerr *strconv.NumError
-		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint: errorlint
+		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint:errorlint
 			if strings.HasPrefix(ctx.Raw, "-") {
 				return nil, newArgParsingErr(numberBelowRangeError, ctx, nil)
 			}

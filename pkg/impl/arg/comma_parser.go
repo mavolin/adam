@@ -48,7 +48,7 @@ func (p *commaParser) startParse() error {
 	for ; err == nil && item.typ != itemEOF; item, err = p.lexer.nextItem() {
 		// the lexer keeps track of the correct ordering, so we don't need to
 		// worry about that
-		switch item.typ { //nolint: exhaustive
+		switch item.typ { //nolint:exhaustive
 		case itemFlagName:
 			err = p.parseFlag(item)
 		case itemArgContent:

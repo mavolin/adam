@@ -134,7 +134,7 @@ var (
 	timeFormatWithTZ = "15:04 -0700"
 )
 
-func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint: dupl // errors differ
+func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl // errors differ
 	var (
 		parsed time.Time
 		err    error

@@ -74,7 +74,7 @@ func (t Text) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint: dupl
+func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl
 	if uint(len(ctx.Raw)) < t.MinLength {
 		return nil, newArgParsingErr2(
 			textBelowMinLengthErrorArg, textBelowMinLengthErrorFlag, ctx, map[string]interface{}{
@@ -285,7 +285,7 @@ func (id AlphanumericID) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint: dupl
+func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl
 	if uint(len(ctx.Raw)) < id.MinLength {
 		return nil, newArgParsingErr2(
 			idBelowMinLengthErrorArg, idBelowMinLengthErrorFlag, ctx, map[string]interface{}{
