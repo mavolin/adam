@@ -146,9 +146,7 @@ func TestTime_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							Base: state.NewBase(),
-						},
+						Base: state.NewBase(),
 					},
 					Raw: c.raw,
 				}
@@ -229,9 +227,7 @@ func TestTime_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							Base: state.NewBase(),
-						},
+						Base: state.NewBase(),
 					},
 					Raw:  c.raw,
 					Kind: KindArg,
@@ -308,9 +304,7 @@ func TestDate_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							Base: state.NewBase(),
-						},
+						Base: state.NewBase(),
 					},
 					Raw: c.raw,
 				}
@@ -392,9 +386,7 @@ func TestDate_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							Base: state.NewBase(),
-						},
+						Base: state.NewBase(),
 					},
 					Raw:  c.raw,
 					Kind: KindArg,
@@ -457,9 +449,7 @@ func TestDateTime_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							Base: state.NewBase(),
-						},
+						Base: state.NewBase(),
 					},
 					Raw: c.raw,
 				}
@@ -538,9 +528,7 @@ func TestDateTime_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							Base: state.NewBase(),
-						},
+						Base: state.NewBase(),
 					},
 					Raw:  c.raw,
 					Kind: KindArg,

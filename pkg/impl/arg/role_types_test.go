@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -26,13 +25,7 @@ func TestRole_Parse(t *testing.T) {
 			name: "mention",
 			ctx: &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: "<@&456>",
 			},
@@ -42,13 +35,7 @@ func TestRole_Parse(t *testing.T) {
 			name: "id",
 			ctx: &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: "456",
 			},
@@ -76,13 +63,7 @@ func TestRole_Parse(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw:  fmt.Sprintf("<@&%d9>", uint64(math.MaxUint64)),
 				Kind: KindArg,
@@ -107,13 +88,7 @@ func TestRole_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 456,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 456},
 				},
 				Raw:  roleID.Mention(),
 				Kind: KindArg,
@@ -144,13 +119,7 @@ func TestRole_Parse(t *testing.T) {
 		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: "abc",
 			}
@@ -166,13 +135,7 @@ func TestRole_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: "456",
 			}

@@ -3,6 +3,7 @@ package bot
 import (
 	"sync"
 
+	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -48,24 +49,68 @@ type MiddlewareManager struct {
 //		• func(*state.State, *state.Base) error
 //		• func(*state.State, *state.MessageCreateEvent)
 //		• func(*state.State, *state.MessageCreateEvent) error
+//		• func(*state.State, *state.MessageUpdateEvent)
+//		• func(*state.State, *state.MessageUpdateEvent) error
 //		• func(next CommandFunc) CommandFunc
-func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
+func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 	var mf MiddlewareFunc
 
 	switch f := f.(type) {
 	case func(*state.State, interface{}):
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
-				f(s, ctx.MessageCreateEvent)
+				if !ctx.Message.EditedTimestamp.IsValid() {
+					e := &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					f(s, e)
+				} else {
+					e := &state.MessageUpdateEvent{
+						MessageUpdateEvent: &gateway.MessageUpdateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					f(s, e)
+				}
+
 				return next(s, ctx)
 			}
 		}
 	case func(*state.State, interface{}) error:
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
-				err := f(s, ctx.MessageCreateEvent)
-				if err != nil {
-					return err
+				if !ctx.Message.EditedTimestamp.IsValid() {
+					e := &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					if err := f(s, e); err != nil {
+						return err
+					}
+				} else {
+					e := &state.MessageUpdateEvent{
+						MessageUpdateEvent: &gateway.MessageUpdateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					if err := f(s, e); err != nil {
+						return err
+					}
 				}
 
 				return next(s, ctx)
@@ -74,14 +119,14 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
 	case func(*state.State, *state.Base):
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
-				f(s, ctx.MessageCreateEvent.Base)
+				f(s, ctx.Base)
 				return next(s, ctx)
 			}
 		}
 	case func(*state.State, *state.Base) error:
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
-				err := f(s, ctx.MessageCreateEvent.Base)
+				err := f(s, ctx.Base)
 				if err != nil {
 					return err
 				}
@@ -92,16 +137,74 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
 	case func(*state.State, *state.MessageCreateEvent):
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
-				f(s, ctx.MessageCreateEvent)
+				if !ctx.Message.EditedTimestamp.IsValid() {
+					e := &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					f(s, e)
+				}
+
 				return next(s, ctx)
 			}
 		}
 	case func(*state.State, *state.MessageCreateEvent) error:
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
-				err := f(s, ctx.MessageCreateEvent)
-				if err != nil {
-					return err
+				if !ctx.Message.EditedTimestamp.IsValid() {
+					e := &state.MessageCreateEvent{
+						MessageCreateEvent: &gateway.MessageCreateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					if err := f(s, e); err != nil {
+						return err
+					}
+				}
+
+				return next(s, ctx)
+			}
+		}
+	case func(*state.State, *state.MessageUpdateEvent):
+		mf = func(next CommandFunc) CommandFunc {
+			return func(s *state.State, ctx *plugin.Context) error {
+				if ctx.Message.EditedTimestamp.IsValid() {
+					e := &state.MessageUpdateEvent{
+						MessageUpdateEvent: &gateway.MessageUpdateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					f(s, e)
+				}
+
+				return next(s, ctx)
+			}
+		}
+	case func(*state.State, *state.MessageUpdateEvent) error:
+		mf = func(next CommandFunc) CommandFunc {
+			return func(s *state.State, ctx *plugin.Context) error {
+				if ctx.Message.EditedTimestamp.IsValid() {
+					e := &state.MessageUpdateEvent{
+						MessageUpdateEvent: &gateway.MessageUpdateEvent{
+							Message: ctx.Message,
+							Member:  ctx.Member,
+						},
+						Base: ctx.Base,
+					}
+
+					if err := f(s, e); err != nil {
+						return err
+					}
 				}
 
 				return next(s, ctx)

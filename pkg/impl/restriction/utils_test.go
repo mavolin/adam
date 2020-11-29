@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
-	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -23,17 +21,9 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "pass guild channels",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.GuildChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
 			allowed: plugin.GuildChannels,
@@ -42,18 +32,10 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "fail guild channels",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.GuildTextChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildTextChannels},
 				}),
 			},
 			allowed: plugin.GuildChannels,
@@ -62,17 +44,9 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "pass direct messages",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 0},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.DirectMessages,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 			},
 			allowed: plugin.DirectMessages,
@@ -81,18 +55,10 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "fail direct messages",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 123},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			allowed: plugin.DirectMessages,
@@ -101,17 +67,9 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "all channels",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 0},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.DirectMessages,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 			},
 			allowed: plugin.AllChannels,
@@ -120,22 +78,14 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "pass guild text",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
 						ChannelTypes: plugin.AllChannels,
 					},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
-					ChannelReturn: &discord.Channel{
-						Type: discord.GuildText,
-					},
+					ChannelReturn: &discord.Channel{Type: discord.GuildText},
 				},
 			},
 			allowed: plugin.GuildTextChannels,
@@ -144,18 +94,10 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "fail guild text - fatal",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.GuildChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
 			allowed: plugin.GuildTextChannels,
@@ -164,23 +106,13 @@ func Test_assertChannelTypes(t *testing.T) {
 		{
 			name: "fail guild text - not fatal",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 123},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.GuildChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
-					ChannelReturn: &discord.Channel{
-						Type: discord.GuildNews,
-					},
+					ChannelReturn: &discord.Channel{Type: discord.GuildNews},
 				},
 			},
 			allowed: plugin.GuildTextChannels,
@@ -199,18 +131,10 @@ func Test_assertChannelTypes(t *testing.T) {
 		noRemainingError := errors.New("no remaining error")
 
 		ctx := &plugin.Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						GuildID: 123,
-					},
-				},
-			},
+			Message:   discord.Message{GuildID: 123},
 			Localizer: mock.NoOpLocalizer,
 			InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-				CommandMeta: mock.CommandMeta{
-					ChannelTypes: plugin.GuildChannels,
-				},
+				CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 			}),
 			ErrorHandler: mock.NewErrorHandler().
 				ExpectSilentError(noRemainingError),
@@ -230,10 +154,8 @@ func Test_canManageRole(t *testing.T) {
 		expect bool
 	}{
 		{
-			name: "can not manage",
-			target: discord.Role{
-				Position: 2,
-			},
+			name:   "can not manage",
+			target: discord.Role{Position: 2},
 			guild: &discord.Guild{
 				Roles: []discord.Role{
 					{
@@ -242,16 +164,12 @@ func Test_canManageRole(t *testing.T) {
 					},
 				},
 			},
-			member: &discord.Member{
-				RoleIDs: []discord.RoleID{123},
-			},
+			member: &discord.Member{RoleIDs: []discord.RoleID{123}},
 			expect: false,
 		},
 		{
-			name: "no manage roles permission",
-			target: discord.Role{
-				Position: 1,
-			},
+			name:   "no manage roles permission",
+			target: discord.Role{Position: 1},
 			guild: &discord.Guild{
 				Roles: []discord.Role{
 					{
@@ -263,18 +181,14 @@ func Test_canManageRole(t *testing.T) {
 				OwnerID: 456,
 			},
 			member: &discord.Member{
-				User: discord.User{
-					ID: 789,
-				},
+				User:    discord.User{ID: 789},
 				RoleIDs: []discord.RoleID{123},
 			},
 			expect: false,
 		},
 		{
-			name: "pass",
-			target: discord.Role{
-				Position: 1,
-			},
+			name:   "pass",
+			target: discord.Role{Position: 1},
 			guild: &discord.Guild{
 				Roles: []discord.Role{
 					{
@@ -286,9 +200,7 @@ func Test_canManageRole(t *testing.T) {
 				OwnerID: 456,
 			},
 			member: &discord.Member{
-				User: discord.User{
-					ID: 789,
-				},
+				User:    discord.User{ID: 789},
 				RoleIDs: []discord.RoleID{123},
 			},
 			expect: true,
@@ -311,54 +223,22 @@ func Test_insertRoleSorted(t *testing.T) {
 		expect []discord.Role
 	}{
 		{
-			name: "empty roles",
-			role: discord.Role{
-				Position: 3,
-			},
-			roles: nil,
-			expect: []discord.Role{
-				{
-					Position: 3,
-				},
-			},
+			name:   "empty roles",
+			role:   discord.Role{Position: 3},
+			roles:  nil,
+			expect: []discord.Role{{Position: 3}},
 		},
 		{
-			name: "append role",
-			role: discord.Role{
-				Position: 5,
-			},
-			roles: []discord.Role{
-				{
-					Position: 3,
-				},
-			},
-			expect: []discord.Role{
-				{
-					Position: 3,
-				},
-				{
-					Position: 5,
-				},
-			},
+			name:   "append role",
+			role:   discord.Role{Position: 5},
+			roles:  []discord.Role{{Position: 3}},
+			expect: []discord.Role{{Position: 3}, {Position: 5}},
 		},
 		{
-			name: "insert role",
-			role: discord.Role{
-				Position: 3,
-			},
-			roles: []discord.Role{
-				{
-					Position: 5,
-				},
-			},
-			expect: []discord.Role{
-				{
-					Position: 3,
-				},
-				{
-					Position: 5,
-				},
-			},
+			name:   "insert role",
+			role:   discord.Role{Position: 3},
+			roles:  []discord.Role{{Position: 5}},
+			expect: []discord.Role{{Position: 3}, {Position: 5}},
 		},
 	}
 

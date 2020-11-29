@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/diamondburned/arikawa/utils/httputil"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
@@ -56,12 +55,8 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: &gateway.MessageCreateEvent{
-								Message: discord.Message{
-									GuildID: c.expect.GuildID,
-								},
-							},
+						Message: discord.Message{
+							GuildID: c.expect.GuildID,
 						},
 					},
 					Raw: c.raw,
@@ -195,13 +190,7 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: &gateway.MessageCreateEvent{
-								Message: discord.Message{
-									GuildID: 456,
-								},
-							},
-						},
+						Message: discord.Message{GuildID: 456},
 					},
 					Raw:  c.raw,
 					Kind: KindArg,
@@ -233,13 +222,7 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: &gateway.MessageCreateEvent{
-								Message: discord.Message{
-									GuildID: 456,
-								},
-							},
-						},
+						Message: discord.Message{GuildID: 456},
 					},
 					Raw:  c.raw,
 					Kind: KindArg,
@@ -275,13 +258,7 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: &gateway.MessageCreateEvent{
-								Message: discord.Message{
-									GuildID: 456,
-								},
-							},
-						},
+						Message: discord.Message{GuildID: 456},
 					},
 					Raw:  c.raw,
 					Kind: KindArg,

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 
@@ -240,20 +239,12 @@ func TestInternalError_Handle(t *testing.T) {
 	defer m.Eval()
 
 	ctx := &plugin.Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Localizer: mock.NewLocalizer(t).
 			On(internalErrorTitle.Term, "abc").
 			Build(),
 		InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-			CommandMeta: mock.CommandMeta{
-				Name: "abc",
-			},
+			CommandMeta: mock.CommandMeta{Name: "abc"},
 		}),
 		Replier: replierFromState(s, 123, 0),
 	}

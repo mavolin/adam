@@ -12,9 +12,7 @@ import (
 //
 // It is intended to be used, if the user signals to cancel a command early
 // and is therefore just a signaling error, rather than an actual exception.
-var Abort error = &InformationalError{
-	s: "abort",
-}
+var Abort error = &InformationalError{s: "abort"}
 
 // InformationalError is an error that won't be handled.
 // It is used to communicate preliminary stop of execution without signaling

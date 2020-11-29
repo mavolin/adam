@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/diamondburned/arikawa/utils/httputil"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
@@ -27,12 +26,8 @@ func TestUser_Parse(t *testing.T) {
 		{
 			name: "mention fallback",
 			ctx: &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: new(gateway.MessageCreateEvent),
-					},
-				},
-				Raw: "<@123>",
+				Context: new(plugin.Context),
+				Raw:     "<@123>",
 			},
 			expect: &discord.User{ID: 123},
 		},
@@ -65,16 +60,8 @@ func TestUser_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								Mentions: []discord.GuildUser{
-									{
-										User: *expect,
-									},
-								},
-							},
-						},
+					Message: discord.Message{
+						Mentions: []discord.GuildUser{{User: *expect}},
 					},
 				},
 				Raw: expect.Mention(),
@@ -111,13 +98,9 @@ func TestUser_Parse(t *testing.T) {
 			var userID discord.UserID = 123
 
 			ctx := &Context{
-				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: new(gateway.MessageCreateEvent),
-					},
-				},
-				Raw:  userID.Mention(),
-				Kind: KindArg,
+				Context: new(plugin.Context),
+				Raw:     userID.Mention(),
+				Kind:    KindArg,
 			}
 
 			srcMocker.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
@@ -192,13 +175,7 @@ func TestMember_Parse(t *testing.T) {
 			name: "mention fallback",
 			ctx: &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: "<@456>",
 			},
@@ -210,13 +187,7 @@ func TestMember_Parse(t *testing.T) {
 			name: "id",
 			ctx: &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: "456",
 			},
@@ -249,16 +220,12 @@ func TestMember_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-								Mentions: []discord.GuildUser{
-									{
-										User:   discord.User{ID: 456},
-										Member: &discord.Member{Deaf: true},
-									},
-								},
+					Message: discord.Message{
+						GuildID: 123,
+						Mentions: []discord.GuildUser{
+							{
+								User:   discord.User{ID: 456},
+								Member: &discord.Member{Deaf: true},
 							},
 						},
 					},
@@ -276,13 +243,7 @@ func TestMember_Parse(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw:  fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
 				Kind: KindArg,
@@ -307,13 +268,7 @@ func TestMember_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw:  userID.Mention(),
 				Kind: KindArg,
@@ -348,13 +303,7 @@ func TestMember_Parse(t *testing.T) {
 		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: "abc",
 			}
@@ -372,13 +321,7 @@ func TestMember_Parse(t *testing.T) {
 
 			ctx := &Context{
 				Context: &plugin.Context{
-					MessageCreateEvent: &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: discord.Message{
-								GuildID: 123,
-							},
-						},
-					},
+					Message: discord.Message{GuildID: 123},
 				},
 				Raw: userID.String(),
 			}

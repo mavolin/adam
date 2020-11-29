@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 
@@ -42,13 +41,7 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 	defer m.Eval()
 
 	ctx := &plugin.Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Localizer: mock.NewLocalizer(t).
 			On(errorTitle.Term, "title").
 			On(channelTypeErrorGuild.Term, "guild").

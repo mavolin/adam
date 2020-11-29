@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -53,13 +52,7 @@ func TestEmoji_Parse(t *testing.T) {
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: &gateway.MessageCreateEvent{
-								Message: discord.Message{
-									GuildID: 123,
-								},
-							},
-						},
+						Message: discord.Message{GuildID: 123},
 					},
 					Raw: c.raw,
 				}
@@ -186,13 +179,9 @@ func TestEmoji_Parse(t *testing.T) {
 				EmojiAllowIDs = c.allowEmojiIDs
 
 				ctx := &Context{
-					Raw: c.raw,
-					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: new(gateway.MessageCreateEvent),
-						},
-					},
-					Kind: KindArg,
+					Raw:     c.raw,
+					Context: new(plugin.Context),
+					Kind:    KindArg,
 				}
 
 				if c.guild {
@@ -225,13 +214,7 @@ func TestEmoji_Parse(t *testing.T) {
 				ctx := &Context{
 					Raw: c.raw,
 					Context: &plugin.Context{
-						MessageCreateEvent: &state.MessageCreateEvent{
-							MessageCreateEvent: &gateway.MessageCreateEvent{
-								Message: discord.Message{
-									GuildID: 456,
-								},
-							},
-						},
+						Message: discord.Message{GuildID: 456},
 					},
 					Kind: KindArg,
 				}

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 
@@ -22,13 +21,7 @@ func TestNSFW(t *testing.T) {
 		{
 			name: "not a guild",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -41,22 +34,14 @@ func TestNSFW(t *testing.T) {
 		{
 			name: "nsfw",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
 						ChannelTypes: plugin.DirectMessages,
 					},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
-					ChannelReturn: &discord.Channel{
-						NSFW: true,
-					},
+					ChannelReturn: &discord.Channel{NSFW: true},
 				},
 			},
 			expect: nil,
@@ -64,22 +49,14 @@ func TestNSFW(t *testing.T) {
 		{
 			name: "not nsfw",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
 						ChannelTypes: plugin.DirectMessages,
 					},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
-					ChannelReturn: &discord.Channel{
-						NSFW: false,
-					},
+					ChannelReturn: &discord.Channel{NSFW: false},
 				},
 			},
 			expect: ErrNotNSFWChannel,
@@ -103,13 +80,7 @@ func TestGuildOwner(t *testing.T) {
 		{
 			name: "not a guild",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -122,15 +93,9 @@ func TestGuildOwner(t *testing.T) {
 		{
 			name: "is owner",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-							Author: discord.User{
-								ID: 456,
-							},
-						},
-					},
+				Message: discord.Message{
+					GuildID: 123,
+					Author:  discord.User{ID: 456},
 				},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
@@ -139,9 +104,7 @@ func TestGuildOwner(t *testing.T) {
 					},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						OwnerID: 456,
-					},
+					GuildReturn: &discord.Guild{OwnerID: 456},
 				},
 			},
 			expect: nil,
@@ -149,15 +112,9 @@ func TestGuildOwner(t *testing.T) {
 		{
 			name: "is not owner",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-							Author: discord.User{
-								ID: 456,
-							},
-						},
-					},
+				Message: discord.Message{
+					GuildID: 123,
+					Author:  discord.User{ID: 456},
 				},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
@@ -166,9 +123,7 @@ func TestGuildOwner(t *testing.T) {
 					},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						OwnerID: 789,
-					},
+					GuildReturn: &discord.Guild{OwnerID: 789},
 				},
 			},
 			expect: ErrNotGuildOwner,
@@ -192,14 +147,8 @@ func TestBotOwner(t *testing.T) {
 		{
 			name: "bot owner",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							Author: discord.User{
-								ID: 123,
-							},
-						},
-					},
+				Message: discord.Message{
+					Author: discord.User{ID: 123},
 				},
 				BotOwnerIDs: []discord.UserID{123},
 			},
@@ -208,14 +157,8 @@ func TestBotOwner(t *testing.T) {
 		{
 			name: "not bot owner",
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							Author: discord.User{
-								ID: 123,
-							},
-						},
-					},
+				Message: discord.Message{
+					Author: discord.User{ID: 123},
 				},
 				BotOwnerIDs: []discord.UserID{},
 			},
@@ -247,14 +190,8 @@ func TestUsers(t *testing.T) {
 			name:    "allowed",
 			userIDs: []discord.UserID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							Author: discord.User{
-								ID: 123,
-							},
-						},
-					},
+				Message: discord.Message{
+					Author: discord.User{ID: 123},
 				},
 			},
 			expect: nil,
@@ -263,14 +200,8 @@ func TestUsers(t *testing.T) {
 			name:    "prohibited",
 			userIDs: []discord.UserID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							Author: discord.User{
-								ID: 456,
-							},
-						},
-					},
+				Message: discord.Message{
+					Author: discord.User{ID: 456},
 				},
 			},
 			expect: errors.DefaultFatalRestrictionError,
@@ -303,13 +234,7 @@ func TestAllRoles(t *testing.T) {
 			name:    "not a guild",
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -323,15 +248,9 @@ func TestAllRoles(t *testing.T) {
 			name:    "none missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{123, 456},
-						},
-					},
+				Message: discord.Message{GuildID: 789},
+				Member: &discord.Member{
+					RoleIDs: []discord.RoleID{123, 456},
 				},
 			},
 			expect: nil,
@@ -340,16 +259,8 @@ func TestAllRoles(t *testing.T) {
 			name:    "none missing - no roles from guild",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{},
@@ -362,24 +273,12 @@ func TestAllRoles(t *testing.T) {
 			name:    "missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012},
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 789},
+				Member:    &discord.Member{RoleIDs: []discord.RoleID{012}},
 				Localizer: mock.NoOpLocalizer,
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{
-							{
-								ID: 456,
-							},
-						},
+						Roles: []discord.Role{{ID: 456}},
 					},
 				},
 			},
@@ -389,16 +288,8 @@ func TestAllRoles(t *testing.T) {
 			name:    "missing - can manage",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012, 345},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{012, 345}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
@@ -453,13 +344,7 @@ func TestMustAllRoles(t *testing.T) {
 			name:    "not a guild",
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -473,16 +358,8 @@ func TestMustAllRoles(t *testing.T) {
 			name:    "none missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{123, 456},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{123, 456}},
 			},
 			expect: nil,
 		},
@@ -490,20 +367,10 @@ func TestMustAllRoles(t *testing.T) {
 			name:    "none missing - no roles from guild",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
 				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{},
-					},
+					GuildReturn: &discord.Guild{Roles: []discord.Role{}},
 				},
 			},
 			expect: errors.DefaultFatalRestrictionError,
@@ -512,23 +379,11 @@ func TestMustAllRoles(t *testing.T) {
 			name:    "missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{
-							{
-								ID: 456,
-							},
-						},
+						Roles: []discord.Role{{ID: 456}},
 					},
 				},
 			},
@@ -562,13 +417,7 @@ func TestAnyRole(t *testing.T) {
 			name:    "not a guild",
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -582,16 +431,8 @@ func TestAnyRole(t *testing.T) {
 			name:    "none missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{456},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{456}},
 			},
 			expect: nil,
 		},
@@ -599,23 +440,11 @@ func TestAnyRole(t *testing.T) {
 			name:    "none missing from guild",
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 456,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{789},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 456},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{789}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{
-							{
-								ID: 789,
-							},
-						},
+						Roles: []discord.Role{{ID: 789}},
 					},
 				},
 			},
@@ -625,16 +454,8 @@ func TestAnyRole(t *testing.T) {
 			name:    "missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
@@ -652,16 +473,8 @@ func TestAnyRole(t *testing.T) {
 			name:    "missing - can manage",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012, 345},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{012, 345}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
@@ -716,13 +529,7 @@ func TestMustAnyRole(t *testing.T) {
 			name:    "not a guild",
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -736,16 +543,8 @@ func TestMustAnyRole(t *testing.T) {
 			name:    "none missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{456},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{456}},
 			},
 			expect: nil,
 		},
@@ -753,23 +552,11 @@ func TestMustAnyRole(t *testing.T) {
 			name:    "none missing from guild",
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 456,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{789},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 456},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{789}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{
-							{
-								ID: 789,
-							},
-						},
+						Roles: []discord.Role{{ID: 789}},
 					},
 				},
 			},
@@ -779,16 +566,8 @@ func TestMustAnyRole(t *testing.T) {
 			name:    "missing",
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 789,
-						},
-						Member: &discord.Member{
-							RoleIDs: []discord.RoleID{012},
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 789},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
@@ -831,13 +610,7 @@ func TestChannels(t *testing.T) {
 			name:       "allowed",
 			channelIDs: []discord.ChannelID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							ChannelID: 123,
-						},
-					},
-				},
+				Message: discord.Message{ChannelID: 123},
 			},
 			expect: nil,
 		},
@@ -845,13 +618,9 @@ func TestChannels(t *testing.T) {
 			name:       "prohibited - direct message",
 			channelIDs: []discord.ChannelID{123},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							ChannelID: 456,
-							GuildID:   0,
-						},
-					},
+				Message: discord.Message{
+					ChannelID: 456,
+					GuildID:   0,
 				},
 			},
 			expect: errors.DefaultFatalRestrictionError,
@@ -860,9 +629,7 @@ func TestChannels(t *testing.T) {
 			name:       "prohibited - allowed channels in guild",
 			channelIDs: []discord.ChannelID{123, 456, 789},
 			channelsReturn: []discord.Channel{
-				{
-					ID: 456,
-				},
+				{ID: 456},
 				{
 					ID: 789,
 					Permissions: []discord.Overwrite{
@@ -875,18 +642,12 @@ func TestChannels(t *testing.T) {
 				},
 			},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							ChannelID: 012,
-							GuildID:   345,
-						},
-						Member: &discord.Member{
-							User: discord.User{
-								ID: 678,
-							},
-						},
-					},
+				Message: discord.Message{
+					ChannelID: 012,
+					GuildID:   345,
+				},
+				Member: &discord.Member{
+					User: discord.User{ID: 678},
 				},
 				Localizer: mock.NoOpLocalizer,
 				DiscordDataProvider: mock.DiscordDataProvider{
@@ -904,23 +665,15 @@ func TestChannels(t *testing.T) {
 			expect: newChannelsError([]discord.ChannelID{456}, mock.NoOpLocalizer),
 		},
 		{
-			name:       "prohibited - allowed channels not in guild",
-			channelIDs: []discord.ChannelID{123, 456},
-			channelsReturn: []discord.Channel{
-				{
-					ID: 789,
-				},
-			},
+			name:           "prohibited - allowed channels not in guild",
+			channelIDs:     []discord.ChannelID{123, 456},
+			channelsReturn: []discord.Channel{{ID: 789}},
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							ChannelID: 789,
-							GuildID:   012,
-						},
-						Member: &discord.Member{},
-					},
+				Message: discord.Message{
+					ChannelID: 789,
+					GuildID:   012,
 				},
+				Member: &discord.Member{},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						ID: 012,
@@ -971,13 +724,7 @@ func TestBotPermissions(t *testing.T) {
 			name:  "pass direct message",
 			perms: discord.PermissionSendMessages | discord.PermissionViewChannel,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 0},
 			},
 			expect: nil,
 		},
@@ -985,13 +732,7 @@ func TestBotPermissions(t *testing.T) {
 			name:  "fail direct message",
 			perms: discord.PermissionAdministrator,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -1005,13 +746,7 @@ func TestBotPermissions(t *testing.T) {
 			name:  "pass guild",
 			perms: discord.PermissionSendMessages,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 123},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						ID: 123,
@@ -1024,9 +759,7 @@ func TestBotPermissions(t *testing.T) {
 					},
 					ChannelReturn: &discord.Channel{},
 					SelfReturn: &discord.Member{
-						User: discord.User{
-							ID: 456,
-						},
+						User: discord.User{ID: 456},
 					},
 				},
 			},
@@ -1036,13 +769,7 @@ func TestBotPermissions(t *testing.T) {
 			name:  "fail guild",
 			perms: discord.PermissionStream | discord.PermissionSendTTSMessages | discord.PermissionSendMessages,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 123},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -1061,9 +788,7 @@ func TestBotPermissions(t *testing.T) {
 					},
 					ChannelReturn: &discord.Channel{},
 					SelfReturn: &discord.Member{
-						User: discord.User{
-							ID: 456,
-						},
+						User: discord.User{ID: 456},
 					},
 				},
 			},
@@ -1098,13 +823,7 @@ func TestUserPermissions(t *testing.T) {
 			name:  "pass direct message",
 			perms: discord.PermissionSendMessages | discord.PermissionViewChannel,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message: discord.Message{GuildID: 0},
 			},
 			expect: nil,
 		},
@@ -1112,13 +831,7 @@ func TestUserPermissions(t *testing.T) {
 			name:  "fail direct message",
 			perms: discord.PermissionAdministrator,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 0,
-						},
-					},
-				},
+				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -1132,17 +845,9 @@ func TestUserPermissions(t *testing.T) {
 			name:  "pass guild",
 			perms: discord.PermissionSendMessages,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-						Member: &discord.Member{
-							User: discord.User{
-								ID: 456,
-							},
-						},
-					},
+				Message: discord.Message{GuildID: 123},
+				Member: &discord.Member{
+					User: discord.User{ID: 456},
 				},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
@@ -1163,17 +868,9 @@ func TestUserPermissions(t *testing.T) {
 			name:  "fail guild",
 			perms: discord.PermissionStream | discord.PermissionSendTTSMessages | discord.PermissionSendMessages,
 			ctx: &plugin.Context{
-				MessageCreateEvent: &state.MessageCreateEvent{
-					MessageCreateEvent: &gateway.MessageCreateEvent{
-						Message: discord.Message{
-							GuildID: 123,
-						},
-						Member: &discord.Member{
-							User: discord.User{
-								ID: 456,
-							},
-						},
-					},
+				Message: discord.Message{GuildID: 123},
+				Member: &discord.Member{
+					User: discord.User{ID: 456},
 				},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{

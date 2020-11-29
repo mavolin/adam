@@ -20,8 +20,14 @@ var ErrInsufficientSendPermissions = &informationalError{
 
 // Context contains context information about a command.
 type Context struct {
-	// MessageCreateEvent contains the event data about the invoking message.
-	*state.MessageCreateEvent
+	// Message is the invoking message.
+	discord.Message
+	// Member is the invoking member, if this happened in a guild.
+	*discord.Member
+
+	// Base is the Base MessageCreateEvent or MessageUpdateEvent that triggered
+	// the invoke.
+	*state.Base
 
 	// Localizer is the localizer set to the guilds language.
 	*i18n.Localizer
