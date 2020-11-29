@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	"regexp"
 	"strings"
 )
 
@@ -9,18 +8,6 @@ import (
 // The root/base is '.'.
 // All plugins are dot-separated, e.g. '.mod.ban'.
 type Identifier string
-
-var whitespaceReplacer = regexp.MustCompile(`\s+`)
-
-// IdentifierFromInvoke creates an Identifier from the passed command or module
-// invoke.
-// It takes into account multiple whitespaces in a row.
-//
-// 		mod  infr edit -> .mod.infr.edit
-func IdentifierFromInvoke(i string) Identifier {
-	id := "." + whitespaceReplacer.ReplaceAllString(i, ".")
-	return Identifier(id)
-}
 
 // Parent returns the parent module of the plugin, or '.' if this Identifier
 // already represents root.

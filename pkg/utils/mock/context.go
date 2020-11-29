@@ -3,6 +3,7 @@ package mock
 import (
 	"reflect"
 	"sort"
+	"strings"
 	"sync"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -38,6 +39,7 @@ func (d DiscordDataProvider) Self() (*discord.Member, error) {
 }
 
 // PluginProvider is a mock implementation of plugin.Provider.
+// Calls to FindX must be made with trimmed, space-separated invokes.
 type PluginProvider struct {
 	// PluginRepositoriesReturn is the value returned by PluginRepositories.
 	// The first element's ProviderName must be 'built_in'.
@@ -76,16 +78,6 @@ func (p PluginProvider) Modules() []*plugin.RegisteredModule {
 }
 
 func (p PluginProvider) Command(id plugin.Identifier) *plugin.RegisteredCommand {
-	return p.FindCommand(id.AsInvoke())
-}
-
-func (p PluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModule {
-	return p.FindModule(id.AsInvoke())
-}
-
-func (p PluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
-	id := plugin.IdentifierFromInvoke(invoke)
-
 	all := id.All()
 	if len(all) <= 1 { // invalid or just root
 		return nil
@@ -119,9 +111,7 @@ func (p PluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
 	return mod.FindCommand(id.Name())
 }
 
-func (p PluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
-	id := plugin.IdentifierFromInvoke(invoke)
-
+func (p PluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModule {
 	all := id.All()
 	if len(all) <= 1 { // invalid or just root
 		return nil
@@ -149,6 +139,16 @@ func (p PluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
 	}
 
 	return mod
+}
+
+func (p PluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
+	id := "." + strings.ReplaceAll(invoke, " ", ".")
+	return p.Command(plugin.Identifier(id))
+}
+
+func (p PluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
+	id := "." + strings.ReplaceAll(invoke, " ", ".")
+	return p.Module(plugin.Identifier(id))
 }
 
 func (p PluginProvider) UnavailablePluginProviders() []plugin.UnavailablePluginProvider {
