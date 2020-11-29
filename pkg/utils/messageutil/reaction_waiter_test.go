@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 
@@ -17,16 +16,10 @@ func TestReactionWaiter_Await(t *testing.T) {
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						GuildID:   650048604110585858,
-						ChannelID: 651147777631584286,
-						Author: discord.User{
-							ID: 256827968133791744,
-						},
-					},
-				},
+			Message: discord.Message{
+				GuildID:   650048604110585858,
+				ChannelID: 651147777631584286,
+				Author:    discord.User{ID: 256827968133791744},
 			},
 			DiscordDataProvider: mock.DiscordDataProvider{
 				ChannelReturn: &discord.Channel{},

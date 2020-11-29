@@ -62,16 +62,6 @@ type RegisteredCommand struct {
 	restrictionFunc RestrictionFunc
 }
 
-// NewRegisteredCommandWithProvider creates a new RegisteredCommand from the
-// passed Provider using the passed RestrictionFunc.
-// The RestrictionFunc may be nil.
-func NewRegisteredCommandWithProvider(p Provider, f RestrictionFunc) *RegisteredCommand {
-	return &RegisteredCommand{
-		provider:        p,
-		restrictionFunc: f,
-	}
-}
-
 // NewRegisteredCommandWithParent creates a new RegisteredCommand from the
 // passed parent module using the passed RestrictionFunc.
 // The RestrictionFunc may be nil.
@@ -173,13 +163,12 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 // Parent returns the parent of this command.
 // It will return nil, nil, if this command is top-level.
 //
-// In any other case will always return valid data, even if error !=
-// nil.
+// In any other case, Parent will return valid data, even if error != nil.
 // It is also  guaranteed that the original parent of the command, i.e.
-// the module that provides this command is included, if there is one.
+// the module that provides this command is included.
 //
 // However, all runtime plugin providers that returned an error won't
-// be included, and their error will be returned wrapped in a
+// be included, and their errors will be returned wrapped in a
 // bot.RuntimePluginProviderError.
 // If multiple errors occur, a errors.MultiError filled with
 // bot.RuntimePluginProviderErrors will be returned.

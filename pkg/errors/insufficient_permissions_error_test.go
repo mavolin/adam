@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 
@@ -67,13 +66,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		defer m.Eval()
 
 		ctx := &plugin.Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						ChannelID: 123,
-					},
-				},
-			},
+			Message:   discord.Message{ChannelID: 123},
 			Localizer: mock.NoOpLocalizer,
 			Replier:   replierFromState(s, 123, 0),
 		}
@@ -98,13 +91,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		defer m.Eval()
 
 		ctx := &plugin.Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						ChannelID: 123,
-					},
-				},
-			},
+			Message:   discord.Message{ChannelID: 123},
 			Localizer: mock.NoOpLocalizer,
 			Replier:   replierFromState(s, 123, 0),
 		}

@@ -688,6 +688,83 @@ var (
 )
 
 // =============================================================================
+// Command
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	commandName        = i18n.NewFallbackConfig("args.types.command.name", "Command")
+	commandDescription = i18n.NewFallbackConfig(
+		"args.types.command.description", "The name of a command without it's prefix.")
+)
+
+// ================================ Errors ================================
+
+var (
+	commandNotFound = i18n.NewFallbackConfig(
+		"args.types.command.errors.not_found",
+		"I don't know any commands by the name of {{.invoke}}. Make sure you spelled it right.")
+
+	commandNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
+		"args.types.command.errors.not_found.providers_unavailable",
+		"I couldn't find any commands by the name of {{.invoke}}, "+
+			"but I don't have access to some commands right now. Try again later or check your spelling.")
+)
+
+// =============================================================================
+// Module
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	moduleName        = i18n.NewFallbackConfig("args.types.module.name", "Module")
+	moduleDescription = i18n.NewFallbackConfig(
+		"args.types.module.description",
+		"The name of a module, without the bot's prefix.")
+)
+
+// ================================ Errors ================================
+
+var (
+	moduleNotFound = i18n.NewFallbackConfig(
+		"args.types.module.errors.not_found",
+		"I don't know any commands by the name of {{.invoke}}. Make sure you spelled it right.")
+
+	moduleNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
+		"args.types.module.errors.not_found.providers_unavailable",
+		"I couldn't find any commands by the name of {{.invoke}}, "+
+			"but I don't have access to some commands right now. Try again later or check your spelling.")
+)
+
+// =============================================================================
+// Plugin
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	pluginName        = i18n.NewFallbackConfig("args.types.plugin.name", "Command or Module")
+	pluginDescription = i18n.NewFallbackConfig(
+		"args.types.plugin.description",
+		"The name of a command or module, without the bot's prefix.")
+)
+
+// ================================ Errors ================================
+
+var (
+	pluginNotFound = i18n.NewFallbackConfig(
+		"args.types.plugin.errors.not_found",
+		"I don't know any commands or modules by the name of {{.invoke}}. Make sure you spelled it right.")
+
+	pluginNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
+		"args.types.plugin.errors.not_found.providers_unavailable",
+		"I couldn't find any commands or modules by the name of {{.invoke}}, "+
+			"but I don't have access to some of them right now. Try again later or check your spelling.")
+)
+
+// =============================================================================
 // RegularExpression
 // =====================================================================================
 

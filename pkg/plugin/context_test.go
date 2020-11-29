@@ -5,7 +5,6 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,14 +19,8 @@ func TestContext_IsBotOwner(t *testing.T) {
 		var owner discord.UserID = 123
 
 		ctx := &Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						Author: discord.User{
-							ID: owner,
-						},
-					},
-				},
+			Message: discord.Message{
+				Author: discord.User{ID: owner},
 			},
 			BotOwnerIDs: []discord.UserID{owner},
 		}
@@ -37,14 +30,8 @@ func TestContext_IsBotOwner(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		ctx := &Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						Author: discord.User{
-							ID: 123,
-						},
-					},
-				},
+			Message: discord.Message{
+				Author: discord.User{ID: 123},
 			},
 			BotOwnerIDs: []discord.UserID{465},
 		}
@@ -55,23 +42,16 @@ func TestContext_IsBotOwner(t *testing.T) {
 
 func TestContext_Reply(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
-		ID: 123,
-		Author: discord.User{
-			ID: 456,
-		},
+		ID:        123,
+		Author:    discord.User{ID: 456},
 		ChannelID: ctx.ChannelID,
 		Content:   "abc",
 	}
@@ -81,12 +61,11 @@ func TestContext_Reply(t *testing.T) {
 	actual, err := ctx.Reply(expect.Content)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_Replyl(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -94,13 +73,7 @@ func TestContext_Replyl(t *testing.T) {
 	)
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
@@ -108,10 +81,8 @@ func TestContext_Replyl(t *testing.T) {
 	}
 
 	expect := &discord.Message{
-		ID: 123,
-		Author: discord.User{
-			ID: 456,
-		},
+		ID:        123,
+		Author:    discord.User{ID: 456},
 		ChannelID: ctx.ChannelID,
 		Content:   content,
 	}
@@ -121,12 +92,11 @@ func TestContext_Replyl(t *testing.T) {
 	actual, err := ctx.Replyl(term.AsConfig())
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_Replylt(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -134,13 +104,7 @@ func TestContext_Replylt(t *testing.T) {
 	)
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
 			build(),
@@ -148,10 +112,8 @@ func TestContext_Replylt(t *testing.T) {
 	}
 
 	expect := &discord.Message{
-		ID: 123,
-		Author: discord.User{
-			ID: 456,
-		},
+		ID:        123,
+		Author:    discord.User{ID: 456},
 		ChannelID: ctx.ChannelID,
 		Content:   content,
 	}
@@ -161,29 +123,20 @@ func TestContext_Replylt(t *testing.T) {
 	actual, err := ctx.Replylt(term)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyEmbed(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
-		ID: 123,
-		Author: discord.User{
-			ID: 456,
-		},
+		ID:        123,
+		Author:    discord.User{ID: 456},
 		ChannelID: ctx.ChannelID,
 		Content:   "abc",
 		Embeds: []discord.Embed{
@@ -199,21 +152,14 @@ func TestContext_ReplyEmbed(t *testing.T) {
 	actual, err := ctx.ReplyEmbed(expect.Embeds[0])
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyEmbedBuilder(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Replier: replierFromState(s, 123, 0),
 	}
 
@@ -227,10 +173,8 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 	embed.Type = discord.NormalEmbed
 
 	expect := &discord.Message{
-		ID: 123,
-		Author: discord.User{
-			ID: 456,
-		},
+		ID:        123,
+		Author:    discord.User{ID: 456},
 		ChannelID: ctx.ChannelID,
 		Content:   "abc",
 		Embeds:    []discord.Embed{embed},
@@ -241,29 +185,20 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 	actual, err := ctx.ReplyEmbedBuilder(builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyMessage(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					ChannelID: 123,
-				},
-			},
-		},
+		Message: discord.Message{ChannelID: 123},
 		Replier: replierFromState(s, 123, 0),
 	}
 
 	expect := &discord.Message{
-		ID: 123,
-		Author: discord.User{
-			ID: 456,
-		},
+		ID:        123,
+		Author:    discord.User{ID: 456},
 		ChannelID: ctx.ChannelID,
 		Content:   "abc",
 	}
@@ -275,23 +210,16 @@ func TestContext_ReplyMessage(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyDM(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					GuildID: 1,
-					Author: discord.User{
-						ID: 123,
-					},
-				},
-			},
+		Message: discord.Message{
+			GuildID: 1,
+			Author:  discord.User{ID: 123},
 		},
 		Replier: replierFromState(s, 0, 123),
 	}
@@ -299,10 +227,8 @@ func TestContext_ReplyDM(t *testing.T) {
 	var channelID discord.ChannelID = 456
 
 	expect := &discord.Message{
-		ID: 789,
-		Author: discord.User{
-			ID: 123,
-		},
+		ID:        789,
+		Author:    discord.User{ID: 123},
 		ChannelID: channelID,
 		Content:   "abc",
 	}
@@ -316,12 +242,11 @@ func TestContext_ReplyDM(t *testing.T) {
 	actual, err := ctx.ReplyDM(expect.Content)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplylDM(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -329,15 +254,10 @@ func TestContext_ReplylDM(t *testing.T) {
 	)
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					GuildID: 1,
-					Author: discord.User{
-						ID: 123,
-					},
-				},
-			},
+
+		Message: discord.Message{
+			GuildID: 1,
+			Author:  discord.User{ID: 123},
 		},
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
@@ -348,10 +268,8 @@ func TestContext_ReplylDM(t *testing.T) {
 	var channelID discord.ChannelID = 456
 
 	expect := &discord.Message{
-		ID: 789,
-		Author: discord.User{
-			ID: 123,
-		},
+		ID:        789,
+		Author:    discord.User{ID: 123},
 		ChannelID: channelID,
 		Content:   content,
 	}
@@ -365,12 +283,11 @@ func TestContext_ReplylDM(t *testing.T) {
 	actual, err := ctx.ReplylDM(term.AsConfig())
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyltDM(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -378,15 +295,9 @@ func TestContext_ReplyltDM(t *testing.T) {
 	)
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					GuildID: 1,
-					Author: discord.User{
-						ID: 123,
-					},
-				},
-			},
+		Message: discord.Message{
+			GuildID: 1,
+			Author:  discord.User{ID: 123},
 		},
 		Localizer: newMockedLocalizer(t).
 			on(term, content).
@@ -397,10 +308,8 @@ func TestContext_ReplyltDM(t *testing.T) {
 	var channelID discord.ChannelID = 456
 
 	expect := &discord.Message{
-		ID: 789,
-		Author: discord.User{
-			ID: 123,
-		},
+		ID:        789,
+		Author:    discord.User{ID: 123},
 		ChannelID: channelID,
 		Content:   content,
 	}
@@ -414,23 +323,16 @@ func TestContext_ReplyltDM(t *testing.T) {
 	actual, err := ctx.ReplyltDM(term)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyEmbedDM(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					GuildID: 1,
-					Author: discord.User{
-						ID: 123,
-					},
-				},
-			},
+		Message: discord.Message{
+			GuildID: 1,
+			Author:  discord.User{ID: 123},
 		},
 		Replier: replierFromState(s, 0, 123),
 	}
@@ -438,10 +340,8 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 	var channelID discord.ChannelID = 456
 
 	expect := &discord.Message{
-		ID: 789,
-		Author: discord.User{
-			ID: 123,
-		},
+		ID:        789,
+		Author:    discord.User{ID: 123},
 		ChannelID: channelID,
 		Content:   "abc",
 		Embeds: []discord.Embed{
@@ -461,23 +361,16 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 	actual, err := ctx.ReplyEmbedDM(expect.Embeds[0])
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					GuildID: 1,
-					Author: discord.User{
-						ID: 123,
-					},
-				},
-			},
+		Message: discord.Message{
+			GuildID: 1,
+			Author:  discord.User{ID: 123},
 		},
 		Replier: replierFromState(s, 0, 123),
 	}
@@ -494,10 +387,8 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 	var channelID discord.ChannelID = 456
 
 	expect := &discord.Message{
-		ID: 789,
-		Author: discord.User{
-			ID: 123,
-		},
+		ID:        789,
+		Author:    discord.User{ID: 123},
 		ChannelID: channelID,
 		Content:   "abc",
 		Embeds:    []discord.Embed{embed},
@@ -512,23 +403,17 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 	actual, err := ctx.ReplyEmbedBuilderDM(builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_ReplyMessageDM(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &Context{
-		MessageCreateEvent: &state.MessageCreateEvent{
-			MessageCreateEvent: &gateway.MessageCreateEvent{
-				Message: discord.Message{
-					GuildID: 1,
-					Author: discord.User{
-						ID: 123,
-					},
-				},
-			},
+
+		Message: discord.Message{
+			GuildID: 1,
+			Author:  discord.User{ID: 123},
 		},
 		Replier: replierFromState(s, 0, 123),
 	}
@@ -536,10 +421,8 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 	var channelID discord.ChannelID = 456
 
 	expect := &discord.Message{
-		ID: 789,
-		Author: discord.User{
-			ID: 123,
-		},
+		ID:        789,
+		Author:    discord.User{ID: 123},
 		ChannelID: channelID,
 		Content:   "abc",
 	}
@@ -555,20 +438,12 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestContext_SelfPermissions(t *testing.T) {
 	t.Run("dm", func(t *testing.T) {
 		ctx := &Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						GuildID: 0,
-					},
-				},
-			},
+			Message: discord.Message{GuildID: 0},
 		}
 
 		actual, err := ctx.SelfPermissions()
@@ -580,12 +455,8 @@ func TestContext_SelfPermissions(t *testing.T) {
 		expect := discord.PermissionViewChannel | discord.PermissionAddReactions
 
 		ctx := &Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						GuildID: 123,
-					},
-				},
+			Message: discord.Message{
+				GuildID: 123,
 			},
 			DiscordDataProvider: mockDiscordDataProvider{
 				GuildReturn: &discord.Guild{
@@ -598,9 +469,7 @@ func TestContext_SelfPermissions(t *testing.T) {
 					},
 				},
 				ChannelReturn: new(discord.Channel),
-				SelfReturn: &discord.Member{
-					RoleIDs: []discord.RoleID{456},
-				},
+				SelfReturn:    &discord.Member{RoleIDs: []discord.RoleID{456}},
 			},
 		}
 
@@ -613,13 +482,7 @@ func TestContext_SelfPermissions(t *testing.T) {
 func TestContext_UserPermissions(t *testing.T) {
 	t.Run("dm", func(t *testing.T) {
 		ctx := &Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						GuildID: 0,
-					},
-				},
-			},
+			Message: discord.Message{GuildID: 0},
 		}
 
 		actual, err := ctx.UserPermissions()
@@ -631,16 +494,8 @@ func TestContext_UserPermissions(t *testing.T) {
 		expect := discord.PermissionViewChannel | discord.PermissionAddReactions
 
 		ctx := &Context{
-			MessageCreateEvent: &state.MessageCreateEvent{
-				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						GuildID: 123,
-					},
-					Member: &discord.Member{
-						RoleIDs: []discord.RoleID{456},
-					},
-				},
-			},
+			Message: discord.Message{GuildID: 123},
+			Member:  &discord.Member{RoleIDs: []discord.RoleID{456}},
 			DiscordDataProvider: mockDiscordDataProvider{
 				GuildReturn: &discord.Guild{
 					OwnerID: 123,

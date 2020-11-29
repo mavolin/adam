@@ -11,6 +11,7 @@ func TestNew(t *testing.T) {
 
 	actual := New(expect)
 
+	//goland:noinspection GoNilness
 	assert.Equal(t, expect, actual.Error())
 }
 
@@ -19,6 +20,7 @@ func TestNewWithStack(t *testing.T) {
 
 	actual := NewWithStack(expect)
 
+	//goland:noinspection GoNilness
 	assert.Equal(t, expect, actual.Error())
 }
 
@@ -27,5 +29,6 @@ func TestNewWithStackf(t *testing.T) {
 
 	actual := NewWithStackf("abc %s", "def")
 
+	//goland:noinspection GoNilness
 	assert.Equal(t, expect, actual.Error())
 }
