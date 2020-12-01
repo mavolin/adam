@@ -22,7 +22,7 @@ type (
 		hasFlags        bool
 	}
 
-	commaStateFunc func(l *commaLexer) (commaStateFunc, error)
+	commaStateFunc func() (commaStateFunc, error)
 
 	commaItem struct {
 		typ commaItemType
@@ -58,15 +58,16 @@ func (i commaItemType) String() string {
 }
 
 func newCommaLexer(args string, numRequiredArgs int, hasFlags bool) *commaLexer {
-	p := &commaLexer{
+	l := &commaLexer{
 		raw:             []rune(args),
 		emitChan:        make(chan commaItem, 2), // pseudo ring buffer, see nextItem
-		state:           item,
 		numRequiredArgs: numRequiredArgs,
 		hasFlags:        hasFlags,
 	}
 
-	return p
+	l.state = l.item
+
+	return l
 }
 
 func (l *commaLexer) nextItem() (commaItem, error) {
@@ -83,7 +84,7 @@ func (l *commaLexer) nextItem() (commaItem, error) {
 
 			var err error
 
-			l.state, err = l.state(l)
+			l.state, err = l.state()
 			if err != nil {
 				return commaItem{}, err
 			}
@@ -150,7 +151,7 @@ func (l *commaLexer) emit(typ commaItemType) {
 
 // ================================ State functions ================================
 
-func item(l *commaLexer) (commaStateFunc, error) {
+func (l *commaLexer) item() (commaStateFunc, error) {
 	if l.drained() {
 		return nil, nil
 	}
@@ -160,16 +161,16 @@ func item(l *commaLexer) (commaStateFunc, error) {
 	// and minus escapes aren't needed.
 	if (l.nextArg == 0 || l.nextArg >= l.numRequiredArgs) && l.hasFlags {
 		if l.peek(1) == '-' && l.peek(2) != '-' {
-			return flag, nil
+			return l.flag, nil
 		}
 	}
 
-	return arg, nil
+	return l.arg, nil
 }
 
 // flag parses a flag.
 // The introducing minus is still present.
-func flag(l *commaLexer) (commaStateFunc, error) {
+func (l *commaLexer) flag() (commaStateFunc, error) {
 	l.skip()
 	l.ignore()
 
@@ -180,7 +181,7 @@ func flag(l *commaLexer) (commaStateFunc, error) {
 			l.backup()
 			l.emit(itemFlagName)
 
-			return flagContent, nil
+			return l.flagContent, nil
 		}
 	}
 
@@ -189,7 +190,7 @@ func flag(l *commaLexer) (commaStateFunc, error) {
 	return nil, nil
 }
 
-func flagContent(l *commaLexer) (commaStateFunc, error) {
+func (l *commaLexer) flagContent() (commaStateFunc, error) {
 	for l.has(1) { // skip whitespace
 		if !strings.ContainsRune(whitespace, l.next()) {
 			l.backup()
@@ -214,10 +215,10 @@ func flagContent(l *commaLexer) (commaStateFunc, error) {
 		l.emit(itemFlagContent)
 	}
 
-	return end, nil
+	return l.end, nil
 }
 
-func arg(l *commaLexer) (commaStateFunc, error) {
+func (l *commaLexer) arg() (commaStateFunc, error) {
 	for l.has(1) { // skip whitespace
 		if !strings.ContainsRune(whitespace, l.next()) {
 			l.backup()
@@ -249,12 +250,12 @@ func arg(l *commaLexer) (commaStateFunc, error) {
 
 	l.nextArg++
 
-	return end, nil
+	return l.end, nil
 }
 
 // end is called if the end of an argument or a flag is reached.
 // It expects either EOF or a comma.
-func end(l *commaLexer) (commaStateFunc, error) {
+func (l *commaLexer) end() (commaStateFunc, error) {
 	if l.drained() {
 		return nil, nil
 	}
@@ -268,7 +269,7 @@ func end(l *commaLexer) (commaStateFunc, error) {
 			l.backup()
 			l.ignore()
 
-			return item, nil
+			return l.item, nil
 		}
 	}
 

@@ -7,7 +7,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 type Kind string
@@ -18,19 +17,30 @@ const (
 )
 
 type (
-	// RequiredArg is a required argument.
+	// RequiredArg is an unlocalized required argument.
 	RequiredArg struct {
 		// Name is the name of the argument.
-		Name *i18nutil.Text
+		Name string
 		// Type is the type of the argument.
 		Type Type
 		// Description is an optional short description of the argument.
-		Description *i18nutil.Text
+		Description string
 	}
-	// OptionalArg is a optional argument.
+
+	// RequiredArg is a localized required argument.
+	LocalizedRequiredArg struct {
+		// Name is the name of the argument.
+		Name *i18n.Config
+		// Type is the type of the argument.
+		Type Type
+		// Description is an optional short description of the argument.
+		Description *i18n.Config
+	}
+
+	// OptionalArg is an unlocalized optional argument.
 	OptionalArg struct {
 		// Name is the name of the argument.
-		Name *i18nutil.Text
+		Name string
 		// Type is the type of the argument.
 		Type Type
 		// Default is the default value of the argument.
@@ -39,9 +49,25 @@ type (
 		// as returned by Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the argument.
-		Description *i18nutil.Text
+		Description string
 	}
-	// Flag is a flag.
+
+	// OptionalArg is an localized optional argument.
+	LocalizedOptionalArg struct {
+		// Name is the name of the argument.
+		Name *i18n.Config
+		// Type is the type of the argument.
+		Type Type
+		// Default is the default value of the argument.
+		//
+		// If Default is (interface{})(nil), the default of Type will be used,
+		// as returned by Type.Default() will be used.
+		Default interface{}
+		// Description is an optional short description of the argument.
+		Description *i18n.Config
+	}
+
+	// Flag is an unlocalized flag.
 	Flag struct {
 		// Name is the name of the flag.
 		Name string
@@ -56,7 +82,27 @@ type (
 		// as returned by Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the flag.
-		Description *i18nutil.Text
+		Description string
+		// Multi specifies whether this flag can be used multiple times.
+		Multi bool
+	}
+
+	// Flag is a localized flag.
+	LocalizedFlag struct {
+		// Name is the name of the flag.
+		Name string
+		// Aliases contains the optional aliases of the flag.
+		Aliases []string
+		// Type is the type of the flag.
+		Type Type
+		// Default is the default value of the flag, and is used if the flag
+		// doesn't get set.
+		//
+		// If Default is (interface{})(nil), the default of Type will be used,
+		// as returned by Type.Default() will be used.
+		Default interface{}
+		// Description is an optional short description of the flag.
+		Description *i18n.Config
 		// Multi specifies whether this flag can be used multiple times.
 		Multi bool
 	}

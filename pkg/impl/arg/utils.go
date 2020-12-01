@@ -10,6 +10,50 @@ const whitespace = " \t\n"
 
 func genArgsInfo(
 	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
+) (info plugin.ArgsInfo, err error) {
+	info = plugin.ArgsInfo{
+		Required: make([]plugin.ArgInfo, len(rargs)),
+		Optional: make([]plugin.ArgInfo, len(oargs)),
+		Flags:    make([]plugin.FlagInfo, len(flags)),
+		Variadic: variadic,
+	}
+
+	for i, arg := range rargs {
+		info.Required[i] = plugin.ArgInfo{
+			Name:        arg.Name,
+			Type:        typeInfo(l, arg.Type),
+			Description: arg.Description,
+		}
+	}
+
+	for i, arg := range oargs {
+		info.Optional[i] = plugin.ArgInfo{
+			Name:        arg.Name,
+			Type:        typeInfo(l, arg.Type),
+			Description: arg.Description,
+		}
+	}
+
+	for i, flag := range flags {
+		info.Flags[i] = plugin.FlagInfo{
+			Name:        flag.Name,
+			Type:        typeInfo(l, flag.Type),
+			Description: flag.Description,
+			Multi:       flag.Multi,
+		}
+
+		if len(flag.Aliases) > 0 {
+			info.Flags[i].Aliases = make([]string, len(flag.Aliases))
+			copy(info.Flags[i].Aliases, flag.Aliases)
+		}
+	}
+
+	return info, nil
+}
+
+func genArgsInfol(
+	l *i18n.Localizer,
+	rargs []LocalizedRequiredArg, oargs []LocalizedOptionalArg, flags []LocalizedFlag, variadic bool,
 ) (plugin.ArgsInfo, error) {
 	info := plugin.ArgsInfo{
 		Required: make([]plugin.ArgInfo, len(rargs)),
@@ -21,63 +65,54 @@ func genArgsInfo(
 	var err error
 
 	for i, arg := range rargs {
-		info.Required[i], err = requiredArgInfo(arg, l)
+		info.Required[i], err = requiredArgInfol(l, arg)
 		if err != nil {
 			return plugin.ArgsInfo{}, err
 		}
 	}
 
 	for i, arg := range oargs {
-		info.Optional[i], err = optionalArgInfo(arg, l)
+		info.Optional[i], err = optionalArgInfol(l, arg)
 		if err != nil {
 			return plugin.ArgsInfo{}, err
 		}
 	}
 
 	for i, flag := range flags {
-		info.Flags[i], err = flagInfo(flag, l)
+		info.Flags[i], err = flagInfol(l, flag)
 		if err != nil {
 			return plugin.ArgsInfo{}, err
 		}
 	}
+
 	return info, nil
 }
 
-func requiredArgInfo(a RequiredArg, l *i18n.Localizer) (info plugin.ArgInfo, err error) {
-	info.Name, err = a.Name.Get(l)
+func requiredArgInfol(l *i18n.Localizer, a LocalizedRequiredArg) (info plugin.ArgInfo, err error) {
+	info.Name, err = l.Localize(a.Name)
+	if err != nil {
+		return plugin.ArgInfo{}, err
+	}
+
+	info.Type = typeInfo(l, a.Type)
+
+	info.Description, err = l.Localize(a.Description)
+	return
+}
+
+func optionalArgInfol(l *i18n.Localizer, a LocalizedOptionalArg) (info plugin.ArgInfo, err error) {
+	info.Name, err = l.Localize(a.Name)
 	if err != nil {
 		return
 	}
 
-	var ok bool
+	info.Type = typeInfo(l, a.Type)
 
-	info.Type, ok = typeInfo(a.Type, l)
-	if !ok {
-		return
-	}
-
-	info.Description, err = a.Description.Get(l)
+	info.Description, err = l.Localize(a.Description)
 	return
 }
 
-func optionalArgInfo(a OptionalArg, l *i18n.Localizer) (info plugin.ArgInfo, err error) {
-	info.Name, err = a.Name.Get(l)
-	if err != nil {
-		return
-	}
-
-	var ok bool
-
-	info.Type, ok = typeInfo(a.Type, l)
-	if !ok {
-		return
-	}
-
-	info.Description, err = a.Description.Get(l)
-	return
-}
-
-func flagInfo(f Flag, l *i18n.Localizer) (info plugin.FlagInfo, err error) {
+func flagInfol(l *i18n.Localizer, f LocalizedFlag) (info plugin.FlagInfo, err error) {
 	info.Name = f.Name
 
 	if len(f.Aliases) > 0 {
@@ -85,32 +120,18 @@ func flagInfo(f Flag, l *i18n.Localizer) (info plugin.FlagInfo, err error) {
 		copy(info.Aliases, f.Aliases)
 	}
 
-	var ok bool
-
-	info.Type, ok = typeInfo(f.Type, l)
-	if !ok {
-		return
-	}
-
+	info.Type = typeInfo(l, f.Type)
 	info.Multi = f.Multi
 
-	info.Description, err = f.Description.Get(l)
+	info.Description, err = l.Localize(f.Description)
 	return
 }
 
-func typeInfo(t Type, l *i18n.Localizer) (info plugin.TypeInfo, ok bool) {
-	info.Name = t.Name(l)
-	if info.Name == "" {
-		return
+func typeInfo(l *i18n.Localizer, t Type) plugin.TypeInfo {
+	return plugin.TypeInfo{
+		Name:        t.Name(l),
+		Description: t.Description(l),
 	}
-
-	info.Description = t.Description(l)
-	if info.Description == "" {
-		return
-	}
-
-	ok = true
-	return
 }
 
 // newArgParsingErr2 creates a new errors.ArgumentParsingError using the passed

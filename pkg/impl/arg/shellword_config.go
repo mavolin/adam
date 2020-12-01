@@ -60,3 +60,57 @@ func (c ShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 
 	return []plugin.ArgsInfo{info}
 }
+
+// ShellwordConfig is a plugin.ArgConfig that roughly follows the parsing rules
+// of the Bourne shell.
+//
+// Flags
+//
+// Flags can be placed both before and after arguments.
+// For simplicity, flags always start with a single minus, double minuses are
+// not permitted.
+//
+// Arguments
+//
+// Arguments are space separated.
+// To use arguments with whitespace quotes, both single and double, can be
+// used.
+// Additionally, lines of code as well as code blocks will be parsed as a
+// single argument.
+//
+// Escapes
+//
+// Escapes are only permitted if using double quotes.
+// Valid escapes are '\\' and '\"', all other combinations will be parsed
+// literally to make usage easier for users unaware of escapes.
+type LocalizedShellwordConfig struct {
+	// Required contains the required arguments.
+	Required []LocalizedRequiredArg
+	// Optional contains the optional arguments.
+	Optional []LocalizedOptionalArg
+	// Variadic specifies whether the last possibly specifiable argument is
+	// variadic.
+	Variadic bool
+
+	// Flags contains the flags.
+	Flags []LocalizedFlag
+}
+
+var (
+	_ plugin.ArgConfig  = LocalizedShellwordConfig{}
+	_ plugin.ArgsInfoer = LocalizedShellwordConfig{}
+)
+
+func (c LocalizedShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
+	parser := newShellwordParserl(args, c, s, ctx)
+	return parser.parse()
+}
+
+func (c LocalizedShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
+	info, err := genArgsInfol(l, c.Required, c.Optional, c.Flags, c.Variadic)
+	if err != nil {
+		return nil
+	}
+
+	return []plugin.ArgsInfo{info}
+}

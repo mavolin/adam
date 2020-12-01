@@ -8,7 +8,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
@@ -92,38 +91,38 @@ func TestOptionsConfig_Info(t *testing.T) {
 			Config: CommaConfig{
 				Required: []RequiredArg{
 					{
-						Name: i18nutil.NewText("1.r1.name"),
+						Name: "1.r1.name",
 						Type: mockType{
 							name: "1.r1.type.name",
 							desc: "1.r1.type.desc",
 						},
-						Description: i18nutil.NewText("1.r1.desc"),
+						Description: "1.r1.desc",
 					},
 					{
-						Name: i18nutil.NewText("1.r2.name"),
+						Name: "1.r2.name",
 						Type: mockType{
 							name: "1.r2.type.name",
 							desc: "1.r2.type.desc",
 						},
-						Description: i18nutil.NewText("1.r2.desc"),
+						Description: "1.r2.desc",
 					},
 				},
 				Optional: []OptionalArg{
 					{
-						Name: i18nutil.NewText("1.o1.name"),
+						Name: "1.o1.name",
 						Type: mockType{
 							name: "1.o1.type.name",
 							desc: "1.o1.type.desc",
 						},
-						Description: i18nutil.NewText("1.o1.desc"),
+						Description: "1.o1.desc",
 					},
 					{
-						Name: i18nutil.NewText("1.o2.name"),
+						Name: "1.o2.name",
 						Type: mockType{
 							name: "1.o2.type.name",
 							desc: "1.o2.type.desc",
 						},
-						Description: i18nutil.NewText("1.o2.desc"),
+						Description: "1.o2.desc",
 					},
 				},
 				Variadic: true,
@@ -135,7 +134,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 							name: "1.f1.type.name",
 							desc: "1.f1.type.desc",
 						},
-						Description: i18nutil.NewText("1.f1.desc"),
+						Description: "1.f1.desc",
 					},
 					{
 						Name: "1.f2.name",
@@ -143,7 +142,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 							name: "1.f2.type.name",
 							desc: "1.f2.type.desc",
 						},
-						Description: i18nutil.NewText("1.f2.desc"),
+						Description: "1.f2.desc",
 						Multi:       true,
 					},
 				},
@@ -154,38 +153,38 @@ func TestOptionsConfig_Info(t *testing.T) {
 			Config: CommaConfig{
 				Required: []RequiredArg{
 					{
-						Name: i18nutil.NewText("2.r1.name"),
+						Name: "2.r1.name",
 						Type: mockType{
 							name: "2.r1.type.name",
 							desc: "2.r1.type.desc",
 						},
-						Description: i18nutil.NewText("2.r1.desc"),
+						Description: "2.r1.desc",
 					},
 					{
-						Name: i18nutil.NewText("2.r2.name"),
+						Name: "2.r2.name",
 						Type: mockType{
 							name: "2.r2.type.name",
 							desc: "2.r2.type.desc",
 						},
-						Description: i18nutil.NewText("2.r2.desc"),
+						Description: "2.r2.desc",
 					},
 				},
 				Optional: []OptionalArg{
 					{
-						Name: i18nutil.NewText("2.o1.name"),
+						Name: "2.o1.name",
 						Type: mockType{
 							name: "2.o1.type.name",
 							desc: "2.o1.type.desc",
 						},
-						Description: i18nutil.NewText("2.o1.desc"),
+						Description: "2.o1.desc",
 					},
 					{
-						Name: i18nutil.NewText("2.o2.name"),
+						Name: "2.o2.name",
 						Type: mockType{
 							name: "2.o2.type.name",
 							desc: "2.o2.type.desc",
 						},
-						Description: i18nutil.NewText("2.o2.desc"),
+						Description: "2.o2.desc",
 					},
 				},
 				Variadic: true,
@@ -197,7 +196,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 							name: "2.f1.type.name",
 							desc: "2.f1.type.desc",
 						},
-						Description: i18nutil.NewText("2.f1.desc"),
+						Description: "2.f1.desc",
 					},
 					{
 						Name: "2.f2.name",
@@ -205,7 +204,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 							name: "2.f2.type.name",
 							desc: "2.f2.type.desc",
 						},
-						Description: i18nutil.NewText("2.f2.desc"),
+						Description: "2.f2.desc",
 						Multi:       true,
 					},
 				},

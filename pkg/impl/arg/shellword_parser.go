@@ -56,6 +56,19 @@ func newShellwordParser(args string, cfg ShellwordConfig, s *state.State, ctx *p
 	return p
 }
 
+func newShellwordParserl(
+	args string, cfg LocalizedShellwordConfig, s *state.State, ctx *plugin.Context,
+) *shellwordParser {
+	p := &shellwordParser{
+		helper: newParseHelperl(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
+		raw:    []rune(args),
+	}
+
+	p.builder.Grow(len(args))
+
+	return p
+}
+
 func (p *shellwordParser) parse() (plugin.Args, plugin.Flags, error) {
 	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && len(p.raw) != 0 {
 		return nil, nil, errors.NewArgumentParsingErrorl(noArgsError)
@@ -247,7 +260,7 @@ func (p *shellwordParser) parseFlags() error {
 				}))
 		}
 
-		if f.Type == Switch {
+		if f.typ == Switch {
 			if err := p.helper.addFlag(f, "", ""); err != nil {
 				return err
 			}

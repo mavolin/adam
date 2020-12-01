@@ -26,6 +26,13 @@ func newCommaParser(args string, cfg CommaConfig, s *state.State, ctx *plugin.Co
 	}
 }
 
+func newCommaParserl(args string, cfg LocalizedCommaConfig, s *state.State, ctx *plugin.Context) *commaParser {
+	return &commaParser{
+		helper: newParseHelperl(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
+		lexer:  newCommaLexer(args, len(cfg.Required), len(cfg.Flags) > 0),
+	}
+}
+
 func (p *commaParser) parse() (plugin.Args, plugin.Flags, error) {
 	err := p.startParse()
 	if err != nil {
@@ -76,7 +83,7 @@ func (p *commaParser) parseFlag(flagName commaItem) (err error) {
 			}))
 	}
 
-	if f.Type == Switch {
+	if f.typ == Switch {
 		if err = p.helper.addFlag(f, "", ""); err != nil {
 			return err
 		}
@@ -102,7 +109,7 @@ func (p *commaParser) parseFlag(flagName commaItem) (err error) {
 	switch {
 	case err != nil:
 		return err
-	case finalizer.typ == itemFlagContent && f.Type == Switch:
+	case finalizer.typ == itemFlagContent && f.typ == Switch:
 		return errors.NewArgumentParsingErrorl(switchWithContentError.
 			WithPlaceholders(&switchWithContentErrorPlaceholders{
 				Name: flagName.val,
