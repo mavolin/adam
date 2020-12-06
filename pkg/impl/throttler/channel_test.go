@@ -24,7 +24,7 @@ func Test_channel_Check(t *testing.T) {
 			time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 		}
 
-		cancelFunc, err := channel.Check(ctx)
+		cancelFunc, err := channel.Check(nil, ctx)
 		assert.Nil(t, cancelFunc)
 		assert.Equal(t, genError(10*time.Second, channelThrottledErrorSecond, channelThrottledErrorMinute), err)
 	})
@@ -44,7 +44,7 @@ func Test_channel_Check(t *testing.T) {
 			time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 		}
 
-		cancelFunc, _ := channel.Check(ctx)
+		cancelFunc, _ := channel.Check(nil, ctx)
 		assert.NotNil(t, cancelFunc)
 	})
 }

@@ -1,6 +1,10 @@
 package mock
 
-import "github.com/mavolin/adam/pkg/plugin"
+import (
+	"github.com/mavolin/disstate/v2/pkg/state"
+
+	"github.com/mavolin/adam/pkg/plugin"
+)
 
 // Throttler is the mocked version of a plugin.Throttler.
 type Throttler struct {
@@ -18,7 +22,7 @@ func NewThrottler(checkReturn error) *Throttler {
 	}
 }
 
-func (t *Throttler) Check(*plugin.Context) (func(), error) {
+func (t *Throttler) Check(*state.State, *plugin.Context) (func(), error) {
 	return func() {
 		t.CancelCalled = true
 	}, t.checkReturn

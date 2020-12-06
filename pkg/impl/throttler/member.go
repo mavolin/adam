@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/diamondburned/arikawa/discord"
+	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -37,9 +38,9 @@ func PerMember(maxInvokes uint, duration time.Duration) plugin.Throttler {
 	}
 }
 
-func (g *member) Check(ctx *plugin.Context) (func(), error) {
+func (g *member) Check(s *state.State, ctx *plugin.Context) (func(), error) {
 	if ctx.GuildID == 0 {
-		return g.userThrottler.Check(ctx)
+		return g.userThrottler.Check(s, ctx)
 	}
 
 	g.memberMutex.Lock()

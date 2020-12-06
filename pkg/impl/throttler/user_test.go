@@ -28,7 +28,7 @@ func Test_user_Check(t *testing.T) {
 			time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 		}
 
-		cancelFunc, err := user.Check(ctx)
+		cancelFunc, err := user.Check(nil, ctx)
 		assert.Nil(t, cancelFunc)
 		assert.Equal(t, genError(10*time.Second, userThrottledErrorSecond, userThrottledErrorMinute), err)
 	})
@@ -52,7 +52,7 @@ func Test_user_Check(t *testing.T) {
 			time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 		}
 
-		cancelFunc, _ := user.Check(ctx)
+		cancelFunc, _ := user.Check(nil, ctx)
 		assert.NotNil(t, cancelFunc)
 	})
 }

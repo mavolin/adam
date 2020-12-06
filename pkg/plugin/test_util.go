@@ -117,7 +117,7 @@ type mockThrottler struct {
 	cmp string // used to make throttlers unique
 }
 
-func (m mockThrottler) Check(*Context) (func(), error) { return func() {}, nil }
+func (m mockThrottler) Check(*state.State, *Context) (func(), error) { return func() {}, nil }
 
 // mockDiscordDataProvider is a copy of mock.DiscordDataProvider to prevent
 // import cycles.
