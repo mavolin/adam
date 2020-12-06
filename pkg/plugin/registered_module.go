@@ -152,6 +152,7 @@ func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, re
 	}
 
 	if parent == nil {
+		//goland:noinspection GoRedundantConversion // GoLand is buggy, we need that conversion
 		rmod.Identifier += "." + Identifier(referenceModule.GetName())
 	} else {
 		rmod.Identifier = parent.Identifier + Identifier("."+referenceModule.GetName())

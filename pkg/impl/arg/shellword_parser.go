@@ -47,7 +47,20 @@ type shellwordParser struct {
 
 func newShellwordParser(args string, cfg ShellwordConfig, s *state.State, ctx *plugin.Context) *shellwordParser {
 	p := &shellwordParser{
-		helper: newParseHelper(cfg.RequiredArgs, cfg.OptionalArgs, cfg.Flags, cfg.Variadic, s, ctx),
+		helper: newParseHelper(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
+		raw:    []rune(args),
+	}
+
+	p.builder.Grow(len(args))
+
+	return p
+}
+
+func newShellwordParserl(
+	args string, cfg LocalizedShellwordConfig, s *state.State, ctx *plugin.Context,
+) *shellwordParser {
+	p := &shellwordParser{
+		helper: newParseHelperl(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
 		raw:    []rune(args),
 	}
 
@@ -247,7 +260,7 @@ func (p *shellwordParser) parseFlags() error {
 				}))
 		}
 
-		if f.Type == Switch {
+		if f.typ == Switch {
 			if err := p.helper.addFlag(f, "", ""); err != nil {
 				return err
 			}

@@ -182,6 +182,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 			if c.expect != nil {
 				var actual interface{}
 
+				//goland:noinspection GoNilness
 				select {
 				case actual = <-result:
 				case <-time.After(2 * time.Second):
@@ -296,6 +297,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 			if c.expect != nil {
 				var actual interface{}
 
+				//goland:noinspection GoNilness
 				select {
 				case actual = <-result:
 				case <-time.After(2 * time.Second):

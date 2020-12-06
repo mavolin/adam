@@ -9,6 +9,7 @@ import (
 )
 
 func Test_isOne(t *testing.T) {
+	//goland:noinspection GoRedundantConversion
 	successCases := []struct {
 		// the number 1 in that type;
 		// expected to produce true
