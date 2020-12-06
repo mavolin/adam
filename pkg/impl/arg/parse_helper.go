@@ -52,7 +52,7 @@ type (
 	}
 )
 
-func newParseHelper(
+func newParseHelper( //nolint:dupl
 	rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool, s *state.State, ctx *plugin.Context,
 ) *parseHelper {
 	p := &parseHelper{
@@ -115,7 +115,7 @@ func newParseHelper(
 	return p
 }
 
-func newParseHelperl(
+func newParseHelperl( //nolint:dupl
 	rargs []LocalizedRequiredArg, oargs []LocalizedOptionalArg, flags []LocalizedFlag, variadic bool,
 	s *state.State, ctx *plugin.Context,
 ) *parseHelper {

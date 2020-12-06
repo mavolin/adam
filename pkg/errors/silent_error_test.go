@@ -51,6 +51,7 @@ func TestWrapSilent(t *testing.T) {
 
 		err := WrapSilent(cause, message)
 
+		//goland:noinspection GoNilness
 		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
 	})
 }
@@ -69,6 +70,7 @@ func TestWrapSilentf(t *testing.T) {
 
 		err := WrapSilentf(cause, "def %s", "ghi")
 
+		//goland:noinspection GoNilness
 		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
 	})
 }

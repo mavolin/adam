@@ -80,4 +80,7 @@ func Is(err error, target error) bool { return errors.Is(err, target) }
 //
 // As panics if target is not a non-nil pointer to either a type that
 // implements error, or to any interface type.
-func As(err error, target interface{}) bool { return errors.As(err, target) }
+func As(err error, target interface{}) bool {
+	//goland:noinspection GoErrorsAs
+	return errors.As(err, target)
+}

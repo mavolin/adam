@@ -1,4 +1,4 @@
-package arg
+package arg //nolint:dupl
 
 import (
 	"github.com/mavolin/disstate/v2/pkg/state"
@@ -53,11 +53,7 @@ func (c ShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context)
 }
 
 func (c ShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
-	info, err := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
-	if err != nil {
-		return nil
-	}
-
+	info := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
 	return []plugin.ArgsInfo{info}
 }
 
@@ -101,7 +97,9 @@ var (
 	_ plugin.ArgsInfoer = LocalizedShellwordConfig{}
 )
 
-func (c LocalizedShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
+func (c LocalizedShellwordConfig) Parse(
+	args string, s *state.State, ctx *plugin.Context,
+) (plugin.Args, plugin.Flags, error) {
 	parser := newShellwordParserl(args, c, s, ctx)
 	return parser.parse()
 }

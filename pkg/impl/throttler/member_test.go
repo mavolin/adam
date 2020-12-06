@@ -85,7 +85,6 @@ func Test_member_Check(t *testing.T) {
 		})
 
 		t.Run("pass", func(t *testing.T) {
-
 			now = func() time.Time {
 				return time.Date(2020, 1, 1, 12, 0, 0, 0, time.UTC)
 			}

@@ -10,7 +10,7 @@ const whitespace = " \t\n"
 
 func genArgsInfo(
 	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
-) (info plugin.ArgsInfo, err error) {
+) (info plugin.ArgsInfo) {
 	info = plugin.ArgsInfo{
 		Required: make([]plugin.ArgInfo, len(rargs)),
 		Optional: make([]plugin.ArgInfo, len(oargs)),
@@ -48,7 +48,7 @@ func genArgsInfo(
 		}
 	}
 
-	return info, nil
+	return info
 }
 
 func genArgsInfol(

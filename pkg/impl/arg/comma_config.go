@@ -1,4 +1,4 @@
-package arg
+package arg //nolint:dupl
 
 import (
 	"github.com/mavolin/disstate/v2/pkg/state"
@@ -51,11 +51,7 @@ func (c CommaConfig) Parse(args string, s *state.State, ctx *plugin.Context) (pl
 func (c CommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	// still use a Localizer, so replacements for the type information will
 	// be used, if there are any
-	info, err := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
-	if err != nil {
-		return nil
-	}
-
+	info := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
 	return []plugin.ArgsInfo{info}
 }
 
@@ -95,7 +91,9 @@ var (
 	_ plugin.ArgsInfoer = LocalizedCommaConfig{}
 )
 
-func (c LocalizedCommaConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
+func (c LocalizedCommaConfig) Parse(
+	args string, s *state.State, ctx *plugin.Context,
+) (plugin.Args, plugin.Flags, error) {
 	parser := newCommaParserl(args, c, s, ctx)
 	return parser.parse()
 }
