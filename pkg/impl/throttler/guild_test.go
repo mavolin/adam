@@ -30,7 +30,7 @@ func Test_guild_Check(t *testing.T) {
 				time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 			}
 
-			cancelFunc, err := guild.Check(ctx)
+			cancelFunc, err := guild.Check(nil, ctx)
 			assert.Nil(t, cancelFunc)
 			assert.Equal(t, genError(10*time.Second, userThrottledErrorSecond, userThrottledErrorMinute), err)
 		})
@@ -53,7 +53,7 @@ func Test_guild_Check(t *testing.T) {
 				time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 			}
 
-			cancelFunc, _ := guild.Check(ctx)
+			cancelFunc, _ := guild.Check(nil, ctx)
 			assert.NotNil(t, cancelFunc)
 		})
 	})
@@ -72,7 +72,7 @@ func Test_guild_Check(t *testing.T) {
 				time.Date(2020, 1, 1, 11, 59, 50, 0, time.UTC),
 			}
 
-			cancelFunc, err := guild.Check(ctx)
+			cancelFunc, err := guild.Check(nil, ctx)
 			assert.Nil(t, cancelFunc)
 			assert.Equal(t, genError(10*time.Second, guildThrottledErrorSecond, guildThrottledErrorMinute), err)
 		})
@@ -92,7 +92,7 @@ func Test_guild_Check(t *testing.T) {
 
 			ctx := &plugin.Context{Message: discord.Message{GuildID: 132}}
 
-			cancelFunc, _ := guild.Check(ctx)
+			cancelFunc, _ := guild.Check(nil, ctx)
 			assert.NotNil(t, cancelFunc)
 		})
 	})

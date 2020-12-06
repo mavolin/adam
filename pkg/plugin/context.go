@@ -367,9 +367,24 @@ type (
 		// Commands are the top-level commands of the repository.
 		Commands []Command
 
-		// CommandDefaults are the global defaults for command settings, the
-		// provider uses.
-		CommandDefaults CommandDefaults
+		// Defaults are the global defaults for settings, the provider
+		// uses.
+		Defaults Defaults
+	}
+
+	// Defaults are the defaults used as fallback if a command does not define
+	// a setting.
+	Defaults struct {
+		// ChannelTypes specifies the default channel types.
+		ChannelTypes ChannelTypes
+		// BotPermissions are the default permissions for Commands.
+		BotPermissions discord.Permissions
+		// Throttler is the default global throttler.
+		// Note that the same Throttler will be shared across all commands that
+		// don't define a custom one.
+		Throttler Throttler
+		// Restrictions is the default restriction func.
+		Restrictions RestrictionFunc
 	}
 
 	// UnavailablePluginProvider contains information about an unavailable

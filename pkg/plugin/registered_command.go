@@ -72,12 +72,14 @@ func NewRegisteredCommandWithParent(p *RegisteredModule, f RestrictionFunc) *Reg
 	}
 }
 
-type CommandDefaults struct {
-	Hidden          bool
-	ChannelTypes    ChannelTypes
-	BotPermissions  discord.Permissions
-	Throttler       Throttler
-	RestrictionFunc RestrictionFunc
+// NewRegisteredCommandWithProvider creates a new RegisteredCommand from the
+// passed Provider using the passed RestrictionFunc.
+// The RestrictionFunc may be nil.
+func NewRegisteredCommandWithProvider(p Provider, f RestrictionFunc) *RegisteredCommand {
+	return &RegisteredCommand{
+		provider:        p,
+		restrictionFunc: f,
+	}
 }
 
 // GenerateRegisteredCommands generates top-level RegisteredCommands from the
@@ -112,11 +114,11 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 				Identifier:      Identifier("." + scmd.GetName()),
 				Name:            scmd.GetName(),
 				Args:            scmd.GetArgs(),
-				Hidden:          repo.CommandDefaults.Hidden,
-				ChannelTypes:    repo.CommandDefaults.ChannelTypes,
-				BotPermissions:  repo.CommandDefaults.BotPermissions,
-				Throttler:       repo.CommandDefaults.Throttler,
-				restrictionFunc: repo.CommandDefaults.RestrictionFunc,
+				Hidden:          scmd.IsHidden(),
+				ChannelTypes:    repo.Defaults.ChannelTypes,
+				BotPermissions:  repo.Defaults.BotPermissions,
+				Throttler:       repo.Defaults.Throttler,
+				restrictionFunc: repo.Defaults.Restrictions,
 			}
 
 			if saliases := scmd.GetAliases(); len(saliases) > 0 {
@@ -128,10 +130,6 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 						rcmd.Aliases = append(rcmd.Aliases, a)
 					}
 				}
-			}
-
-			if h := scmd.IsHidden(); h {
-				rcmd.Hidden = h
 			}
 
 			if t := scmd.GetChannelTypes(); t != 0 {
@@ -161,17 +159,12 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 }
 
 // Parent returns the parent of this command.
-// It will return nil, nil, if this command is top-level.
+// The returned RegisteredModule may not consists of all modules that share the
+// same namespace, if some plugin providers are unavailable.
+// Check PluginProvider.UnavailableProviders() to check if that is the case.
 //
-// In any other case, Parent will return valid data, even if error != nil.
-// It is also  guaranteed that the original parent of the command, i.e.
-// the module that provides this command is included.
-//
-// However, all runtime plugin providers that returned an error won't
-// be included, and their errors will be returned wrapped in a
-// bot.RuntimePluginProviderError.
-// If multiple errors occur, a errors.MultiError filled with
-// bot.RuntimePluginProviderErrors will be returned.
+// In any case the module will contain the built-in module and the module that
+// provides the command.
 func (c *RegisteredCommand) Parent() *RegisteredModule {
 	if c.parent != nil {
 		return *c.parent

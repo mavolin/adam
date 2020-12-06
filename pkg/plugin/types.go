@@ -47,7 +47,7 @@ type (
 	// to use a command or module.
 	//
 	// Implementations can be found in impl/restriction.
-	RestrictionFunc func(s *state.State, ctx *Context) error
+	RestrictionFunc func(*state.State, *Context) error
 
 	// RestrictionErrorWrapper is the interface used to wrap errors returned by a
 	// RestrictionFunc.
@@ -71,5 +71,5 @@ type Throttler interface {
 	//
 	// The returned function will be called, if the command exits with an
 	// error and that error is not ignored as defined via the bots Options.
-	Check(ctx *Context) (func(), error)
+	Check(*state.State, *Context) (func(), error)
 }

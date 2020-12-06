@@ -95,7 +95,7 @@ type mockModule struct {
 	name                string
 	shortDesc           string
 	longDesc            string
-	Hidden              bool
+	hidden              bool
 	defaultChannelTypes ChannelTypes
 	defaultRestrictions RestrictionFunc
 	defaultThrottler    Throttler
@@ -106,7 +106,7 @@ type mockModule struct {
 func (c mockModule) GetName() string                            { return c.name }
 func (c mockModule) GetShortDescription(*i18n.Localizer) string { return c.shortDesc }
 func (c mockModule) GetLongDescription(*i18n.Localizer) string  { return c.longDesc }
-func (c mockModule) IsHidden() bool                             { return c.Hidden }
+func (c mockModule) IsHidden() bool                             { return c.hidden }
 func (c mockModule) GetDefaultChannelTypes() ChannelTypes       { return c.defaultChannelTypes }
 func (c mockModule) GetDefaultRestrictionFunc() RestrictionFunc { return c.defaultRestrictions }
 func (c mockModule) GetDefaultThrottler() Throttler             { return c.defaultThrottler }
@@ -117,7 +117,7 @@ type mockThrottler struct {
 	cmp string // used to make throttlers unique
 }
 
-func (m mockThrottler) Check(*Context) (func(), error) { return func() {}, nil }
+func (m mockThrottler) Check(*state.State, *Context) (func(), error) { return func() {}, nil }
 
 // mockDiscordDataProvider is a copy of mock.DiscordDataProvider to prevent
 // import cycles.
