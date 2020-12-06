@@ -19,7 +19,7 @@ type (
 
 		// Sources contains the Modules this module is based upon.
 		// Sources[0] will contain the built in module.
-		// If there is no built-in module, Sources will be nil.
+		// If there is no built-in module, Sources[0] will be nil.
 		//
 		// If the module is top-level, this will be empty.
 		Sources []SourceModule
@@ -28,6 +28,11 @@ type (
 		Identifier Identifier
 		// Name is the name of the module.
 		Name string
+
+		// Hidden specifies if either all Sources are hidden.
+		// A source module is considered hidden if it is marked as hidden, or
+		// if all of it's commands and modules are hidden as well.
+		Hidden bool
 
 		// Commands are the subcommands of the module.
 		// They are sorted in ascending order by name.
@@ -64,13 +69,13 @@ func GenerateRegisteredModules(repos []Repository) []*RegisteredModule {
 		mergeLen += len(repo.Modules)
 	}
 
-	sorted := make([]SourceModule, mergeLen)
+	smods := make([]SourceModule, mergeLen)
 
 	i := 0
 
 	for _, repo := range repos {
 		for _, mod := range repo.Modules {
-			sorted[i] = SourceModule{
+			smods[i] = SourceModule{
 				ProviderName: repo.ProviderName,
 				Modules:      []Module{mod},
 			}
@@ -79,7 +84,7 @@ func GenerateRegisteredModules(repos []Repository) []*RegisteredModule {
 		}
 	}
 
-	for _, sm := range sortSourceModules(sorted) {
+	for _, sm := range sortSourceModules(smods) {
 		// create a RegisteredModule for every SourceModule we merged.
 		rmod = append(rmod, generateRegisteredModule(nil, sm, repos))
 	}
@@ -87,8 +92,9 @@ func GenerateRegisteredModules(repos []Repository) []*RegisteredModule {
 	return rmod
 }
 
-// sortSourceModules sorts the passed SourceModules.
-// To preserve the order of the providers, merge should be sorted by providers.
+// sortSourceModules sorts the passed SourceModules into slices of modules with
+// the same name.
+// To preserve the order of the providers, smods should be sorted by providers.
 //
 // The outer slice contains slices of modules with the same name.
 func sortSourceModules(smods []SourceModule) [][]SourceModule {
@@ -135,7 +141,7 @@ func sortSourceModules(smods []SourceModule) [][]SourceModule {
 // The passed SourceModules represent a group of Modules with the same name in
 // the passed parent.
 //
-// The passed Repositories will be used to determine the CommandDefaults of the
+// The passed Repositories will be used to determine the Defaults of the
 // subcommands.
 func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, repos []Repository) *RegisteredModule {
 	if len(smods) == 0 {
@@ -161,6 +167,29 @@ func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, re
 	fillSubmodules(rmod, repos)
 	fillSubcommands(rmod, repos)
 
+	rmod.Hidden = true
+
+	for _, s := range rmod.Sources {
+		if smod := s.Modules[len(s.Modules)-1]; !smod.IsHidden() {
+			// if a source module is hidden, make sure it has at least one
+			// plugin that is visible
+
+			for _, cmd := range smod.Commands() {
+				if !cmd.IsHidden() {
+					rmod.Hidden = false
+					break
+				}
+			}
+
+			for _, m := range smod.Modules() {
+				if !rmod.FindModule(m.GetName()).Hidden {
+					rmod.Hidden = false
+					break
+				}
+			}
+		}
+	}
+
 	return rmod
 }
 
@@ -180,7 +209,7 @@ func fillSubmodules(parent *RegisteredModule, repos []Repository) {
 	}
 
 	// source modules of the modules of the parent
-	subSmods := make([]SourceModule, maxLen)
+	subSMods := make([]SourceModule, maxLen)
 
 	i := 0
 
@@ -190,7 +219,7 @@ func fillSubmodules(parent *RegisteredModule, repos []Repository) {
 
 		// and range over the modules of the closest parent module
 		for _, mod := range parentSource.Modules() {
-			subSmods[i] = SourceModule{
+			subSMods[i] = SourceModule{
 				ProviderName: smod.ProviderName,
 				// append the new inner module to the original source modules
 				Modules: append(smod.Modules, mod),
@@ -200,11 +229,7 @@ func fillSubmodules(parent *RegisteredModule, repos []Repository) {
 		}
 	}
 
-	sortedSmods := sortSourceModules(subSmods)
-	if len(sortedSmods) == 0 {
-		parent.Modules = nil
-		return
-	}
+	sortedSmods := sortSourceModules(subSMods)
 
 	parent.Modules = make([]*RegisteredModule, len(sortedSmods))
 
@@ -246,12 +271,12 @@ func fillSubcommands(parent *RegisteredModule, repos []Repository) {
 	usedAliases := make(map[string]struct{}, maxLen)
 
 	for _, smod := range parent.Sources {
-		var defaults CommandDefaults
+		var defaults Defaults
 
-		// find the CommandDefaults for the current provider
+		// find the Defaults for the current provider
 		for _, r := range repos {
 			if r.ProviderName == smod.ProviderName {
-				defaults = r.CommandDefaults
+				defaults = r.Defaults
 				break
 			}
 		}
@@ -296,34 +321,22 @@ func fillSubcommands(parent *RegisteredModule, repos []Repository) {
 	}
 }
 
-func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d CommandDefaults) []*RegisteredCommand { //nolint:funlen
-	var (
-		id Identifier
-
-		hidden          = d.Hidden
-		channelTypes    = d.ChannelTypes
-		botPermissions  = d.BotPermissions
-		throttler       = d.Throttler
-		restrictionFunc = d.RestrictionFunc
-	)
+func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d Defaults) []*RegisteredCommand { //nolint:funlen
+	var id Identifier
 
 	for _, p := range smod.Modules {
 		id += Identifier("." + p.GetName())
 
-		if p.IsHidden() {
-			hidden = true
-		}
-
 		if t := p.GetDefaultChannelTypes(); t != 0 {
-			channelTypes = t
+			d.ChannelTypes = t
 		}
 
 		if t := p.GetDefaultThrottler(); t != nil {
-			throttler = t
+			d.Throttler = t
 		}
 
 		if f := p.GetDefaultRestrictionFunc(); f != nil {
-			restrictionFunc = f
+			d.Restrictions = f
 		}
 	}
 
@@ -340,20 +353,16 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d C
 			ProviderName:    smod.ProviderName,
 			Name:            cmd.GetName(),
 			Args:            cmd.GetArgs(),
-			Hidden:          hidden,
-			ChannelTypes:    channelTypes,
-			BotPermissions:  botPermissions,
-			Throttler:       throttler,
-			restrictionFunc: restrictionFunc,
+			Hidden:          cmd.IsHidden(),
+			ChannelTypes:    d.ChannelTypes,
+			BotPermissions:  d.BotPermissions,
+			Throttler:       d.Throttler,
+			restrictionFunc: d.Restrictions,
 		}
 
 		if aliases := cmd.GetAliases(); aliases != nil {
 			rcmd.Aliases = make([]string, len(aliases))
 			copy(rcmd.Aliases, aliases)
-		}
-
-		if cmd.IsHidden() {
-			rcmd.Hidden = true
 		}
 
 		if t := cmd.GetChannelTypes(); t != 0 {
@@ -411,11 +420,17 @@ func (m *RegisteredModule) LongDescription(l *i18n.Localizer) string {
 func (m *RegisteredModule) FindCommand(name string) *RegisteredCommand {
 	name = strings.TrimSpace(name)
 
-	for _, c := range m.Commands {
-		if c.Name == name {
-			return c
-		}
+	// fast path, if not searching for alias
+	i := sort.Search(len(m.Commands), func(i int) bool {
+		return m.Commands[i].Name >= name
+	})
 
+	if i < len(m.Commands) && m.Commands[i].Name == name {
+		return m.Commands[i]
+	}
+
+	// no command with matching name, try matching alias
+	for _, c := range m.Commands {
 		for _, alias := range c.Aliases {
 			if alias == name {
 				return c
@@ -430,10 +445,12 @@ func (m *RegisteredModule) FindCommand(name string) *RegisteredCommand {
 func (m *RegisteredModule) FindModule(name string) *RegisteredModule {
 	name = strings.TrimSpace(name)
 
-	for _, mod := range m.Modules {
-		if mod.Name == name {
-			return mod
-		}
+	i := sort.Search(len(m.Modules), func(i int) bool {
+		return m.Modules[i].Name >= name
+	})
+
+	if i < len(m.Modules) && m.Modules[i].Name == name {
+		return m.Modules[i]
 	}
 
 	return nil
