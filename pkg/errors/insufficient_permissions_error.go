@@ -21,11 +21,14 @@ type InsufficientPermissionsError struct {
 
 var _ Interface = new(InsufficientPermissionsError)
 
-// NewInsufficientBotPermissionError creates a new
-// InsufficientPermissionsError with the passed missing permissions.
+// NewInsufficientPermissionError creates a new InsufficientPermissionsError
+// with the passed missing permissions.
+//
 // If the missing permissions contain discord.PermissionAdministrator, all
 // other permissions will be discarded, as they are included in Administrator.
-func NewInsufficientBotPermissionsError(missing discord.Permissions) *InsufficientPermissionsError {
+//
+// If missing is 0, a generic error message will be used.
+func NewInsufficientPermissionsError(missing discord.Permissions) *InsufficientPermissionsError {
 	// if we require Administrator, we will automatically receive all other
 	// permissions once we get it
 	if missing.Has(discord.PermissionAdministrator) {
