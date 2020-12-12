@@ -19,7 +19,7 @@ type InsufficientPermissionsError struct {
 	MissingPermissions discord.Permissions
 }
 
-var _ Interface = new(InsufficientPermissionsError)
+var DefaultInsufficientPermissionsError = new(InsufficientPermissionsError)
 
 // NewInsufficientPermissionError creates a new InsufficientPermissionsError
 // with the passed missing permissions.
@@ -52,7 +52,9 @@ func (e *InsufficientPermissionsError) IsSinglePermission() bool {
 // via PermissionList.
 func (e *InsufficientPermissionsError) Description(l *i18n.Localizer) (desc string) {
 	if e.MissingPermissions == 0 {
-		return
+		// we can ignore this error, as there is a fallback
+		desc, _ = l.Localize(insufficientPermissionsDefault)
+		return desc
 	}
 
 	if e.IsSinglePermission() {

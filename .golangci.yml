@@ -77,6 +77,3 @@ issues:
         - gocyclo
         - gosec
         - unparam
-    - path: ^pkg/errors.(?:internal|silent|multi)_error.go$
-      linters:
-        - errorlint

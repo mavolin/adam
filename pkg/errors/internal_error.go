@@ -48,7 +48,7 @@ func withStack(err error) error {
 		return nil
 	}
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case Interface:
@@ -83,7 +83,7 @@ func Wrap(err error, message string) error {
 
 	stack := stackTrace(err, 1)
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case *InternalError:
@@ -113,7 +113,7 @@ func Wrapf(err error, format string, args ...interface{}) error {
 
 	stack := stackTrace(err, 1)
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case *InternalError:
@@ -139,7 +139,7 @@ func WithDescription(err error, description string) error {
 
 	stack := stackTrace(err, 1)
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case *InternalError:
@@ -163,7 +163,7 @@ func WithDescriptionf(err error, format string, args ...interface{}) error {
 
 	stack := stackTrace(err, 1)
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case *InternalError:
@@ -187,7 +187,7 @@ func WithDescriptionl(err error, description *i18n.Config) error {
 
 	stack := stackTrace(err, 1)
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case *InternalError:
@@ -211,7 +211,7 @@ func WithDescriptionlt(err error, description i18n.Term) error {
 
 	stack := stackTrace(err, 1)
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case *InternalError:
@@ -250,23 +250,24 @@ func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) {
 }
 
 var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.Context) {
-	logstract.
-		WithFields(logstract.Fields{
-			"cmd_ident": ctx.InvokedCommand.Identifier,
-			"err":       ierr.cause,
-		}).
-		Error("internal error")
-
 	if derr := discorderr.As(ierr.Unwrap()); derr != nil {
 		switch {
 		case discorderr.Is(derr, discorderr.InsufficientPermissions):
-			ierr.desc = i18nutil.NewTextl(discordErrorInsufficientPermissions)
+			DefaultInsufficientPermissionsError.Handle(s, ctx)
+			return
 		case discorderr.Is(derr, discorderr.TemporarilyDisabled):
 			ierr.desc = i18nutil.NewTextl(discordErrorFeatureTemporarilyDisabled)
 		case derr.Status >= 500:
 			ierr.desc = i18nutil.NewTextl(discordErrorServerError)
 		}
 	}
+
+	logstract.
+		WithFields(logstract.Fields{
+			"cmd_ident": ctx.InvokedCommand.Identifier,
+			"err":       ierr.cause,
+		}).
+		Error("internal error")
 
 	embed := ErrorEmbed.Clone().
 		WithSimpleTitlel(internalErrorTitle).
