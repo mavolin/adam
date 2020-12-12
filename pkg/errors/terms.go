@@ -22,9 +22,6 @@ var (
 // ================================ Discord Error ================================
 
 var (
-	discordErrorInsufficientPermissions = i18n.NewFallbackConfig(
-		"errors.discord.insufficient_permissions",
-		"I don't have sufficient permission to perform that action.")
 	discordErrorFeatureTemporarilyDisabled = i18n.NewFallbackConfig(
 		"errors.discord.feature_temporarily_disabled",
 		"Discord has temporarily disabled a feature I need to execute the command. Try again later.")
@@ -51,6 +48,10 @@ var (
 		"errors.insufficient_permissions.description.multi",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
 			"permissions and try again:")
+
+	insufficientPermissionsDefault = i18n.NewFallbackConfig(
+		"errors.insufficient_permissions.default",
+		"I don't have sufficient permission to execute this command.")
 
 	insufficientPermissionsMissingPermissionsFieldName = i18n.NewFallbackConfig(
 		"errors.insufficient_permissions.fields.missing_permissions.name",

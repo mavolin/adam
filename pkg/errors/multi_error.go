@@ -22,13 +22,13 @@ func Append(err1, err2 error) error {
 		return err1
 	}
 
-	if err1Typed, ok := err1.(multiError); ok {
-		if err2Typed, ok := err2.(multiError); ok {
+	if err1Typed, ok := err1.(multiError); ok { //nolint:errorlint
+		if err2Typed, ok := err2.(multiError); ok { //nolint:errorlint
 			return append(err1Typed, err2Typed...)
 		}
 
 		return append(err1Typed, withStack(err2))
-	} else if err2Typed, ok := err2.(multiError); ok {
+	} else if err2Typed, ok := err2.(multiError); ok { //nolint:errorlint
 		return append(multiError{withStack(err1)}, err2Typed...)
 	}
 
@@ -46,8 +46,8 @@ func AppendSilent(err1, err2 error) error {
 		return err1
 	}
 
-	if err1Typed, ok := err1.(multiError); ok {
-		if err2Typed, ok := err2.(multiError); ok {
+	if err1Typed, ok := err1.(multiError); ok { //nolint:errorlint
+		if err2Typed, ok := err2.(multiError); ok { //nolint:errorlint
 			return append(err1Typed, err2Typed...)
 		}
 
@@ -55,7 +55,7 @@ func AppendSilent(err1, err2 error) error {
 		serr2.(*SilentError).stack = serr2.(*SilentError).stack[:len(serr2.(*SilentError).stack)-1]
 
 		return append(err1Typed, serr2)
-	} else if err2Typed, ok := err2.(multiError); ok {
+	} else if err2Typed, ok := err2.(multiError); ok { //nolint:errorlint
 		serr1 := Silent(err1)
 		serr1.(*SilentError).stack = serr1.(*SilentError).stack[:len(serr1.(*SilentError).stack)-1]
 
@@ -87,7 +87,7 @@ func Combine(errs ...error) error {
 	var n int
 
 	for _, err := range errs {
-		if sub, ok := err.(multiError); ok {
+		if sub, ok := err.(multiError); ok { //nolint:errorlint
 			n += len(sub)
 		} else {
 			n++
@@ -97,7 +97,7 @@ func Combine(errs ...error) error {
 	merr := make(multiError, 0, len(errs))
 
 	for _, err := range errs {
-		if sub, ok := err.(multiError); ok {
+		if sub, ok := err.(multiError); ok { //nolint:errorlint
 			merr = append(merr, sub...)
 		} else {
 			merr = append(merr, withStack(err))
@@ -119,7 +119,7 @@ func CombineSilent(errs ...error) error {
 	var n int
 
 	for i, err := range errs {
-		if merr, ok := err.(multiError); ok {
+		if merr, ok := err.(multiError); ok { //nolint:errorlint
 			n += len(merr)
 		} else {
 			silent := Silent(err)
@@ -135,7 +135,7 @@ func CombineSilent(errs ...error) error {
 	merr := make(multiError, 0, len(errs))
 
 	for _, err := range errs {
-		if sub, ok := err.(multiError); ok {
+		if sub, ok := err.(multiError); ok { //nolint:errorlint
 			merr = append(merr, sub...)
 		} else {
 			merr = append(merr, err)
@@ -148,7 +148,7 @@ func CombineSilent(errs ...error) error {
 // RetrieveMultiError converts the passed errors to a single error.
 // If the error is not of type multiError, it will return []error{err}.
 func RetrieveMultiError(err error) []error {
-	merr, ok := err.(multiError)
+	merr, ok := err.(multiError) //nolint:errorlint
 	if ok {
 		return merr
 	}
@@ -181,7 +181,7 @@ var HandleMultiError = func(errs []error, s *state.State, ctx *plugin.Context) {
 
 	for _, err := range errs {
 		if !internal {
-			if _, ok := err.(*InternalError); ok {
+			if _, ok := err.(*InternalError); ok { //nolint:errorlint
 				ctx.HandleError(err)
 
 				internal = true

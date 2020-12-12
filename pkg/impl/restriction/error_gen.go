@@ -134,7 +134,7 @@ func newInsufficientBotPermissionsError(missing discord.Permissions, l *i18n.Loc
 		return nil
 	}
 
-	err := errors.NewInsufficientBotPermissionsError(missing)
+	err := errors.NewInsufficientPermissionsError(missing)
 
 	desc := err.Description(l)
 	if err.IsSinglePermission() {

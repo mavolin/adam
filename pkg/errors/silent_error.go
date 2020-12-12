@@ -31,7 +31,7 @@ func Silent(err error) error {
 		return nil
 	}
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		return typedErr
 	case *InternalError:
@@ -54,7 +54,7 @@ func WrapSilent(err error, message string) error {
 		return nil
 	}
 
-	switch typedErr := err.(type) {
+	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
 	case *InternalError:
