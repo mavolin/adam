@@ -119,8 +119,8 @@ func (w *ReactionWaiter) WithMiddleware(middlewares ...interface{}) *ReactionWai
 	return w
 }
 
-// Copy creates a copy of the ReactionWaiter.
-func (w *ReactionWaiter) Copy() (cp *ReactionWaiter) {
+// Clone creates a deep copy of the ReactionWaiter.
+func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 	cp = &ReactionWaiter{
 		noAutoReact: w.noAutoReact,
 	}

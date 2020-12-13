@@ -13,10 +13,10 @@ var (
 	// ErrNotNSFWChannel is the error returned by NSFW if the command is not
 	// executed in an NSFW channel.
 	ErrNotNSFWChannel = errors.NewRestrictionErrorl(notNSFWChannelError)
-	// ErrNotGuildOwner is the error returned by GuildOwner, if the command is
+	// ErrNotGuildOwner is the error returned by GuildOwner if the command is
 	// not executed by the guild owner.
 	ErrNotGuildOwner = errors.NewFatalRestrictionErrorl(notOwnerError)
-	// ErrNotBotOwner is the error returned by BotOwner, if the command is not
+	// ErrNotBotOwner is the error returned by BotOwner if the command is not
 	// executed by the bot owner.
 	ErrNotBotOwner = errors.NewFatalRestrictionErrorl(notBotOwnerError)
 )

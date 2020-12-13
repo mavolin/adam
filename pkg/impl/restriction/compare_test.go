@@ -132,12 +132,8 @@ func TestAll(t *testing.T) {
 			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), Any(errorFunc3, errorFunc4)},
 			expect: &allError{
 				anys: []*anyError{
-					{
-						restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
-					},
-					{
-						restrictions: []*errors.RestrictionError{errorFuncReturn3, errorFuncReturn4},
-					},
+					{restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2}},
+					{restrictions: []*errors.RestrictionError{errorFuncReturn3, errorFuncReturn4}},
 				},
 			},
 		},
@@ -147,9 +143,7 @@ func TestAll(t *testing.T) {
 			expect: &allError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1},
 				anys: []*anyError{
-					{
-						restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3},
-					},
+					{restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
 				},
 			},
 		},
@@ -288,9 +282,7 @@ func TestAny(t *testing.T) {
 			expect: &anyError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1},
 				alls: []*allError{
-					{
-						restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3},
-					},
+					{restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
 				},
 			},
 		},
@@ -309,9 +301,7 @@ func TestAny(t *testing.T) {
 			expect: &anyError{
 				restrictions: []*errors.RestrictionError{errorFuncReturn1},
 				alls: []*allError{
-					{
-						restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3},
-					},
+					{restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
 				},
 			},
 		},

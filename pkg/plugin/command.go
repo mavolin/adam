@@ -16,7 +16,7 @@ type (
 
 		// Invoke calls the command.
 		//
-		// Possible first return values are
+		// Possible first return values are:
 		//	• uint, uint8, uint16, uint32, uint64
 		//	• int, int8, int16, int32, int64
 		// 	• float32, float64
@@ -98,11 +98,13 @@ type (
 		//
 		// If the RestrictionFunc returns an error that implements
 		// RestrictionErrorWrapper, it will be properly wrapped.
+		//
+		// To override a parents RestrictionFunc, use restriction.None.
 		GetRestrictionFunc() RestrictionFunc
 		// GetThrottler returns the Throttler for the command.
 		//
 		// Setting this will override the Throttler defined by the parent.
-		// To remove a Throttler defined by a parent without defining a new
+		// To override a Throttler defined by a parent without defining a new
 		// one use throttler.None.
 		GetThrottler() Throttler
 	}

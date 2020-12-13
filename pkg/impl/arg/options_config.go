@@ -58,7 +58,7 @@ func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin
 }
 
 // firstWord extracts the first word of the given string.
-// A word ends if it is followed by a space, a tab or a newline.
+// A word ends if it is followed by a space, tab or newline.
 func firstWord(s string) string {
 	for i, char := range s {
 		if strings.ContainsRune(whitespace, char) {

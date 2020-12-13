@@ -7,7 +7,7 @@ import (
 )
 
 // None is a no-op plugin.Throttler.
-// It can be used to override the throttler of a parent.
+// It can be used to prevent inheritance from a parent.
 var None plugin.Throttler = new(none)
 
 type none struct{}

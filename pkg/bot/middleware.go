@@ -3,14 +3,15 @@ package bot
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-var ErrNotAMiddleware = errors.New("the passed func does not resemble a valid middleware")
+// ErrNotAMiddleware is the error returned if a middleware given to
+// MiddlewareManager.AddMiddleware is not a valid middleware type.
+var ErrNotAMiddleware = errors.New("the passed function does not resemble a valid middleware")
 
 type (
 	// CommandFunc is the signature of the Invoke function of a plugin.Command,
@@ -21,7 +22,7 @@ type (
 )
 
 // Middlewarer is an abstraction of a plugin that provides middlewares.
-// If a plugin does not implement the interface, it will be assumed, that the
+// If a plugin does not implement the interface, it will be assumed that the
 // plugin does not provide any middlewares.
 type Middlewarer interface {
 	// Middlewares returns a copy of the MiddlewareFuncs of the plugin.
@@ -42,7 +43,7 @@ type MiddlewareManager struct {
 // If the middleware's type is invalid, AddMiddleware will return
 // ErrNotAMiddleware.
 //
-// Supported types are:
+// Valid middleware types are:
 //		• func(*state.State, interface{})
 //		• func(*state.State, interface{}) error
 //		• func(*state.State, *state.Base)
@@ -60,25 +61,9 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if !ctx.Message.EditedTimestamp.IsValid() {
-					e := &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					f(s, e)
+					f(s, newMessageCreateEvent(ctx))
 				} else {
-					e := &state.MessageUpdateEvent{
-						MessageUpdateEvent: &gateway.MessageUpdateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					f(s, e)
+					f(s, newMessageUpdateEvent(ctx))
 				}
 
 				return next(s, ctx)
@@ -88,27 +73,11 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if !ctx.Message.EditedTimestamp.IsValid() {
-					e := &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					if err := f(s, e); err != nil {
+					if err := f(s, newMessageCreateEvent(ctx)); err != nil {
 						return err
 					}
 				} else {
-					e := &state.MessageUpdateEvent{
-						MessageUpdateEvent: &gateway.MessageUpdateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					if err := f(s, e); err != nil {
+					if err := f(s, newMessageUpdateEvent(ctx)); err != nil {
 						return err
 					}
 				}
@@ -138,15 +107,7 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if !ctx.Message.EditedTimestamp.IsValid() {
-					e := &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					f(s, e)
+					f(s, newMessageCreateEvent(ctx))
 				}
 
 				return next(s, ctx)
@@ -156,15 +117,7 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if !ctx.Message.EditedTimestamp.IsValid() {
-					e := &state.MessageCreateEvent{
-						MessageCreateEvent: &gateway.MessageCreateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					if err := f(s, e); err != nil {
+					if err := f(s, newMessageCreateEvent(ctx)); err != nil {
 						return err
 					}
 				}
@@ -176,15 +129,7 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if ctx.Message.EditedTimestamp.IsValid() {
-					e := &state.MessageUpdateEvent{
-						MessageUpdateEvent: &gateway.MessageUpdateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					f(s, e)
+					f(s, newMessageUpdateEvent(ctx))
 				}
 
 				return next(s, ctx)
@@ -194,15 +139,7 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if ctx.Message.EditedTimestamp.IsValid() {
-					e := &state.MessageUpdateEvent{
-						MessageUpdateEvent: &gateway.MessageUpdateEvent{
-							Message: ctx.Message,
-							Member:  ctx.Member,
-						},
-						Base: ctx.Base,
-					}
-
-					if err := f(s, e); err != nil {
+					if err := f(s, newMessageUpdateEvent(ctx)); err != nil {
 						return err
 					}
 				}
@@ -249,7 +186,8 @@ func (m *MiddlewareManager) Middlewares() (cp []MiddlewareFunc) {
 	return
 }
 
-func (m *MiddlewareManager) Copy() *MiddlewareManager {
+// Clone creates a deep copy of the MiddlewareManager.
+func (m *MiddlewareManager) Clone() *MiddlewareManager {
 	cp := new(MiddlewareManager)
 	cp.middlewares = make([]MiddlewareFunc, len(m.middlewares))
 

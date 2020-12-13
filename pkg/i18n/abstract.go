@@ -9,7 +9,8 @@ type (
 	// If LangFunc is nil, the Localizer will use the fallback
 	// translation.
 	Func func(lang string) LangFunc
-	// LangFunc is a language specific function for localizing messages.
+
+	// LangFunc is a function used to translate to a specific language.
 	//
 	// The first value is the unique id of the translation.
 	//
@@ -17,6 +18,9 @@ type (
 	// are no placeholders a nil map.
 	//
 	// The third parameter is a number or a string of such defining the plural.
-	// If it is nil, there is no pluralization.
+	// Valid plural data are number types or a string containing a number.
+	// If plural is nil, Other should be used.
+	//
+	// If the LangFunc returns an error, the fallback translation will be used.
 	LangFunc func(term Term, placeholders map[string]interface{}, plural interface{}) (string, error)
 )

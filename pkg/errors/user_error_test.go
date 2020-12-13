@@ -5,13 +5,14 @@ import (
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestUserError_Handle(t *testing.T) {
-	t.Run("without embed", func(t *testing.T) {
+	t.Run("without Embed", func(t *testing.T) {
 		expectDesc := "abc"
 
 		m, s := state.NewMocker(t)
@@ -34,10 +35,11 @@ func TestUserError_Handle(t *testing.T) {
 
 		e := NewUserError(expectDesc)
 
-		e.Handle(s, ctx)
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
 	})
 
-	t.Run("with embed", func(t *testing.T) {
+	t.Run("with Embed", func(t *testing.T) {
 		var (
 			expectDesc       = "abc"
 			expectFieldName  = "def"
@@ -66,6 +68,7 @@ func TestUserError_Handle(t *testing.T) {
 		e := NewUserError(expectDesc).
 			WithField(expectFieldName, expectFieldValue)
 
-		e.Handle(s, ctx)
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
 	})
 }

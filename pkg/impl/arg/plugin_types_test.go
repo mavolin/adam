@@ -21,9 +21,7 @@ func TestCommand_Parse(t *testing.T) {
 						{
 							ProviderName: "built_in",
 							Commands: []plugin.Command{
-								mock.Command{
-									CommandMeta: mock.CommandMeta{Name: "abc"},
-								},
+								mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 							},
 						},
 					},
@@ -45,9 +43,7 @@ func TestCommand_Parse(t *testing.T) {
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.PluginProvider{
-						PluginRepositoriesReturn: []plugin.Repository{
-							{ProviderName: "built_in"},
-						},
+						PluginRepositoriesReturn: []plugin.Repository{{ProviderName: "built_in"}},
 					},
 				},
 			}
@@ -95,9 +91,7 @@ func TestModule_Parse(t *testing.T) {
 						{
 							ProviderName: "built_in",
 							Modules: []plugin.Module{
-								mock.Module{
-									ModuleMeta: mock.ModuleMeta{Name: "abc"},
-								},
+								mock.Module{ModuleMeta: mock.ModuleMeta{Name: "abc"}},
 							},
 						},
 					},
@@ -119,9 +113,7 @@ func TestModule_Parse(t *testing.T) {
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.PluginProvider{
-						PluginRepositoriesReturn: []plugin.Repository{
-							{ProviderName: "built_in"},
-						},
+						PluginRepositoriesReturn: []plugin.Repository{{ProviderName: "built_in"}},
 					},
 				},
 			}
@@ -170,9 +162,7 @@ func TestPlugin_Parse(t *testing.T) {
 							{
 								ProviderName: "built_in",
 								Commands: []plugin.Command{
-									mock.Command{
-										CommandMeta: mock.CommandMeta{Name: "abc"},
-									},
+									mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 								},
 							},
 						},
@@ -197,9 +187,7 @@ func TestPlugin_Parse(t *testing.T) {
 							{
 								ProviderName: "built_in",
 								Modules: []plugin.Module{
-									mock.Module{
-										ModuleMeta: mock.ModuleMeta{Name: "abc"},
-									},
+									mock.Module{ModuleMeta: mock.ModuleMeta{Name: "abc"}},
 								},
 							},
 						},
@@ -222,9 +210,7 @@ func TestPlugin_Parse(t *testing.T) {
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.PluginProvider{
-						PluginRepositoriesReturn: []plugin.Repository{
-							{ProviderName: "built_in"},
-						},
+						PluginRepositoriesReturn: []plugin.Repository{{ProviderName: "built_in"}},
 					},
 				},
 			}

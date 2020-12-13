@@ -19,9 +19,7 @@ func TestContext_IsBotOwner(t *testing.T) {
 		var owner discord.UserID = 123
 
 		ctx := &Context{
-			Message: discord.Message{
-				Author: discord.User{ID: owner},
-			},
+			Message:     discord.Message{Author: discord.User{ID: owner}},
 			BotOwnerIDs: []discord.UserID{owner},
 		}
 
@@ -30,9 +28,7 @@ func TestContext_IsBotOwner(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		ctx := &Context{
-			Message: discord.Message{
-				Author: discord.User{ID: 123},
-			},
+			Message:     discord.Message{Author: discord.User{ID: 123}},
 			BotOwnerIDs: []discord.UserID{465},
 		}
 
@@ -455,9 +451,7 @@ func TestContext_SelfPermissions(t *testing.T) {
 		expect := discord.PermissionViewChannel | discord.PermissionAddReactions
 
 		ctx := &Context{
-			Message: discord.Message{
-				GuildID: 123,
-			},
+			Message: discord.Message{GuildID: 123},
 			DiscordDataProvider: mockDiscordDataProvider{
 				GuildReturn: &discord.Guild{
 					OwnerID: 123,

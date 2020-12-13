@@ -407,8 +407,8 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
-				if ape, ok := err.(*errors.ArgumentParsingError); ok && ape != nil {
-					desc, err := ape.Description(mock.NoOpLocalizer)
+				if aerr, ok := err.(*errors.ArgumentParsingError); ok && aerr != nil {
+					desc, err := aerr.Description(mock.NoOpLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}
@@ -1060,8 +1060,8 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
 
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, ctx)
-				if ape, ok := err.(*errors.ArgumentParsingError); ok && ape != nil {
-					desc, err := ape.Description(mock.NoOpLocalizer)
+				if aerr, ok := err.(*errors.ArgumentParsingError); ok && aerr != nil {
+					desc, err := aerr.Description(mock.NoOpLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}

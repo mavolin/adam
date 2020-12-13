@@ -14,6 +14,7 @@ import (
 func TestReactionWaiter_Await(t *testing.T) {
 	t.Run("timeout", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		ctx := &plugin.Context{
 			Message: discord.Message{
@@ -44,7 +45,5 @@ func TestReactionWaiter_Await(t *testing.T) {
 		_, actual := NewReactionWaiter(s, ctx, 123).
 			Await(1)
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 }

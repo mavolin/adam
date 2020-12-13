@@ -16,22 +16,18 @@ type ThrottlingError struct {
 	desc *i18nutil.Text
 }
 
-var _ Interface = new(ThrottlingError)
+var _ Error = new(ThrottlingError)
 
 // NewThrottlingError creates a new ThrottlingError with the passed
 // description.
 func NewThrottlingError(description string) *ThrottlingError {
-	return &ThrottlingError{
-		desc: i18nutil.NewText(description),
-	}
+	return &ThrottlingError{desc: i18nutil.NewText(description)}
 }
 
 // NewThrottlingErrorl creates a new ThrottlingError using the message
 // generated from the passed i18n.Config as description.
 func NewThrottlingErrorl(description *i18n.Config) *ThrottlingError {
-	return &ThrottlingError{
-		desc: i18nutil.NewTextl(description),
-	}
+	return &ThrottlingError{desc: i18nutil.NewTextl(description)}
 }
 
 // NewThrottlingErrorlt creates a new ThrottlingError using the message
@@ -49,20 +45,21 @@ func (e *ThrottlingError) Description(l *i18n.Localizer) (string, error) {
 func (e *ThrottlingError) Error() string { return "throttling error" }
 
 // Handle handles the ThrottlingError.
-// By default it sends an info embed with the description of the
+// By default it sends an info Embed with the description of the
 // ThrottlingError.
-func (e *ThrottlingError) Handle(s *state.State, ctx *plugin.Context) {
-	HandleThrottlingError(e, s, ctx)
+func (e *ThrottlingError) Handle(s *state.State, ctx *plugin.Context) error {
+	return HandleThrottlingError(e, s, ctx)
 }
 
-var HandleThrottlingError = func(terr *ThrottlingError, s *state.State, ctx *plugin.Context) {
+var HandleThrottlingError = func(terr *ThrottlingError, s *state.State, ctx *plugin.Context) error {
 	desc, err := terr.Description(ctx.Localizer)
 	if err != nil {
-		return
+		return err
 	}
 
 	embed := InfoEmbed.Clone().
 		WithDescription(desc)
 
-	_, _ = ctx.ReplyEmbedBuilder(embed)
+	_, err = ctx.ReplyEmbedBuilder(embed)
+	return err
 }

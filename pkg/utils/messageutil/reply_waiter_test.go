@@ -20,6 +20,7 @@ import (
 func TestWaiter_Await(t *testing.T) {
 	t.Run("initial timeout", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		ctx := &plugin.Context{
 			Message: discord.Message{
@@ -53,8 +54,6 @@ func TestWaiter_Await(t *testing.T) {
 			Await(1, 1)
 		assert.Nil(t, msg)
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 }
 
@@ -102,9 +101,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 			e: &state.MessageCreateEvent{
 				Base: state.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
-					Message: discord.Message{
-						Author: discord.User{ID: 321},
-					},
+					Message: discord.Message{Author: discord.User{ID: 321}},
 				},
 			},
 			expect: nil,
@@ -192,8 +189,6 @@ func TestWaiter_handleMessages(t *testing.T) {
 				assert.Equal(t, c.expect, actual)
 			}
 
-			m.Eval()
-
 			rm()
 		})
 	}
@@ -272,6 +267,8 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
 			m, s := state.NewMocker(t)
+			defer m.Eval()
+
 			c.waiter.state = s
 
 			var reactionMessageID discord.MessageID = 123
@@ -306,8 +303,6 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 
 				assert.Equal(t, c.expect, actual)
 			}
-
-			m.Eval()
 		})
 	}
 }

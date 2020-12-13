@@ -41,7 +41,7 @@ type (
 		// stop with an errors.InsufficientPermissionsError.
 		//
 		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
-		// To remove a RestrictionFunc defined by a parent without defining a
+		// To override a RestrictionFunc defined by a parent without defining a
 		// new one use restriction.None.
 		GetDefaultRestrictionFunc() RestrictionFunc
 		// GetDefaultThrottler returns the Throttler for the module.
@@ -50,7 +50,7 @@ type (
 		// However, a command or module can overwrite this, by setting its own
 		// Throttler.
 		//
-		// To remove a Throttler defined by a parent without defining a new
+		// To override a Throttler defined by a parent without defining a new
 		// one use throttler.None.
 		GetDefaultThrottler() Throttler
 	}

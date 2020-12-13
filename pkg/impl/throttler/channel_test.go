@@ -34,9 +34,7 @@ func Test_channel_Check(t *testing.T) {
 			return time.Date(2020, 1, 1, 12, 0, 0, 0, time.UTC)
 		}
 
-		ctx := &plugin.Context{
-			Message: discord.Message{Author: discord.User{ID: 123}},
-		}
+		ctx := &plugin.Context{Message: discord.Message{Author: discord.User{ID: 123}}}
 
 		channel := PerChannel(2, 30*time.Second).(*channel)
 		channel.throttler.throttled[discord.Snowflake(ctx.Author.ID)] = []time.Time{

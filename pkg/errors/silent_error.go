@@ -20,7 +20,7 @@ type SilentError struct {
 	stack errorutil.Stack
 }
 
-var _ Interface = new(SilentError)
+var _ Error = new(SilentError)
 
 // Silent creates a new silent error using the passed error as cause.
 // If the error is already a SilentError, it will be returned as is.
@@ -96,8 +96,11 @@ func (e *SilentError) StackTrace() []uintptr { return e.stack }
 // By default it logs the error.
 //
 // It will never return an error.
-func (e *SilentError) Handle(s *state.State, ctx *plugin.Context) {
+func (e *SilentError) Handle(s *state.State, ctx *plugin.Context) error {
+	// prevent infinite error cycle, by not allowing error returns
 	HandleSilentError(e, s, ctx)
+
+	return nil
 }
 
 var HandleSilentError = func(serr *SilentError, s *state.State, ctx *plugin.Context) {

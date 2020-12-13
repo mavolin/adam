@@ -65,5 +65,6 @@ func TestRestrictionError_Handle(t *testing.T) {
 
 	e := NewRestrictionError(expectDesc)
 
-	e.Handle(s, ctx)
+	err := e.Handle(s, ctx)
+	require.NoError(t, err)
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -60,5 +61,6 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 
 	e := NewInvalidChannelTypeError(plugin.GuildChannels)
 
-	e.Handle(s, ctx)
+	err := e.Handle(s, ctx)
+	require.NoError(t, err)
 }

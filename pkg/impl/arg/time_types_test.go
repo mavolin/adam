@@ -145,10 +145,8 @@ func TestTime_Parse(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Base: state.NewBase(),
-					},
-					Raw: c.raw,
+					Context: &plugin.Context{Base: state.NewBase()},
+					Raw:     c.raw,
 				}
 
 				ctx.Set(LocationKey, c.location)
@@ -226,11 +224,9 @@ func TestTime_Parse(t *testing.T) {
 				}
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Base: state.NewBase(),
-					},
-					Raw:  c.raw,
-					Kind: KindArg,
+					Context: &plugin.Context{Base: state.NewBase()},
+					Raw:     c.raw,
+					Kind:    KindArg,
 				}
 
 				ctx.Set(LocationKey, c.location)
@@ -303,10 +299,8 @@ func TestDate_Parse(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Base: state.NewBase(),
-					},
-					Raw: c.raw,
+					Context: &plugin.Context{Base: state.NewBase()},
+					Raw:     c.raw,
 				}
 
 				ctx.Set(LocationKey, c.location)
@@ -448,10 +442,8 @@ func TestDateTime_Parse(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Base: state.NewBase(),
-					},
-					Raw: c.raw,
+					Context: &plugin.Context{Base: state.NewBase()},
+					Raw:     c.raw,
 				}
 
 				ctx.Set(LocationKey, c.location)
@@ -527,11 +519,9 @@ func TestDateTime_Parse(t *testing.T) {
 				}
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Base: state.NewBase(),
-					},
-					Raw:  c.raw,
-					Kind: KindArg,
+					Context: &plugin.Context{Base: state.NewBase()},
+					Raw:     c.raw,
+					Kind:    KindArg,
 				}
 
 				ctx.Set(LocationKey, c.location)

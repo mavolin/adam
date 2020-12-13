@@ -28,7 +28,7 @@ var (
 // Note that the description might contain mentions, which are intended not
 // to ping anyone, e.g. "You need @role to use this command.".
 // This means you should use allowed mentions if you are custom handling this
-// error and not using an embed, which suppresses mentions by default.
+// error and not using an Embed, which suppresses mentions by default.
 type RestrictionError struct {
 	// description of the error
 	desc *i18nutil.Text
@@ -38,22 +38,18 @@ type RestrictionError struct {
 	Fatal bool
 }
 
-var _ Interface = new(RestrictionError)
+var _ Error = new(RestrictionError)
 
 // NewRestrictionError creates a new RestrictionError with the passed
 // description.
 func NewRestrictionError(description string) *RestrictionError {
-	return &RestrictionError{
-		desc: i18nutil.NewText(description),
-	}
+	return &RestrictionError{desc: i18nutil.NewText(description)}
 }
 
 // NewRestrictionErrorl creates a new RestrictionError using the message
 // generated from the passed i18n.Config as description.
 func NewRestrictionErrorl(description *i18n.Config) *RestrictionError {
-	return &RestrictionError{
-		desc: i18nutil.NewTextl(description),
-	}
+	return &RestrictionError{desc: i18nutil.NewTextl(description)}
 }
 
 // NewRestrictionErrorlt creates a new RestrictionError using the message
@@ -95,20 +91,21 @@ func (e *RestrictionError) Description(l *i18n.Localizer) (string, error) {
 func (e *RestrictionError) Error() string { return "restriction error" }
 
 // Handle handles the RestrictionError.
-// By default it sends an error embed with the description of the
+// By default it sends an error Embed with the description of the
 // RestrictionError.
-func (e *RestrictionError) Handle(s *state.State, ctx *plugin.Context) {
-	HandleRestrictionError(e, s, ctx)
+func (e *RestrictionError) Handle(s *state.State, ctx *plugin.Context) error {
+	return HandleRestrictionError(e, s, ctx)
 }
 
-var HandleRestrictionError = func(rerr *RestrictionError, s *state.State, ctx *plugin.Context) {
+var HandleRestrictionError = func(rerr *RestrictionError, s *state.State, ctx *plugin.Context) error {
 	desc, err := rerr.Description(ctx.Localizer)
 	if err != nil {
-		return
+		return err
 	}
 
 	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
-	_, _ = ctx.ReplyEmbedBuilder(embed)
+	_, err = ctx.ReplyEmbedBuilder(embed)
+	return err
 }

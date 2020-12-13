@@ -10,11 +10,12 @@ import (
 // InvalidChannelTypeError is the error returned if a command is invoked in
 // an channel that is not supported by that command.
 type InvalidChannelTypeError struct {
-	// AllowedChannelTypes are the plugin.ChannelTypes that the command supports.
+	// AllowedChannelTypes are the plugin.ChannelTypes that the command
+	// supports.
 	AllowedChannelTypes plugin.ChannelTypes
 }
 
-var _ Interface = new(InvalidChannelTypeError)
+var _ Error = new(InvalidChannelTypeError)
 
 // NewInvalidChannelTypeError creates a new InvalidChannelTypeError with the
 // passed allowed plugin.ChannelTypes.
@@ -63,15 +64,15 @@ func (e *InvalidChannelTypeError) Is(target error) bool {
 }
 
 // Handle handles the InvalidChannelTypeError.
-// By default it sends an error message stating the allowed channel types
-// permissions.
-func (e *InvalidChannelTypeError) Handle(s *state.State, ctx *plugin.Context) {
-	HandleInvalidChannelTypeError(e, s, ctx)
+// By default it sends an error message stating the allowed channel types.
+func (e *InvalidChannelTypeError) Handle(s *state.State, ctx *plugin.Context) error {
+	return HandleInvalidChannelTypeError(e, s, ctx)
 }
 
-var HandleInvalidChannelTypeError = func(ierr *InvalidChannelTypeError, s *state.State, ctx *plugin.Context) {
+var HandleInvalidChannelTypeError = func(ierr *InvalidChannelTypeError, s *state.State, ctx *plugin.Context) error {
 	embed := ErrorEmbed.Clone().
 		WithDescription(ierr.Description(ctx.Localizer))
 
-	_, _ = ctx.ReplyEmbedBuilder(embed)
+	_, err := ctx.ReplyEmbedBuilder(embed)
+	return err
 }

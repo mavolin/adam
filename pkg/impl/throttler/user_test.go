@@ -17,9 +17,7 @@ func Test_user_Check(t *testing.T) {
 		}
 
 		ctx := &plugin.Context{
-			Message: discord.Message{
-				Author: discord.User{ID: 123},
-			},
+			Message: discord.Message{Author: discord.User{ID: 123}},
 		}
 
 		user := PerUser(2, 30*time.Second).(*user)
@@ -41,9 +39,7 @@ func Test_user_Check(t *testing.T) {
 		}
 
 		ctx := &plugin.Context{
-			Message: discord.Message{
-				Author: discord.User{ID: discord.UserID(s)},
-			},
+			Message: discord.Message{Author: discord.User{ID: discord.UserID(s)}},
 		}
 
 		user := PerUser(2, 30*time.Second).(*user)

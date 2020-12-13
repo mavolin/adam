@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -31,7 +32,7 @@ func TestWithStack(t *testing.T) {
 		assert.Equal(t, cause, unwrapper.Unwrap())
 	})
 
-	t.Run("Interface", func(t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
 		cause := NewWithStack("abc")
 
 		err := WithStack(cause)
@@ -261,5 +262,6 @@ func TestInternalError_Handle(t *testing.T) {
 
 	e := WithDescription(New(""), expectDesc)
 
-	e.(*InternalError).Handle(s, ctx)
+	err := e.(*InternalError).Handle(s, ctx)
+	require.NoError(t, err, "InternalError.Handle should never return an error")
 }

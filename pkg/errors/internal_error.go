@@ -13,12 +13,11 @@ import (
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
-// InternalError represents a non-user triggered error, that is reported to
-// the user.
+// InternalError represents a non-user triggered error.
 // By default, an InternalError does not explicitly state any information about
-// the cause or context of the error, but sends a generalised message.
-// However, the default description can with WithDescription, WithDescriptionl
-// or WithDescriptionlt.
+// the cause or context of the error, and instead sends a generalised message.
+// However, a custom description can be added using WithDescription,
+// WithDescriptionl or WithDescriptionlt.
 type InternalError struct {
 	// cause is the cause of the error.
 	cause error
@@ -29,20 +28,30 @@ type InternalError struct {
 	desc *i18nutil.Text
 }
 
-var _ Interface = new(InternalError)
+var _ Error = new(InternalError)
 
-// WithStack returns a new InternalError.
+// WithStack returns a new InternalError using the callers stack trace.
+//
 // If the error is a *SilentError, WithStack will unwrap it first.
-// If the error is nil or it is another Interface type, WithStack will return
-// the error as is.
+//
+// In case the error is nil or another Error type, WithStack will return the
+// error as is.
+//
+// If the passed error already provides a stack trace via a
+// err.StackTrace() []uintptr method, WithStack will use that stack trace when
+// wrapping, instead of creating one from the caller chain.
 func WithStack(err error) error {
 	return withStack(err)
 }
 
 // withStack enriches the passed error with a stack trace.
-// If the error is nil or it is another Interface expect *SilentError,
-// withStack will return the error as is.
-// If there is no stack trace withStack saves the callers.
+//
+// If the error is nil or it is another Error expect *SilentError, withStack
+// will return the error as is.
+//
+// If the passed error already provides a stack trace via a
+// err.StackTrace() []uintptr method, WithStack will use that stack trace when
+// wrapping, instead of creating one from the caller chain.
 func withStack(err error) error {
 	if err == nil {
 		return nil
@@ -51,7 +60,7 @@ func withStack(err error) error {
 	switch typedErr := err.(type) { //nolint:errorlint
 	case *SilentError:
 		err = typedErr.Unwrap()
-	case Interface:
+	case Error:
 		return err
 	}
 
@@ -73,8 +82,10 @@ func (e *messageError) Unwrap() error { return e.cause }
 
 // Wrap wraps the passed error with the passed message and enriches it with a
 // stack trace.
-// If the passed error is an InternalError or a SilentError Wrap will unwrap it
-// first.
+//
+// If the passed error is an *InternalError or a *SilentError, Wrap will unwrap
+// it first.
+//
 // The returned error will print as '$message: $err.Error()'.
 func Wrap(err error, message string) error {
 	if err == nil {
@@ -102,8 +113,9 @@ func Wrap(err error, message string) error {
 
 // Wrapf wraps the passed error using the formatted passed message, and
 // enriches the new error with a stack trace.
-// If the passed error is an InternalError or a SilentError Wrapf will unwrap
-// will unwrap it first.
+//
+// If the passed error is an *InternalError or a *SilentError, Wrapf will unwrap
+// it first.
 // The returned error will print as
 // '$fmt.Sprintf(format, args...): $err.Error()'.
 func Wrapf(err error, format string, args ...interface{}) error {
@@ -130,8 +142,14 @@ func Wrapf(err error, format string, args ...interface{}) error {
 	}
 }
 
-// WithDescription creates an internal error from the passed error with the
+// WithDescription creates a new InternalError from the passed error using the
 // passed description.
+//
+// If the passed description is empty, the error will use the default
+// description.
+//
+// If the passed error is a *SilentError or an *InternalError, WithDescription
+// will unwrap it first.
 func WithDescription(err error, description string) error {
 	if err == nil {
 		return nil
@@ -154,8 +172,11 @@ func WithDescription(err error, description string) error {
 	}
 }
 
-// WithDescription creates an internal error from the passed error using
-// the formatted description.
+// WithDescription creates a new *InternalError from the passed error using the
+// formatted description.
+//
+// If the passed error is a *SilentError or an *InternalError, WithDescriptionf
+// will unwrap it first.
 func WithDescriptionf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
@@ -178,8 +199,11 @@ func WithDescriptionf(err error, format string, args ...interface{}) error {
 	}
 }
 
-// WithDescriptionl creates an internal error from the passed cause using the
-// localized description.
+// WithDescriptionl creates a new *InternalError from the passed cause using
+// the localized description.
+//
+// If the passed error is a *SilentError or an *InternalError, WithDescriptionl
+// will unwrap it first.
 func WithDescriptionl(err error, description *i18n.Config) error {
 	if err == nil {
 		return nil
@@ -204,6 +228,9 @@ func WithDescriptionl(err error, description *i18n.Config) error {
 
 // WithDescriptionlt creates an internal error from the passed cause using the
 // message generated from the passed term.
+//
+// If the passed error is a *SilentError or an *InternalError,
+// WithDescriptionlt will unwrap it first.
 func WithDescriptionlt(err error, description i18n.Term) error {
 	if err == nil {
 		return nil
@@ -228,10 +255,12 @@ func WithDescriptionlt(err error, description i18n.Term) error {
 
 // Description returns the description of the error and localizes it, if
 // possible.
+// If there is no custom description or the custom description is empty,
+// Description will fall back on the default description.
 func (e *InternalError) Description(l *i18n.Localizer) string {
 	if e.desc != nil {
 		desc, err := e.desc.Get(l)
-		if err == nil {
+		if err == nil && len(desc) > 0 {
 			return desc
 		}
 	}
@@ -244,16 +273,24 @@ func (e *InternalError) Error() string         { return e.cause.Error() }
 func (e *InternalError) Unwrap() error         { return e.cause }
 func (e *InternalError) StackTrace() []uintptr { return e.stack }
 
-// Handle logs the error and sends out an internal error embed.
-func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) {
+// Handle handles the InternalError.
+// By default it logs the error and sends out an internal error Embed.
+func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) error {
+	// prevent infinite error cycle, by not allowing error returns
 	HandleInternalError(e, s, ctx)
+
+	return nil
 }
 
 var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.Context) {
 	if derr := discorderr.As(ierr.Unwrap()); derr != nil {
 		switch {
 		case discorderr.Is(derr, discorderr.InsufficientPermissions):
-			DefaultInsufficientPermissionsError.Handle(s, ctx)
+			// prevent cyclic error handling, in case this error was cause by
+			// the same permission needed to handle the
+			// InsufficientPermissionError
+			_ = DefaultInsufficientPermissionsError.Handle(s, ctx)
+
 			return
 		case discorderr.Is(derr, discorderr.TemporarilyDisabled):
 			ierr.desc = i18nutil.NewTextl(discordErrorFeatureTemporarilyDisabled)

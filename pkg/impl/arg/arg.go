@@ -9,10 +9,13 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
+// Kind specifies whether a flag or an argument is being parsed.
 type Kind string
 
 const (
-	KindArg  = "arg"
+	// KindArg is the Kind used for argument.
+	KindArg = "arg"
+	// KindFlag is the Kind used for flags.
 	KindFlag = "flag"
 )
 
@@ -142,7 +145,7 @@ type (
 		// Index contains the index of the argument, if the context represents
 		// an argument.
 		Index int
-		// Kind specifies whether the parsed argument is a flag or an argument.
+		// Kind specifies whether a flag or an argument is being parsed.
 		Kind Kind
 	}
 )

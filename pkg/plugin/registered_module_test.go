@@ -12,16 +12,12 @@ func TestGenerateRegisteredModules(t *testing.T) {
 			ProviderName: "built_in",
 			Modules: []Module{
 				mockModule{
-					name: "abc",
-					commands: []Command{
-						mockCommand{name: "zyx"},
-					},
+					name:     "abc",
+					commands: []Command{mockCommand{name: "zyx"}},
 				},
 				mockModule{
-					name: "def",
-					commands: []Command{
-						mockCommand{name: "wvu"},
-					},
+					name:     "def",
+					commands: []Command{mockCommand{name: "wvu"}},
 				},
 			},
 		},
@@ -29,16 +25,12 @@ func TestGenerateRegisteredModules(t *testing.T) {
 			ProviderName: "custom_commands",
 			Modules: []Module{
 				mockModule{
-					name: "def",
-					commands: []Command{
-						mockCommand{name: "tsr"},
-					},
+					name:     "def",
+					commands: []Command{mockCommand{name: "tsr"}},
 				},
 				mockModule{
-					name: "ghi",
-					commands: []Command{
-						mockCommand{name: "qpo"},
-					},
+					name:     "ghi",
+					commands: []Command{mockCommand{name: "qpo"}},
 				},
 			},
 		},
@@ -50,10 +42,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 				ProviderName: "built_in",
 				Modules: []Module{
 					mockModule{
-						name: "abc",
-						commands: []Command{
-							mockCommand{name: "zyx"},
-						},
+						name:     "abc",
+						commands: []Command{mockCommand{name: "zyx"}},
 					},
 				},
 			},
@@ -67,10 +57,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		Source: mockCommand{name: "zyx"},
 		SourceParents: []Module{
 			mockModule{
-				name: "abc",
-				commands: []Command{
-					mockCommand{name: "zyx"},
-				},
+				name:     "abc",
+				commands: []Command{mockCommand{name: "zyx"}},
 			},
 		},
 		ProviderName: "built_in",
@@ -85,10 +73,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 				ProviderName: "built_in",
 				Modules: []Module{
 					mockModule{
-						name: "def",
-						commands: []Command{
-							mockCommand{name: "wvu"},
-						},
+						name:     "def",
+						commands: []Command{mockCommand{name: "wvu"}},
 					},
 				},
 			},
@@ -96,10 +82,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 				ProviderName: "custom_commands",
 				Modules: []Module{
 					mockModule{
-						name: "def",
-						commands: []Command{
-							mockCommand{name: "tsr"},
-						},
+						name:     "def",
+						commands: []Command{mockCommand{name: "tsr"}},
 					},
 				},
 			},
@@ -112,10 +96,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		Source: mockCommand{name: "tsr"},
 		SourceParents: []Module{
 			mockModule{
-				name: "def",
-				commands: []Command{
-					mockCommand{name: "tsr"},
-				},
+				name:     "def",
+				commands: []Command{mockCommand{name: "tsr"}},
 			},
 		},
 		ProviderName: "custom_commands",
@@ -128,10 +110,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		Source: mockCommand{name: "wvu"},
 		SourceParents: []Module{
 			mockModule{
-				name: "def",
-				commands: []Command{
-					mockCommand{name: "wvu"},
-				},
+				name:     "def",
+				commands: []Command{mockCommand{name: "wvu"}},
 			},
 		},
 		ProviderName: "built_in",
@@ -146,10 +126,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 				ProviderName: "custom_commands",
 				Modules: []Module{
 					mockModule{
-						name: "ghi",
-						commands: []Command{
-							mockCommand{name: "qpo"},
-						},
+						name:     "ghi",
+						commands: []Command{mockCommand{name: "qpo"}},
 					},
 				},
 			},
@@ -162,10 +140,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		Source: mockCommand{name: "qpo"},
 		SourceParents: []Module{
 			mockModule{
-				name: "ghi",
-				commands: []Command{
-					mockCommand{name: "qpo"},
-				},
+				name:     "ghi",
+				commands: []Command{mockCommand{name: "qpo"}},
 			},
 		},
 		ProviderName: "custom_commands",
@@ -190,10 +166,8 @@ func Test_mergeSourceModules(t *testing.T) {
 			ProviderName: "built_in",
 			Modules: []Module{
 				mockModule{
-					name: "def",
-					commands: []Command{
-						mockCommand{name: "wvu"},
-					},
+					name:     "def",
+					commands: []Command{mockCommand{name: "wvu"}},
 				},
 			},
 		},
@@ -201,10 +175,8 @@ func Test_mergeSourceModules(t *testing.T) {
 			ProviderName: "built_in",
 			Modules: []Module{
 				mockModule{
-					name: "abc",
-					commands: []Command{
-						mockCommand{name: "zyx"},
-					},
+					name:     "abc",
+					commands: []Command{mockCommand{name: "zyx"}},
 				},
 			},
 		},
@@ -212,10 +184,8 @@ func Test_mergeSourceModules(t *testing.T) {
 			ProviderName: "custom_commands",
 			Modules: []Module{
 				mockModule{
-					name: "def",
-					commands: []Command{
-						mockCommand{name: "tsr"},
-					},
+					name:     "def",
+					commands: []Command{mockCommand{name: "tsr"}},
 				},
 			},
 		},
@@ -227,10 +197,8 @@ func Test_mergeSourceModules(t *testing.T) {
 				ProviderName: "built_in",
 				Modules: []Module{
 					mockModule{
-						name: "abc",
-						commands: []Command{
-							mockCommand{name: "zyx"},
-						},
+						name:     "abc",
+						commands: []Command{mockCommand{name: "zyx"}},
 					},
 				},
 			},
@@ -240,10 +208,8 @@ func Test_mergeSourceModules(t *testing.T) {
 				ProviderName: "built_in",
 				Modules: []Module{
 					mockModule{
-						name: "def",
-						commands: []Command{
-							mockCommand{name: "wvu"},
-						},
+						name:     "def",
+						commands: []Command{mockCommand{name: "wvu"}},
 					},
 				},
 			},
@@ -251,10 +217,8 @@ func Test_mergeSourceModules(t *testing.T) {
 				ProviderName: "custom_commands",
 				Modules: []Module{
 					mockModule{
-						name: "def",
-						commands: []Command{
-							mockCommand{name: "tsr"},
-						},
+						name:     "def",
+						commands: []Command{mockCommand{name: "tsr"}},
 					},
 				},
 			},
@@ -273,10 +237,8 @@ func Test_generateRegisteredModule(t *testing.T) {
 				ProviderName: "built_in",
 				Modules: []Module{
 					mockModule{
-						name: "abc",
-						commands: []Command{
-							mockCommand{name: "def"},
-						},
+						name:     "abc",
+						commands: []Command{mockCommand{name: "def"}},
 					},
 				},
 			},
@@ -295,10 +257,8 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Source:   mockCommand{name: "def"},
 			SourceParents: []Module{
 				mockModule{
-					name: "abc",
-					commands: []Command{
-						mockCommand{name: "def"},
-					},
+					name:     "abc",
+					commands: []Command{mockCommand{name: "def"}},
 				},
 			},
 			ProviderName: "built_in",
@@ -323,10 +283,8 @@ func Test_generateRegisteredModule(t *testing.T) {
 							name: "abc",
 							modules: []Module{
 								mockModule{
-									name: "def",
-									commands: []Command{
-										mockCommand{name: "ghi"},
-									},
+									name:     "def",
+									commands: []Command{mockCommand{name: "ghi"}},
 								},
 							},
 						},
@@ -345,18 +303,14 @@ func Test_generateRegisteredModule(t *testing.T) {
 						name: "abc",
 						modules: []Module{
 							mockModule{
-								name: "def",
-								commands: []Command{
-									mockCommand{name: "ghi"},
-								},
+								name:     "def",
+								commands: []Command{mockCommand{name: "ghi"}},
 							},
 						},
 					},
 					mockModule{
-						name: "def",
-						commands: []Command{
-							mockCommand{name: "ghi"},
-						},
+						name:     "def",
+						commands: []Command{mockCommand{name: "ghi"}},
 					},
 				},
 			},
@@ -378,18 +332,14 @@ func Test_generateRegisteredModule(t *testing.T) {
 					name: "abc",
 					modules: []Module{
 						mockModule{
-							name: "def",
-							commands: []Command{
-								mockCommand{name: "ghi"},
-							},
+							name:     "def",
+							commands: []Command{mockCommand{name: "ghi"}},
 						},
 					},
 				},
 				mockModule{
-					name: "def",
-					commands: []Command{
-						mockCommand{name: "ghi"},
-					},
+					name:     "def",
+					commands: []Command{mockCommand{name: "ghi"}},
 				},
 			},
 			ProviderName: "built_in",
@@ -792,10 +742,8 @@ func Test_fillSubcommands(t *testing.T) {
 				ProviderName: "custom_commands",
 				Modules: []Module{
 					mockModule{
-						name: "abc",
-						commands: []Command{
-							mockCommand{name: "def"},
-						},
+						name:     "abc",
+						commands: []Command{mockCommand{name: "def"}},
 					},
 				},
 			},
@@ -885,10 +833,8 @@ func Test_generateRegisteredCommands(t *testing.T) {
 			ProviderName: "",
 			Modules: []Module{
 				mockModule{
-					name: "abc",
-					commands: []Command{
-						mockCommand{name: "def"},
-					},
+					name:     "abc",
+					commands: []Command{mockCommand{name: "def"}},
 				},
 			},
 		}
@@ -901,10 +847,8 @@ func Test_generateRegisteredCommands(t *testing.T) {
 				Source:       mockCommand{name: "def"},
 				SourceParents: []Module{
 					mockModule{
-						name: "abc",
-						commands: []Command{
-							mockCommand{name: "def"},
-						},
+						name:     "abc",
+						commands: []Command{mockCommand{name: "def"}},
 					},
 				},
 				Identifier:      ".abc.def",
@@ -940,9 +884,7 @@ func Test_generateRegisteredCommands(t *testing.T) {
 					defaultChannelTypes: 23,
 					defaultRestrictions: nil,
 					defaultThrottler:    mockThrottler{cmp: "bcd"},
-					commands: []Command{
-						mockCommand{name: "def"},
-					},
+					commands:            []Command{mockCommand{name: "def"}},
 				},
 			},
 		}
@@ -960,9 +902,7 @@ func Test_generateRegisteredCommands(t *testing.T) {
 						defaultChannelTypes: 23,
 						defaultRestrictions: nil,
 						defaultThrottler:    mockThrottler{cmp: "bcd"},
-						commands: []Command{
-							mockCommand{name: "def"},
-						},
+						commands:            []Command{mockCommand{name: "def"}},
 					},
 				},
 				Identifier:      ".abc.def",
@@ -1067,11 +1007,7 @@ func TestRegisteredModule_ShortDescription(t *testing.T) {
 
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{
-					Modules: []Module{
-						mockModule{shortDesc: expect},
-					},
-				},
+				{Modules: []Module{mockModule{shortDesc: expect}}},
 			},
 		}
 
@@ -1084,16 +1020,8 @@ func TestRegisteredModule_ShortDescription(t *testing.T) {
 
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{
-					Modules: []Module{
-						mockModule{shortDesc: ""},
-					},
-				},
-				{
-					Modules: []Module{
-						mockModule{shortDesc: expect},
-					},
-				},
+				{Modules: []Module{mockModule{shortDesc: ""}}},
+				{Modules: []Module{mockModule{shortDesc: expect}}},
 			},
 		}
 
@@ -1104,16 +1032,8 @@ func TestRegisteredModule_ShortDescription(t *testing.T) {
 	t.Run("none", func(t *testing.T) {
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{
-					Modules: []Module{
-						mockModule{shortDesc: ""},
-					},
-				},
-				{
-					Modules: []Module{
-						mockModule{shortDesc: ""},
-					},
-				},
+				{Modules: []Module{mockModule{shortDesc: ""}}},
+				{Modules: []Module{mockModule{shortDesc: ""}}},
 			},
 		}
 
@@ -1128,11 +1048,7 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{
-					Modules: []Module{
-						mockModule{longDesc: expect},
-					},
-				},
+				{Modules: []Module{mockModule{longDesc: expect}}},
 			},
 		}
 
@@ -1145,16 +1061,8 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{
-					Modules: []Module{
-						mockModule{longDesc: ""},
-					},
-				},
-				{
-					Modules: []Module{
-						mockModule{longDesc: expect},
-					},
-				},
+				{Modules: []Module{mockModule{longDesc: ""}}},
+				{Modules: []Module{mockModule{longDesc: expect}}},
 			},
 		}
 
@@ -1165,16 +1073,8 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 	t.Run("none", func(t *testing.T) {
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{
-					Modules: []Module{
-						mockModule{longDesc: ""},
-					},
-				},
-				{
-					Modules: []Module{
-						mockModule{longDesc: ""},
-					},
-				},
+				{Modules: []Module{mockModule{longDesc: ""}}},
+				{Modules: []Module{mockModule{longDesc: ""}}},
 			},
 		}
 
@@ -1190,11 +1090,7 @@ func TestRegisteredModule_FindCommand(t *testing.T) {
 		}
 
 		rmod := &RegisteredModule{
-			Commands: []*RegisteredCommand{
-				{Name: "abc"},
-				expect,
-				{Name: "ghi"},
-			},
+			Commands: []*RegisteredCommand{{Name: "abc"}, expect, {Name: "ghi"}},
 		}
 
 		actual := rmod.FindCommand(expect.Name)
@@ -1232,11 +1128,7 @@ func TestRegisteredModule_FindModule(t *testing.T) {
 		}
 
 		rmod := &RegisteredModule{
-			Modules: []*RegisteredModule{
-				{Name: "abc"},
-				expect,
-				{Name: "ghi"},
-			},
+			Modules: []*RegisteredModule{{Name: "abc"}, expect, {Name: "ghi"}},
 		}
 
 		actual := rmod.FindModule(expect.Name)

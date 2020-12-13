@@ -11,20 +11,19 @@ import (
 
 // ChoiceCaseSensitive is a global flag that defines whether choices should be
 // case sensitive.
-// Defaults to false.
 var ChoiceCaseSensitive = false
 
 type (
 	// Choice is an unlocalized enum type.
 	Choice []ChoiceElement
 
-	// ChoiceElement is an element in a choice and represents a single value.
+	// ChoiceElement is a single element of a choice.
 	ChoiceElement struct {
 		// Name is the name of the element.
 		Name string
 		// Aliases are optional aliases for the element.
 		Aliases []string
-		// Value is the value the element. corresponds to.
+		// Value is the value the element corresponds to.
 		// If this is nil, the name of the choice will be used.
 		Value interface{}
 	}
@@ -82,11 +81,10 @@ func (c Choice) Default() interface{} {
 }
 
 type (
-	// LocalizedChoice is an localized enum type.
+	// LocalizedChoice is a localized enum type.
 	LocalizedChoice []LocalizedChoiceElement
 
-	// LocalizedChoiceElement is an element in a localized choice and
-	// represents a single value.
+	// LocalizedChoiceElement is a single element in a localized choice.
 	LocalizedChoiceElement struct {
 		// Names are the names used for the element.
 		Names []*i18n.Config

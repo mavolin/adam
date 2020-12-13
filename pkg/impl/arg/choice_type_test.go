@@ -27,10 +27,8 @@ func TestChoice_Parse(t *testing.T) {
 			expect: "def",
 		},
 		{
-			name: "alias",
-			choice: Choice{
-				{Name: "abc", Aliases: []string{"def"}, Value: "ghi"},
-			},
+			name:   "alias",
+			choice: Choice{{Name: "abc", Aliases: []string{"def"}, Value: "ghi"}},
 			raw:    "def",
 			expect: "ghi",
 		},
@@ -101,9 +99,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 
 		choice := LocalizedChoice{
 			{
-				Names: []*i18n.Config{
-					i18n.NewFallbackConfig("abc", "def"),
-				},
+				Names: []*i18n.Config{i18n.NewFallbackConfig("abc", "def")},
 				Value: expect,
 			},
 		}
@@ -123,18 +119,14 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		choice := LocalizedChoice{
 			{
-				Names: []*i18n.Config{
-					i18n.NewFallbackConfig("abc", "def"),
-				},
+				Names: []*i18n.Config{i18n.NewFallbackConfig("abc", "def")},
 				Value: "ghi",
 			},
 		}
 
 		ctx := &Context{
-			Context: &plugin.Context{
-				Localizer: mock.NoOpLocalizer,
-			},
-			Raw: "jkl",
+			Context: &plugin.Context{Localizer: mock.NoOpLocalizer},
+			Raw:     "jkl",
 		}
 
 		expect := newArgParsingErr(choiceInvalidError, ctx, nil)
@@ -148,9 +140,7 @@ func TestLocalizedChoice_Default(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		choice := LocalizedChoice{
 			{
-				Names: []*i18n.Config{
-					i18n.NewFallbackConfig("abc", "def"),
-				},
+				Names: []*i18n.Config{i18n.NewFallbackConfig("abc", "def")},
 				Value: 123,
 			},
 		}

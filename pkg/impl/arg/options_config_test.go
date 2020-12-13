@@ -17,18 +17,14 @@ func TestOptions_Parse(t *testing.T) {
 			{
 				Prefix: "1",
 				Config: CommaConfig{
-					Required: []RequiredArg{
-						{Type: mockTypeString},
-					},
+					Required: []RequiredArg{{Type: mockTypeString}},
 				},
 			},
 		}
 
 		expect := plugin.Args{"abc"}
 
-		ctx := &plugin.Context{
-			Localizer: mock.NoOpLocalizer,
-		}
+		ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
 
 		actual, flags, err := options.Parse("1 abc", nil, ctx)
 		require.NoError(t, err)

@@ -24,20 +24,16 @@ func TestRole_Parse(t *testing.T) {
 		{
 			name: "mention",
 			ctx: &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: "<@&456>",
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     "<@&456>",
 			},
 			expect: &discord.Role{ID: 456},
 		},
 		{
 			name: "id",
 			ctx: &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: "456",
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     "456",
 			},
 			expect: &discord.Role{ID: 456},
 		},
@@ -47,14 +43,13 @@ func TestRole_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
+				defer m.Eval()
 
 				m.Roles(c.ctx.GuildID, []discord.Role{*c.expect})
 
 				actual, err := Role.Parse(s, c.ctx)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -62,11 +57,9 @@ func TestRole_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw:  fmt.Sprintf("<@&%d9>", uint64(math.MaxUint64)),
-				Kind: KindArg,
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     fmt.Sprintf("<@&%d9>", uint64(math.MaxUint64)),
+				Kind:    KindArg,
 			}
 
 			expect := newArgParsingErr(roleInvalidMentionErrorArg, ctx, nil)
@@ -87,11 +80,9 @@ func TestRole_Parse(t *testing.T) {
 			var roleID discord.RoleID = 123
 
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 456},
-				},
-				Raw:  roleID.Mention(),
-				Kind: KindArg,
+				Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
+				Raw:     roleID.Mention(),
+				Kind:    KindArg,
 			}
 
 			srcMocker.Roles(ctx.GuildID, []discord.Role{})
@@ -118,10 +109,8 @@ func TestRole_Parse(t *testing.T) {
 
 		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: "abc",
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     "abc",
 			}
 
 			expect := newArgParsingErr(roleInvalidError, ctx, nil)
@@ -132,12 +121,11 @@ func TestRole_Parse(t *testing.T) {
 
 		t.Run("role id not found", func(t *testing.T) {
 			m, s := state.NewMocker(t)
+			defer m.Eval()
 
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: "456",
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     "456",
 			}
 
 			m.Roles(ctx.GuildID, []discord.Role{})
@@ -146,8 +134,6 @@ func TestRole_Parse(t *testing.T) {
 
 			_, actual := Role.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 	})
 }

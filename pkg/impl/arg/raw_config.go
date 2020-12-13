@@ -13,7 +13,7 @@ type raw struct {
 }
 
 var (
-	// Raw is a plugin.ArgConfig that returns the arguments as
+	// Raw is a plugin.ArgConfig that returns the arguments as is.
 	Raw plugin.ArgConfig  = new(raw)
 	_   plugin.ArgsInfoer = new(raw)
 )
@@ -21,25 +21,19 @@ var (
 // RawWithDescription creates a argument config for raw arguments, that uses
 // the passed description as argument config.
 func RawWithDescription(description string) plugin.ArgConfig {
-	return &raw{
-		desc: i18nutil.NewText(description),
-	}
+	return &raw{desc: i18nutil.NewText(description)}
 }
 
 // RawWithDescription creates a argument config for raw arguments, that uses
 // the passed description as argument config.
 func RawWithDescriptionl(description *i18n.Config) plugin.ArgConfig {
-	return &raw{
-		desc: i18nutil.NewTextl(description),
-	}
+	return &raw{desc: i18nutil.NewTextl(description)}
 }
 
 // RawWithDescriptionlt creates a argument config for raw arguments, that uses
 // the passed description as argument config.
 func RawWithDescriptionlt(description i18n.Term) plugin.ArgConfig {
-	return &raw{
-		desc: i18nutil.NewTextl(description.AsConfig()),
-	}
+	return &raw{desc: i18nutil.NewTextl(description.AsConfig())}
 }
 
 func (r raw) Parse(args string, _ *state.State, _ *plugin.Context) (plugin.Args, plugin.Flags, error) {
