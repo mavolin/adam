@@ -91,9 +91,7 @@ func Test_member_Check(t *testing.T) {
 
 			ctx := &plugin.Context{
 				Message: discord.Message{
-					Author: discord.User{
-						ID: 123,
-					},
+					Author:  discord.User{ID: 123},
 					GuildID: 456,
 				},
 			}

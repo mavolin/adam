@@ -11,8 +11,8 @@ import (
 
 // NoOpLocalizer is a localizer that only returns errors.
 var NoOpLocalizer = i18n.NewManager(func(lang string) i18n.LangFunc {
-	return func(_ i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
-		return "", errors.New("error")
+	return func(i18n.Term, map[string]interface{}, interface{}) (string, error) {
+		return "", errors.New("")
 	}
 }).Localizer("")
 

@@ -65,5 +65,6 @@ func TestThrottlingError_Handle(t *testing.T) {
 
 	e := NewThrottlingError(expectDesc)
 
-	e.Handle(s, ctx)
+	err := e.Handle(s, ctx)
+	require.NoError(t, err)
 }

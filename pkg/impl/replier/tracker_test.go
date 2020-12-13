@@ -12,14 +12,13 @@ import (
 
 func TestTracker_GuildMessages(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var channelID discord.ChannelID = 123
 
 	r := NewTracker(s, 0, channelID)
 
-	data := api.SendMessageData{
-		Content: "abc",
-	}
+	data := api.SendMessageData{Content: "abc"}
 
 	expectMessage := discord.Message{
 		ID:        456,
@@ -38,12 +37,11 @@ func TestTracker_GuildMessages(t *testing.T) {
 
 	actualGuildMessages := r.GuildMessages()
 	assert.Equal(t, expectGuildMessage, actualGuildMessages)
-
-	m.Eval()
 }
 
 func TestTracker_DMs(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var channelID discord.ChannelID = 123
 
@@ -52,9 +50,7 @@ func TestTracker_DMs(t *testing.T) {
 		dmID: channelID,
 	}
 
-	data := api.SendMessageData{
-		Content: "abc",
-	}
+	data := api.SendMessageData{Content: "abc"}
 
 	expectMessage := discord.Message{
 		ID:        456,
@@ -73,20 +69,17 @@ func TestTracker_DMs(t *testing.T) {
 
 	actualDMs := r.DMs()
 	assert.Equal(t, expectDMs, actualDMs)
-
-	m.Eval()
 }
 
 func TestTracker_ReplyMessage(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var channelID discord.ChannelID = 123
 
 	r := NewTracker(s, 0, channelID)
 
-	data := api.SendMessageData{
-		Content: "abc",
-	}
+	data := api.SendMessageData{Content: "abc"}
 
 	expect := discord.Message{
 		ID:        456,
@@ -100,13 +93,12 @@ func TestTracker_ReplyMessage(t *testing.T) {
 	actual, err := r.ReplyMessage(data)
 	require.NoError(t, err)
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestTracker_ReplyDM(t *testing.T) {
 	t.Run("unknown dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -115,9 +107,7 @@ func TestTracker_ReplyDM(t *testing.T) {
 
 		r := NewTracker(s, userID, 0)
 
-		data := api.SendMessageData{
-			Content: "abc",
-		}
+		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
 			ID:        789,
@@ -135,12 +125,11 @@ func TestTracker_ReplyDM(t *testing.T) {
 		actual, err := r.ReplyDM(data)
 		require.NoError(t, err)
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("known dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -149,9 +138,7 @@ func TestTracker_ReplyDM(t *testing.T) {
 			dmID: channelID,
 		}
 
-		data := api.SendMessageData{
-			Content: "abc",
-		}
+		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
 			ID:        456,
@@ -165,7 +152,5 @@ func TestTracker_ReplyDM(t *testing.T) {
 		actual, err := r.ReplyDM(data)
 		require.NoError(t, err)
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 }

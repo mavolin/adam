@@ -212,9 +212,7 @@ func TestAlphanumericID_Name(t *testing.T) {
 	t.Run("custom name", func(t *testing.T) {
 		expect := "abc"
 
-		id := AlphanumericID{
-			CustomName: i18nutil.NewText(expect),
-		}
+		id := AlphanumericID{CustomName: i18nutil.NewText(expect)}
 
 		actual := id.Name(mock.NoOpLocalizer)
 		assert.Equal(t, expect, actual)
@@ -234,9 +232,7 @@ func TestAlphanumericID_Description(t *testing.T) {
 	t.Run("custom description", func(t *testing.T) {
 		expect := "abc"
 
-		id := AlphanumericID{
-			CustomDescription: i18nutil.NewText(expect),
-		}
+		id := AlphanumericID{CustomDescription: i18nutil.NewText(expect)}
 
 		actual := id.Description(mock.NoOpLocalizer)
 		assert.Equal(t, expect, actual)

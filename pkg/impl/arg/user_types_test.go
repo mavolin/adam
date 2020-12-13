@@ -32,10 +32,8 @@ func TestUser_Parse(t *testing.T) {
 			expect: &discord.User{ID: 123},
 		},
 		{
-			name: "id",
-			ctx: &Context{
-				Raw: "123",
-			},
+			name:   "id",
+			ctx:    &Context{Raw: "123"},
 			expect: &discord.User{ID: 123},
 		},
 	}
@@ -44,14 +42,13 @@ func TestUser_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
+				defer m.Eval()
 
 				m.User(*c.expect)
 
 				actual, err := User.Parse(s, c.ctx)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
-
-				m.Eval()
 			})
 		}
 
@@ -140,12 +137,11 @@ func TestUser_Parse(t *testing.T) {
 
 		t.Run("id user not found", func(t *testing.T) {
 			m, s := state.NewMocker(t)
+			defer m.Eval()
 
 			var userID discord.UserID = 123
 
-			ctx := &Context{
-				Raw: "123",
-			}
+			ctx := &Context{Raw: "123"}
 
 			m.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
@@ -157,8 +153,6 @@ func TestUser_Parse(t *testing.T) {
 
 			_, actual := User.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 	})
 }
@@ -174,10 +168,8 @@ func TestMember_Parse(t *testing.T) {
 		{
 			name: "mention fallback",
 			ctx: &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: "<@456>",
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     "<@456>",
 			},
 			expect: &discord.Member{
 				User: discord.User{ID: 456},
@@ -186,10 +178,8 @@ func TestMember_Parse(t *testing.T) {
 		{
 			name: "id",
 			ctx: &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: "456",
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     "456",
 			},
 			expect: &discord.Member{
 				User: discord.User{ID: 456},
@@ -201,14 +191,13 @@ func TestMember_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
+				defer m.Eval()
 
 				m.Member(c.ctx.GuildID, *c.expect)
 
 				actual, err := Member.Parse(s, c.ctx)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
-
-				m.Eval()
 			})
 		}
 
@@ -242,11 +231,9 @@ func TestMember_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw:  fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
-				Kind: KindArg,
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
+				Kind:    KindArg,
 			}
 
 			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
@@ -267,11 +254,9 @@ func TestMember_Parse(t *testing.T) {
 			var userID discord.UserID = 456
 
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw:  userID.Mention(),
-				Kind: KindArg,
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     userID.Mention(),
+				Kind:    KindArg,
 			}
 
 			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
@@ -302,10 +287,8 @@ func TestMember_Parse(t *testing.T) {
 
 		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: "abc",
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     "abc",
 			}
 
 			expect := newArgParsingErr(userInvalidError, ctx, nil)
@@ -316,14 +299,13 @@ func TestMember_Parse(t *testing.T) {
 
 		t.Run("id user not found", func(t *testing.T) {
 			m, s := state.NewMocker(t)
+			defer m.Eval()
 
 			var userID discord.UserID = 456
 
 			ctx := &Context{
-				Context: &plugin.Context{
-					Message: discord.Message{GuildID: 123},
-				},
-				Raw: userID.String(),
+				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
+				Raw:     userID.String(),
 			}
 
 			m.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
@@ -336,8 +318,6 @@ func TestMember_Parse(t *testing.T) {
 
 			_, actual := Member.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 	})
 }

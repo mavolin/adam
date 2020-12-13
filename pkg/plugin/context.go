@@ -14,9 +14,7 @@ import (
 // ErrInsufficientSendPermissions is an informational error that signals
 // that a message wasn't sent, because the bot lacks permissions.
 // This error should not be handled.
-var ErrInsufficientSendPermissions = &informationalError{
-	s: "insufficient permissions to send message",
-}
+var ErrInsufficientSendPermissions = &informationalError{s: "insufficient permissions to send message"}
 
 // Context contains context information about a command.
 type Context struct {

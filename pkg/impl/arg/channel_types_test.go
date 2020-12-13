@@ -52,12 +52,11 @@ func TestTextChannel_Parse(t *testing.T) {
 				TextChannelAllowIDs = c.allowChannelIDs
 
 				m, s := state.NewMocker(t)
+				defer m.Eval()
 
 				ctx := &Context{
 					Context: &plugin.Context{
-						Message: discord.Message{
-							GuildID: c.expect.GuildID,
-						},
+						Message: discord.Message{GuildID: c.expect.GuildID},
 					},
 					Raw: c.raw,
 				}
@@ -67,8 +66,6 @@ func TestTextChannel_Parse(t *testing.T) {
 				actual, err := TextChannel.Parse(s, ctx)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -189,11 +186,9 @@ func TestTextChannel_Parse(t *testing.T) {
 				TextChannelAllowIDs = c.allowIDs
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Message: discord.Message{GuildID: 456},
-					},
-					Raw:  c.raw,
-					Kind: KindArg,
+					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
+					Raw:     c.raw,
+					Kind:    KindArg,
 				}
 
 				expect := newArgParsingErr(c.expectArg, ctx, nil)
@@ -221,11 +216,9 @@ func TestTextChannel_Parse(t *testing.T) {
 				})
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Message: discord.Message{GuildID: 456},
-					},
-					Raw:  c.raw,
-					Kind: KindArg,
+					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
+					Raw:     c.raw,
+					Kind:    KindArg,
 				}
 
 				expect := newArgParsingErr(c.expectArg, ctx, nil)
@@ -257,11 +250,9 @@ func TestTextChannel_Parse(t *testing.T) {
 				srcMocker.Channel(c.channel)
 
 				ctx := &Context{
-					Context: &plugin.Context{
-						Message: discord.Message{GuildID: 456},
-					},
-					Raw:  c.raw,
-					Kind: KindArg,
+					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
+					Raw:     c.raw,
+					Kind:    KindArg,
 				}
 
 				expect := newArgParsingErr(c.expectArg, ctx, nil)

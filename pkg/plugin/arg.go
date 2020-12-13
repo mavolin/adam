@@ -47,6 +47,7 @@ type (
 	// If those requirements are fulfilled, help commands should display the
 	// description of the required argument instead of creating an argument
 	// help message.
+	// Note that the description may be empty.
 	ArgsInfoer interface {
 		// Info returns localized information about the arguments and flags of
 		// a command.

@@ -12,14 +12,13 @@ import (
 
 func Test_wrappedReplier_ReplyMessage(t *testing.T) {
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	var channelID discord.ChannelID = 123
 
 	r := WrapState(s, 0, channelID)
 
-	data := api.SendMessageData{
-		Content: "abc",
-	}
+	data := api.SendMessageData{Content: "abc"}
 
 	expect := discord.Message{
 		ID:        456,
@@ -33,13 +32,12 @@ func Test_wrappedReplier_ReplyMessage(t *testing.T) {
 	actual, err := r.ReplyMessage(data)
 	require.NoError(t, err)
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func Test_wrappedReplier_ReplyDM(t *testing.T) {
 	t.Run("unknown dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -48,9 +46,7 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 
 		r := WrapState(s, userID, 0)
 
-		data := api.SendMessageData{
-			Content: "abc",
-		}
+		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
 			ID:        789,
@@ -68,12 +64,11 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		actual, err := r.ReplyDM(data)
 		require.NoError(t, err)
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("known dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -82,9 +77,7 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 			dmID: channelID,
 		}
 
-		data := api.SendMessageData{
-			Content: "abc",
-		}
+		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
 			ID:        456,
@@ -98,7 +91,5 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		actual, err := r.ReplyDM(data)
 		require.NoError(t, err)
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 }

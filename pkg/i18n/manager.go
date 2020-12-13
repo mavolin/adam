@@ -14,9 +14,7 @@ func NewManager(f Func) *Manager {
 		f = func(lang string) LangFunc { return nil }
 	}
 
-	return &Manager{
-		f: f,
-	}
+	return &Manager{f: f}
 }
 
 // Localizer returns a localizer for the passed language.

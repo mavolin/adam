@@ -14,23 +14,19 @@ type ArgumentParsingError struct {
 	desc *i18nutil.Text
 }
 
-var _ Interface = new(ArgumentParsingError)
+var _ Error = new(ArgumentParsingError)
 
 // NewArgumentParsingError returns a new ArgumentParsingError with the passed
 // description.
 // The description mustn't be empty for this error to be handled properly.
 func NewArgumentParsingError(description string) *ArgumentParsingError {
-	return &ArgumentParsingError{
-		desc: i18nutil.NewText(description),
-	}
+	return &ArgumentParsingError{desc: i18nutil.NewText(description)}
 }
 
 // NewArgumentParsingErrorl returns a new ArgumentParsingError using the passed
 // i18n.Config to generate a description.
 func NewArgumentParsingErrorl(description *i18n.Config) *ArgumentParsingError {
-	return &ArgumentParsingError{
-		desc: i18nutil.NewTextl(description),
-	}
+	return &ArgumentParsingError{desc: i18nutil.NewTextl(description)}
 }
 
 // NewArgumentParsingErrorlt returns a new ArgumentParsingError using the
@@ -45,23 +41,26 @@ func (e *ArgumentParsingError) Description(l *i18n.Localizer) (string, error) {
 	return e.desc.Get(l)
 }
 
-func (e *ArgumentParsingError) Error() string { return "argument parsing error" }
-
-// Handle handles the ArgumentParsingError.
-// By default it sends an error embed containing a description of which
-// arg/flag was faulty in the channel the command was sent in.
-func (e *ArgumentParsingError) Handle(s *state.State, ctx *plugin.Context) {
-	HandleArgumentParsingError(e, s, ctx)
+func (e *ArgumentParsingError) Error() string {
+	return "argument parsing error"
 }
 
-var HandleArgumentParsingError = func(aerr *ArgumentParsingError, _ *state.State, ctx *plugin.Context) {
+// Handle handles the ArgumentParsingError.
+// By default it sends an error Embed containing a description of which
+// arg/flag was faulty in the channel the command was sent in.
+func (e *ArgumentParsingError) Handle(s *state.State, ctx *plugin.Context) error {
+	return HandleArgumentParsingError(e, s, ctx)
+}
+
+var HandleArgumentParsingError = func(aerr *ArgumentParsingError, _ *state.State, ctx *plugin.Context) error {
 	desc, err := aerr.Description(ctx.Localizer)
 	if err != nil {
-		return
+		return err
 	}
 
 	embed := ErrorEmbed.Clone().
 		WithDescription(desc)
 
-	_, _ = ctx.ReplyEmbedBuilder(embed)
+	_, err = ctx.ReplyEmbedBuilder(embed)
+	return err
 }

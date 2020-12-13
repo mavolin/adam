@@ -24,9 +24,7 @@ func TestNSFW(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
@@ -36,9 +34,7 @@ func TestNSFW(t *testing.T) {
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.DirectMessages,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{NSFW: true},
@@ -51,9 +47,7 @@ func TestNSFW(t *testing.T) {
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.DirectMessages,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{NSFW: false},
@@ -83,9 +77,7 @@ func TestGuildOwner(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
@@ -99,9 +91,7 @@ func TestGuildOwner(t *testing.T) {
 				},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{OwnerID: 456},
@@ -118,9 +108,7 @@ func TestGuildOwner(t *testing.T) {
 				},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{OwnerID: 789},
@@ -147,9 +135,7 @@ func TestBotOwner(t *testing.T) {
 		{
 			name: "bot owner",
 			ctx: &plugin.Context{
-				Message: discord.Message{
-					Author: discord.User{ID: 123},
-				},
+				Message:     discord.Message{Author: discord.User{ID: 123}},
 				BotOwnerIDs: []discord.UserID{123},
 			},
 			expect: nil,
@@ -157,9 +143,7 @@ func TestBotOwner(t *testing.T) {
 		{
 			name: "not bot owner",
 			ctx: &plugin.Context{
-				Message: discord.Message{
-					Author: discord.User{ID: 123},
-				},
+				Message:     discord.Message{Author: discord.User{ID: 123}},
 				BotOwnerIDs: []discord.UserID{},
 			},
 			expect: ErrNotBotOwner,
@@ -190,9 +174,7 @@ func TestUsers(t *testing.T) {
 			name:    "allowed",
 			userIDs: []discord.UserID{123},
 			ctx: &plugin.Context{
-				Message: discord.Message{
-					Author: discord.User{ID: 123},
-				},
+				Message: discord.Message{Author: discord.User{ID: 123}},
 			},
 			expect: nil,
 		},
@@ -200,9 +182,7 @@ func TestUsers(t *testing.T) {
 			name:    "prohibited",
 			userIDs: []discord.UserID{123},
 			ctx: &plugin.Context{
-				Message: discord.Message{
-					Author: discord.User{ID: 456},
-				},
+				Message: discord.Message{Author: discord.User{ID: 456}},
 			},
 			expect: errors.DefaultFatalRestrictionError,
 		},
@@ -347,9 +327,7 @@ func TestMustAllRoles(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
@@ -382,9 +360,7 @@ func TestMustAllRoles(t *testing.T) {
 				Message: discord.Message{GuildID: 789},
 				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
 				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{{ID: 456}},
-					},
+					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 456}}},
 				},
 			},
 			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
@@ -420,9 +396,7 @@ func TestAnyRole(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
@@ -443,9 +417,7 @@ func TestAnyRole(t *testing.T) {
 				Message: discord.Message{GuildID: 456},
 				Member:  &discord.Member{RoleIDs: []discord.RoleID{789}},
 				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{{ID: 789}},
-					},
+					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 789}}},
 				},
 			},
 			expect: errors.DefaultFatalRestrictionError,
@@ -532,9 +504,7 @@ func TestMustAnyRole(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
@@ -555,9 +525,7 @@ func TestMustAnyRole(t *testing.T) {
 				Message: discord.Message{GuildID: 456},
 				Member:  &discord.Member{RoleIDs: []discord.RoleID{789}},
 				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{{ID: 789}},
-					},
+					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 789}}},
 				},
 			},
 			expect: errors.DefaultFatalRestrictionError,
@@ -609,10 +577,8 @@ func TestChannels(t *testing.T) {
 		{
 			name:       "allowed",
 			channelIDs: []discord.ChannelID{123},
-			ctx: &plugin.Context{
-				Message: discord.Message{ChannelID: 123},
-			},
-			expect: nil,
+			ctx:        &plugin.Context{Message: discord.Message{ChannelID: 123}},
+			expect:     nil,
 		},
 		{
 			name:       "prohibited - direct message",
@@ -646,9 +612,7 @@ func TestChannels(t *testing.T) {
 					ChannelID: 012,
 					GuildID:   345,
 				},
-				Member: &discord.Member{
-					User: discord.User{ID: 678},
-				},
+				Member:    &discord.Member{User: discord.User{ID: 678}},
 				Localizer: mock.NoOpLocalizer,
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
@@ -693,6 +657,7 @@ func TestChannels(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
 			m, s := state.NewMocker(t)
+			defer m.Eval()
 
 			if c.channelsReturn != nil {
 				m.Channels(c.ctx.GuildID, c.channelsReturn)
@@ -702,8 +667,6 @@ func TestChannels(t *testing.T) {
 
 			actual := f(s, c.ctx)
 			assert.Equal(t, c.expect, actual)
-
-			m.Eval()
 		})
 	}
 }
@@ -721,11 +684,9 @@ func TestBotPermissions(t *testing.T) {
 			expect: nil,
 		},
 		{
-			name:  "pass direct message",
-			perms: discord.PermissionSendMessages | discord.PermissionViewChannel,
-			ctx: &plugin.Context{
-				Message: discord.Message{GuildID: 0},
-			},
+			name:   "pass direct message",
+			perms:  discord.PermissionSendMessages | discord.PermissionViewChannel,
+			ctx:    &plugin.Context{Message: discord.Message{GuildID: 0}},
 			expect: nil,
 		},
 		{
@@ -735,9 +696,7 @@ func TestBotPermissions(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
@@ -758,9 +717,7 @@ func TestBotPermissions(t *testing.T) {
 						},
 					},
 					ChannelReturn: &discord.Channel{},
-					SelfReturn: &discord.Member{
-						User: discord.User{ID: 456},
-					},
+					SelfReturn:    &discord.Member{User: discord.User{ID: 456}},
 				},
 			},
 			expect: nil,
@@ -772,9 +729,7 @@ func TestBotPermissions(t *testing.T) {
 				Message:   discord.Message{GuildID: 123},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
@@ -787,9 +742,7 @@ func TestBotPermissions(t *testing.T) {
 						},
 					},
 					ChannelReturn: &discord.Channel{},
-					SelfReturn: &discord.Member{
-						User: discord.User{ID: 456},
-					},
+					SelfReturn:    &discord.Member{User: discord.User{ID: 456}},
 				},
 			},
 			expect: newInsufficientBotPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
@@ -820,11 +773,9 @@ func TestUserPermissions(t *testing.T) {
 			expect: nil,
 		},
 		{
-			name:  "pass direct message",
-			perms: discord.PermissionSendMessages | discord.PermissionViewChannel,
-			ctx: &plugin.Context{
-				Message: discord.Message{GuildID: 0},
-			},
+			name:   "pass direct message",
+			perms:  discord.PermissionSendMessages | discord.PermissionViewChannel,
+			ctx:    &plugin.Context{Message: discord.Message{GuildID: 0}},
 			expect: nil,
 		},
 		{
@@ -834,9 +785,7 @@ func TestUserPermissions(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
@@ -846,9 +795,7 @@ func TestUserPermissions(t *testing.T) {
 			perms: discord.PermissionSendMessages,
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
-				Member: &discord.Member{
-					User: discord.User{ID: 456},
-				},
+				Member:  &discord.Member{User: discord.User{ID: 456}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						ID: 123,
@@ -868,15 +815,11 @@ func TestUserPermissions(t *testing.T) {
 			name:  "fail guild",
 			perms: discord.PermissionStream | discord.PermissionSendTTSMessages | discord.PermissionSendMessages,
 			ctx: &plugin.Context{
-				Message: discord.Message{GuildID: 123},
-				Member: &discord.Member{
-					User: discord.User{ID: 456},
-				},
+				Message:   discord.Message{GuildID: 123},
+				Member:    &discord.Member{User: discord.User{ID: 456}},
 				Localizer: mock.NoOpLocalizer,
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{

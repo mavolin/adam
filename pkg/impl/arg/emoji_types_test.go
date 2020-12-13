@@ -49,6 +49,7 @@ func TestEmoji_Parse(t *testing.T) {
 		for _, c := range apiSuccessCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
+				defer m.Eval()
 
 				ctx := &Context{
 					Context: &plugin.Context{
@@ -212,11 +213,9 @@ func TestEmoji_Parse(t *testing.T) {
 				EmojiAllowIDs = c.allowEmojiIDs
 
 				ctx := &Context{
-					Raw: c.raw,
-					Context: &plugin.Context{
-						Message: discord.Message{GuildID: 456},
-					},
-					Kind: KindArg,
+					Raw:     c.raw,
+					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
+					Kind:    KindArg,
 				}
 
 				srcMocker.Emojis(ctx.GuildID, []discord.Emoji{})

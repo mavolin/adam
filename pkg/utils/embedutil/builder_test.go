@@ -15,9 +15,7 @@ import (
 func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
 	title := "abc"
 
-	expect := discord.Embed{
-		Title: title,
-	}
+	expect := discord.Embed{Title: title}
 
 	actual, err := NewBuilder().
 		WithSimpleTitle(title).
@@ -30,9 +28,7 @@ func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
 func TestEmbedBuilder_WithSimpleTitlel(t *testing.T) {
 	title := "abc"
 
-	expect := discord.Embed{
-		Title: title,
-	}
+	expect := discord.Embed{Title: title}
 
 	l := newMockedLocalizer(t).
 		on("a", title).
@@ -49,9 +45,7 @@ func TestEmbedBuilder_WithSimpleTitlel(t *testing.T) {
 func TestEmbedBuilder_WithSimpleTitlelt(t *testing.T) {
 	title := "abc"
 
-	expect := discord.Embed{
-		Title: title,
-	}
+	expect := discord.Embed{Title: title}
 
 	l := newMockedLocalizer(t).
 		on("a", title).
@@ -133,9 +127,7 @@ func TestEmbedBuilder_WithTitlelt(t *testing.T) {
 func TestEmbedBuilder_WithDescription(t *testing.T) {
 	description := "abc"
 
-	expect := discord.Embed{
-		Description: description,
-	}
+	expect := discord.Embed{Description: description}
 
 	actual, err := NewBuilder().
 		WithDescription(description).
@@ -148,9 +140,7 @@ func TestEmbedBuilder_WithDescription(t *testing.T) {
 func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 	description := "abc"
 
-	expect := discord.Embed{
-		Description: description,
-	}
+	expect := discord.Embed{Description: description}
 
 	l := newMockedLocalizer(t).
 		on("a", description).
@@ -167,9 +157,7 @@ func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
 	description := "abc"
 
-	expect := discord.Embed{
-		Description: description,
-	}
+	expect := discord.Embed{Description: description}
 
 	l := newMockedLocalizer(t).
 		on("a", description).
@@ -186,9 +174,7 @@ func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
 func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 	timestamp := discord.NowTimestamp()
 
-	expect := discord.Embed{
-		Timestamp: timestamp,
-	}
+	expect := discord.Embed{Timestamp: timestamp}
 
 	actual, err := NewBuilder().
 		WithTimestamp(timestamp).
@@ -201,9 +187,7 @@ func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 func TestEmbedBuilder_WithColor(t *testing.T) {
 	var color discord.Color = 123
 
-	expect := discord.Embed{
-		Color: color,
-	}
+	expect := discord.Embed{Color: color}
 
 	actual, err := NewBuilder().
 		WithColor(color).
@@ -217,9 +201,7 @@ func TestEmbedBuilder_WithSimpleFooter(t *testing.T) {
 	text := "abc"
 
 	expect := discord.Embed{
-		Footer: &discord.EmbedFooter{
-			Text: text,
-		},
+		Footer: &discord.EmbedFooter{Text: text},
 	}
 
 	actual, err := NewBuilder().
@@ -234,9 +216,7 @@ func TestEmbedBuilder_WithSimpleFooterl(t *testing.T) {
 	text := "abc"
 
 	expect := discord.Embed{
-		Footer: &discord.EmbedFooter{
-			Text: text,
-		},
+		Footer: &discord.EmbedFooter{Text: text},
 	}
 
 	l := newMockedLocalizer(t).
@@ -255,9 +235,7 @@ func TestEmbedBuilder_WithSimpleFooterlt(t *testing.T) {
 	text := "abc"
 
 	expect := discord.Embed{
-		Footer: &discord.EmbedFooter{
-			Text: text,
-		},
+		Footer: &discord.EmbedFooter{Text: text},
 	}
 
 	l := newMockedLocalizer(t).
@@ -347,9 +325,7 @@ func TestEmbedBuilder_WithImage(t *testing.T) {
 	image := "abc"
 
 	expect := discord.Embed{
-		Image: &discord.EmbedImage{
-			URL: image,
-		},
+		Image: &discord.EmbedImage{URL: image},
 	}
 
 	actual, err := NewBuilder().
@@ -364,9 +340,7 @@ func TestEmbedBuilder_WithThumbnail(t *testing.T) {
 	thumbnail := "abc"
 
 	expect := discord.Embed{
-		Thumbnail: &discord.EmbedThumbnail{
-			URL: thumbnail,
-		},
+		Thumbnail: &discord.EmbedThumbnail{URL: thumbnail},
 	}
 
 	actual, err := NewBuilder().
@@ -381,9 +355,7 @@ func TestEmbedBuilder_WithSimpleAuthor(t *testing.T) {
 	name := "abc"
 
 	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-		},
+		Author: &discord.EmbedAuthor{Name: name},
 	}
 
 	actual, err := NewBuilder().
@@ -398,9 +370,7 @@ func TestEmbedBuilder_WithSimpleAuthorl(t *testing.T) {
 	name := "abc"
 
 	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-		},
+		Author: &discord.EmbedAuthor{Name: name},
 	}
 
 	l := newMockedLocalizer(t).
@@ -419,9 +389,7 @@ func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
 	name := "abc"
 
 	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Name: name,
-		},
+		Author: &discord.EmbedAuthor{Name: name},
 	}
 
 	l := newMockedLocalizer(t).
@@ -662,9 +630,7 @@ func TestEmbedBuilder_WithField(t *testing.T) {
 		Inline: false,
 	}
 
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
+	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
 	actual, err := NewBuilder().
 		WithField(field.Name, field.Value).
@@ -681,9 +647,7 @@ func TestEmbedBuilder_WithFieldl(t *testing.T) {
 		Inline: false,
 	}
 
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
+	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
 	l := newMockedLocalizer(t).
 		on("a", field.Name).
@@ -705,9 +669,7 @@ func TestEmbedBuilder_WithFieldlt(t *testing.T) {
 		Inline: false,
 	}
 
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
+	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
 	l := newMockedLocalizer(t).
 		on("a", field.Name).
@@ -729,9 +691,7 @@ func TestEmbedBuilder_WithInlinedField(t *testing.T) {
 		Inline: true,
 	}
 
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
+	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
 	actual, err := NewBuilder().
 		WithInlinedField(field.Name, field.Value).
@@ -748,9 +708,7 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 		Inline: true,
 	}
 
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
+	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
 	l := newMockedLocalizer(t).
 		on("a", field.Name).
@@ -772,9 +730,7 @@ func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
 		Inline: true,
 	}
 
-	expect := discord.Embed{
-		Fields: []discord.EmbedField{field},
-	}
+	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
 	l := newMockedLocalizer(t).
 		on("a", field.Name).

@@ -22,14 +22,10 @@ func TestMiddlewareManager_AddMiddleware(t *testing.T) {
 		func(*state.State, *state.MessageUpdateEvent) {},
 		func(*state.State, *state.MessageUpdateEvent) error { return nil },
 		func(next CommandFunc) CommandFunc {
-			return func(*state.State, *plugin.Context) error {
-				return nil
-			}
+			return func(*state.State, *plugin.Context) error { return nil }
 		},
 		MiddlewareFunc(func(next CommandFunc) CommandFunc {
-			return func(*state.State, *plugin.Context) error {
-				return nil
-			}
+			return func(*state.State, *plugin.Context) error { return nil }
 		}),
 	}
 

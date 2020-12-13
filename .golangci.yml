@@ -60,7 +60,7 @@ issues:
       source: \w\.\(\*?\w+\)\.\w+
     - linters:
         - lll
-      source: //nolint
+      source: //(?:nolint|go)
     # io.EOF and sql.ErrNoRows should, by doc, never be wrapped
     - linters:
         - errorlint

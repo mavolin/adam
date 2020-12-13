@@ -19,7 +19,7 @@ type InsufficientPermissionsError struct {
 	MissingPermissions discord.Permissions
 }
 
-var DefaultInsufficientPermissionsError = new(InsufficientPermissionsError)
+var DefaultInsufficientPermissionsError Error = new(InsufficientPermissionsError)
 
 // NewInsufficientPermissionError creates a new InsufficientPermissionsError
 // with the passed missing permissions.
@@ -97,25 +97,26 @@ func (e *InsufficientPermissionsError) Is(target error) bool {
 }
 
 // Handle handles the InsufficientPermissionsError.
-// By default it sends an error embed stating the missing permissions.
-func (e *InsufficientPermissionsError) Handle(s *state.State, ctx *plugin.Context) {
-	HandleInsufficientPermissionsError(e, s, ctx)
+// By default it sends an error Embed stating the missing permissions.
+func (e *InsufficientPermissionsError) Handle(s *state.State, ctx *plugin.Context) error {
+	return HandleInsufficientPermissionsError(e, s, ctx)
 }
 
 var HandleInsufficientPermissionsError = func(
 	ierr *InsufficientPermissionsError, _ *state.State, ctx *plugin.Context,
-) {
+) error {
 	embed := ErrorEmbed.Clone().
 		WithDescription(ierr.Description(ctx.Localizer))
 
 	if !ierr.IsSinglePermission() {
 		perms, err := ctx.Localize(insufficientPermissionsMissingPermissionsFieldName)
 		if err != nil {
-			return
+			return err
 		}
 
 		embed.WithField(perms, ierr.PermissionList(ctx.Localizer))
 	}
 
-	_, _ = ctx.ReplyEmbedBuilder(embed)
+	_, err := ctx.ReplyEmbedBuilder(embed)
+	return err
 }

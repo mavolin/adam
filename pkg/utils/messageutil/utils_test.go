@@ -18,9 +18,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 	e := &state.MessageCreateEvent{
 		Base: state.NewBase(),
 		MessageCreateEvent: &gateway.MessageCreateEvent{
-			Message: discord.Message{
-				Content: "abc",
-			},
+			Message: discord.Message{Content: "abc"},
 		},
 	}
 	e.Base.Set("abc", "def")

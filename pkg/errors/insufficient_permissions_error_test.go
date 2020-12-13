@@ -6,6 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -15,20 +16,14 @@ func TestNewInsufficientBotPermissionsError(t *testing.T) {
 	t.Run("regular permissions", func(t *testing.T) {
 		perms := discord.PermissionViewChannel | discord.PermissionManageEmojis
 
-		expect := &InsufficientPermissionsError{
-			MissingPermissions: perms,
-		}
-
+		expect := &InsufficientPermissionsError{MissingPermissions: perms}
 		actual := NewInsufficientPermissionsError(perms)
 
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("regular permissions", func(t *testing.T) {
-		expect := &InsufficientPermissionsError{
-			MissingPermissions: discord.PermissionAdministrator,
-		}
-
+		expect := &InsufficientPermissionsError{MissingPermissions: discord.PermissionAdministrator}
 		actual := NewInsufficientPermissionsError(discord.PermissionViewChannel | discord.PermissionAdministrator)
 
 		assert.Equal(t, expect, actual)
@@ -83,7 +78,8 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 		e := NewInsufficientPermissionsError(discord.PermissionStream)
 
-		e.Handle(s, ctx)
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
 	})
 
 	t.Run("multiple permissions", func(t *testing.T) {
@@ -109,6 +105,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 		e := NewInsufficientPermissionsError(discord.PermissionViewAuditLog | discord.PermissionStream)
 
-		e.Handle(s, ctx)
+		err := e.Handle(s, ctx)
+		require.NoError(t, err)
 	})
 }

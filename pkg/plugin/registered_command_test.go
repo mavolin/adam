@@ -22,10 +22,8 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			{
 				ProviderName: "",
 				Modules:      nil,
-				Commands: []Command{
-					mockCommand{name: "abc"},
-				},
-				Defaults: defaults,
+				Commands:     []Command{mockCommand{name: "abc"}},
+				Defaults:     defaults,
 			},
 		}
 
@@ -109,15 +107,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 		repos := []Repository{
 			{
 				ProviderName: "abc",
-				Commands: []Command{
-					mockCommand{name: "def"},
-				},
+				Commands:     []Command{mockCommand{name: "def"}},
 			},
 			{
 				ProviderName: "ghi",
-				Commands: []Command{
-					mockCommand{name: "def"},
-				},
+				Commands:     []Command{mockCommand{name: "def"}},
 			},
 		}
 
@@ -141,15 +135,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 		repos := []Repository{
 			{
 				ProviderName: "ghi",
-				Commands: []Command{
-					mockCommand{name: "jkl"},
-				},
+				Commands:     []Command{mockCommand{name: "jkl"}},
 			},
 			{
 				ProviderName: "abc",
-				Commands: []Command{
-					mockCommand{name: "def"},
-				},
+				Commands:     []Command{mockCommand{name: "def"}},
 			},
 		}
 
@@ -180,15 +170,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 		repos := []Repository{
 			{
 				ProviderName: "abc",
-				Commands: []Command{
-					mockCommand{name: "def"},
-				},
+				Commands:     []Command{mockCommand{name: "def"}},
 			},
 			{
 				ProviderName: "ghi",
-				Commands: []Command{
-					mockCommand{name: "def"}, // duplicate
-				},
+				Commands:     []Command{mockCommand{name: "def"}}, // duplicate
 			},
 		}
 
@@ -291,11 +277,7 @@ func TestRegisteredCommand_LongDescription(t *testing.T) {
 func TestRegisteredCommand_Examples(t *testing.T) {
 	expect := []string{"abc", "def"}
 
-	rcmd := &RegisteredCommand{
-		Source: mockCommand{
-			examples: expect,
-		},
-	}
+	rcmd := &RegisteredCommand{Source: mockCommand{examples: expect}}
 
 	actual := rcmd.Examples(nil)
 	assert.Equal(t, expect, actual)

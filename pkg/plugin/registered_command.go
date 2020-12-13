@@ -9,6 +9,8 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
+var BuiltIn = "built_in"
+
 // RegisteredCommand is the abstraction of a command as returned by a Provider.
 // In contrast to the regular command abstraction, RegisteredCommand will
 // return data that takes into account it's parents settings.
@@ -22,7 +24,7 @@ type RegisteredCommand struct {
 	//
 	// If the command is built-in, ProviderName will be set to 'built_in'.
 	ProviderName string
-	// Sources is the original Command this command is based on.
+	// Source is the original Command this command is based on.
 	Source Command
 	// SourceParents contains the original parent Modules in ascending order
 	// from lowest order to the closest parent.

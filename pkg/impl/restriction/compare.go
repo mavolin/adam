@@ -36,9 +36,9 @@ func (e *EmbeddableError) Error() string                            { return e.D
 // All asserts that all of the passed plugin.RestrictionFuncs return nil.
 // If not, it will create an error containing a list of all missing
 // requirements using the returned errors.
-// For this list to be created, the error must either be of type
-// *errors.RestrictionError or *EmbeddableError, or must be a nested All or
-// Any.
+// This list can only be created, if the returned errors are of type
+// *errors.RestrictionError or *EmbeddableError, or are error lists returned by
+// nested Alls or Anys.
 func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:gocognit
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
@@ -130,9 +130,9 @@ func Allf(returnError error, funcs ...plugin.RestrictionFunc) plugin.Restriction
 // no error.
 // If not it will return a list of the needed requirements using the returned
 // errors.
-// For this list to be created, the error must either be of type
-// *errors.RestrictionError or *EmbeddableError, or must be a nested All or
-// Any.
+// This list can only be created, if the returned errors are of type
+// *errors.RestrictionError or *EmbeddableError, or are error lists returned by
+// nested Alls or Anys.
 func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {

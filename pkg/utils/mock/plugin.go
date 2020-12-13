@@ -17,9 +17,7 @@ var _ plugin.Throttler = new(Throttler)
 // NewThrottler creates a new mocked Throttler with the given return value
 // for check.
 func NewThrottler(checkReturn error) *Throttler {
-	return &Throttler{
-		checkReturn: checkReturn,
-	}
+	return &Throttler{checkReturn: checkReturn}
 }
 
 func (t *Throttler) Check(*state.State, *plugin.Context) (func(), error) {

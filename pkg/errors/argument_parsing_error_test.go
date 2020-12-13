@@ -48,6 +48,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 	var channelID discord.ChannelID = 123
 
 	m, s := state.NewMocker(t)
+	defer m.Eval()
 
 	ctx := &plugin.Context{
 		Message:   discord.Message{ChannelID: channelID},
@@ -66,7 +67,6 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 
 	e := NewArgumentParsingError(expectDesc)
 
-	e.Handle(nil, ctx)
-
-	m.Eval()
+	err := e.Handle(s, ctx)
+	require.NoError(t, err)
 }

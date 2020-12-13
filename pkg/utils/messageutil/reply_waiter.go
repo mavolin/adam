@@ -94,7 +94,7 @@ func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 // NewReplyWaiterFromDefault creates a new default waiter using the DefaultReplyWaiter
 // variable as a template.
 func NewReplyWaiterFromDefault(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
-	w = DefaultReplyWaiter.Copy()
+	w = DefaultReplyWaiter.Clone()
 	w.state = s
 	w.ctx = ctx
 	w.userID = ctx.Author.ID
@@ -223,8 +223,8 @@ func (w *ReplyWaiter) WithMaxTimeout(max time.Duration) *ReplyWaiter {
 	return w
 }
 
-// Copy creates a copy of the ReplyWaiter.
-func (w *ReplyWaiter) Copy() (cp *ReplyWaiter) {
+// Clone creates a deep copy of the ReplyWaiter.
+func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 	cp = &ReplyWaiter{
 		caseSensitive: w.caseSensitive,
 		noAutoReact:   w.noAutoReact,

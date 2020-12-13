@@ -59,7 +59,7 @@ This of course only applies if the function is testable.
 ### Code Style
 
 Make sure all code is `gofmt -s`'ed, and passes the golangci-lint checks.
-If your code fails a lint task but the way you did it is justified, add a `//nolint` comment to the line or block.
+If your code fails a lint task, but the way you did it is justified, add a `//nolint:{{name_of_linter}}` comment to the line or block.
 
 ### Testing
 

@@ -11,28 +11,6 @@ import (
 )
 
 // Tracker is a plugin.Replier that tracks the messages that were sent.
-//
-// Usage
-//
-// The tracker should be used in a middleware.
-// Make sure that no middleware before the one using tracker sends message.
-//
-// In the middleware replace the Replier of the Context call next and then
-// handle the results.
-//
-// 		func(next bot.CommandFunc) bot.CommandFunc {
-//			return func(s *state.State, ctx *plugin.Context) error {
-//				t := NewTracker(s, ctx.Author.ID, ctx.ChannelID)
-//				ctx.Replier = t
-//
-//				err := next(s, ctx)
-//				if err != nil {
-//					return err
-//				}
-//
-//				// do something with t.DMs() and t.GuildMessages()
-//			}
-//		}
 type Tracker struct {
 	s *state.State
 
