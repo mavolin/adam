@@ -20,13 +20,13 @@ func (e *TimeoutError) As(target interface{}) bool {
 	case **errors.UserInfo:
 		*err = errors.NewUserInfol(timeoutInfo.
 			WithPlaceholders(timeoutInfoPlaceholders{
-				ResponseUserMention: e.UserID.Mention(),
+				Mention: e.UserID.Mention(),
 			}))
 		return true
 	case *errors.Error:
 		*err = errors.NewUserInfol(timeoutInfo.
 			WithPlaceholders(timeoutInfoPlaceholders{
-				ResponseUserMention: e.UserID.Mention(),
+				Mention: e.UserID.Mention(),
 			}))
 		return true
 	default:

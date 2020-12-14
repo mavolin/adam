@@ -22,3 +22,31 @@ func stackTrace(err error, skip int) (stack []uintptr) {
 
 	return
 }
+
+// retrieveCause retrieves the cause of the passed error, and returns it
+// alongside the stack trace.
+func retrieveCause(err error) (cause error, stack []uintptr, ok bool) { //nolint:golint,stylecheck
+	var eerr Error
+	eerrOk := As(err, &eerr)
+	if eerrOk {
+		err = eerr
+	}
+
+	switch err := err.(type) { //nolint:errorlint
+	case *SilentError:
+		cause = err.cause
+		stack = err.stack
+	case *InternalError:
+		cause = err.cause
+		stack = err.stack
+	default:
+		if eerrOk { // another Error, ignore
+			return eerr, nil, false
+		}
+
+		cause = err
+		stack = stackTrace(err, 2)
+	}
+
+	return cause, stack, true
+}

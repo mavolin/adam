@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/diamondburned/arikawa/discord"
@@ -15,6 +14,56 @@ import (
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
+type asError struct {
+	as Error
+}
+
+func (a *asError) As(target interface{}) bool {
+	if err, ok := target.(*Error); ok {
+		*err = a.as
+		return true
+	}
+
+	return false
+}
+
+func (a *asError) Error() string {
+	return "asError"
+}
+
+func TestNewInternalError(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := NewInternalError(nil)
+		assert.Nil(t, err)
+	})
+
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
+
+		ierr := NewInternalError(cause).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		ierr := NewInternalError(cause).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		ierr := NewInternalError(cause).(*InternalError)
+
+		assert.Equal(t, cause, ierr.cause)
+	})
+}
+
 func TestWithStack(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
 		err := WithStack(nil)
@@ -22,33 +71,37 @@ func TestWithStack(t *testing.T) {
 	})
 
 	t.Run("silent error", func(t *testing.T) {
-		cause := New("abc")
+		cause := NewSilent("abc").(*SilentError)
 
-		err := WithStack(Silent(cause))
-		unwrapper := err.(interface {
-			Unwrap() error
-		})
+		ierr := WithStack(cause).(*InternalError)
 
-		assert.Equal(t, cause, unwrapper.Unwrap())
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		ierr := WithStack(cause).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		cause := NewWithStack("abc")
+		cause := &asError{as: NewInformationalError("abc")}
 
 		err := WithStack(cause)
 
-		assert.True(t, cause == err)
+		assert.Equal(t, cause.as, err)
 	})
 
-	t.Run("not handler", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		cause := New("abc")
 
-		err := WithStack(cause)
-		unwrapper := err.(interface {
-			Unwrap() error
-		})
+		ierr := WithStack(cause).(*InternalError)
 
-		assert.Equal(t, cause, unwrapper.Unwrap())
+		assert.Equal(t, cause, ierr.cause)
 	})
 }
 
@@ -58,16 +111,44 @@ func TestWrap(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("not nil", func(t *testing.T) {
-		var (
-			cause   = New("abc")
-			message = "def"
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
 
-		err := Wrap(cause, message)
+		expectMsg := "def"
 
-		//goland:noinspection GoNilness
-		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
+		ierr := Wrap(cause, expectMsg).(*InternalError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		expectMsg := "def"
+
+		ierr := Wrap(cause, expectMsg).(*InternalError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		cause := &asError{as: NewInformationalError("abc")}
+
+		err := Wrap(cause, "def")
+
+		assert.Equal(t, cause.as, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		expectMsg := "def"
+
+		ierr := Wrap(cause, expectMsg).(*InternalError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause}, ierr.cause)
 	})
 }
 
@@ -77,16 +158,44 @@ func TestWrapf(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("not nil", func(t *testing.T) {
-		var (
-			cause   = New("abc")
-			message = "def ghi"
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
+
+		expectMsg := "def ghi"
+
+		ierr := Wrapf(cause, "def %s", "ghi").(*InternalError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		expectMsg := "def ghi"
+
+		ierr := Wrapf(cause, "def %s", "ghi").(*InternalError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		cause := &asError{as: NewInformationalError("abc")}
 
 		err := Wrapf(cause, "def %s", "ghi")
 
-		//goland:noinspection GoNilness
-		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
+		assert.Equal(t, cause.as, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		expectMsg := "def ghi"
+
+		ierr := Wrapf(cause, "def %s", "ghi").(*InternalError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause}, ierr.cause)
 	})
 }
 
@@ -96,26 +205,47 @@ func TestWithDescription(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("internal error", func(t *testing.T) {
-		var (
-			cause = new(InternalError)
-			desc  = "abc"
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
 
-		err := WithDescription(cause, desc)
-		assert.True(t, err == cause)
-		assert.Equal(t, i18nutil.NewText(desc), err.(*InternalError).desc)
+		expectDesc := "def"
+
+		ierr := WithDescription(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
-	t.Run("normal error", func(t *testing.T) {
-		var (
-			cause = New("abc")
-			desc  = "def"
-		)
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
 
-		err := WithDescription(cause, desc)
-		assert.Equal(t, cause, err.(*InternalError).cause)
-		assert.Equal(t, i18nutil.NewText(desc), err.(*InternalError).desc)
+		expectDesc := "def"
+
+		ierr := WithDescription(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		cause := &asError{as: NewInformationalError("abc")}
+
+		err := WithDescription(cause, "def")
+
+		assert.Equal(t, cause.as, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		expectDesc := "def"
+
+		ierr := WithDescription(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, cause, ierr.cause)
 	})
 }
 
@@ -125,26 +255,47 @@ func TestWithDescriptionf(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("internal error", func(t *testing.T) {
-		var (
-			cause = new(InternalError)
-			desc  = "abc def"
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
 
-		err := WithDescriptionf(cause, "abc %s", "def")
-		assert.True(t, err == cause)
-		assert.Equal(t, i18nutil.NewText(desc), cause.desc)
+		expectDesc := "def"
+
+		ierr := WithDescription(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
-	t.Run("normal error", func(t *testing.T) {
-		var (
-			cause = New("abc")
-			desc  = "def ghi"
-		)
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		expectDesc := "def ghi"
+
+		ierr := WithDescriptionf(cause, "def %s", "ghi").(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		cause := &asError{as: NewInformationalError("abc")}
 
 		err := WithDescriptionf(cause, "def %s", "ghi")
-		assert.Equal(t, cause, err.(*InternalError).cause)
-		assert.Equal(t, i18nutil.NewText(desc), err.(*InternalError).desc)
+
+		assert.Equal(t, cause.as, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		expectDesc := "def ghi"
+
+		ierr := WithDescriptionf(cause, "def %s", "ghi").(*InternalError)
+
+		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, cause, ierr.cause)
 	})
 }
 
@@ -154,26 +305,47 @@ func TestWithDescriptionl(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("internal error", func(t *testing.T) {
-		var (
-			cause = new(InternalError)
-			desc  = i18n.NewTermConfig("abc")
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
 
-		err := WithDescriptionl(cause, desc)
-		assert.True(t, err == cause)
-		assert.Equal(t, i18nutil.NewTextl(desc), cause.desc)
+		expectDesc := i18n.NewTermConfig("def")
+
+		ierr := WithDescriptionl(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewTextl(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
-	t.Run("normal error", func(t *testing.T) {
-		var (
-			cause = New("abc")
-			desc  = i18n.NewTermConfig("def")
-		)
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
 
-		err := WithDescriptionl(cause, desc)
-		assert.Equal(t, cause, err.(*InternalError).cause)
-		assert.Equal(t, i18nutil.NewTextl(desc), err.(*InternalError).desc)
+		expectDesc := i18n.NewTermConfig("def")
+
+		ierr := WithDescriptionl(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewTextl(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		cause := &asError{as: NewInformationalError("abc")}
+
+		err := WithDescriptionl(cause, i18n.NewTermConfig("def"))
+
+		assert.Equal(t, cause.as, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		expectDesc := i18n.NewTermConfig("def")
+
+		ierr := WithDescriptionl(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, i18nutil.NewTextl(expectDesc), ierr.desc)
+		assert.Equal(t, cause, ierr.cause)
 	})
 }
 
@@ -183,26 +355,47 @@ func TestWithDescriptionlt(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("internal error", func(t *testing.T) {
-		var (
-			cause           = new(InternalError)
-			desc  i18n.Term = "abc"
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
 
-		err := WithDescriptionlt(cause, desc)
-		assert.True(t, err == cause)
-		assert.Equal(t, i18nutil.NewTextl(desc.AsConfig()), cause.desc)
+		var expectDesc i18n.Term = "def"
+
+		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewTextlt(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
-	t.Run("normal error", func(t *testing.T) {
-		var (
-			cause           = New("abc")
-			desc  i18n.Term = "def"
-		)
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
 
-		err := WithDescriptionlt(cause, desc)
-		assert.Equal(t, cause, err.(*InternalError).cause)
-		assert.Equal(t, i18nutil.NewTextl(desc.AsConfig()), err.(*InternalError).desc)
+		var expectDesc i18n.Term = "def"
+
+		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, i18nutil.NewTextlt(expectDesc), ierr.desc)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		cause := &asError{as: NewInformationalError("abc")}
+
+		err := WithDescriptionlt(cause, "def")
+
+		assert.Equal(t, cause.as, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		var expectDesc i18n.Term = "def"
+
+		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
+
+		assert.Equal(t, i18nutil.NewTextlt(expectDesc), ierr.desc)
+		assert.Equal(t, cause, ierr.cause)
 	})
 }
 

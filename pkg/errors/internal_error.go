@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mavolin/disstate/v2/pkg/state"
-	"github.com/mavolin/logstract/pkg/logstract"
+	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -30,12 +30,41 @@ type InternalError struct {
 
 var _ Error = new(InternalError)
 
+// NewInternalError creates a new *InternalError from the passed error.
+//
+// If cause is a *SilentError or an *InternalError, NewInternalError will
+// unwrap it first.
+// In any other case, NewInternalError will use the cause as is.
+func NewInternalError(cause error) error {
+	if cause == nil {
+		return nil
+	}
+
+	var stack []uintptr
+
+	if serr, ok := cause.(*SilentError); ok { //nolint:errorlint
+		cause = serr.Unwrap()
+		stack = serr.stack
+	} else if ierr, ok := cause.(*InternalError); ok { //nolint:errorlint
+		return ierr
+	} else {
+		stack = stackTrace(cause, 1)
+	}
+
+	return &InternalError{
+		cause: cause,
+		stack: stack,
+	}
+}
+
 // WithStack returns a new InternalError using the callers stack trace.
 //
-// If the error is a *SilentError, WithStack will unwrap it first.
+// If the error is a *SilentError or an *InternalError, WithStack will unwrap
+// it first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, WithStack will return the converted error instead.
 //
-// In case the error is nil or another Error type, WithStack will return the
-// error as is.
+// In case the error is nil, WithStack will return the error as is.
 //
 // If the passed error already provides a stack trace via a
 // err.StackTrace() []uintptr method, WithStack will use that stack trace when
@@ -46,8 +75,12 @@ func WithStack(err error) error {
 
 // withStack enriches the passed error with a stack trace.
 //
-// If the error is nil or it is another Error expect *SilentError, withStack
-// will return the error as is.
+// If the error is a *SilentError or an *InternalError, withStack will unwrap
+// it first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, withStack will return the converted error instead.
+//
+// In case the error is nil, withStack will return the error as is.
 //
 // If the passed error already provides a stack trace via a
 // err.StackTrace() []uintptr method, WithStack will use that stack trace when
@@ -57,16 +90,14 @@ func withStack(err error) error {
 		return nil
 	}
 
-	switch typedErr := err.(type) { //nolint:errorlint
-	case *SilentError:
-		err = typedErr.Unwrap()
-	case Error:
+	err, stack, ok := retrieveCause(err)
+	if !ok {
 		return err
 	}
 
 	return &InternalError{
 		cause: err,
-		stack: stackTrace(err, 2),
+		stack: stack,
 		desc:  i18nutil.NewTextl(defaultInternalDesc),
 	}
 }
@@ -83,8 +114,12 @@ func (e *messageError) Unwrap() error { return e.cause }
 // Wrap wraps the passed error with the passed message and enriches it with a
 // stack trace.
 //
-// If the passed error is an *InternalError or a *SilentError, Wrap will unwrap
-// it first.
+// If the error is a *SilentError or an *InternalError, Wrap will unwrap it
+// first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, Wrap will return the converted error instead.
+//
+// In case the error is nil, Wrap will return the error as is.
 //
 // The returned error will print as '$message: $err.Error()'.
 func Wrap(err error, message string) error {
@@ -92,13 +127,9 @@ func Wrap(err error, message string) error {
 		return nil
 	}
 
-	stack := stackTrace(err, 1)
-
-	switch typedErr := err.(type) { //nolint:errorlint
-	case *SilentError:
-		err = typedErr.Unwrap()
-	case *InternalError:
-		err = typedErr.Unwrap()
+	err, stack, ok := retrieveCause(err)
+	if !ok {
+		return err
 	}
 
 	return &InternalError{
@@ -114,8 +145,13 @@ func Wrap(err error, message string) error {
 // Wrapf wraps the passed error using the formatted passed message, and
 // enriches the new error with a stack trace.
 //
-// If the passed error is an *InternalError or a *SilentError, Wrapf will unwrap
-// it first.
+// If the error is a *SilentError or an *InternalError, Wrapf will unwrap it
+// first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, Wrapf will return the converted error instead.
+//
+// In case the error is nil, Wrapf will return the error as is.
+//
 // The returned error will print as
 // '$fmt.Sprintf(format, args...): $err.Error()'.
 func Wrapf(err error, format string, args ...interface{}) error {
@@ -123,13 +159,9 @@ func Wrapf(err error, format string, args ...interface{}) error {
 		return nil
 	}
 
-	stack := stackTrace(err, 1)
-
-	switch typedErr := err.(type) { //nolint:errorlint
-	case *SilentError:
-		err = typedErr.Unwrap()
-	case *InternalError:
-		err = typedErr.Unwrap()
+	err, stack, ok := retrieveCause(err)
+	if !ok {
+		return err
 	}
 
 	return &InternalError{
@@ -138,7 +170,6 @@ func Wrapf(err error, format string, args ...interface{}) error {
 			cause: err,
 		},
 		stack: stack,
-		desc:  i18nutil.NewTextl(defaultInternalDesc),
 	}
 }
 
@@ -148,6 +179,13 @@ func Wrapf(err error, format string, args ...interface{}) error {
 // If the passed description is empty, the error will use the default
 // description.
 //
+// If the error is a *SilentError or an *InternalError, WithDescription will
+// unwrap it first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, WithDescription will return the converted error instead.
+//
+// In case the error is nil, WithDescription will return the error as is.
+//
 // If the passed error is a *SilentError or an *InternalError, WithDescription
 // will unwrap it first.
 func WithDescription(err error, description string) error {
@@ -155,14 +193,9 @@ func WithDescription(err error, description string) error {
 		return nil
 	}
 
-	stack := stackTrace(err, 1)
-
-	switch typedErr := err.(type) { //nolint:errorlint
-	case *SilentError:
-		err = typedErr.Unwrap()
-	case *InternalError:
-		typedErr.desc = i18nutil.NewText(description)
-		return typedErr
+	err, stack, ok := retrieveCause(err)
+	if !ok {
+		return err
 	}
 
 	return &InternalError{
@@ -172,24 +205,23 @@ func WithDescription(err error, description string) error {
 	}
 }
 
-// WithDescription creates a new *InternalError from the passed error using the
+// WithDescriptionf creates a new *InternalError from the passed error using the
 // formatted description.
 //
-// If the passed error is a *SilentError or an *InternalError, WithDescriptionf
-// will unwrap it first.
+// If the error is a *SilentError or an *InternalError, WithDescriptionf will
+// unwrap it first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, WithDescriptionf will return the converted error instead.
+//
+// In case the error is nil, WithDescriptionf will return the error as is.
 func WithDescriptionf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
 	}
 
-	stack := stackTrace(err, 1)
-
-	switch typedErr := err.(type) { //nolint:errorlint
-	case *SilentError:
-		err = typedErr.Unwrap()
-	case *InternalError:
-		typedErr.desc = i18nutil.NewText(fmt.Sprintf(format, args...))
-		return typedErr
+	err, stack, ok := retrieveCause(err)
+	if !ok {
+		return err
 	}
 
 	return &InternalError{
@@ -202,21 +234,20 @@ func WithDescriptionf(err error, format string, args ...interface{}) error {
 // WithDescriptionl creates a new *InternalError from the passed cause using
 // the localized description.
 //
-// If the passed error is a *SilentError or an *InternalError, WithDescriptionl
-// will unwrap it first.
+// If the error is a *SilentError or an *InternalError, WithDescriptionl will
+// unwrap it first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, WithDescriptionl will return the converted error instead.
+//
+// In case the error is nil, WithDescriptionl will return the error as is.
 func WithDescriptionl(err error, description *i18n.Config) error {
 	if err == nil {
 		return nil
 	}
 
-	stack := stackTrace(err, 1)
-
-	switch typedErr := err.(type) { //nolint:errorlint
-	case *SilentError:
-		err = typedErr.Unwrap()
-	case *InternalError:
-		typedErr.desc = i18nutil.NewTextl(description)
-		return typedErr
+	err, stack, ok := retrieveCause(err)
+	if !ok {
+		return err
 	}
 
 	return &InternalError{
@@ -229,21 +260,20 @@ func WithDescriptionl(err error, description *i18n.Config) error {
 // WithDescriptionlt creates an internal error from the passed cause using the
 // message generated from the passed term.
 //
-// If the passed error is a *SilentError or an *InternalError,
-// WithDescriptionlt will unwrap it first.
+// If the error is a *SilentError or an *InternalError, WithDescriptionlt will
+// unwrap it first.
+// If the error isn't a *SilentError or an *InternalError, but fulfills As for
+// Error, WithDescriptionlt will return the converted error instead.
+//
+// In case the error is nil, WithDescriptionlt will return the error as is.
 func WithDescriptionlt(err error, description i18n.Term) error {
 	if err == nil {
 		return nil
 	}
 
-	stack := stackTrace(err, 1)
-
-	switch typedErr := err.(type) { //nolint:errorlint
-	case *SilentError:
-		err = typedErr.Unwrap()
-	case *InternalError:
-		typedErr.desc = i18nutil.NewTextlt(description)
-		return typedErr
+	err, stack, ok := retrieveCause(err)
+	if !ok {
+		return err
 	}
 
 	return &InternalError{
@@ -299,8 +329,8 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 		}
 	}
 
-	logstract.
-		WithFields(logstract.Fields{
+	log.
+		WithFields(log.Fields{
 			"cmd_ident": ctx.InvokedCommand.Identifier,
 			"err":       ierr.cause,
 		}).
