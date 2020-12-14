@@ -54,11 +54,11 @@ var (
 )
 
 var (
-	// VoiceChannelCancelEmoji is the emoji used as cancel emoji in a VoiceChannel
-	// chooser embed.
+	// VoiceChannelCancelEmoji is the emoji used as cancel emoji in a
+	// VoiceChannel chooser embed.
 	VoiceChannelCancelEmoji = emojiutil.CrossMarkButton
-	// VoiceChannelOptionEmojis are the emojis used as options in a VoiceChannel
-	// chooser embed.
+	// VoiceChannelOptionEmojis are the emojis used as options in a
+	// VoiceChannel chooser embed.
 	// It must contain at least 2 emojis.
 	VoiceChannelOptionEmojis = []api.Emoji{
 		emojiutil.Keycap1, emojiutil.Keycap2, emojiutil.Keycap3, emojiutil.Keycap4, emojiutil.Keycap5,
@@ -618,7 +618,7 @@ func (c voiceChannel) sendChooser( //nolint:dupl
 	return partialMatches[i-len(fullMatches)].channel, nil
 }
 
-func (c voiceChannel) genChooserEmbed( //nolint:dupl
+func (c voiceChannel) genChooserEmbed( //nolint:dupl,funlen
 	ctx *Context, fullMatches, partialMatches []voiceMatch,
 ) (chooser *embedutil.Builder, numMatches int, err error) {
 	chooser = VoiceChannelChooserBuilder.Clone().
