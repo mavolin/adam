@@ -31,6 +31,8 @@ type Bot struct {
 	*MiddlewareManager
 }
 
+// New creates a new Bot from the passed options.
+// The Options.Token field must be set.
 func New(o Options) (*Bot, error) {
 	b := new(Bot)
 
@@ -76,4 +78,23 @@ func New(o Options) (*Bot, error) {
 	b.PanicHandler = o.PanicHandler
 
 	return b, nil
+}
+
+// Open opens a connection to the gateway and starts the bot.
+func (b *Bot) Open() error {
+	if b.State.Gateway.Identifier.Intents == 0 {
+		// todo: derive intents
+		b.AddIntents(gateway.IntentGuilds)
+	}
+
+	if err := b.State.Open(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AddIntents adds the passed gateway.Intents to the bot.
+func (b *Bot) AddIntents(i gateway.Intents) {
+	b.State.Gateway.AddIntent(i)
 }
