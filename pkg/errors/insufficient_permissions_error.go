@@ -21,6 +21,9 @@ type InsufficientPermissionsError struct {
 
 var DefaultInsufficientPermissionsError Error = new(InsufficientPermissionsError)
 
+// allPermissions except admin
+var allPerms = discord.PermissionAll ^ discord.PermissionAdministrator
+
 // NewInsufficientPermissionError creates a new InsufficientPermissionsError
 // with the passed missing permissions.
 //
@@ -29,20 +32,13 @@ var DefaultInsufficientPermissionsError Error = new(InsufficientPermissionsError
 //
 // If missing is 0, a generic error message will be used.
 func NewInsufficientPermissionsError(missing discord.Permissions) *InsufficientPermissionsError {
-	// if we require Administrator, we will automatically receive all other
-	// permissions once we get it
-	if missing.Has(discord.PermissionAdministrator) {
-		missing = discord.PermissionAdministrator
-	}
-
-	return &InsufficientPermissionsError{
-		MissingPermissions: missing,
-	}
+	return &InsufficientPermissionsError{MissingPermissions: missing}
 }
 
 // IsSinglePermission checks if only a single permission is missing.
 func (e *InsufficientPermissionsError) IsSinglePermission() bool {
-	return (e.MissingPermissions & (e.MissingPermissions - 1)) == 0
+	return e.MissingPermissions.Has(discord.PermissionAdministrator) || e.MissingPermissions.Has(allPerms) ||
+		(e.MissingPermissions&(e.MissingPermissions-1)) == 0
 }
 
 // Description returns the description of the error and localizes it, if
@@ -57,8 +53,16 @@ func (e *InsufficientPermissionsError) Description(l *i18n.Localizer) (desc stri
 		return desc
 	}
 
+	missing := e.MissingPermissions
+
+	// if we require Administrator, we will automatically receive all other
+	// permissions once we get it
+	if missing.Has(discord.PermissionAdministrator) || missing.Has(allPerms) {
+		missing = discord.PermissionAdministrator
+	}
+
 	if e.IsSinglePermission() {
-		missingNames := permutil.Namesl(e.MissingPermissions, l)
+		missingNames := permutil.Namesl(missing, l)
 		if len(missingNames) == 0 {
 			return ""
 		}
@@ -105,6 +109,12 @@ func (e *InsufficientPermissionsError) Handle(s *state.State, ctx *plugin.Contex
 var HandleInsufficientPermissionsError = func(
 	ierr *InsufficientPermissionsError, _ *state.State, ctx *plugin.Context,
 ) error {
+	// if this error arose because of a missing send messages permission,
+	// do nothing, as we can't send an error message
+	if ierr.MissingPermissions.Has(discord.PermissionSendMessages) {
+		return nil
+	}
+
 	embed := ErrorEmbed.Clone().
 		WithDescription(ierr.Description(ctx.Localizer))
 
