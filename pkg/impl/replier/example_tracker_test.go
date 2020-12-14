@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleTracker() {
-	b := bot.New(bot.Options{Token: "abc"})
+	b, _ := bot.New(bot.Options{Token: "abc"})
 
 	// A tracker is typically added to a Context through a middleware.
 	// Make sure that the middleware replacing the default replier is executed

@@ -20,10 +20,10 @@ type Error interface {
 	// If an error occurs during handling, it should be returned.
 	// However, Handlers must make sure, that they don't infinitely return
 	// errors, i.e. the handler returns the same error it is supposed to handle
-	// either directly or while passing other errors.
+	// either directly or through other Errors.
 	//
 	// To prevent this from happening, errors that deal with internal errors
-	// should never return errors, or it should be made sure that only a finite
+	// should never return errors, or it must be made sure that only a finite
 	// error chain will arise.
 	Handle(s *state.State, ctx *plugin.Context) error
 }

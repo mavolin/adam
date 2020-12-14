@@ -355,12 +355,12 @@ type (
 		ChannelTypes ChannelTypes
 		// BotPermissions are the default permissions for Commands.
 		BotPermissions discord.Permissions
+		// Restrictions is the default restriction func.
+		Restrictions RestrictionFunc
 		// Throttler is the default global throttler.
 		// Note that the same Throttler will be shared across all commands that
 		// don't define a custom one.
 		Throttler Throttler
-		// Restrictions is the default restriction func.
-		Restrictions RestrictionFunc
 	}
 
 	// UnavailablePluginProvider contains information about an unavailable

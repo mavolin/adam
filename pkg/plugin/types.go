@@ -69,7 +69,9 @@ type Throttler interface {
 	// if the command is throttled.
 	// The returned error should be of type errors.ThrottlingError.
 	//
-	// The returned function will be called, if the command exits with an
-	// error and that error is not ignored as defined via the bots Options.
+	// If the returned function gets called, the command invoke should not be
+	// counted, e.g. if a Command returns with an error.
+	// This will be the case, if the ThrottlerErrorCheck function in the bot's
+	// Options returns true.
 	Check(*state.State, *Context) (func(), error)
 }
