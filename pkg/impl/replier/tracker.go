@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/disstate/v2/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -17,23 +18,17 @@ type Tracker struct {
 	dms     []discord.Message
 	dmMutex sync.RWMutex
 	dmID    discord.ChannelID
-	userID  discord.UserID
 
 	guildMessages      []discord.Message
 	guildMessagesMutex sync.RWMutex
-	guildChannelID     discord.ChannelID
 }
 
 var _ plugin.Replier = new(Tracker)
 
 // NewTracker creates a new tracker using the passed state, with the passed
 // invoking user and the passed guild channel.
-func NewTracker(s *state.State, invokingUserID discord.UserID, guildChannelID discord.ChannelID) *Tracker {
-	return &Tracker{
-		s:              s,
-		userID:         invokingUserID,
-		guildChannelID: guildChannelID,
-	}
+func NewTracker(s *state.State) *Tracker {
+	return &Tracker{s: s}
 }
 
 // GuildMessages returns the guild messages that were sent.
@@ -52,11 +47,20 @@ func (t *Tracker) DMs() (cp []discord.Message) {
 	return
 }
 
-func (t *Tracker) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
+func (t *Tracker) ReplyMessage(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
+	perms, err := ctx.SelfPermissions()
+	if err != nil {
+		return nil, err
+	}
+
+	if !perms.Has(discord.PermissionSendMessages) {
+		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+	}
+
 	t.guildMessagesMutex.Lock()
 	defer t.guildMessagesMutex.Unlock()
 
-	msg, err := t.s.SendMessageComplex(t.guildChannelID, data)
+	msg, err := t.s.SendMessageComplex(ctx.ChannelID, data)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +70,18 @@ func (t *Tracker) ReplyMessage(data api.SendMessageData) (*discord.Message, erro
 	return msg, nil
 }
 
-func (t *Tracker) ReplyDM(data api.SendMessageData) (*discord.Message, error) {
-	if !t.dmID.IsValid() {
-		c, err := t.s.CreatePrivateChannel(t.userID)
+func (t *Tracker) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
+	perms, err := ctx.SelfPermissions()
+	if err != nil {
+		return nil, err
+	}
+
+	if !perms.Has(discord.PermissionSendMessages) {
+		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+	}
+
+	if !t.dmID.IsValid() { // lazily load dm id
+		c, err := t.s.CreatePrivateChannel(ctx.Author.ID)
 		if err != nil {
 			return nil, err
 		}

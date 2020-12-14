@@ -182,11 +182,11 @@ func replierFromState(s *state.State, channelID discord.ChannelID, userID discor
 	}
 }
 
-func (r *wrappedReplier) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
+func (r *wrappedReplier) ReplyMessage(_ *Context, data api.SendMessageData) (*discord.Message, error) {
 	return r.s.SendMessageComplex(r.channelID, data)
 }
 
-func (r *wrappedReplier) ReplyDM(data api.SendMessageData) (*discord.Message, error) {
+func (r *wrappedReplier) ReplyDM(_ *Context, data api.SendMessageData) (*discord.Message, error) {
 	if !r.dmID.IsValid() {
 		c, err := r.s.CreatePrivateChannel(r.userID)
 		if err != nil {

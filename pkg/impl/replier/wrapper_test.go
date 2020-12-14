@@ -8,28 +8,45 @@ import (
 	"github.com/mavolin/disstate/v2/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func Test_wrappedReplier_ReplyMessage(t *testing.T) {
 	m, s := state.NewMocker(t)
 	defer m.Eval()
 
-	var channelID discord.ChannelID = 123
+	ctx := &plugin.Context{
+		Message: discord.Message{
+			ChannelID: 123,
+			Author:    discord.User{ID: 456},
+		},
+		DiscordDataProvider: mock.DiscordDataProvider{
+			ChannelReturn: &discord.Channel{},
+			GuildReturn: &discord.Guild{
+				Roles: []discord.Role{
+					{ID: 789, Permissions: discord.PermissionAdministrator},
+				},
+			},
+			SelfReturn: &discord.Member{RoleIDs: []discord.RoleID{789}},
+		},
+	}
 
-	r := WrapState(s, 0, channelID)
+	r := WrapState(s)
 
 	data := api.SendMessageData{Content: "abc"}
 
 	expect := discord.Message{
-		ID:        456,
-		ChannelID: channelID,
-		Author:    discord.User{ID: 789},
+		ID:        012,
+		ChannelID: ctx.ChannelID,
+		Author:    ctx.Author,
 		Content:   data.Content,
 	}
 
 	m.SendMessageComplex(data, expect)
 
-	actual, err := r.ReplyMessage(data)
+	actual, err := r.ReplyMessage(ctx, data)
 	require.NoError(t, err)
 	assert.Equal(t, expect, *actual)
 }
@@ -39,29 +56,39 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		m, s := state.NewMocker(t)
 		defer m.Eval()
 
-		var (
-			channelID discord.ChannelID = 123
-			userID    discord.UserID    = 456
-		)
+		ctx := &plugin.Context{
+			Message: discord.Message{Author: discord.User{ID: 123}},
+			DiscordDataProvider: mock.DiscordDataProvider{
+				ChannelReturn: &discord.Channel{},
+				GuildReturn: &discord.Guild{
+					Roles: []discord.Role{
+						{ID: 456, Permissions: discord.PermissionAdministrator},
+					},
+				},
+				SelfReturn: &discord.Member{RoleIDs: []discord.RoleID{456}},
+			},
+		}
 
-		r := WrapState(s, userID, 0)
+		var dmID discord.ChannelID = 789
+
+		r := WrapState(s)
 
 		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
-			ID:        789,
-			ChannelID: channelID,
-			Author:    discord.User{ID: userID},
+			ID:        012,
+			ChannelID: dmID,
+			Author:    ctx.Author,
 			Content:   data.Content,
 		}
 
 		m.CreatePrivateChannel(discord.Channel{
-			ID:           channelID,
-			DMRecipients: []discord.User{{ID: userID}},
+			ID:           dmID,
+			DMRecipients: []discord.User{ctx.Author},
 		})
 		m.SendMessageComplex(data, expect)
 
-		actual, err := r.ReplyDM(data)
+		actual, err := r.ReplyDM(ctx, data)
 		require.NoError(t, err)
 		assert.Equal(t, expect, *actual)
 	})
@@ -70,25 +97,38 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		m, s := state.NewMocker(t)
 		defer m.Eval()
 
-		var channelID discord.ChannelID = 123
+		ctx := &plugin.Context{
+			Message: discord.Message{Author: discord.User{ID: 123}},
+			DiscordDataProvider: mock.DiscordDataProvider{
+				ChannelReturn: &discord.Channel{},
+				GuildReturn: &discord.Guild{
+					Roles: []discord.Role{
+						{ID: 456, Permissions: discord.PermissionAdministrator},
+					},
+				},
+				SelfReturn: &discord.Member{RoleIDs: []discord.RoleID{456}},
+			},
+		}
+
+		var dmID discord.ChannelID = 789
 
 		r := &wrappedReplier{
 			s:    s,
-			dmID: channelID,
+			dmID: dmID,
 		}
 
 		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
-			ID:        456,
-			ChannelID: channelID,
-			Author:    discord.User{ID: 789},
+			ID:        012,
+			ChannelID: dmID,
+			Author:    ctx.Author,
 			Content:   data.Content,
 		}
 
 		m.SendMessageComplex(data, expect)
 
-		actual, err := r.ReplyDM(data)
+		actual, err := r.ReplyDM(ctx, data)
 		require.NoError(t, err)
 		assert.Equal(t, expect, *actual)
 	})

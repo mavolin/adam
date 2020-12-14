@@ -11,11 +11,6 @@ import (
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
-// ErrInsufficientSendPermissions is an informational error that signals
-// that a message wasn't sent, because the bot lacks permissions.
-// This error should not be handled.
-var ErrInsufficientSendPermissions = &informationalError{s: "insufficient permissions to send message"}
-
 // Context contains context information about a command.
 type Context struct {
 	// Message is the invoking message.
@@ -90,9 +85,7 @@ func (c *Context) IsBotOwner() bool {
 // Reply replies with the passed message in the channel the command was
 // originally sent in.
 func (c *Context) Reply(content string) (*discord.Message, error) {
-	return c.ReplyMessage(api.SendMessageData{
-		Content: content,
-	})
+	return c.ReplyMessage(api.SendMessageData{Content: content})
 }
 
 // Replyl replies with the message translated from the passed
@@ -115,9 +108,7 @@ func (c *Context) Replylt(term i18n.Term) (*discord.Message, error) {
 // ReplyEmbed replies with the passed discord.Embed in the channel the command
 // was originally sent in.
 func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
-	return c.ReplyMessage(api.SendMessageData{
-		Embed: &e,
-	})
+	return c.ReplyMessage(api.SendMessageData{Embed: &e})
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed
@@ -135,25 +126,14 @@ func (c *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, err
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	perms, err := c.SelfPermissions()
-	if err != nil {
-		return nil, err
-	}
-
-	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, ErrInsufficientSendPermissions
-	}
-
-	msg, err := c.Replier.ReplyMessage(data)
+	msg, err := c.Replier.ReplyMessage(c, data)
 	return msg, errorutil.WithStack(err)
 }
 
 // ReplyDM replies with the passed message in in a direct message to the
 // invoking user.
 func (c *Context) ReplyDM(content string) (*discord.Message, error) {
-	return c.ReplyMessageDM(api.SendMessageData{
-		Content: content,
-	})
+	return c.ReplyMessageDM(api.SendMessageData{Content: content})
 }
 
 // ReplylDM replies with the message translated from the passed i18n.Config in
@@ -176,9 +156,7 @@ func (c *Context) ReplyltDM(term i18n.Term) (*discord.Message, error) {
 // ReplyEmbedDM replies with the passed discord.Embed in a direct message
 // to the invoking user.
 func (c *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
-	return c.ReplyMessageDM(api.SendMessageData{
-		Embed: &e,
-	})
+	return c.ReplyMessageDM(api.SendMessageData{Embed: &e})
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed embedutil.Builder
@@ -195,7 +173,7 @@ func (c *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, e
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
 // the invoking user.
 func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message, err error) {
-	msg, err = c.Replier.ReplyDM(data)
+	msg, err = c.Replier.ReplyDM(c, data)
 	return msg, errorutil.WithStack(err)
 }
 
@@ -255,9 +233,9 @@ type (
 	// responds.
 	Replier interface {
 		// ReplyMessage sends a message in the invoking channel.
-		ReplyMessage(data api.SendMessageData) (*discord.Message, error)
+		ReplyMessage(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 		// ReplyDM sends the passed message in a direct message to the user.
-		ReplyDM(data api.SendMessageData) (*discord.Message, error)
+		ReplyDM(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 	}
 
 	// DiscordDataProvider is an embeddable interface used to extend a Context

@@ -16,7 +16,7 @@ func ExampleTracker() {
 
 	b.MustAddMiddleware(func(next bot.CommandFunc) bot.CommandFunc {
 		return func(s *state.State, ctx *plugin.Context) error {
-			t := NewTracker(s, ctx.Author.ID, ctx.ChannelID)
+			t := NewTracker(s)
 			ctx.Replier = t // replace the default replier
 
 			err := next(s, ctx)

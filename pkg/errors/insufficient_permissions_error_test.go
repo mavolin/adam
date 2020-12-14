@@ -13,21 +13,12 @@ import (
 )
 
 func TestNewInsufficientBotPermissionsError(t *testing.T) {
-	t.Run("regular permissions", func(t *testing.T) {
-		perms := discord.PermissionViewChannel | discord.PermissionManageEmojis
+	perms := discord.PermissionViewChannel | discord.PermissionManageEmojis
 
-		expect := &InsufficientPermissionsError{MissingPermissions: perms}
-		actual := NewInsufficientPermissionsError(perms)
+	expect := &InsufficientPermissionsError{MissingPermissions: perms}
+	actual := NewInsufficientPermissionsError(perms)
 
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("regular permissions", func(t *testing.T) {
-		expect := &InsufficientPermissionsError{MissingPermissions: discord.PermissionAdministrator}
-		actual := NewInsufficientPermissionsError(discord.PermissionViewChannel | discord.PermissionAdministrator)
-
-		assert.Equal(t, expect, actual)
-	})
+	assert.Equal(t, expect, actual)
 }
 
 func TestInsufficientBotPermissionsError_Is(t *testing.T) {

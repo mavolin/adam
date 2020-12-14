@@ -45,7 +45,7 @@ func TestWaiter_Await(t *testing.T) {
 					RoleIDs: []discord.RoleID{012},
 				},
 			},
-			Replier: replier.WrapState(s, 0, 123),
+			Replier: replier.WrapState(s),
 		}
 
 		expect := &TimeoutError{UserID: ctx.Author.ID}
