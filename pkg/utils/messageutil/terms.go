@@ -11,5 +11,5 @@ var (
 )
 
 type timeoutInfoPlaceholders struct {
-	ResponseUserMention string
+	Mention string
 }
