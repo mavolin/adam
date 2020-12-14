@@ -67,27 +67,27 @@ type insufficientBotPermissionsDescSinglePlaceholders struct {
 var (
 	channelTypeErrorGuildText = i18n.NewFallbackConfig(
 		"errors.channel_type.description.guild_text",
-		"You must use this command in a regular text channel.")
+		"You can only use this command in a regular text channel.")
 
 	channelTypeErrorGuildNews = i18n.NewFallbackConfig(
 		"errors.channel_types.description.guild_news.",
-		"You must use this command in an announcement channel.")
+		"You can only use this command in an announcement channel.")
 
 	channelTypeErrorDirectMessage = i18n.NewFallbackConfig(
 		"errors.channel_types.description.direct_message.",
-		"You must use this command in a direct message.")
+		"You can only use this command in a direct message.")
 
 	channelTypeErrorGuild = i18n.NewFallbackConfig(
 		"errors.channel_types.description.guild.",
-		"You must use this command in a server.")
+		"You can only use this command in a server.")
 
 	channelTypeErrorDirectMessageAndGuildText = i18n.NewFallbackConfig(
 		"errors.channel_types.description.direct_message_and_guild_text.",
-		"You must use this command in a direct message or a regular text channel.")
+		"You can only use this command in a direct message or a regular text channel.")
 
 	channelTypeErrorDirectMessageAndGuildNews = i18n.NewFallbackConfig(
 		"errors.channel_types.description.direct_message_and_guild_news.",
-		"You must use this command in a direct message or an announcement channel.")
+		"You can only use this command in a direct message or an announcement channel.")
 
 	channelTypeErrorFallback = i18n.NewFallbackConfig(
 		"errors.channel_type.description.fallback",

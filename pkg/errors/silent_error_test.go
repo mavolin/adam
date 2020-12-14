@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,26 +13,67 @@ func TestSilent(t *testing.T) {
 	})
 
 	t.Run("silent error", func(t *testing.T) {
-		expect := Silent(New("abc"))
+		cause := NewSilent("abc").(*SilentError)
 
-		actual := Silent(expect)
-		assert.Equal(t, expect, actual)
+		serr := Silent(cause).(*SilentError)
+
+		assert.Equal(t, cause.cause, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
 	})
 
 	t.Run("internal error", func(t *testing.T) {
-		expectCause := New("abc")
+		cause := NewWithStack("abc").(*InternalError)
 
-		cause := WithStack(expectCause)
+		serr := Silent(cause).(*SilentError)
 
-		actual := Silent(cause)
-		assert.Equal(t, expectCause, actual.(*SilentError).cause)
+		assert.Equal(t, cause.cause, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
 	})
 
-	t.Run("normal error", func(t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
+		err := Silent(&asError{as: NewInformationalError("abc")})
+		assert.Nil(t, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
 		cause := New("abc")
 
-		err := Silent(cause)
-		assert.Equal(t, cause, err.(*SilentError).cause)
+		serr := Silent(cause).(*SilentError)
+
+		assert.Equal(t, cause, serr.cause)
+	})
+}
+
+func TestMustSilent(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := MustSilent(nil)
+		assert.Nil(t, err)
+	})
+
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
+
+		serr := MustSilent(cause).(*SilentError)
+
+		assert.Equal(t, cause.cause, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		serr := MustSilent(cause).(*SilentError)
+
+		assert.Equal(t, cause.cause, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		serr := MustSilent(cause).(*SilentError)
+
+		assert.Equal(t, cause, serr.cause)
 	})
 }
 
@@ -43,16 +83,42 @@ func TestWrapSilent(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("not nil", func(t *testing.T) {
-		var (
-			cause   = New("abc")
-			message = "def"
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
 
-		err := WrapSilent(cause, message)
+		expectMsg := "def"
 
-		//goland:noinspection GoNilness
-		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
+		serr := WrapSilent(cause, expectMsg).(*SilentError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		expectMsg := "def"
+
+		serr := WrapSilent(cause, expectMsg).(*SilentError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		err := WrapSilent(&asError{as: NewInformationalError("abc")}, "def")
+
+		assert.Nil(t, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		expectMsg := "def"
+
+		serr := WrapSilent(cause, expectMsg).(*SilentError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause}, serr.cause)
 	})
 }
 
@@ -62,15 +128,41 @@ func TestWrapSilentf(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("not nil", func(t *testing.T) {
-		var (
-			cause   = New("abc")
-			message = "def ghi"
-		)
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
 
-		err := WrapSilentf(cause, "def %s", "ghi")
+		expectMsg := "def ghi"
 
-		//goland:noinspection GoNilness
-		assert.Equal(t, fmt.Sprintf("%s: %s", message, cause.Error()), err.Error())
+		serr := WrapSilentf(cause, "def %s", "ghi").(*SilentError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		expectMsg := "def ghi"
+
+		serr := WrapSilentf(cause, "def %s", "ghi").(*SilentError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause.cause}, serr.cause)
+		assert.Equal(t, cause.stack, serr.stack)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		err := WrapSilentf(&asError{as: NewInformationalError("abc")}, "def %s", "ghi")
+
+		assert.Nil(t, err)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		expectMsg := "def ghi"
+
+		serr := WrapSilentf(cause, "def %s", "ghi").(*SilentError)
+
+		assert.Equal(t, &messageError{msg: expectMsg, cause: cause}, serr.cause)
 	})
 }
