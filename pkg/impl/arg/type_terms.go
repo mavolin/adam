@@ -37,7 +37,7 @@ var (
 
 var switchWithContentError = i18n.NewFallbackConfig(
 	"args.types.switch.errors.with_content",
-	"The `{{.used-name}}`-flag is a switch flag and cannot be used with content.")
+	"The `{{.used_name}}`-flag is a switch flag and cannot be used with content.")
 
 type switchWithContentErrorPlaceholders struct {
 	Name string
@@ -52,7 +52,7 @@ type switchWithContentErrorPlaceholders struct {
 var (
 	choiceName        = i18n.NewFallbackConfig("args.types.choice.name", "Choice")
 	choiceDescription = i18n.NewFallbackConfig(
-		"args.types.choice.Name",
+		"args.types.choice.name",
 		"A choice is a list of elements from which you can to pick one. "+
 			"Refer to the help of the command to see all possible choices.")
 )
@@ -609,7 +609,7 @@ var (
 	categoryName        = i18n.NewFallbackConfig("args.types.category.name", "Category")
 	categoryDescription = i18n.NewFallbackConfig(
 		"args.types.category.description",
-		"The name of a channel category or its id.")
+		"The name of a category or its id.")
 )
 
 // ================================ Chooser Data ================================
@@ -625,7 +625,7 @@ var (
 
 	categoryChooserMatch = i18n.NewFallbackConfig(
 		"args.types.category.chooser.match",
-		"{{.emoji}}: **{{.channel_name}}** (position: {{.channel_position}})")
+		"{{.emoji}} **{{.category_name}}** (position: {{.position}})")
 
 	categoryChooserFullMatchesName = i18n.NewFallbackConfig(
 		"args.types.category.chooser.full_matches.name",
@@ -647,9 +647,9 @@ type (
 	}
 
 	categoryChooserMatchPlaceholders struct {
-		Emoji           string
-		ChannelName     string
-		ChannelPosition int
+		Emoji        string
+		CategoryName string
+		Position     int
 	}
 
 	categoryChooserTooManyPartialMatchesPlaceholders struct {
@@ -676,7 +676,7 @@ var (
 		"The id `{{.raw}}` doesn't belong to a category.")
 
 	categoryTooManyMatchesError = i18n.NewFallbackConfig(
-		"args.types.category.errors.too_many_matches",
+		"args.types.category.errors.too_many_full_matches",
 		"There are too many categories that match `{{.raw}}`. "+
 			"You can either (temporarily) rename the category and try again, or use the id of category instead.")
 
@@ -685,6 +685,95 @@ var (
 		"There are too many categories that match `{{.raw}}`. "+
 			"You can either try to find the category by using their full name, "+
 			"or you can use the id of category instead.")
+)
+
+// =============================================================================
+// VoiceChannel
+// =====================================================================================
+
+// ================================ Meta Data ================================
+
+var (
+	voiceChannelName        = i18n.NewFallbackConfig("args.types.voice_channel.name", "Voice Channel")
+	voiceChannelDescription = i18n.NewFallbackConfig(
+		"args.types.voice_channel.description",
+		"The name of a voice channel or its id.")
+)
+
+// ================================ Chooser Data ================================
+
+var (
+	voiceChannelChooserTitle = i18n.NewFallbackConfig("args.types.voice_channel.chooser.title", "Multiple Matches")
+
+	voiceChannelChooserDescription = i18n.NewFallbackConfig(
+		"args.types.voice_channel.chooser.description",
+		"There are multiple voice channels that match the name you gave me. "+
+			"Please choose the correct one by reacting with the corresponding emoji, "+
+			"or react with {{.cancel_emoji}} to cancel.")
+
+	voiceChannelChooserMatch = i18n.NewFallbackConfig(
+		"args.types.voice_channel.chooser.match",
+		"{{.emoji}} **{{.channel_name}}** ({{.category_name}}, position: {{.position}})")
+
+	voiceChannelChooserFullMatchesName = i18n.NewFallbackConfig(
+		"args.types.voice_channel.chooser.full_matches.name",
+		"Full Matches")
+
+	voiceChannelChooserPartialMatchesName = i18n.NewFallbackConfig(
+		"args.types.voice_channel.chooser.partial_matches.name",
+		"Partial Matches")
+
+	voiceChannelChooserTooManyPartialMatches = i18n.NewFallbackConfig(
+		"args.types.voice_channel.chooser.too_many_partial_matches",
+		"There are {{.num_partial_matches}} additional partial matches. "+
+			"Use the full name of the voice channel or their id, to match any of these.")
+)
+
+type (
+	voiceChannelChooserDescriptionPlaceholders struct {
+		CancelEmoji string
+	}
+
+	voiceChannelChooserMatchPlaceholders struct {
+		Emoji        string
+		CategoryName string
+		ChannelName  string
+		Position     int
+	}
+
+	voiceChannelChooserTooManyPartialMatchesPlaceholders struct {
+		NumPartialMatches int
+	}
+)
+
+// ================================ Errors ================================
+
+var (
+	voiceChannelNotFoundError = i18n.NewFallbackConfig(
+		"args.types.voice_channel.errors.not_found",
+		"I couldn't find a voice channel with the name or id `{{.raw}}`. Make sure you spelled it correctly.")
+
+	voiceChannelIDInvalidErrorArg = i18n.NewFallbackConfig(
+		"args.types.voice_channel.errors.id_invalid.arg",
+		"Argument {{.position}} is not a valid voice channel id.")
+	voiceChannelIDInvalidErrorFlag = i18n.NewFallbackConfig(
+		"args.types.voice_channel.errors.id_invalid.flag",
+		"The `{{.used_name}}`-flag doesn't contain a valid voice channel id.")
+
+	voiceChannelIDInvalidTypeError = i18n.NewFallbackConfig(
+		"args.types.voice_channel.errors.id_invalid_type",
+		"The id `{{.raw}}` doesn't belong to a voice channel.")
+
+	voiceChannelTooManyMatchesError = i18n.NewFallbackConfig(
+		"args.types.voice_channel.errors.too_many_full_matches",
+		"There are too many voice channels that match `{{.raw}}`. "+
+			"You can either (temporarily) rename the voice channel and try again, or use the id of category instead.")
+
+	voiceChannelTooManyPartialMatchesError = i18n.NewFallbackConfig(
+		"args.types.voice_channel.errors.too_many_partial_matches",
+		"There are too many categories that match `{{.raw}}`. "+
+			"You can either try to find the voice channel by using their full name, "+
+			"or you can use the id of voice channel instead.")
 )
 
 // =============================================================================
