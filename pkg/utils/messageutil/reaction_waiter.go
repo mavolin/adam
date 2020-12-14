@@ -153,6 +153,8 @@ func (w *ReactionWaiter) Await(timeout time.Duration) (api.Emoji, error) {
 //
 // If the timeout is reached, a *TimeoutError will be returned.
 // If the user cancels the wait, errors.Abort will be returned.
+// If the context expires or get canceled, the error returned by ctx.Err() will
+// be returned.
 //
 // Besides that, the Wait can also be canceled through a middleware.
 func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Duration) (api.Emoji, error) {
