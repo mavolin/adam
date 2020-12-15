@@ -77,7 +77,7 @@ func (e *InsufficientPermissionsError) Description(l *i18n.Localizer) (desc stri
 		desc, _ = l.Localize(insufficientPermissionsDescMulti)
 	}
 
-	return
+	return desc
 }
 
 // PermissionList returns a written bullet point list of the missing
