@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )

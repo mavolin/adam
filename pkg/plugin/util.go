@@ -1,6 +1,6 @@
 package plugin
 
-import "github.com/diamondburned/arikawa/discord"
+import "github.com/diamondburned/arikawa/v2/discord"
 
 // NoPermissions defines explicitly that a command or module requires no
 // permissions.

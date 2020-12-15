@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -77,7 +77,7 @@ func (e *InsufficientPermissionsError) Description(l *i18n.Localizer) (desc stri
 		desc, _ = l.Localize(insufficientPermissionsDescMulti)
 	}
 
-	return
+	return desc
 }
 
 // PermissionList returns a written bullet point list of the missing

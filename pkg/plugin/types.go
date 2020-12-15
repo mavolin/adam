@@ -1,8 +1,8 @@
 package plugin
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 )
 
 // ChannelTypes is an enum used to specify in which channel types the command
@@ -69,7 +69,9 @@ type Throttler interface {
 	// if the command is throttled.
 	// The returned error should be of type errors.ThrottlingError.
 	//
-	// The returned function will be called, if the command exits with an
-	// error and that error is not ignored as defined via the bots Options.
+	// If the returned function gets called, the command invoke should not be
+	// counted, e.g. if a Command returns with an error.
+	// This will be the case, if the ThrottlerErrorCheck function in the bot's
+	// Options returns true.
 	Check(*state.State, *Context) (func(), error)
 }

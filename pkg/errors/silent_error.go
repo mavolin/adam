@@ -3,7 +3,7 @@ package errors
 import (
 	"fmt"
 
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/internal/errorutil"

@@ -1,7 +1,7 @@
 package permutil
 
 import (
-	. "github.com/diamondburned/arikawa/discord" //nolint:golint, stylecheck
+	. "github.com/diamondburned/arikawa/v2/discord" //nolint:golint, stylecheck
 
 	. "github.com/mavolin/adam/pkg/i18n" //nolint:golint, stylecheck
 )

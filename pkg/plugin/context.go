@@ -1,9 +1,9 @@
 package plugin
 
 import (
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -355,12 +355,12 @@ type (
 		ChannelTypes ChannelTypes
 		// BotPermissions are the default permissions for Commands.
 		BotPermissions discord.Permissions
+		// Restrictions is the default restriction func.
+		Restrictions RestrictionFunc
 		// Throttler is the default global throttler.
 		// Note that the same Throttler will be shared across all commands that
 		// don't define a custom one.
 		Throttler Throttler
-		// Restrictions is the default restriction func.
-		Restrictions RestrictionFunc
 	}
 
 	// UnavailablePluginProvider contains information about an unavailable

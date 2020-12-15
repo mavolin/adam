@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/httputil"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/httputil"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

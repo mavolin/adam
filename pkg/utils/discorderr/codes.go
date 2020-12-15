@@ -1,6 +1,6 @@
 package discorderr
 
-import "github.com/diamondburned/arikawa/utils/httputil"
+import "github.com/diamondburned/arikawa/v2/utils/httputil"
 
 const (
 	// GeneralError is a general error (such as a malformed request body,
