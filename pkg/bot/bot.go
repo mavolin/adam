@@ -81,9 +81,14 @@ func New(o Options) (*Bot, error) {
 }
 
 // Open opens a connection to the gateway and starts the bot.
+//
+// If no gateway.Intents were added to the State before opening, Open will
+// derive intents from the registered handlers.
+// Additionally, gateway.IntentGuilds will be added, to ensure caching of guild
+// data.
 func (b *Bot) Open() error {
 	if b.State.Gateway.Identifier.Intents == 0 {
-		// todo: derive intents
+		b.AddIntents(b.State.DeriveIntents())
 		b.AddIntents(gateway.IntentGuilds)
 	}
 
