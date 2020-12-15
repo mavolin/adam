@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
-	astate "github.com/diamondburned/arikawa/state"
-	"github.com/diamondburned/arikawa/utils/wsutil"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v2/state/store"
+	"github.com/diamondburned/arikawa/v2/state/store/defaultstore"
+	"github.com/diamondburned/arikawa/v2/utils/wsutil"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -42,8 +43,8 @@ type Options struct { //nolint:maligned
 
 	// Status is the status of the bot.
 	//
-	// Default: discord.OnlineStatus
-	Status discord.Status
+	// Default: gateway.OnlineStatus
+	Status gateway.Status
 	// ActivityName is the name of the activity the bot will display, if any.
 	// If this left empty, the bot won't display any activity.
 	//
@@ -104,11 +105,11 @@ type Options struct { //nolint:maligned
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerErrorCheck func(error) bool
 
-	// Store is the store.Cabinet used for caching.
+	// Cabinet is the store.Cabinet used for caching.
 	//
-	// Default: defaultstore.New() and maxMessages set to
-	// min(100, EditThreshold)
-	Store astate.Store
+	// Every nil store of the cabinet, will be set to it's default store.
+	// Use store.Noop to deactivate Stores.
+	Cabinet store.Cabinet
 
 	// Shard is the shard of the bot.
 	//
@@ -155,13 +156,14 @@ type Options struct { //nolint:maligned
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
 }
 
+// SetDefaults fills the defaults for all options, that weren't manually set.
 func (o *Options) SetDefaults() (err error) {
 	if o.PrefixProvider == nil {
 		o.PrefixProvider = NewStaticPrefixProvider(",")
 	}
 
 	if len(o.Status) == 0 {
-		o.Status = discord.OnlineStatus
+		o.Status = gateway.OnlineStatus
 	}
 
 	if o.DefaultChannelTypes == 0 {
@@ -172,16 +174,7 @@ func (o *Options) SetDefaults() (err error) {
 		o.ThrottlerErrorCheck = DefaultThrottlerErrorCheck
 	}
 
-	if o.Store == nil {
-		var maxMessages uint = 100
-		if o.EditThreshold > maxMessages {
-			maxMessages = o.EditThreshold
-		}
-
-		o.Store = astate.NewDefaultStore(&astate.DefaultStoreOptions{
-			MaxMessages: maxMessages,
-		})
-	}
+	o.setCabinetDefaults()
 
 	if o.Shard[1] == 0 {
 		o.Shard = gateway.Shard{0, 1}
@@ -223,6 +216,49 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	return nil
+}
+
+func (o *Options) setCabinetDefaults() {
+	if o.Cabinet.MeStore == nil {
+		o.Cabinet.MeStore = defaultstore.NewMe()
+	}
+
+	if o.Cabinet.ChannelStore == nil {
+		o.Cabinet.ChannelStore = defaultstore.NewChannel()
+	}
+
+	if o.Cabinet.EmojiStore == nil {
+		o.Cabinet.EmojiStore = defaultstore.NewEmoji()
+	}
+
+	if o.Cabinet.GuildStore == nil {
+		o.Cabinet.GuildStore = defaultstore.NewGuild()
+	}
+
+	if o.Cabinet.MemberStore == nil {
+		o.Cabinet.MemberStore = defaultstore.NewMember()
+	}
+
+	var maxMessages uint = 100
+	if o.EditThreshold > maxMessages {
+		maxMessages = o.EditThreshold
+	}
+
+	if o.Cabinet.MessageStore == nil {
+		o.Cabinet.MessageStore = defaultstore.NewMessage(int(maxMessages))
+	}
+
+	if o.Cabinet.PresenceStore == nil {
+		o.Cabinet.PresenceStore = defaultstore.NewPresence()
+	}
+
+	if o.Cabinet.RoleStore == nil {
+		o.Cabinet.RoleStore = defaultstore.NewRole()
+	}
+
+	if o.Cabinet.VoiceStateStore == nil {
+		o.Cabinet.VoiceStateStore = defaultstore.NewVoiceState()
+	}
 }
 
 // PrefixProvider is the function used to retrieve the bot's prefix.

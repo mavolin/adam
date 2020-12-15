@@ -1,8 +1,8 @@
 package plugin
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 )
 
 // ChannelTypes is an enum used to specify in which channel types the command

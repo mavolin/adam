@@ -4,7 +4,7 @@ package channelutil
 import (
 	"sort"
 
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/discord"
 )
 
 // ResolvePositions resolves the position of the channels, as displayed in the

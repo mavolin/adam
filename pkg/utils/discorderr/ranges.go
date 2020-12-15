@@ -1,6 +1,6 @@
 package discorderr
 
-import "github.com/diamondburned/arikawa/utils/httputil"
+import "github.com/diamondburned/arikawa/v2/utils/httputil"
 
 // CodeRange is a list of code ranges.
 // A range consists of two elements:

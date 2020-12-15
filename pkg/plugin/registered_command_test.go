@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

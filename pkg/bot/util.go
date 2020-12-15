@@ -1,8 +1,8 @@
 package bot
 
 import (
-	"github.com/diamondburned/arikawa/gateway"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )

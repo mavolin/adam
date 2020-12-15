@@ -2,10 +2,10 @@
 package bot
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
-	"github.com/diamondburned/arikawa/session"
-	"github.com/mavolin/disstate/v2/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v2/session"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -58,7 +58,7 @@ func New(o Options) (*Bot, error) {
 		}
 	}
 
-	b.State = state.NewFromSession(session.NewWithGateway(gw), o.Store)
+	b.State = state.NewFromSession(session.NewWithGateway(gw), o.Cabinet)
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
 
@@ -96,5 +96,5 @@ func (b *Bot) Open() error {
 
 // AddIntents adds the passed gateway.Intents to the bot.
 func (b *Bot) AddIntents(i gateway.Intents) {
-	b.State.Gateway.AddIntent(i)
+	b.State.Gateway.AddIntents(i)
 }
