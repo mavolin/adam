@@ -105,10 +105,10 @@ func (b *Bot) AddIntents(i gateway.Intents) {
 }
 
 // AddCommand adds the passed command to the bot.
-func (b *Bot) AddCommand(c plugin.Command) {
-	b.commands = append(b.commands, c)
+func (b *Bot) AddCommand(cmd plugin.Command) {
+	b.commands = append(b.commands, cmd)
 }
 
-func (b *Bot) AddModule(m plugin.Module) {
-	b.modules = append(b.modules, m)
+func (b *Bot) AddModule(mod plugin.Module) {
+	b.modules = append(b.modules, mod)
 }
