@@ -42,6 +42,7 @@ type Bot struct {
 type pluginProvider struct {
 	name     string
 	provider PluginProvider
+	defaults plugin.Defaults
 }
 
 // Plugin provider is the function used by plugin providers.
@@ -158,7 +159,7 @@ func (b *Bot) AddModule(mod plugin.Module) {
 // first.
 //
 // The plugin providers will be used in the order they are added in.
-func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
+func (b *Bot) AddPluginProvider(name string, p PluginProvider, defaults plugin.Defaults) {
 	if name == plugin.BuiltInProvider {
 		panic("you cannot use " + name + " as plugin provider")
 	}
@@ -176,5 +177,6 @@ func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
 	b.pluginProviders = append(b.pluginProviders, &pluginProvider{
 		name:     name,
 		provider: p,
+		defaults: defaults,
 	})
 }
