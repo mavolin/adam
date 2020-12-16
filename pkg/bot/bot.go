@@ -15,6 +15,9 @@ type Bot struct {
 	State *state.State
 	*MiddlewareManager
 
+	commands []plugin.Command
+	modules  []plugin.Module
+
 	// ----- Settings -----
 
 	PrefixProvider PrefixProvider
@@ -99,4 +102,13 @@ func (b *Bot) Open() error {
 // AddIntents adds the passed gateway.Intents to the bot.
 func (b *Bot) AddIntents(i gateway.Intents) {
 	b.State.Gateway.AddIntents(i)
+}
+
+// AddCommand adds the passed command to the bot.
+func (b *Bot) AddCommand(c plugin.Command) {
+	b.commands = append(b.commands, c)
+}
+
+func (b *Bot) AddModule(m plugin.Module) {
+	b.modules = append(b.modules, m)
 }
