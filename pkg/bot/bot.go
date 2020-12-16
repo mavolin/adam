@@ -10,8 +10,10 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
+// Bot is the bot executing all commands.
 type Bot struct {
 	State *state.State
+	*MiddlewareManager
 
 	// ----- Settings -----
 
@@ -28,7 +30,6 @@ type Bot struct {
 
 	ErrorHandler func(error, *state.State, *plugin.Context)
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
-	*MiddlewareManager
 }
 
 // New creates a new Bot from the passed options.
@@ -92,11 +93,7 @@ func (b *Bot) Open() error {
 		b.AddIntents(gateway.IntentGuilds)
 	}
 
-	if err := b.State.Open(); err != nil {
-		return err
-	}
-
-	return nil
+	return b.State.Open()
 }
 
 // AddIntents adds the passed gateway.Intents to the bot.
