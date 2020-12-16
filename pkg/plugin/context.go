@@ -338,10 +338,10 @@ type (
 		// ProviderName is the name of the bot.RuntimePluginProvider that provides
 		// these plugins.
 		ProviderName string
-		// Modules are the top-level modules of the repository.
-		Modules []Module
 		// Commands are the top-level commands of the repository.
 		Commands []Command
+		// Modules are the top-level modules of the repository.
+		Modules []Module
 
 		// Defaults are the global defaults for settings, the provider
 		// uses.
