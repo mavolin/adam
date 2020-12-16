@@ -6,6 +6,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewIdentifierFromInvoke(t *testing.T) {
+	invoke := "abc \tdef\njkl  mno"
+
+	var expect Identifier = ".abc.def.jkl.mno"
+
+	actual := NewIdentifierFromInvoke(invoke)
+	assert.Equal(t, expect, actual)
+}
+
 func TestIdentifier_Parent(t *testing.T) {
 	testCases := []struct {
 		name       string
