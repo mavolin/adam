@@ -2,6 +2,9 @@
 package bot
 
 import (
+	"os"
+	"os/signal"
+
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/diamondburned/arikawa/v2/session"
@@ -97,6 +100,14 @@ func (b *Bot) Open() error {
 	}
 
 	return b.State.Open()
+}
+
+// Wait blockingly waits for SIGINT and returns, when it receives it.
+func (b *Bot) Wait() {
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+
+	<-stop
 }
 
 // AddIntents adds the passed gateway.Intents to the bot.
