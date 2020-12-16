@@ -33,7 +33,7 @@ func TestBot_AddPluginProvider(t *testing.T) {
 		b, err := New(Options{Token: "abc"})
 		require.NoError(t, err)
 
-		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) { return nil, nil, nil }
+		p := mockPluginProvider(nil, nil, nil)
 
 		b.AddPluginProvider("abc", p, plugin.Defaults{ChannelTypes: plugin.AllChannels})
 		b.AddPluginProvider("def", p, plugin.Defaults{})
@@ -62,7 +62,7 @@ func TestBot_AddPluginProvider(t *testing.T) {
 		b, err := New(Options{Token: "abc"})
 		require.NoError(t, err)
 
-		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) { return nil, nil, nil }
+		p := mockPluginProvider(nil, nil, nil)
 
 		b.AddPluginProvider("abc", p, plugin.Defaults{})
 		assert.Len(t, b.pluginProviders, 1)
