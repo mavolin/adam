@@ -2,6 +2,9 @@
 package bot
 
 import (
+	"os"
+	"os/signal"
+
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/diamondburned/arikawa/v2/session"
@@ -99,16 +102,24 @@ func (b *Bot) Open() error {
 	return b.State.Open()
 }
 
+// Wait blockingly waits for SIGINT and returns, when it receives it.
+func (b *Bot) Wait() {
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+
+	<-stop
+}
+
 // AddIntents adds the passed gateway.Intents to the bot.
 func (b *Bot) AddIntents(i gateway.Intents) {
 	b.State.Gateway.AddIntents(i)
 }
 
 // AddCommand adds the passed command to the bot.
-func (b *Bot) AddCommand(c plugin.Command) {
-	b.commands = append(b.commands, c)
+func (b *Bot) AddCommand(cmd plugin.Command) {
+	b.commands = append(b.commands, cmd)
 }
 
-func (b *Bot) AddModule(m plugin.Module) {
-	b.modules = append(b.modules, m)
+func (b *Bot) AddModule(mod plugin.Module) {
+	b.modules = append(b.modules, mod)
 }
