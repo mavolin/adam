@@ -69,8 +69,12 @@ func New(o Options) (*Bot, error) {
 	gw.WSTimeout = o.GatewayTimeout
 	gw.WS.Timeout = o.GatewayTimeout
 	gw.ErrorLog = o.GatewayErrorHandler
-	gw.Identifier.Presence.Status = o.Status
-	gw.Identifier.Shard = &o.Shard
+	gw.Identifier = &gateway.Identifier{
+		IdentifyData: gateway.IdentifyData{
+			Shard:    &o.Shard,
+			Presence: &gateway.UpdateStatusData{Status: o.Status},
+		},
+	}
 
 	if len(o.ActivityName) > 0 {
 		gw.Identifier.Presence.Activities = &[]discord.Activity{
@@ -157,6 +161,10 @@ func (b *Bot) AddModule(mod plugin.Module) {
 func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
 	if name == plugin.BuiltInProvider {
 		panic("you cannot use " + name + " as plugin provider")
+	}
+
+	if p == nil {
+		return
 	}
 
 	for i, rp := range b.pluginProviders {
