@@ -269,15 +269,15 @@ type (
 		// Commands returns all top-level commands sorted in ascending order by
 		// name.
 		//
-		// To check if any of the runtime plugin providers returned an error,
-		// call UnavailablePluginProviders.
+		// To check if any of the plugin providers returned an error, call
+		// UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
 		Commands() []*RegisteredCommand
 		// Modules returns all top-level modules sorted in ascending order by
 		// name.
 		//
-		// To check if any of the runtime plugin providers returned an error,
-		// call UnavailablePluginProviders.
+		// To check if any of the plugin providers returned an error, call
+		// UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
 		Modules() []*RegisteredModule
 
@@ -295,8 +295,8 @@ type (
 		//
 		// It will return nil if no module matching the identifier was found.
 		//
-		// To check if any of the runtime plugin providers returned an error,
-		// call UnavailablePluginProviders.
+		// To check if any of the plugin providers returned an error, call
+		// UnavailablePluginProviders.
 		// If that is the case, the module's description might not be available
 		// or differ from the description that is used if all plugin providers
 		// function properly.
@@ -307,16 +307,16 @@ type (
 		// It will return nil if no command matching the passed invoke was
 		// found.
 		//
-		// To check if any of the runtime plugin providers returned an error,
-		// call UnavailablePluginProviders.
+		// To check if any of the plugin providers returned an error, call
+		// UnavailablePluginProviders.
 		FindCommand(invoke string) *RegisteredCommand
 		// FindModule returns the RegisteredModule with the passed invoke.
 		//
 		// It will return nil if no module matching the passed invoke was
 		// found.
 		//
-		// To check if any of the runtime plugin providers returned an error,
-		// call UnavailablePluginProviders.
+		// To check if any of the plugin providers returned an error, call
+		// UnavailablePluginProviders.
 		// If that is the case, the module's description might not be available
 		// or differ from the description that is used if all plugin providers
 		// function properly.
@@ -364,11 +364,11 @@ type (
 	}
 
 	// UnavailablePluginProvider contains information about an unavailable
-	// runtime plugin provider.
+	// plugin provider.
 	UnavailablePluginProvider struct {
-		// Name is the name of the runtime plugin provider.
+		// Name is the name of the plugin provider.
 		Name string
-		// Error is the error returned by the runtime plugin provider.
+		// Error is the error returned by the plugin provider.
 		Error error
 	}
 

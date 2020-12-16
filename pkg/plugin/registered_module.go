@@ -44,7 +44,7 @@ type (
 
 	// SourceModule contains the parent Modules of a RegisteredModule.
 	SourceModule struct {
-		// ProviderName is the name of the runtime plugin provider that
+		// ProviderName is the name of the plugin provider that
 		// provided the module.
 		ProviderName string
 		// Modules contains the parents of the RegisteredModule.

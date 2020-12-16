@@ -18,8 +18,9 @@ type Bot struct {
 	State *state.State
 	*MiddlewareManager
 
-	commands []plugin.Command
-	modules  []plugin.Module
+	commands        []plugin.Command
+	modules         []plugin.Module
+	pluginProviders []*pluginProvider
 
 	// ----- Settings -----
 
@@ -37,6 +38,22 @@ type Bot struct {
 	ErrorHandler func(error, *state.State, *plugin.Context)
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
 }
+
+type pluginProvider struct {
+	name     string
+	provider PluginProvider
+}
+
+// Plugin provider is the function used by plugin providers.
+// PluginProviders will be called in the order they were added to a Bot, until
+// one of the returns a matching plugin.
+//
+// If there are no plugins that match the context of the message, the
+// PluginProvider should return (nil, nil, nil).
+// If there is an error the returned plugins will be discarded, and the error
+// will be noted in the Context of the command, available via
+// Context.UnavailablePluginProviders().
+type PluginProvider func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error)
 
 // New creates a new Bot from the passed options.
 // The Options.Token field must be set.
@@ -120,6 +137,36 @@ func (b *Bot) AddCommand(cmd plugin.Command) {
 	b.commands = append(b.commands, cmd)
 }
 
+// AddModule adds the passed module to the Bot.
 func (b *Bot) AddModule(mod plugin.Module) {
 	b.modules = append(b.modules, mod)
+}
+
+// AddPluginProvider adds the passed PluginProvider under the passed name.
+// The is similar to a key and can be used later on to distinguish between
+// different plugin providers.
+// It is typically snake_case.
+//
+// 'built_in' is not allowed as name, and AddPluginProvider will panic if
+// attempting to use it.
+//
+// If there is another plugin provider with the passed name, it will be removed
+// first.
+//
+// The plugin providers will be used in the order they are added in.
+func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
+	if name == plugin.BuiltInProvider {
+		panic("you cannot use " + name + " as plugin provider")
+	}
+
+	for i, rp := range b.pluginProviders {
+		if rp.name == name {
+			b.pluginProviders = append(b.pluginProviders[:i], b.pluginProviders[i+1:]...)
+		}
+	}
+
+	b.pluginProviders = append(b.pluginProviders, &pluginProvider{
+		name:     name,
+		provider: p,
+	})
 }

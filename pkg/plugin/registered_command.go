@@ -9,7 +9,7 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
-var BuiltIn = "built_in"
+var BuiltInProvider = "built_in"
 
 // RegisteredCommand is the abstraction of a command as returned by a Provider.
 // In contrast to the regular command abstraction, RegisteredCommand will
