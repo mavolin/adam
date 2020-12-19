@@ -67,7 +67,7 @@ func New(o Options) (*Bot, error) {
 		return nil, err
 	}
 
-	gw := gateway.NewCustomGateway(o.GatewayURL, o.Token)
+	gw := gateway.NewCustomGateway(o.GatewayURL, "Bot "+o.Token)
 
 	gw.WSTimeout = o.GatewayTimeout
 	gw.WS.Timeout = o.GatewayTimeout
