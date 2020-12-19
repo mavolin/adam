@@ -43,6 +43,23 @@ func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.Registe
 	return c
 }
 
+// GenerateRegisteredCommand creates a mocked RegisteredCommand from the passed
+// Command using the passed provider name and defaults.
+func GenerateRegisteredCommandWithDefaults(
+	providerName string, cmd Command, defaults plugin.Defaults,
+) *plugin.RegisteredCommand {
+	c := plugin.GenerateRegisteredCommands([]plugin.Repository{
+		{
+			ProviderName: providerName,
+			Commands:     []plugin.Command{cmd},
+			Modules:      nil,
+			Defaults:     defaults,
+		},
+	})
+
+	return c[0]
+}
+
 // GenerateRegisteredCommandWithParents creates a new RegisteredCommand from
 // the passed module.
 // It then returns the command with the given identifier found in the module.
@@ -77,7 +94,7 @@ type CommandMeta struct {
 	ShortDescription string
 	LongDescription  string
 
-	Args ArgConfig
+	Args plugin.ArgConfig
 
 	Examples       []string
 	Hidden         bool

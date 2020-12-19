@@ -18,11 +18,27 @@ func (c Module) Modules() []plugin.Module   { return c.ModulesReturn }
 
 // GenerateRegisteredModule generates a RegisteredModule from the passed source
 // module using the passed provider name.
-func GenerateRegisteredModule(providerName string, smod plugin.Module) *plugin.RegisteredModule {
+func GenerateRegisteredModule(providerName string, mod plugin.Module) *plugin.RegisteredModule {
 	rmod := plugin.GenerateRegisteredModules([]plugin.Repository{
 		{
 			ProviderName: providerName,
-			Modules:      []plugin.Module{smod},
+			Modules:      []plugin.Module{mod},
+		},
+	})
+
+	return rmod[0]
+}
+
+// GenerateRegisteredModule generates a RegisteredModule from the passed source
+// module using the passed provider name and defaults.
+func GenerateRegisteredModuleWithDefaults(
+	providerName string, mod plugin.Module, defaults plugin.Defaults,
+) *plugin.RegisteredModule {
+	rmod := plugin.GenerateRegisteredModules([]plugin.Repository{
+		{
+			ProviderName: providerName,
+			Modules:      []plugin.Module{mod},
+			Defaults:     defaults,
 		},
 	})
 
