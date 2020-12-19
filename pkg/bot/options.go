@@ -288,7 +288,7 @@ func DefaultThrottlerErrorCheck(err error) bool {
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
-	for i := 0; i < 25 && err != nil; i++ { // prevent error cycle
+	for i := 0; i < 10 && err != nil; i++ { // prevent error cycle
 		var Err errors.Error
 		if !errors.As(err, &Err) {
 			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
@@ -306,7 +306,7 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 		err = fmt.Errorf("panic: %+v", recovered)
 	}
 
-	for i := 0; i < 25 && err != nil; i++ { // prevent error cycle
+	for i := 0; i < 10 && err != nil; i++ { // prevent error cycle
 		var Err errors.Error
 		if !errors.As(err, &Err) {
 			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
