@@ -177,14 +177,14 @@ func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message
 	return msg, errorutil.WithStack(err)
 }
 
-// Channel returns the *discord.Channel the command was invoked in.
-func (c *Context) Channel() (*discord.Channel, error) {
-	return c.ChannelAsync()()
-}
-
 // Guild returns the guild the command was invoked in.
 func (c *Context) Guild() (*discord.Guild, error) {
 	return c.GuildAsync()()
+}
+
+// Channel returns the *discord.Channel the command was invoked in.
+func (c *Context) Channel() (*discord.Channel, error) {
+	return c.ChannelAsync()()
 }
 
 // Self returns the *discord.Member that belongs to the bot.
@@ -262,13 +262,13 @@ type (
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
 	DiscordDataProvider interface {
-		// Channel returns a callback returning channel the message was sent
-		// in.
-		ChannelAsync() func() (*discord.Channel, error)
 		// Guild returns a callback returning guild the message was sent in.
 		// If this happened in a private channel, Guild will return nil, nil.
 		GuildAsync() func() (*discord.Guild, error)
 		// Self returns a callback returning the *discord.Member the bot
+		// Channel returns a callback returning channel the message was sent
+		// in.
+		ChannelAsync() func() (*discord.Channel, error)
 		// represents in the calling guild.
 		// If this happened in a private channel, Self will return (nil, nil).
 		SelfAsync() func() (*discord.Member, error)
