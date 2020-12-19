@@ -143,7 +143,39 @@ func (p *ctxPluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModul
 
 func (p *ctxPluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
 	id := plugin.NewIdentifierFromInvoke(invoke)
-	return p.Command(id)
+
+	name := id.Name()
+
+	if id.Parent().IsRoot() {
+		for _, cmd := range p.Commands() {
+			if cmd.Name == name {
+				return cmd
+			}
+
+			for _, alias := range cmd.Aliases {
+				if alias == name {
+					return cmd
+				}
+			}
+		}
+
+		return nil
+	}
+
+	mod := p.Module(id.Parent())
+	for _, cmd := range mod.Commands {
+		if cmd.Name == name {
+			return cmd
+		}
+
+		for _, alias := range cmd.Aliases {
+			if alias == name {
+				return cmd
+			}
+		}
+	}
+
+	return nil
 }
 
 func (p *ctxPluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
