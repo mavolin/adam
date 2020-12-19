@@ -13,6 +13,8 @@ const whitespace = " \t\n"
 
 // NewIdentifierFromInvoke creates a new Identifier from the passed invoke.
 func NewIdentifierFromInvoke(invoke string) Identifier {
+	invoke = strings.Trim(invoke, whitespace)
+
 	var b strings.Builder
 	b.Grow(len(invoke) + 1)
 	b.WriteRune('.')

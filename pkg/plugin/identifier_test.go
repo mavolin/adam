@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewIdentifierFromInvoke(t *testing.T) {
-	invoke := "abc \tdef\njkl  mno"
+	invoke := "  abc \tdef\njkl  mno"
 
 	var expect Identifier = ".abc.def.jkl.mno"
 
