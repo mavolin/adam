@@ -132,16 +132,22 @@ type mockDiscordDataProvider struct {
 	SelfError  error
 }
 
-func (d mockDiscordDataProvider) Channel() (*discord.Channel, error) {
-	return d.ChannelReturn, d.ChannelError
+func (d mockDiscordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
+	return func() (*discord.Channel, error) {
+		return d.ChannelReturn, d.ChannelError
+	}
 }
 
-func (d mockDiscordDataProvider) Guild() (*discord.Guild, error) {
-	return d.GuildReturn, d.GuildError
+func (d mockDiscordDataProvider) GuildAsync() func() (*discord.Guild, error) {
+	return func() (*discord.Guild, error) {
+		return d.GuildReturn, d.GuildError
+	}
 }
 
-func (d mockDiscordDataProvider) Self() (*discord.Member, error) {
-	return d.SelfReturn, d.SelfError
+func (d mockDiscordDataProvider) SelfAsync() func() (*discord.Member, error) {
+	return func() (*discord.Member, error) {
+		return d.SelfReturn, d.SelfError
+	}
 }
 
 // removeRegisteredModuleFuncs sets all functions stored in the passed

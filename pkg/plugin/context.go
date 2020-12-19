@@ -177,6 +177,22 @@ func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message
 	return msg, errorutil.WithStack(err)
 }
 
+// Channel returns the *discord.Channel the command was invoked in.
+func (c *Context) Channel() (*discord.Channel, error) {
+	return c.ChannelAsync()()
+}
+
+// Guild returns the guild the command was invoked in.
+func (c *Context) Guild() (*discord.Guild, error) {
+	return c.GuildAsync()()
+}
+
+// Self returns the *discord.Member that belongs to the bot.
+// It will return (nil, nil) if the command was not invoked in a guild.
+func (c *Context) Self() (*discord.Member, error) {
+	return c.SelfAsync()()
+}
+
 // SelfPermissions checks if the bot has the passed permissions.
 // If this command is executed in a direct message, constant.DMPermissions will
 // be returned instead.
@@ -185,17 +201,20 @@ func (c *Context) SelfPermissions() (discord.Permissions, error) {
 		return permutil.DMPermissions, nil
 	}
 
-	g, err := c.Guild()
-	if err != nil {
-		return 0, err
-	}
-
-	ch, err := c.Channel()
-	if err != nil {
-		return 0, err
-	}
+	gf := c.GuildAsync()
+	cf := c.ChannelAsync()
 
 	s, err := c.Self()
+	if err != nil {
+		return 0, err
+	}
+
+	g, err := gf()
+	if err != nil {
+		return 0, err
+	}
+
+	ch, err := cf()
 	if err != nil {
 		return 0, err
 	}
@@ -212,12 +231,14 @@ func (c *Context) UserPermissions() (discord.Permissions, error) {
 		return permutil.DMPermissions, nil
 	}
 
-	g, err := c.Guild()
+	gf := c.GuildAsync()
+
+	ch, err := c.Channel()
 	if err != nil {
 		return 0, err
 	}
 
-	ch, err := c.Channel()
+	g, err := gf()
 	if err != nil {
 		return 0, err
 	}
@@ -241,15 +262,16 @@ type (
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
 	DiscordDataProvider interface {
-		// Channel returns the channel the message was sent in.
-		Channel() (*discord.Channel, error)
-		// Guild returns the guild the message was sent in.
+		// Channel returns a callback returning channel the message was sent
+		// in.
+		ChannelAsync() func() (*discord.Channel, error)
+		// Guild returns a callback returning guild the message was sent in.
 		// If this happened in a private channel, Guild will return nil, nil.
-		Guild() (*discord.Guild, error)
-		// Self returns the bot as a member, if the command was invoked in a
-		// guild.
-		// If this happened in a private channel, Self will return nil, nil.
-		Self() (*discord.Member, error)
+		GuildAsync() func() (*discord.Guild, error)
+		// Self returns a callback returning the *discord.Member the bot
+		// represents in the calling guild.
+		// If this happened in a private channel, Self will return (nil, nil).
+		SelfAsync() func() (*discord.Member, error)
 	}
 
 	// Provider provides copies if the plugins of the bot in the Context.

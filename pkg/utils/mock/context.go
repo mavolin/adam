@@ -25,16 +25,22 @@ type DiscordDataProvider struct {
 
 var _ plugin.DiscordDataProvider = DiscordDataProvider{}
 
-func (d DiscordDataProvider) Channel() (*discord.Channel, error) {
-	return d.ChannelReturn, d.ChannelError
+func (d DiscordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
+	return func() (*discord.Channel, error) {
+		return d.ChannelReturn, d.ChannelError
+	}
 }
 
-func (d DiscordDataProvider) Guild() (*discord.Guild, error) {
-	return d.GuildReturn, d.GuildError
+func (d DiscordDataProvider) GuildAsync() func() (*discord.Guild, error) {
+	return func() (*discord.Guild, error) {
+		return d.GuildReturn, d.GuildError
+	}
 }
 
-func (d DiscordDataProvider) Self() (*discord.Member, error) {
-	return d.SelfReturn, d.SelfError
+func (d DiscordDataProvider) SelfAsync() func() (*discord.Member, error) {
+	return func() (*discord.Member, error) {
+		return d.SelfReturn, d.SelfError
+	}
 }
 
 // PluginProvider is a mock implementation of plugin.Provider.
