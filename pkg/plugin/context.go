@@ -375,8 +375,6 @@ type (
 	Defaults struct {
 		// ChannelTypes specifies the default channel types.
 		ChannelTypes ChannelTypes
-		// BotPermissions are the default permissions for Commands.
-		BotPermissions discord.Permissions
 		// Restrictions is the default restriction func.
 		Restrictions RestrictionFunc
 		// Throttler is the default global throttler.

@@ -118,7 +118,7 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 				Args:            scmd.GetArgs(),
 				Hidden:          scmd.IsHidden(),
 				ChannelTypes:    repo.Defaults.ChannelTypes,
-				BotPermissions:  repo.Defaults.BotPermissions,
+				BotPermissions:  scmd.GetBotPermissions(),
 				Throttler:       repo.Defaults.Throttler,
 				restrictionFunc: repo.Defaults.Restrictions,
 			}
@@ -136,10 +136,6 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 
 			if t := scmd.GetChannelTypes(); t != 0 {
 				rcmd.ChannelTypes = t
-			}
-
-			if p := scmd.GetBotPermissions(); p != nil {
-				rcmd.BotPermissions = *p
 			}
 
 			if t := scmd.GetThrottler(); t != nil {

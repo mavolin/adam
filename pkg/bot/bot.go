@@ -100,10 +100,9 @@ func New(o Options) (*Bot, error) {
 	b.AllowBot = o.AllowBot
 	b.SendTyping = o.SendTyping
 	b.PluginDefaults = plugin.Defaults{
-		ChannelTypes:   o.DefaultChannelTypes,
-		BotPermissions: o.DefaultBotPermissions,
-		Restrictions:   o.DefaultRestrictions,
-		Throttler:      o.DefaultThrottler,
+		ChannelTypes: o.DefaultChannelTypes,
+		Restrictions: o.DefaultRestrictions,
+		Throttler:    o.DefaultThrottler,
 	}
 	b.ThrottlerErrorCheck = o.ThrottlerErrorCheck
 	b.ErrorHandler = o.ErrorHandler

@@ -33,11 +33,7 @@ func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.Registe
 	c.Args = cmd.GetArgs()
 	c.Hidden = cmd.IsHidden()
 	c.ChannelTypes = cmd.GetChannelTypes()
-
-	if perms := cmd.GetBotPermissions(); perms != nil {
-		c.BotPermissions = *perms
-	}
-
+	c.BotPermissions = cmd.GetBotPermissions()
 	c.Throttler = cmd.GetThrottler()
 
 	return c
@@ -99,7 +95,7 @@ type CommandMeta struct {
 	Examples       []string
 	Hidden         bool
 	ChannelTypes   plugin.ChannelTypes
-	BotPermissions *discord.Permissions
+	BotPermissions discord.Permissions
 	Restrictions   plugin.RestrictionFunc
 	Throttler      plugin.Throttler
 }
@@ -114,7 +110,7 @@ func (m CommandMeta) GetArgs() plugin.ArgConfig                  { return m.Args
 func (m CommandMeta) GetExamples(*i18n.Localizer) []string       { return m.Examples }
 func (m CommandMeta) IsHidden() bool                             { return m.Hidden }
 func (m CommandMeta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
-func (m CommandMeta) GetBotPermissions() *discord.Permissions    { return m.BotPermissions }
+func (m CommandMeta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
 func (m CommandMeta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
 func (m CommandMeta) GetThrottler() plugin.Throttler             { return m.Throttler }
 

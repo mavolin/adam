@@ -80,12 +80,9 @@ type (
 		// If the bot lacks one ore more permissions command execution will
 		// stop with an errors.InsufficientPermissionsError.
 		//
-		// Setting this to a non-nil value overrides bot permissions defined by
-		// parents.
-		//
 		// Note that that direct messages may also pass this, if the passed
 		// permissions only require permutil.DMPermissions.
-		GetBotPermissions() *discord.Permissions
+		GetBotPermissions() discord.Permissions
 		// GetRestrictionFunc checks if the user is restricted from using the
 		// command.
 		//

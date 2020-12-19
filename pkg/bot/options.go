@@ -85,12 +85,6 @@ type Options struct { //nolint:maligned
 	//
 	// Default: plugin.AllChannels
 	DefaultChannelTypes plugin.ChannelTypes
-	// DefaultBotPermissions are the default bot permissions, used if neither
-	// the parent modules of a command nor the command itself define any
-	// permissions.
-	//
-	// Default: 0
-	DefaultBotPermissions discord.Permissions
 	// DefaultRestrictions are the default restrictions, used if neither the
 	// parent modules of a command nor the command itself define any.
 	//
