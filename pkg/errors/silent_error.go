@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/mavolin/disstate/v3/pkg/state"
-	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -142,10 +141,5 @@ func (e *SilentError) Handle(s *state.State, ctx *plugin.Context) error {
 }
 
 var HandleSilentError = func(serr *SilentError, s *state.State, ctx *plugin.Context) {
-	log.
-		WithFields(log.Fields{
-			"cmd_ident": ctx.InvokedCommand.Identifier,
-			"err":       serr.Unwrap().Error(),
-		}).
-		Error("command returned with error")
+	Log(serr.Unwrap(), ctx)
 }

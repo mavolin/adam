@@ -25,7 +25,7 @@ type Bot struct {
 
 	// ----- Settings -----
 
-	PrefixProvider      SettingsProvider
+	SettingsProvider    SettingsProvider
 	LocalizationManager *i18n.Manager
 	Owners              []discord.UserID
 	EditThreshold       uint
@@ -93,7 +93,7 @@ func New(o Options) (*Bot, error) {
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
 
-	b.PrefixProvider = o.SettingsProvider
+	b.SettingsProvider = o.SettingsProvider
 	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
 	b.EditThreshold = o.EditThreshold

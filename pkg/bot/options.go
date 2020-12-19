@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -10,7 +11,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store/defaultstore"
 	"github.com/diamondburned/arikawa/v2/utils/wsutil"
 	"github.com/mavolin/disstate/v3/pkg/state"
-	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -133,22 +133,20 @@ type Options struct { //nolint:maligned
 	GatewayTimeout time.Duration
 	// GatewayErrorHandler is the error handler of the gateway.
 	//
-	// Default: func(err error) { logstract.Error(err) }
+	// Default: func(err error) { log.Println(err) }
 	GatewayErrorHandler func(error)
 
 	// StateErrorHandler is the error handler of the *state.State, called if an
 	// event handler returns with an error.
 	//
-	// Default: func(err error) { logstract.Error(err) }
+	// Default: func(err error) { log.Println(err) }
 	StateErrorHandler func(error)
 	// StatePanicHandler is the panic handler of the *state.State, called if an
 	// event handler panics.
 	//
 	// Default:
 	// 	func(recovered interface{}) {
-	//		logstract.
-	//			WithField("recovered", recovered).
-	//			Error("recovered from panic")
+	// 		log.Printf("recovered from panic: %+v\n", recovered)
 	//	}
 	StatePanicHandler func(recovered interface{})
 
@@ -199,18 +197,16 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	if o.GatewayErrorHandler == nil {
-		o.GatewayErrorHandler = func(err error) { log.Error(err) }
+		o.GatewayErrorHandler = func(err error) { log.Println(err) }
 	}
 
 	if o.StateErrorHandler == nil {
-		o.StateErrorHandler = func(err error) { log.Error(err) }
+		o.StateErrorHandler = func(err error) { log.Println(err) }
 	}
 
 	if o.StatePanicHandler == nil {
 		o.StatePanicHandler = func(recovered interface{}) {
-			log.
-				WithField("recovered", recovered).
-				Error("recovered from panic")
+			log.Printf("recovered from panic: %+v", recovered)
 		}
 	}
 
