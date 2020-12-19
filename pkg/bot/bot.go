@@ -10,6 +10,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/session"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -24,9 +25,10 @@ type Bot struct {
 
 	// ----- Settings -----
 
-	PrefixProvider PrefixProvider
-	Owners         []discord.UserID
-	EditThreshold  uint
+	PrefixProvider      SettingsProvider
+	LocalizationManager *i18n.Manager
+	Owners              []discord.UserID
+	EditThreshold       uint
 
 	AllowBot   bool
 	SendTyping bool
@@ -91,7 +93,8 @@ func New(o Options) (*Bot, error) {
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
 
-	b.PrefixProvider = o.PrefixProvider
+	b.PrefixProvider = o.SettingsProvider
+	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
 	b.EditThreshold = o.EditThreshold
 	b.AllowBot = o.AllowBot

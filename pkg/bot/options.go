@@ -13,6 +13,7 @@ import (
 	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -23,10 +24,16 @@ type Options struct { //nolint:maligned
 	// This field is required.
 	Token string
 
-	// PrefixProvider is the prefix provider for the bot.
+	// SettingsProvider is the settings provider for the bot.
 	//
-	// Default: NewStaticPrefixProvider(",").
-	PrefixProvider PrefixProvider
+	// Default: NewStaticSettingsProvider(",").
+	SettingsProvider SettingsProvider
+	// LocalizationFunc is the function used to retrieve i18n.LangFuncs used
+	// for creating localized data.
+	// Leave this empty, if you don't want to use localization.
+	//
+	// Default: nil
+	LocalizationFunc i18n.Func
 	// Owners are the ids of the bot owners.
 	//
 	// Default: nil
@@ -158,8 +165,8 @@ type Options struct { //nolint:maligned
 
 // SetDefaults fills the defaults for all options, that weren't manually set.
 func (o *Options) SetDefaults() (err error) {
-	if o.PrefixProvider == nil {
-		o.PrefixProvider = NewStaticPrefixProvider(",")
+	if o.SettingsProvider == nil {
+		o.SettingsProvider = NewStaticSettingsProvider(",")
 	}
 
 	if len(o.Status) == 0 {
@@ -261,16 +268,20 @@ func (o *Options) setCabinetDefaults() {
 	}
 }
 
-// PrefixProvider is the function used to retrieve the bot's prefix.
-// Prefixes may differ from user to user and from guild to guild.
+// SettingsProvider is the function used to retrieve the settings in the guild.
 //
-// The passed *state.Base is the base of the event triggering prefix check.
-// This will either be message create event, or a message update event, if
-// Options.EditThreshold is greater than 0.
-type PrefixProvider func(b *state.Base, m *discord.Message) (prefixes []string)
+// The passed *state.Base is the base of the event triggering settings check.
+// This will either stem from either message create event, or a message update
+// event, if Options.EditThreshold is greater than 0.
+type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, lang string)
 
-func NewStaticPrefixProvider(prefixes ...string) PrefixProvider {
-	return func(*state.Base, *discord.Message) []string { return prefixes }
+// NewStaticSettingsProvider creates a new SettingsProvider that returns the
+// same prefixes for all guilds and users.
+// The returned language will always be an empty string.
+func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
+	return func(*state.Base, *discord.Message) ([]string, string) {
+		return prefixes, ""
+	}
 }
 
 // =============================================================================
