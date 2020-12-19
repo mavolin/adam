@@ -6,6 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -152,4 +153,24 @@ func (p *ctxPluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
 func (p *ctxPluginProvider) UnavailablePluginProviders() []plugin.UnavailablePluginProvider {
 	p.lazyRepos()
 	return p.unavailableProviders
+}
+
+// =============================================================================
+// plugin.ErrorHandler
+// =====================================================================================
+
+type ctxErrorHandler func(error)
+
+func newCtxErrorHandler(
+	s *state.State, ctx *plugin.Context, f func(error, *state.State, *plugin.Context),
+) ctxErrorHandler {
+	return func(err error) { f(err, s, ctx) }
+}
+
+func (h ctxErrorHandler) HandleError(err error) {
+	h(err)
+}
+
+func (h ctxErrorHandler) HandleErrorSilent(err error) {
+	h(errors.Silent(err))
 }

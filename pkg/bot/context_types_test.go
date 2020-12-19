@@ -470,3 +470,32 @@ func TestCtxPluginProvider_UnavailablePluginProviders(t *testing.T) {
 		assert.Equal(t, expect, actual)
 	})
 }
+
+// =============================================================================
+// plugin.ErrorHandler
+// =====================================================================================
+
+func Test_newCtxErrorHandler(t *testing.T) {
+	var called bool
+
+	f := func(error, *state.State, *plugin.Context) { called = true }
+
+	h := newCtxErrorHandler(nil, nil, f)
+	h(errors.New("abc"))
+
+	assert.True(t, called, "wrapped error handler was not called")
+}
+
+func TestCtxErrorHandler_HandleError(t *testing.T) {
+	var actual error
+
+	var h ctxErrorHandler = func(err error) {
+		actual = err
+	}
+
+	expect := errors.New("Abort. Retry. Fail.") //nolint:golint
+
+	h.HandleError(expect)
+
+	assert.Equal(t, expect, actual)
+}
