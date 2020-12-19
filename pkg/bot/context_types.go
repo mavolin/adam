@@ -2,6 +2,7 @@ package bot
 
 import (
 	"sort"
+	"sync"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
@@ -173,4 +174,76 @@ func (h ctxErrorHandler) HandleError(err error) {
 
 func (h ctxErrorHandler) HandleErrorSilent(err error) {
 	h(errors.Silent(err))
+}
+
+// =============================================================================
+// plugin.DiscordDataProvider
+// =====================================================================================
+
+type discordDataProvider struct {
+	s *state.State
+
+	guildID   discord.GuildID
+	channelID discord.ChannelID
+	selfID    discord.UserID
+}
+
+func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) {
+	g, err := d.s.Cabinet.Guild(d.guildID)
+	if err == nil {
+		return func() (*discord.Guild, error) { return g, nil }
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		g, err = d.s.Guild(d.guildID)
+		wg.Done()
+	}()
+
+	return func() (*discord.Guild, error) {
+		wg.Wait()
+		return g, err
+	}
+}
+
+func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
+	c, err := d.s.Cabinet.Channel(d.channelID)
+	if err == nil {
+		return func() (*discord.Channel, error) { return c, err }
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		c, err = d.s.Channel(d.channelID)
+		wg.Done()
+	}()
+
+	return func() (*discord.Channel, error) {
+		wg.Wait()
+		return c, err
+	}
+}
+
+func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) {
+	m, err := d.s.Cabinet.Member(d.guildID, d.selfID)
+	if err == nil {
+		return func() (*discord.Member, error) { return m, err }
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		m, err = d.s.Member(d.guildID, d.selfID)
+		wg.Done()
+	}()
+
+	return func() (*discord.Member, error) {
+		wg.Wait()
+		return m, err
+	}
 }
