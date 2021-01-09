@@ -1,6 +1,8 @@
 package plugin
 
 import (
+	"fmt"
+
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
@@ -85,8 +87,16 @@ func (c *Context) IsBotOwner() bool {
 
 // Reply replies with the passed message in the channel the command was
 // originally sent in.
-func (c *Context) Reply(content string) (*discord.Message, error) {
-	return c.ReplyMessage(api.SendMessageData{Content: content})
+// The message will be formatted as fmt.Sprint(content...).
+func (c *Context) Reply(content ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprint(content...)})
+}
+
+// Reply replies with the passed message in the channel the command was
+// originally sent in.
+// The message will be formatted as fmt.Sprintf(format, a...).
+func (c *Context) Replyf(format string, a ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a...)})
 }
 
 // Replyl replies with the message translated from the passed
@@ -133,8 +143,16 @@ func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, erro
 
 // ReplyDM replies with the passed message in in a direct message to the
 // invoking user.
-func (c *Context) ReplyDM(content string) (*discord.Message, error) {
-	return c.ReplyMessageDM(api.SendMessageData{Content: content})
+// The message will be formatted as fmt.Sprint(content...).
+func (c *Context) ReplyDM(content ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessageDM(api.SendMessageData{Content: fmt.Sprint(content...)})
+}
+
+// ReplyfDM replies with the passed message in the channel the command was
+// originally sent in.
+// The message will be formatted as fmt.Sprintf(format, a...).
+func (c *Context) ReplyfDM(format string, a ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a)})
 }
 
 // ReplylDM replies with the message translated from the passed i18n.Config in
