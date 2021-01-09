@@ -4,10 +4,13 @@ package bot
 import (
 	"os"
 	"os/signal"
+	"regexp"
+	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/diamondburned/arikawa/v2/session"
+	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
@@ -23,19 +26,26 @@ type Bot struct {
 	modules         []plugin.Module
 	pluginProviders []*pluginProvider
 
+	selfID            discord.UserID
+	selfMentionRegexp *regexp.Regexp
+
 	// ----- Settings -----
 
 	SettingsProvider    SettingsProvider
 	LocalizationManager *i18n.Manager
 	Owners              []discord.UserID
-	EditThreshold       uint
+	EditAge             time.Duration
 
 	AllowBot   bool
 	SendTyping bool
 
+	AsyncPluginProviders bool
+
 	PluginDefaults plugin.Defaults
 
 	ThrottlerErrorCheck func(error) bool
+
+	ReplyMiddlewares []interface{}
 
 	ErrorHandler func(error, *state.State, *plugin.Context)
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
@@ -72,12 +82,8 @@ func New(o Options) (*Bot, error) {
 	gw.WSTimeout = o.GatewayTimeout
 	gw.WS.Timeout = o.GatewayTimeout
 	gw.ErrorLog = o.GatewayErrorHandler
-	gw.Identifier = &gateway.Identifier{
-		IdentifyData: gateway.IdentifyData{
-			Shard:    &o.Shard,
-			Presence: &gateway.UpdateStatusData{Status: o.Status},
-		},
-	}
+	gw.Identifier.IdentifyData.Shard = &o.Shard
+	gw.Identifier.IdentifyData.Presence = &gateway.UpdateStatusData{Status: o.Status}
 
 	if len(o.ActivityName) > 0 {
 		gw.Identifier.Presence.Activities = &[]discord.Activity{
@@ -93,10 +99,18 @@ func New(o Options) (*Bot, error) {
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
 
+	if o.EditAge > 0 {
+		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+			if e.Timestamp.Time().Add(o.EditAge).Before(time.Now()) {
+				b.Route(e.Base, &e.Message, e.Member)
+			}
+		})
+	}
+
 	b.SettingsProvider = o.SettingsProvider
 	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
-	b.EditThreshold = o.EditThreshold
+	b.EditAge = o.EditAge
 	b.AllowBot = o.AllowBot
 	b.SendTyping = o.SendTyping
 	b.PluginDefaults = plugin.Defaults{
@@ -105,6 +119,8 @@ func New(o Options) (*Bot, error) {
 		Throttler:    o.DefaultThrottler,
 	}
 	b.ThrottlerErrorCheck = o.ThrottlerErrorCheck
+	b.ReplyMiddlewares = o.ReplyMiddlewares
+	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
@@ -115,15 +131,44 @@ func New(o Options) (*Bot, error) {
 //
 // If no gateway.Intents were added to the State before opening, Open will
 // derive intents from the registered handlers.
-// Additionally, gateway.IntentGuilds will be added, to ensure caching of guild
-// data.
+// Additionally, gateway.IntentGuilds will be added, if guild caching is
+// enabled.
 func (b *Bot) Open() error {
 	if b.State.Gateway.Identifier.Intents == 0 {
 		b.AddIntents(b.State.DeriveIntents())
-		b.AddIntents(gateway.IntentGuilds)
+
+		if b.State.Cabinet.GuildStore != store.Noop {
+			b.AddIntents(gateway.IntentGuilds)
+		}
 	}
 
-	return b.State.Open()
+	err := b.State.Open()
+	if err != nil {
+		return err
+	}
+
+	done := make(chan struct{})
+
+	rm := b.State.MustAddHandler(func(_ *state.State, r *state.ReadyEvent) {
+		b.selfID = r.User.ID
+		b.selfMentionRegexp = regexp.MustCompile("^<@!?" + r.User.ID.String() + ">")
+
+		done <- struct{}{}
+	})
+
+	<-done
+	rm()
+
+	b.State.MustAddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
+		b.Route(e.Base, &e.Message, e.Member)
+	})
+
+	return nil
+}
+
+// Close closes the websocket connection to Discord's gateway.
+func (b *Bot) Close() error {
+	return b.State.Close()
 }
 
 // Wait blockingly waits for SIGINT and returns, when it receives it.

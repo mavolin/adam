@@ -3,6 +3,7 @@ package bot
 import (
 	"fmt"
 	"log"
+	"runtime/debug"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -18,15 +19,16 @@ import (
 )
 
 // Options contains different configurations for a Bot.
-type Options struct { //nolint:maligned
+type Options struct { //nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
 	// Token is the bot token without the 'Bot' prefix.
 	//
 	// This field is required.
 	Token string
 
 	// SettingsProvider is the settings provider for the bot.
+	// If left nil, only the mention prefix will be usable.
 	//
-	// Default: NewStaticSettingsProvider(",").
+	// Default: NewStaticSettingsProvider()
 	SettingsProvider SettingsProvider
 	// LocalizationFunc is the function used to retrieve i18n.LangFuncs used
 	// for creating localized data.
@@ -35,18 +37,17 @@ type Options struct { //nolint:maligned
 	// Default: nil
 	LocalizationFunc i18n.Func
 	// Owners are the ids of the bot owners.
+	// These are accessible through plugin.Context.BotOwnerIDs.
 	//
 	// Default: nil
 	Owners []discord.UserID
-	// EditThreshold is the inclusive per channel threshold until which message
-	// edits will also be scanned for invokes.
-	// If this is set to 0, edited messages won't be watched.
-	//
-	// Make sure, that the MessageStore stores at least EditThreshold messages
-	// for this feature to work.
+	// EditAge is the oldest age an edit message may have, to trigger a
+	// command.
+	// If a message older than EditAge is edited, it will be ignored.
+	// If this is set to 0 or less, edited messages won't be watched.
 	//
 	// Default: 0
-	EditThreshold uint
+	EditAge time.Duration
 
 	// Status is the status of the bot.
 	//
@@ -106,15 +107,33 @@ type Options struct { //nolint:maligned
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerErrorCheck func(error) bool
 
-	// Cabinet is the store.Cabinet used for caching.
+	// ReplyMiddlewares contains the middlewares that should be used when
+	// awaiting a reply.
 	//
-	// Every nil store of the cabinet, will be set to it's default store.
-	// Use store.Noop to deactivate Stores.
+	// The following types are permitted:
+	//  • func(*state.State, interface{})
+	//  • func(*state.State, interface{}) error
+	//  • func(*state.State, *state.Base)
+	//  • func(*state.State, *state.Base) error
+	//  • func(*state.State, *state.MessageCreateEvent)
+	//  • func(*state.State, *state.MessageCreateEvent) error
+	ReplyMiddlewares []interface{}
+
+	// AsyncPluginProviders specifies whether the plugins providers should be
+	// fetched asynchronously or one by one.
+	//
+	// Default: false
+	AsyncPluginProviders bool
+
+	// Cabinet is the store.Cabinet used for caching.
+	// Use store.NoopCabinet to deactivate caching.
+	//
+	// Default: defaultstore.New()
 	Cabinet store.Cabinet
 
 	// Shard is the shard of the bot.
 	//
-	// Default: &gateway.Shard[0, 1]
+	// Default: gateway.Shard[0, 1]
 	Shard gateway.Shard
 	// GatewayURL is the url of the gateway to use.
 	//
@@ -140,7 +159,7 @@ type Options struct { //nolint:maligned
 	//
 	// Default:
 	// 	func(recovered interface{}) {
-	// 		log.Printf("recovered from panic: %+v\n", recovered)
+	// 		log.Printf("recovered from panic: %+v\n%s", recovered, debug.Stack())
 	//	}
 	StatePanicHandler func(recovered interface{})
 
@@ -173,6 +192,19 @@ func (o *Options) SetDefaults() (err error) {
 		o.ThrottlerErrorCheck = DefaultThrottlerErrorCheck
 	}
 
+	for i, m := range o.ReplyMiddlewares {
+		switch m.(type) {
+		case func(*state.State, interface{}):
+		case func(*state.State, interface{}) error:
+		case func(*state.State, *state.Base):
+		case func(*state.State, *state.Base) error:
+		case func(*state.State, *state.MessageCreateEvent):
+		case func(*state.State, *state.MessageCreateEvent) error:
+		default:
+			return errors.NewWithStackf("bot: Options.ReplyMiddlewares[%d] is of unsupported type %T", i, m)
+		}
+	}
+
 	o.setCabinetDefaults()
 
 	if o.Shard[1] == 0 {
@@ -200,7 +232,7 @@ func (o *Options) SetDefaults() (err error) {
 
 	if o.StatePanicHandler == nil {
 		o.StatePanicHandler = func(recovered interface{}) {
-			log.Printf("recovered from panic: %+v", recovered)
+			log.Printf("recovered from panic: %+v\n%s", recovered, debug.Stack())
 		}
 	}
 
@@ -236,13 +268,8 @@ func (o *Options) setCabinetDefaults() {
 		o.Cabinet.MemberStore = defaultstore.NewMember()
 	}
 
-	var maxMessages uint = 100
-	if o.EditThreshold > maxMessages {
-		maxMessages = o.EditThreshold
-	}
-
 	if o.Cabinet.MessageStore == nil {
-		o.Cabinet.MessageStore = defaultstore.NewMessage(int(maxMessages))
+		o.Cabinet.MessageStore = defaultstore.NewMessage(100)
 	}
 
 	if o.Cabinet.PresenceStore == nil {
@@ -262,7 +289,7 @@ func (o *Options) setCabinetDefaults() {
 //
 // The passed *state.Base is the base of the event triggering settings check.
 // This will either stem from either message create event, or a message update
-// event, if Options.EditThreshold is greater than 0.
+// event, if Options.EditAge is greater than 0.
 type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, lang string)
 
 // NewStaticSettingsProvider creates a new SettingsProvider that returns the
@@ -279,17 +306,11 @@ func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
 // =====================================================================================
 
 func DefaultThrottlerErrorCheck(err error) bool {
-	if errors.As(err, new(errors.InternalError)) {
-		return true
-	} else if errors.As(err, new(errors.SilentError)) {
-		return true
-	}
-
-	return false
+	return !errors.As(err, new(errors.InformationalError))
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
-	for i := 0; i < 10 && err != nil; i++ { // prevent error cycle
+	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
 		var Err errors.Error
 		if !errors.As(err, &Err) {
 			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
@@ -307,7 +328,7 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 		err = fmt.Errorf("panic: %+v", recovered)
 	}
 
-	for i := 0; i < 10 && err != nil; i++ { // prevent error cycle
+	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
 		var Err errors.Error
 		if !errors.As(err, &Err) {
 			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
