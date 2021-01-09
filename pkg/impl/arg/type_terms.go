@@ -53,7 +53,7 @@ var (
 	choiceName        = i18n.NewFallbackConfig("args.types.choice.name", "Choice")
 	choiceDescription = i18n.NewFallbackConfig(
 		"args.types.choice.name",
-		"A choice is a list of elements from which you can to pick one. "+
+		"A list of elements from which you can to pick one. "+
 			"Refer to the help of the command to see all possible choices.")
 )
 
