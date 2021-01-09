@@ -821,10 +821,9 @@ func Test_fillSubcommands(t *testing.T) {
 func Test_generateRegisteredCommands(t *testing.T) {
 	t.Run("use defaults", func(t *testing.T) {
 		defaults := Defaults{
-			ChannelTypes:   12,
-			BotPermissions: 456,
-			Throttler:      mockThrottler{cmp: "abc"},
-			Restrictions:   nil,
+			ChannelTypes: 12,
+			Throttler:    mockThrottler{cmp: "abc"},
+			Restrictions: nil,
 		}
 
 		parent := new(RegisteredModule)
@@ -854,7 +853,6 @@ func Test_generateRegisteredCommands(t *testing.T) {
 				Identifier:      ".abc.def",
 				Name:            "def",
 				ChannelTypes:    defaults.ChannelTypes,
-				BotPermissions:  defaults.BotPermissions,
 				Throttler:       defaults.Throttler,
 				restrictionFunc: defaults.Restrictions,
 			},
@@ -867,10 +865,9 @@ func Test_generateRegisteredCommands(t *testing.T) {
 
 	t.Run("parent overwrite", func(t *testing.T) {
 		defaults := Defaults{
-			ChannelTypes:   12,
-			BotPermissions: 456,
-			Throttler:      mockThrottler{cmp: "abc"},
-			Restrictions:   nil,
+			ChannelTypes: 12,
+			Throttler:    mockThrottler{cmp: "abc"},
+			Restrictions: nil,
 		}
 
 		parent := new(RegisteredModule)
@@ -909,7 +906,6 @@ func Test_generateRegisteredCommands(t *testing.T) {
 				Name:            "def",
 				Hidden:          false,
 				ChannelTypes:    23,
-				BotPermissions:  456,
 				Throttler:       mockThrottler{cmp: "bcd"},
 				restrictionFunc: nil,
 			},
@@ -922,10 +918,9 @@ func Test_generateRegisteredCommands(t *testing.T) {
 
 	t.Run("command overwrite", func(t *testing.T) {
 		defaults := Defaults{
-			ChannelTypes:   12,
-			BotPermissions: 456,
-			Throttler:      mockThrottler{cmp: "abc"},
-			Restrictions:   nil,
+			ChannelTypes: 12,
+			Throttler:    mockThrottler{cmp: "abc"},
+			Restrictions: nil,
 		}
 
 		parent := new(RegisteredModule)
@@ -941,12 +936,11 @@ func Test_generateRegisteredCommands(t *testing.T) {
 					defaultThrottler:    mockThrottler{cmp: "bcd"},
 					commands: []Command{
 						mockCommand{
-							name:           "def",
-							hidden:         true,
-							channelTypes:   34,
-							botPermissions: Permissions(678),
-							restrictions:   nil,
-							throttler:      mockThrottler{cmp: "cde"},
+							name:         "def",
+							hidden:       true,
+							channelTypes: 34,
+							restrictions: nil,
+							throttler:    mockThrottler{cmp: "cde"},
 						},
 					},
 				},
@@ -959,12 +953,11 @@ func Test_generateRegisteredCommands(t *testing.T) {
 				provider:     nil,
 				ProviderName: "",
 				Source: mockCommand{
-					name:           "def",
-					hidden:         true,
-					channelTypes:   34,
-					botPermissions: Permissions(678),
-					restrictions:   nil,
-					throttler:      mockThrottler{cmp: "cde"},
+					name:         "def",
+					hidden:       true,
+					channelTypes: 34,
+					restrictions: nil,
+					throttler:    mockThrottler{cmp: "cde"},
 				},
 				SourceParents: []Module{
 					mockModule{
@@ -975,12 +968,11 @@ func Test_generateRegisteredCommands(t *testing.T) {
 						defaultThrottler:    mockThrottler{cmp: "bcd"},
 						commands: []Command{
 							mockCommand{
-								name:           "def",
-								hidden:         true,
-								channelTypes:   34,
-								botPermissions: Permissions(678),
-								restrictions:   nil,
-								throttler:      mockThrottler{cmp: "cde"},
+								name:         "def",
+								hidden:       true,
+								channelTypes: 34,
+								restrictions: nil,
+								throttler:    mockThrottler{cmp: "cde"},
 							},
 						},
 					},
@@ -989,7 +981,6 @@ func Test_generateRegisteredCommands(t *testing.T) {
 				Name:            "def",
 				Hidden:          true,
 				ChannelTypes:    34,
-				BotPermissions:  678,
 				Throttler:       mockThrottler{cmp: "cde"},
 				restrictionFunc: nil,
 			},
