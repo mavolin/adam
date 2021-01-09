@@ -22,7 +22,7 @@ func WrapState(s *state.State) plugin.Replier {
 	return &wrappedReplier{s: s}
 }
 
-func (r *wrappedReplier) ReplyMessage(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
+func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
 	perms, err := ctx.SelfPermissions()
 	if err != nil {
 		return nil, err

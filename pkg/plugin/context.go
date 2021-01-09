@@ -127,7 +127,7 @@ func (c *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, err
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	msg, err := c.Replier.ReplyMessage(c, data)
+	msg, err := c.Replier.Reply(c, data)
 	return msg, errorutil.WithStack(err)
 }
 
@@ -255,7 +255,7 @@ type (
 	// responds.
 	Replier interface {
 		// ReplyMessage sends a message in the invoking channel.
-		ReplyMessage(ctx *Context, data api.SendMessageData) (*discord.Message, error)
+		Reply(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 		// ReplyDM sends the passed message in a direct message to the user.
 		ReplyDM(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 	}

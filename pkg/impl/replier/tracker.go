@@ -27,6 +27,30 @@ var _ plugin.Replier = new(Tracker)
 
 // NewTracker creates a new tracker using the passed state, with the passed
 // invoking user and the passed guild channel.
+//
+// Example Usage
+//
+//  b, _ := bot.New(bot.Options{Token: "abc"})
+//
+//	// A tracker is typically added to a Context through a middleware.
+//	// Make sure that the middleware replacing the default replier is executed
+//	// before any middlewares that could send replies.
+//
+//	b.MustAddMiddleware(func(next bot.CommandFunc) bot.CommandFunc {
+//		return func(s *state.State, ctx *plugin.Context) error {
+//			t := NewTracker(s)
+//			ctx.Replier = t // replace the default replier
+//
+//			err := next(s, ctx)
+//			if err != nil {
+//				return err
+//			}
+//
+//			// do something with t.DMs() and t.GuildMessages()
+//
+//			return nil
+//		}
+//	})
 func NewTracker(s *state.State) *Tracker {
 	return &Tracker{s: s}
 }
@@ -47,7 +71,7 @@ func (t *Tracker) DMs() (cp []discord.Message) {
 	return
 }
 
-func (t *Tracker) ReplyMessage(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
+func (t *Tracker) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
 	perms, err := ctx.SelfPermissions()
 	if err != nil {
 		return nil, err

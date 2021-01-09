@@ -46,7 +46,7 @@ func TestTracker_GuildMessages(t *testing.T) {
 
 	m.SendMessageComplex(data, expectMessage)
 
-	actualMessage, err := r.ReplyMessage(ctx, data)
+	actualMessage, err := r.Reply(ctx, data)
 	require.NoError(t, err)
 	assert.Equal(t, expectMessage, *actualMessage)
 
@@ -132,7 +132,7 @@ func TestTracker_ReplyMessage(t *testing.T) {
 
 	m.SendMessageComplex(data, expect)
 
-	actual, err := r.ReplyMessage(ctx, data)
+	actual, err := r.Reply(ctx, data)
 	require.NoError(t, err)
 	assert.Equal(t, expect, *actual)
 }
