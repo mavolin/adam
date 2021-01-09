@@ -44,6 +44,7 @@ type Context struct {
 
 	// ReplyMiddlewares contains the middlewares that should be used when
 	// awaiting a reply.
+	//
 	// The following types are permitted:
 	//		• func(*state.State, interface{})
 	//		• func(*state.State, interface{}) error
@@ -112,7 +113,7 @@ func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed
-// discordutil.EmbedBuilder and sends it in the channel the command was sent
+// embedutil.Builder and sends it in the channel the command was sent
 // in.
 func (c *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(c.Localizer)
@@ -147,8 +148,8 @@ func (c *Context) ReplylDM(cfg *i18n.Config) (*discord.Message, error) {
 	return c.ReplyDM(s)
 }
 
-// Replylt replies with the message generated from the passed term in a direct
-// message to the invoking user.
+// ReplyltDM replies with the message generated from the passed term in a
+// direct message to the invoking user.
 func (c *Context) ReplyltDM(term i18n.Term) (*discord.Message, error) {
 	return c.ReplylDM(term.AsConfig())
 }
@@ -159,8 +160,8 @@ func (c *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
 	return c.ReplyMessageDM(api.SendMessageData{Embed: &e})
 }
 
-// ReplyEmbedBuilder builds the discord.Embed from the passed embedutil.Builder
-// and sends it in a direct message to the invoking user.
+// ReplyEmbedBuilderDM builds the discord.Embed from the passed
+// embedutil.Builder and sends it in a direct message to the invoking user.
 func (c *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(c.Localizer)
 	if err != nil {
