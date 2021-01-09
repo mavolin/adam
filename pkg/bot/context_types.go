@@ -22,7 +22,9 @@ type ctxPluginProvider struct {
 	// repos contains the already collected repositories
 	repos []plugin.Repository
 	// remProviders are the remaining, i.e. uncalled, plugin providers.
-	remProviders []pluginProvider
+	remProviders []*pluginProvider
+
+	async bool
 
 	commands []*plugin.RegisteredCommand
 	modules  []*plugin.RegisteredModule
@@ -36,6 +38,19 @@ func (p *ctxPluginProvider) PluginRepositories() []plugin.Repository {
 }
 
 func (p *ctxPluginProvider) lazyRepos() {
+	if len(p.remProviders) == 0 {
+		return
+	}
+
+	if p.async {
+		r, up := pluginProvidersAsync(p.base, p.msg, p.remProviders)
+		p.repos = append(p.repos, r...)
+		p.unavailableProviders = append(p.unavailableProviders, up...)
+
+		p.remProviders = nil
+		return
+	}
+
 	for _, remp := range p.remProviders {
 		cmds, mods, err := remp.provider(p.base, p.msg)
 		if err != nil {

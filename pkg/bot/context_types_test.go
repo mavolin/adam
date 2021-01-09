@@ -28,10 +28,10 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 					Commands: []plugin.Command{
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 					},
-					Defaults: plugin.Defaults{BotPermissions: discord.PermissionSendMessages},
+					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
-			remProviders: []pluginProvider{
+			remProviders: []*pluginProvider{
 				{
 					name: "another",
 					provider: func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -39,7 +39,7 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 							[]plugin.Module{mock.Module{ModuleMeta: mock.ModuleMeta{Name: "ghi"}}},
 							nil
 					},
-					defaults: plugin.Defaults{BotPermissions: discord.PermissionConnect},
+					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
@@ -50,7 +50,7 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 				Commands: []plugin.Command{
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 				},
-				Defaults: plugin.Defaults{BotPermissions: discord.PermissionSendMessages},
+				Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 			},
 			{
 				ProviderName: "another",
@@ -60,7 +60,7 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 				Modules: []plugin.Module{
 					mock.Module{ModuleMeta: mock.ModuleMeta{Name: "ghi"}},
 				},
-				Defaults: plugin.Defaults{BotPermissions: discord.PermissionConnect},
+				Defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 			},
 		}
 
@@ -76,7 +76,7 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 					Commands: []plugin.Command{
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 					},
-					Defaults: plugin.Defaults{BotPermissions: discord.PermissionSendMessages},
+					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 				{
 					ProviderName: "another",
@@ -86,7 +86,7 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 					Modules: []plugin.Module{
 						mock.Module{ModuleMeta: mock.ModuleMeta{Name: "ghi"}},
 					},
-					Defaults: plugin.Defaults{BotPermissions: discord.PermissionConnect},
+					Defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 			remProviders: nil,
@@ -108,16 +108,16 @@ func TestCtxPluginProvider_Commands(t *testing.T) {
 					Commands: []plugin.Command{
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 					},
-					Defaults: plugin.Defaults{BotPermissions: discord.PermissionSendMessages},
+					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
-			remProviders: []pluginProvider{
+			remProviders: []*pluginProvider{
 				{
 					name: "another",
 					provider: func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 						return []plugin.Command{mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}}}, nil, nil
 					},
-					defaults: plugin.Defaults{BotPermissions: discord.PermissionConnect},
+					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
@@ -126,11 +126,11 @@ func TestCtxPluginProvider_Commands(t *testing.T) {
 			mock.GenerateRegisteredCommandWithDefaults(
 				plugin.BuiltInProvider,
 				mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
-				plugin.Defaults{BotPermissions: discord.PermissionSendMessages}),
+				plugin.Defaults{ChannelTypes: plugin.DirectMessages}),
 			mock.GenerateRegisteredCommandWithDefaults(
 				"another",
 				mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
-				plugin.Defaults{BotPermissions: discord.PermissionConnect}),
+				plugin.Defaults{ChannelTypes: plugin.GuildTextChannels}),
 		}
 
 		actual := p.Commands()
@@ -170,10 +170,10 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 							},
 						},
 					},
-					Defaults: plugin.Defaults{BotPermissions: discord.PermissionSendMessages},
+					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
-			remProviders: []pluginProvider{
+			remProviders: []*pluginProvider{
 				{
 					name: "another",
 					provider: func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -186,7 +186,7 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 							},
 						}, nil
 					},
-					defaults: plugin.Defaults{BotPermissions: discord.PermissionConnect},
+					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
@@ -200,7 +200,7 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
 					},
 				},
-				plugin.Defaults{BotPermissions: discord.PermissionSendMessages}),
+				plugin.Defaults{ChannelTypes: plugin.DirectMessages}),
 			mock.GenerateRegisteredModuleWithDefaults(
 				"another",
 				mock.Module{
@@ -209,7 +209,7 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "jkl"}},
 					},
 				},
-				plugin.Defaults{BotPermissions: discord.PermissionConnect}),
+				plugin.Defaults{ChannelTypes: plugin.GuildTextChannels}),
 		}
 
 		actual := p.Modules()
@@ -422,16 +422,16 @@ func TestCtxPluginProvider_UnavailablePluginProviders(t *testing.T) {
 					Commands: []plugin.Command{
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 					},
-					Defaults: plugin.Defaults{BotPermissions: discord.PermissionSendMessages},
+					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
-			remProviders: []pluginProvider{
+			remProviders: []*pluginProvider{
 				{
 					name: "another",
 					provider: func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 						return nil, nil, errors.New("abc")
 					},
-					defaults: plugin.Defaults{BotPermissions: discord.PermissionConnect},
+					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
@@ -455,7 +455,7 @@ func TestCtxPluginProvider_UnavailablePluginProviders(t *testing.T) {
 					Commands: []plugin.Command{
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 					},
-					Defaults: plugin.Defaults{BotPermissions: discord.PermissionSendMessages},
+					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
 			remProviders: nil,
