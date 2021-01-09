@@ -1,6 +1,8 @@
 package arg
 
 import (
+	"github.com/diamondburned/arikawa/v2/discord"
+
 	"github.com/mavolin/adam/pkg/i18n"
 	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
 )
@@ -643,11 +645,11 @@ var (
 
 type (
 	categoryChooserDescriptionPlaceholders struct {
-		CancelEmoji string
+		CancelEmoji discord.APIEmoji
 	}
 
 	categoryChooserMatchPlaceholders struct {
-		Emoji        string
+		Emoji        discord.APIEmoji
 		CategoryName string
 		Position     int
 	}
@@ -731,11 +733,11 @@ var (
 
 type (
 	voiceChannelChooserDescriptionPlaceholders struct {
-		CancelEmoji string
+		CancelEmoji discord.APIEmoji
 	}
 
 	voiceChannelChooserMatchPlaceholders struct {
-		Emoji        string
+		Emoji        discord.APIEmoji
 		CategoryName string
 		ChannelName  string
 		Position     int

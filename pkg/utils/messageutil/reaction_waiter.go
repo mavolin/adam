@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
@@ -25,7 +24,7 @@ type (
 		messageID discord.MessageID
 		channelID discord.ChannelID
 
-		reactions, cancelReactions []api.Emoji
+		reactions, cancelReactions []discord.APIEmoji
 		noAutoReact                bool
 		noAutoDelete               bool
 
@@ -60,7 +59,7 @@ func (w *ReactionWaiter) InChannel(id discord.ChannelID) *ReactionWaiter {
 }
 
 // WithReactions adds the passed reaction to the wait list.
-func (w *ReactionWaiter) WithReactions(reactions ...api.Emoji) *ReactionWaiter {
+func (w *ReactionWaiter) WithReactions(reactions ...discord.APIEmoji) *ReactionWaiter {
 	w.reactions = append(w.reactions, reactions...)
 	return w
 }
@@ -68,7 +67,7 @@ func (w *ReactionWaiter) WithReactions(reactions ...api.Emoji) *ReactionWaiter {
 // WithCancelReactions adds the passed cancel reactions.
 // If the user reacts with one of the passed emojis, AwaitReply will return
 // errors.Abort.
-func (w *ReactionWaiter) WithCancelReactions(reactions ...api.Emoji) *ReactionWaiter {
+func (w *ReactionWaiter) WithCancelReactions(reactions ...discord.APIEmoji) *ReactionWaiter {
 	w.cancelReactions = append(w.cancelReactions, reactions...)
 	return w
 }
@@ -125,10 +124,10 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 		noAutoReact: w.noAutoReact,
 	}
 
-	cp.reactions = make([]api.Emoji, len(w.reactions))
+	cp.reactions = make([]discord.APIEmoji, len(w.reactions))
 	copy(cp.reactions, w.reactions)
 
-	cp.cancelReactions = make([]api.Emoji, len(w.cancelReactions))
+	cp.cancelReactions = make([]discord.APIEmoji, len(w.cancelReactions))
 	copy(cp.cancelReactions, w.cancelReactions)
 
 	cp.middlewares = make([]interface{}, len(w.middlewares))
@@ -144,7 +143,7 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 // If the user cancels the wait, errors.Abort will be returned.
 //
 // Besides that, the Wait can also be canceled through a middleware.
-func (w *ReactionWaiter) Await(timeout time.Duration) (api.Emoji, error) {
+func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) {
 	return w.AwaitWithContext(context.Background(), timeout)
 }
 
@@ -157,7 +156,7 @@ func (w *ReactionWaiter) Await(timeout time.Duration) (api.Emoji, error) {
 // be returned.
 //
 // Besides that, the Wait can also be canceled through a middleware.
-func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Duration) (api.Emoji, error) {
+func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Duration) (discord.APIEmoji, error) {
 	perms, err := w.ctx.SelfPermissions()
 	if err != nil {
 		return "", err
@@ -186,7 +185,7 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 		return "", &TimeoutError{UserID: w.ctx.Author.ID}
 	case r := <-result:
 		switch r := r.(type) {
-		case api.Emoji:
+		case discord.APIEmoji:
 			return r, nil
 		case error:
 			return "", r

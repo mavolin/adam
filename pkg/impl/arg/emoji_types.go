@@ -122,7 +122,7 @@ func (e emoji) Default() interface{} {
 // of an emoji.
 // Unlike Emoji, this type only accepts actual emojis but no ids.
 //
-// Go type: api.Emoji
+// Go type: discord.APIEmoji
 var RawEmoji Type = new(rawEmoji)
 
 type rawEmoji struct{}
@@ -139,14 +139,14 @@ func (r rawEmoji) Description(l *i18n.Localizer) string {
 
 func (r rawEmoji) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	if emojiutil.IsValid(ctx.Raw) {
-		return ctx.Raw, nil
+		return discord.APIEmoji(ctx.Raw), nil
 	} else if matches := customEmojiRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 3 {
-		return matches[1] + ":" + matches[2], nil
+		return discord.APIEmoji(matches[1] + ":" + matches[2]), nil
 	}
 
 	return nil, newArgParsingErr(emojiInvalidError, ctx, nil)
 }
 
 func (r rawEmoji) Default() interface{} {
-	return ""
+	return discord.APIEmoji("")
 }

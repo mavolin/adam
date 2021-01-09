@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
@@ -28,13 +27,15 @@ var TextChannelAllowIDs = false
 var (
 	// CategoryCancelEmoji is the emoji used as cancel emoji in a Category
 	// chooser embed.
-	CategoryCancelEmoji = emojiutil.CrossMarkButton
+	CategoryCancelEmoji = discord.APIEmoji(emojiutil.CrossMarkButton)
 	// CategoryOptionEmojis are the emojis used as options in a category
 	// chooser embed.
 	// It must contain at least 2 emojis.
-	CategoryOptionEmojis = []api.Emoji{
-		emojiutil.Keycap1, emojiutil.Keycap2, emojiutil.Keycap3, emojiutil.Keycap4, emojiutil.Keycap5,
-		emojiutil.Keycap6, emojiutil.Keycap7, emojiutil.Keycap8, emojiutil.Keycap9, emojiutil.Keycap10,
+	CategoryOptionEmojis = []discord.APIEmoji{
+		discord.APIEmoji(emojiutil.Keycap1), discord.APIEmoji(emojiutil.Keycap2), discord.APIEmoji(emojiutil.Keycap3),
+		discord.APIEmoji(emojiutil.Keycap4), discord.APIEmoji(emojiutil.Keycap5), discord.APIEmoji(emojiutil.Keycap6),
+		discord.APIEmoji(emojiutil.Keycap7), discord.APIEmoji(emojiutil.Keycap8), discord.APIEmoji(emojiutil.Keycap9),
+		discord.APIEmoji(emojiutil.Keycap10),
 	}
 
 	// CategoryChooserBuilder is the source embedutil.Builder used to create
@@ -56,13 +57,15 @@ var (
 var (
 	// VoiceChannelCancelEmoji is the emoji used as cancel emoji in a
 	// VoiceChannel chooser embed.
-	VoiceChannelCancelEmoji = emojiutil.CrossMarkButton
+	VoiceChannelCancelEmoji = discord.APIEmoji(emojiutil.CrossMarkButton)
 	// VoiceChannelOptionEmojis are the emojis used as options in a
 	// VoiceChannel chooser embed.
 	// It must contain at least 2 emojis.
-	VoiceChannelOptionEmojis = []api.Emoji{
-		emojiutil.Keycap1, emojiutil.Keycap2, emojiutil.Keycap3, emojiutil.Keycap4, emojiutil.Keycap5,
-		emojiutil.Keycap6, emojiutil.Keycap7, emojiutil.Keycap8, emojiutil.Keycap9, emojiutil.Keycap10,
+	VoiceChannelOptionEmojis = []discord.APIEmoji{
+		discord.APIEmoji(emojiutil.Keycap1), discord.APIEmoji(emojiutil.Keycap2), discord.APIEmoji(emojiutil.Keycap3),
+		discord.APIEmoji(emojiutil.Keycap4), discord.APIEmoji(emojiutil.Keycap5), discord.APIEmoji(emojiutil.Keycap6),
+		discord.APIEmoji(emojiutil.Keycap7), discord.APIEmoji(emojiutil.Keycap8), discord.APIEmoji(emojiutil.Keycap9),
+		discord.APIEmoji(emojiutil.Keycap10),
 	}
 
 	// VoiceChannelChooserBuilder is the source embedutil.Builder used to

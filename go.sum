@@ -5,6 +5,7 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/diamondburned/arikawa v1.3.14 h1:9Y1r8nlvWA01hQIYVFGr83JTLd5ULPBzNOKvxbAsH1M=
 github.com/diamondburned/arikawa/v2 v2.0.0-20201215163218-7a7a56d613f4 h1:EhCL4FfMH0E55RVDoFo+ZUAuWBao/C42YmUwWokJcfE=
 github.com/diamondburned/arikawa/v2 v2.0.0-20201215163218-7a7a56d613f4/go.mod h1:e+lhS20ni2luFEU06Pc8paCxgZL99/RZb77dOC82CF0=
+github.com/diamondburned/arikawa/v2 v2.0.0-20201216225132-fdeff18f5d9e/go.mod h1:e+lhS20ni2luFEU06Pc8paCxgZL99/RZb77dOC82CF0=
 github.com/diamondburned/arikawa/v2 v2.0.0-20210106051538-d9a159d948af h1:Q1NROEw872Yy4puFMgpJDEbJM5OpYYW1w9v4gGMH5Dc=
 github.com/diamondburned/arikawa/v2 v2.0.0-20210106051538-d9a159d948af/go.mod h1:e+lhS20ni2luFEU06Pc8paCxgZL99/RZb77dOC82CF0=
 github.com/gorilla/schema v1.2.0 h1:YufUaxZYCKGFuAq3c96BOhjgd5nmXiOY9NGzF247Tsc=
@@ -15,6 +16,8 @@ github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334 h1:VHgatEHNcBFE
 github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334/go.mod h1:SK73tn/9oHe+/Y0h39VT4UCxmurVJkR5NA7kMEAOgSE=
 github.com/mavolin/dismock/v2 v2.0.0-20201215165643-dc1c2e57a55d h1:RJgb3fcM/fuMbPMNfVmgixEz2HMBFoNw6FdkgSz0neo=
 github.com/mavolin/dismock/v2 v2.0.0-20201215165643-dc1c2e57a55d/go.mod h1:k8PNvjEJhEkjcNixhCvI+LdNY/vDTLJlXe0Dw46AtCM=
+github.com/mavolin/dismock/v2 v2.0.0-20210109152257-76e67bdfcc67 h1:PNi5BQV1kqj41T8PqWRjW6JQZNAERU739xSxOrpuJRA=
+github.com/mavolin/dismock/v2 v2.0.0-20210109152257-76e67bdfcc67/go.mod h1:kpPbt/+FbparW2MDnJSbSHM1GAo0ctzf6JihAxtU9jg=
 github.com/mavolin/disstate/v3 v3.0.0-20201215180522-7a52bcbd8b42 h1:ptgQcjAX1AVwsZuE/vXUNspnwIItzhjRBImES/FbP7A=
 github.com/mavolin/disstate/v3 v3.0.0-20201215180522-7a52bcbd8b42/go.mod h1:UvwDsdwB4F6ua+uyqzhTdbISQAFPJO0UhKgc1C//lE4=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
