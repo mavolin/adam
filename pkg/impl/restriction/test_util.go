@@ -10,20 +10,20 @@ import (
 // plugin.RestrictionFuncs useful in testing
 
 var (
-	errorFuncReturn1 = errors.NewRestrictionError("abc")
-	errorFuncReturn2 = errors.NewRestrictionError("def")
-	errorFuncReturn3 = errors.NewRestrictionError("ghi")
-	errorFuncReturn4 = errors.NewRestrictionError("jkl")
+	errorFuncReturn1 = plugin.NewRestrictionError("abc")
+	errorFuncReturn2 = plugin.NewRestrictionError("def")
+	errorFuncReturn3 = plugin.NewRestrictionError("ghi")
+	errorFuncReturn4 = plugin.NewRestrictionError("jkl")
 
-	fatalErrorFuncReturn = errors.NewFatalRestrictionError("mno")
+	fatalErrorFuncReturn = plugin.NewFatalRestrictionError("mno")
 
 	embeddableErrorFuncReturn = &EmbeddableError{
-		EmbeddableVersion: errors.NewRestrictionError("pqr"),
+		EmbeddableVersion: plugin.NewRestrictionError("pqr"),
 		DefaultVersion:    errors.New("stu"),
 	}
 
 	fatalEmbeddableErrorFuncReturn = &EmbeddableError{
-		EmbeddableVersion: errors.NewFatalRestrictionError("vwx"),
+		EmbeddableVersion: plugin.NewFatalRestrictionError("vwx"),
 		DefaultVersion:    errors.New("yza"),
 	}
 
@@ -44,11 +44,11 @@ func fatalEmbeddableErrorFunc(*state.State, *plugin.Context) error {
 func unexpectedErrorFunc(*state.State, *plugin.Context) error { return unexpectedErrorFuncReturn }
 
 func defaultRestrictionErrorFunc(*state.State, *plugin.Context) error {
-	return errors.DefaultRestrictionError
+	return plugin.DefaultRestrictionError
 }
 
 func defaultFatalRestrictionErrorFunc(*state.State, *plugin.Context) error {
-	return errors.DefaultFatalRestrictionError
+	return plugin.DefaultFatalRestrictionError
 }
 
 func nilFunc(*state.State, *plugin.Context) error { return nil }

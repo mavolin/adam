@@ -61,10 +61,10 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// ActivityType is the type of activity.
 	// ActivityName must be set for this to take effect.
 	//
-	// Default: None
+	// Default: discord.GameActivity
 	ActivityType discord.ActivityType
 	// ActivityURL is the URL of the activity.
-	// Currently, this is only used if the activity is set to Watching.
+	// Currently, this is only used if the activity is set to Streaming.
 	//
 	// Default: None
 	ActivityURL discord.URL
@@ -73,7 +73,8 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: false
 	AllowBot bool
-	// SendTyping specifies whether to send a typing event before responding.
+	// SendTyping specifies whether to send a typing event if the command has
+	// the SendMessagesPermission.
 	// The event will be sent in 6 second intervals, until the Invoke method
 	// of the command returns.
 	//
@@ -118,13 +119,13 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: nil
 	DefaultThrottler plugin.Throttler
 
-	// ThrottlerErrorCheck is the function run every time a command returns
+	// ThrottlerCancelChecker is the function run every time a command returns
 	// with a non-nil error.
 	// If the function returns true, the command's throttler will not count the
 	// invoke.
 	//
 	// Default: DefaultThrottlerErrorCheck
-	ThrottlerErrorCheck func(error) bool
+	ThrottlerCancelChecker func(error) bool
 
 	// ReplyMiddlewares contains the middlewares that should be used when
 	// awaiting a reply.
@@ -207,8 +208,8 @@ func (o *Options) SetDefaults() (err error) {
 		o.DefaultChannelTypes = plugin.AllChannels
 	}
 
-	if o.ThrottlerErrorCheck == nil {
-		o.ThrottlerErrorCheck = DefaultThrottlerErrorCheck
+	if o.ThrottlerCancelChecker == nil {
+		o.ThrottlerCancelChecker = DefaultThrottlerErrorCheck
 	}
 
 	for i, m := range o.ReplyMiddlewares {
@@ -354,5 +355,8 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 		}
 
 		err = Err.Handle(s, ctx)
+		if i == 0 {
+			fmt.Println(string(debug.Stack()))
+		}
 	}
 }

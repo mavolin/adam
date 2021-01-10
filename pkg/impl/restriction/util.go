@@ -5,7 +5,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/discord"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -14,33 +13,11 @@ import (
 //
 // assertChannelTypes will also silently report errors in some cases.
 func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRemainingError error) error {
-	if allowed&plugin.AllChannels == plugin.AllChannels {
+	ok, err := allowed.Check(ctx)
+	if err != nil {
+		return err
+	} else if ok {
 		return nil
-	}
-
-	if ctx.GuildID == 0 { // we are in a DM
-		// we assert a DM
-		if allowed&plugin.DirectMessages == plugin.DirectMessages {
-			return nil
-		}
-		// no DM falls through
-	} else { // we are in a guild
-		// we assert all guild channels
-		if allowed&plugin.GuildChannels == plugin.GuildChannels {
-			return nil
-
-			// we assert something other than all guild channels
-		} else if !(allowed&plugin.GuildChannels == 0) {
-			c, err := ctx.Channel()
-			if err != nil {
-				return err
-			}
-
-			if allowed.Has(c.Type) {
-				return nil
-			}
-		}
-		// not all guild types falls through
 	}
 
 	remaining := ctx.InvokedCommand.ChannelTypes & allowed
@@ -49,7 +26,7 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRema
 		// may permit it, still we should capture this
 		ctx.HandleErrorSilent(noRemainingError)
 
-		return errors.DefaultFatalRestrictionError
+		return plugin.DefaultFatalRestrictionError
 	}
 
 	fatal := false

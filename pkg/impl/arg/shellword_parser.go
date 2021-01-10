@@ -5,7 +5,6 @@ import (
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -71,7 +70,7 @@ func newShellwordParserl(
 
 func (p *shellwordParser) parse() (plugin.Args, plugin.Flags, error) {
 	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && len(p.raw) != 0 {
-		return nil, nil, errors.NewArgumentErrorl(noArgsError)
+		return nil, nil, plugin.NewArgumentErrorl(noArgsError)
 	}
 
 	err := p.parseFlags()
@@ -214,7 +213,7 @@ func (p *shellwordParser) nextContent() (string, error) { //nolint:gocognit
 	}
 
 	if gc != 0 {
-		return "", errors.NewArgumentErrorl(groupNotClosedError.
+		return "", plugin.NewArgumentErrorl(groupNotClosedError.
 			WithPlaceholders(groupNotClosedErrorPlaceholders{
 				Quote: gc.String(),
 			}))
@@ -254,7 +253,7 @@ func (p *shellwordParser) parseFlags() error {
 
 		f := p.helper.flag(name)
 		if f == nil {
-			return errors.NewArgumentErrorl(unknownFlagError.
+			return plugin.NewArgumentErrorl(unknownFlagError.
 				WithPlaceholders(unknownFlagErrorPlaceholders{
 					Name: name,
 				}))

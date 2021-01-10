@@ -44,7 +44,7 @@ type Bot struct {
 
 	PluginDefaults plugin.Defaults
 
-	ThrottlerErrorCheck func(error) bool
+	ThrottlerCancelChecker func(error) bool
 
 	ReplyMiddlewares []interface{}
 
@@ -101,14 +101,6 @@ func New(o Options) (*Bot, error) {
 	b.State.PanicHandler = o.StatePanicHandler
 	b.MiddlewareManager = new(MiddlewareManager)
 
-	if o.EditAge > 0 {
-		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
-			if e.Timestamp.Time().Add(o.EditAge).Before(time.Now()) {
-				b.Route(e.Base, &e.Message, e.Member)
-			}
-		})
-	}
-
 	b.SettingsProvider = o.SettingsProvider
 	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
@@ -122,7 +114,7 @@ func New(o Options) (*Bot, error) {
 		Restrictions: o.DefaultRestrictions,
 		Throttler:    o.DefaultThrottler,
 	}
-	b.ThrottlerErrorCheck = o.ThrottlerErrorCheck
+	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
 	b.ReplyMiddlewares = o.ReplyMiddlewares
 	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
@@ -175,6 +167,14 @@ func (b *Bot) Open() error {
 		b.Route(e.Base, &e.Message, e.Member)
 	})
 
+	if b.EditAge > 0 {
+		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+			if time.Since(e.Timestamp.Time()) <= b.EditAge {
+				b.Route(e.Base, &e.Message, e.Member)
+			}
+		})
+	}
+
 	err := b.State.Open()
 	if err != nil {
 		return err
@@ -182,12 +182,6 @@ func (b *Bot) Open() error {
 
 	<-done
 	rm()
-
-	b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
-		if time.Since(e.EditedTimestamp.Time()) <= b.EditAge {
-			b.Route(e.Base, &e.Message, e.Member)
-		}
-	})
 
 	return nil
 }
@@ -342,14 +336,20 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 // If there is another plugin provider with the passed name, it will be removed
 // first.
 //
+// If defaults.ChannelTypes is 0, it will be set to plugin.AllChannels.
+//
 // The plugin providers will be used in the order they are added in.
 func (b *Bot) AddPluginProvider(name string, p PluginProvider, defaults plugin.Defaults) {
+	if p == nil {
+		return
+	}
+
 	if name == plugin.BuiltInProvider {
 		panic("you cannot use " + plugin.BuiltInProvider + " as plugin provider")
 	}
 
-	if p == nil {
-		return
+	if defaults.ChannelTypes == 0 {
+		defaults.ChannelTypes = plugin.AllChannels
 	}
 
 	for i, rp := range b.pluginProviders {

@@ -7,7 +7,6 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -184,7 +183,7 @@ func TestUsers(t *testing.T) {
 			ctx: &plugin.Context{
 				Message: discord.Message{Author: discord.User{ID: 456}},
 			},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 	}
 
@@ -247,7 +246,7 @@ func TestAllRoles(t *testing.T) {
 					},
 				},
 			},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 		{
 			name:    "missing",
@@ -351,7 +350,7 @@ func TestMustAllRoles(t *testing.T) {
 					GuildReturn: &discord.Guild{Roles: []discord.Role{}},
 				},
 			},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 		{
 			name:    "missing",
@@ -420,7 +419,7 @@ func TestAnyRole(t *testing.T) {
 					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 789}}},
 				},
 			},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 		{
 			name:    "missing",
@@ -528,7 +527,7 @@ func TestMustAnyRole(t *testing.T) {
 					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 789}}},
 				},
 			},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 		{
 			name:    "missing",
@@ -589,7 +588,7 @@ func TestChannels(t *testing.T) {
 					GuildID:   0,
 				},
 			},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 		{
 			name:       "prohibited - allowed channels in guild",
@@ -650,7 +649,7 @@ func TestChannels(t *testing.T) {
 					},
 				},
 			},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 	}
 
@@ -745,7 +744,7 @@ func TestBotPermissions(t *testing.T) {
 					SelfReturn:    &discord.Member{User: discord.User{ID: 456}},
 				},
 			},
-			expect: newInsufficientBotPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
+			expect: newBotPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
 				mock.NoOpLocalizer),
 		},
 	}
@@ -834,7 +833,7 @@ func TestUserPermissions(t *testing.T) {
 					ChannelReturn: &discord.Channel{},
 				},
 			},
-			expect: newInsufficientUserPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
+			expect: newUserPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
 				mock.NoOpLocalizer),
 		},
 	}

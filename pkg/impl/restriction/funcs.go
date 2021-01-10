@@ -12,13 +12,13 @@ import (
 var (
 	// ErrNotNSFWChannel is the error returned by NSFW if the command is not
 	// executed in an NSFW channel.
-	ErrNotNSFWChannel = errors.NewRestrictionErrorl(notNSFWChannelError)
+	ErrNotNSFWChannel = plugin.NewRestrictionErrorl(notNSFWChannelError)
 	// ErrNotGuildOwner is the error returned by GuildOwner if the command is
 	// not executed by the guild owner.
-	ErrNotGuildOwner = errors.NewFatalRestrictionErrorl(notOwnerError)
+	ErrNotGuildOwner = plugin.NewFatalRestrictionErrorl(notOwnerError)
 	// ErrNotBotOwner is the error returned by BotOwner if the command is not
 	// executed by the bot owner.
-	ErrNotBotOwner = errors.NewFatalRestrictionErrorl(notBotOwnerError)
+	ErrNotBotOwner = plugin.NewFatalRestrictionErrorl(notBotOwnerError)
 )
 
 // NSFW asserts that a command is executed in an NSFW channel.
@@ -93,7 +93,7 @@ func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 			}
 		}
 
-		return errors.DefaultFatalRestrictionError
+		return plugin.DefaultFatalRestrictionError
 	}
 }
 
@@ -167,7 +167,7 @@ func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:gocog
 				}
 			}
 
-			return errors.DefaultFatalRestrictionError
+			return plugin.DefaultFatalRestrictionError
 		}
 
 		if canManageRole(missingRoles[len(missingRoles)-1], g, ctx.Member) {
@@ -247,7 +247,7 @@ func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:g
 				}
 			}
 
-			return errors.DefaultFatalRestrictionError
+			return plugin.DefaultFatalRestrictionError
 		}
 
 		return newAllMissingRolesError(missingRoles, ctx.Localizer)
@@ -298,7 +298,7 @@ func AnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 		}
 
 		if len(missingRoles) == 0 { // none of the roles are from this guild
-			return errors.DefaultFatalRestrictionError
+			return plugin.DefaultFatalRestrictionError
 		}
 
 		if canManageRole(missingRoles[0], g, ctx.Member) {
@@ -353,7 +353,7 @@ func MustAnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 		}
 
 		if len(missingRoles) == 0 { // none of the roles are from this guild
-			return errors.DefaultFatalRestrictionError
+			return plugin.DefaultFatalRestrictionError
 		}
 
 		return newAnyMissingRolesError(missingRoles, ctx.Localizer)
@@ -374,7 +374,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 		}
 
 		if ctx.GuildID == 0 {
-			return errors.DefaultFatalRestrictionError
+			return plugin.DefaultFatalRestrictionError
 		}
 
 		channels, err := s.Channels(ctx.GuildID)
@@ -408,7 +408,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 		// the guild does not have any of the allowed channels, or the user
 		// can't see them
 		if len(missingIDs) == 0 {
-			return errors.DefaultFatalRestrictionError
+			return plugin.DefaultFatalRestrictionError
 		}
 
 		return newChannelsError(missingIDs, ctx.Localizer)
@@ -462,7 +462,7 @@ func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return newInsufficientBotPermissionsError(missing, ctx.Localizer)
+		return newBotPermissionsError(missing, ctx.Localizer)
 	}
 }
 
@@ -496,6 +496,6 @@ func UserPermissions(perms discord.Permissions) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return newInsufficientUserPermissionsError(missing, ctx.Localizer)
+		return newUserPermissionsError(missing, ctx.Localizer)
 	}
 }

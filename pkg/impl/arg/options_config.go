@@ -5,7 +5,6 @@ import (
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -30,7 +29,7 @@ var (
 
 func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	if len(args) == 0 {
-		return nil, nil, errors.NewArgumentErrorl(notEnoughArgsError)
+		return nil, nil, plugin.NewArgumentErrorl(notEnoughArgsError)
 	}
 
 	prefix := firstWord(args)
@@ -41,7 +40,7 @@ func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin
 
 			if o.Config == nil {
 				if len(args) != 0 {
-					return nil, nil, errors.NewArgumentErrorl(tooManyArgsError)
+					return nil, nil, plugin.NewArgumentErrorl(tooManyArgsError)
 				}
 
 				return nil, nil, nil
@@ -51,7 +50,7 @@ func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin
 		}
 	}
 
-	return nil, nil, errors.NewArgumentErrorl(unknownPrefixError.
+	return nil, nil, plugin.NewArgumentErrorl(unknownPrefixError.
 		WithPlaceholders(unknownPrefixErrorPlaceholders{
 			Name: prefix,
 		}))

@@ -235,67 +235,123 @@ func (h ctxErrorHandler) HandleErrorSilent(err error) {
 type discordDataProvider struct {
 	s *state.State
 
+	mut sync.Mutex
+
+	guild   *discord.Guild
+	guildWG *sync.WaitGroup
+
+	channel   *discord.Channel
+	channelWG *sync.WaitGroup
+
+	self   *discord.Member
+	selfWG *sync.WaitGroup
+
 	guildID   discord.GuildID
 	channelID discord.ChannelID
 	selfID    discord.UserID
 }
 
-func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) {
+func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) { //nolint:dupl
+	if d.guild != nil {
+		return func() (*discord.Guild, error) { return d.guild, nil }
+	}
+
+	d.mut.Lock()
+	defer d.mut.Unlock()
+
 	g, err := d.s.Cabinet.Guild(d.guildID)
 	if err == nil {
+		d.guild = g
 		return func() (*discord.Guild, error) { return g, nil }
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
+	if d.guildWG != nil {
+		return func() (*discord.Guild, error) {
+			d.guildWG.Wait()
+			return d.guild, err
+		}
+	}
+
+	d.guildWG = new(sync.WaitGroup)
+	d.guildWG.Add(1)
 
 	go func() {
-		g, err = d.s.Guild(d.guildID)
-		wg.Done()
+		d.guild, err = d.s.Guild(d.guildID)
+		d.guildWG.Done()
 	}()
 
 	return func() (*discord.Guild, error) {
-		wg.Wait()
-		return g, err
+		d.guildWG.Wait()
+		return d.guild, err
 	}
 }
 
-func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
-	c, err := d.s.Cabinet.Channel(d.channelID)
-	if err == nil {
-		return func() (*discord.Channel, error) { return c, err }
+func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) { //nolint:dupl
+	if d.channel != nil {
+		return func() (*discord.Channel, error) { return d.channel, nil }
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
+	d.mut.Lock()
+	defer d.mut.Unlock()
+
+	c, err := d.s.Cabinet.Channel(d.channelID)
+	if err == nil {
+		d.channel = c
+		return func() (*discord.Channel, error) { return c, nil }
+	}
+
+	if d.channelWG != nil {
+		return func() (*discord.Channel, error) {
+			d.channelWG.Wait()
+			return d.channel, err
+		}
+	}
+
+	d.channelWG = new(sync.WaitGroup)
+	d.channelWG.Add(1)
 
 	go func() {
-		c, err = d.s.Channel(d.channelID)
-		wg.Done()
+		d.channel, err = d.s.Channel(d.channelID)
+		d.channelWG.Done()
 	}()
 
 	return func() (*discord.Channel, error) {
-		wg.Wait()
-		return c, err
+		d.channelWG.Wait()
+		return d.channel, err
 	}
 }
 
-func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) {
-	m, err := d.s.Cabinet.Member(d.guildID, d.selfID)
-	if err == nil {
-		return func() (*discord.Member, error) { return m, err }
+func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) { //nolint:dupl
+	if d.self != nil {
+		return func() (*discord.Member, error) { return d.self, nil }
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
+	d.mut.Lock()
+	defer d.mut.Unlock()
+
+	m, err := d.s.Cabinet.Member(d.guildID, d.selfID)
+	if err == nil {
+		d.self = m
+		return func() (*discord.Member, error) { return m, nil }
+	}
+
+	if d.selfWG != nil {
+		return func() (*discord.Member, error) {
+			d.selfWG.Wait()
+			return d.self, err
+		}
+	}
+
+	d.selfWG = new(sync.WaitGroup)
+	d.selfWG.Add(1)
 
 	go func() {
-		m, err = d.s.Member(d.guildID, d.selfID)
-		wg.Done()
+		d.self, err = d.s.Member(d.guildID, d.selfID)
+		d.selfWG.Done()
 	}()
 
 	return func() (*discord.Member, error) {
-		wg.Wait()
-		return m, err
+		d.selfWG.Wait()
+		return d.self, err
 	}
 }

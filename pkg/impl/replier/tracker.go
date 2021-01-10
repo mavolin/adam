@@ -7,7 +7,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -78,7 +77,7 @@ func (t *Tracker) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	t.guildMessagesMutex.Lock()
@@ -101,7 +100,7 @@ func (t *Tracker) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*disco
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	if !t.dmID.IsValid() { // lazily load dm id

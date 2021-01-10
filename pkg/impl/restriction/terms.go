@@ -78,14 +78,14 @@ type blockedChannelErrorSinglePlaceholders struct {
 // ================================ UserPermissions ================================
 
 var (
-	insufficientUserPermissionsDescSingle = i18n.NewFallbackConfig(
+	userPermissionsDescSingle = i18n.NewFallbackConfig(
 		"restrictions.user_permissions.errors.insufficient_permissions.description.single",
 		`You need the "{{.missing_permission}}" permission to use this command.`)
-	insufficientUserPermissionsDescMulti = i18n.NewFallbackConfig(
+	userPermissionsDescMulti = i18n.NewFallbackConfig(
 		"restrictions.user_permissions.errors.insufficient_permissions.description.multi",
 		"You need these permissions to use this command:")
 )
 
-type insufficientUserPermissionsDescSinglePlaceholders struct {
+type userPermissionsDescSinglePlaceholders struct {
 	MissingPermission string
 }

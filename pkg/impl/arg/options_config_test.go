@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -42,7 +41,7 @@ func TestOptions_Parse(t *testing.T) {
 		{
 			name:   "empty args",
 			args:   "",
-			expect: errors.NewArgumentErrorl(notEnoughArgsError),
+			expect: plugin.NewArgumentErrorl(notEnoughArgsError),
 		},
 		{
 			name: "nil config with args",
@@ -53,13 +52,13 @@ func TestOptions_Parse(t *testing.T) {
 					Config: nil,
 				},
 			},
-			expect: errors.NewArgumentErrorl(tooManyArgsError),
+			expect: plugin.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
 			name:    "unknown prefix",
 			args:    "unknown_prefix",
 			options: Options{{Prefix: "1"}},
-			expect: errors.NewArgumentErrorl(unknownPrefixError.
+			expect: plugin.NewArgumentErrorl(unknownPrefixError.
 				WithPlaceholders(unknownPrefixErrorPlaceholders{
 					Name: "unknown_prefix",
 				})),

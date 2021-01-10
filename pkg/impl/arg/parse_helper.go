@@ -5,7 +5,6 @@ import (
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
@@ -185,7 +184,7 @@ func (h *parseHelper) get() (plugin.Args, plugin.Flags, error) {
 	}
 
 	if len(h.args) < len(h.rargData) {
-		return nil, nil, errors.NewArgumentErrorl(notEnoughArgsError)
+		return nil, nil, plugin.NewArgumentErrorl(notEnoughArgsError)
 	}
 
 	h.mergeFlags()
@@ -204,27 +203,28 @@ func (h *parseHelper) mergeFlags() {
 func (h *parseHelper) fillFlagDefaults() {
 	for _, f := range h.flagData {
 		if _, ok := h.flags[f.name]; !ok {
-			val := f.dfault
-			if val == nil {
-				val = f.typ.Default()
-			}
+			var val interface{}
 
 			if f.multi {
-				rval := reflect.ValueOf(val)
-				var t reflect.Type
-
-				if val == nil {
-					t = interfaceType
+				if f.dfault != nil {
+					val = f.dfault
 				} else {
-					t = rval.Type()
+					var t reflect.Type
+
+					if def := f.typ.Default(); def == nil {
+						t = interfaceType
+					} else {
+						t = reflect.TypeOf(def)
+					}
+
+					t = reflect.SliceOf(t)
+					val = reflect.Zero(t).Interface()
 				}
-
-				sliceType := reflect.SliceOf(t)
-
-				slice := reflect.MakeSlice(sliceType, 1, 1)
-				slice.Index(0).Set(rval)
-
-				val = slice.Interface()
+			} else {
+				val = f.dfault
+				if val == nil {
+					val = f.typ.Default()
+				}
 			}
 
 			h.flags[f.name] = val
@@ -239,9 +239,7 @@ func (h *parseHelper) fillArgDefaults() {
 		return
 	}
 
-	for i := argIndex; i < len(h.oargData)-1; i++ {
-		arg := h.oargData[i]
-
+	for _, arg := range h.oargData[argIndex : len(h.oargData)-1] {
 		val := arg.dfault
 		if val == nil {
 			val = arg.typ.Default()
@@ -252,27 +250,28 @@ func (h *parseHelper) fillArgDefaults() {
 
 	last := h.oargData[len(h.oargData)-1]
 
-	val := last.dfault
-	if val == nil {
-		val = last.typ.Default()
-	}
+	var val interface{}
 
 	if h.variadic {
-		rval := reflect.ValueOf(val)
-		var t reflect.Type
-
-		if val == nil {
-			t = interfaceType
+		if last.dfault != nil {
+			val = last.dfault
 		} else {
-			t = rval.Type()
+			var t reflect.Type
+
+			if def := last.typ.Default(); def == nil {
+				t = interfaceType
+			} else {
+				t = reflect.TypeOf(def)
+			}
+
+			t = reflect.SliceOf(t)
+			val = reflect.Zero(t).Interface()
 		}
-
-		sliceType := reflect.SliceOf(t)
-
-		slice := reflect.MakeSlice(sliceType, 1, 1)
-		slice.Index(0).Set(rval)
-
-		val = slice.Interface()
+	} else {
+		val = last.dfault
+		if val == nil {
+			val = last.typ.Default()
+		}
 	}
 
 	h.args = append(h.args, val)
@@ -324,7 +323,7 @@ func (h *parseHelper) addFlag(flag *flag, usedName, content string) (err error) 
 
 func (h *parseHelper) setSingleFlag(name, usedName string, val interface{}) error {
 	if _, ok := h.flags[name]; ok {
-		return errors.NewArgumentErrorl(flagUsedMultipleTimesError.
+		return plugin.NewArgumentErrorl(flagUsedMultipleTimesError.
 			WithPlaceholders(flagUsedMultipleTimesErrorPlaceholders{
 				Name: usedName,
 			}))
@@ -363,12 +362,12 @@ func (h *parseHelper) setMultiFlag(name string, val interface{}) {
 func (h *parseHelper) nextArg() (name string, typ Type, variadic bool, err error) {
 	totalArgs := len(h.rargData) + len(h.oargData)
 	if totalArgs == 0 {
-		return "", nil, false, errors.NewArgumentErrorl(tooManyArgsError)
+		return "", nil, false, plugin.NewArgumentErrorl(tooManyArgsError)
 	}
 
 	if h.argIndex >= totalArgs {
 		if !h.variadic {
-			return "", nil, false, errors.NewArgumentErrorl(tooManyArgsError)
+			return "", nil, false, plugin.NewArgumentErrorl(tooManyArgsError)
 		}
 
 		if len(h.oargData) > 0 {

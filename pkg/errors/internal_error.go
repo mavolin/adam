@@ -318,7 +318,7 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 			// prevent cyclic error handling, in case this error was cause by
 			// the same permission needed to handle the
 			// BotPermissionsError
-			_ = DefaultBotPermissionsError.Handle(s, ctx)
+			_ = plugin.DefaultBotPermissionsError.Handle(s, ctx)
 
 			return
 		case discorderr.Is(derr, discorderr.TemporarilyDisabled):
@@ -330,7 +330,7 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 
 	Log(ierr.Unwrap(), ctx)
 
-	embed := ErrorEmbed.Clone().
+	embed := NewErrorEmbed().
 		WithSimpleTitlel(internalErrorTitle).
 		WithDescription(ierr.Description(ctx.Localizer))
 

@@ -22,7 +22,7 @@ var _ Error = new(UserError)
 // NewCustomUserError creates a new UserError using the ErrorEmbed as a
 // template.
 func NewCustomUserError() *UserError {
-	return &UserError{Embed: ErrorEmbed.Clone()}
+	return &UserError{Embed: NewErrorEmbed()}
 }
 
 // NewUserErrorFromEmbed creates a new UserError from the passed

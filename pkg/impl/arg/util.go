@@ -1,7 +1,6 @@
 package arg
 
 import (
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -141,9 +140,9 @@ func typeInfo(l *i18n.Localizer, t Type) plugin.TypeInfo {
 // If raw is longer than a 100 characters, it will be shortened.
 func newArgumentError(
 	cfg *i18n.Config, ctx *Context, placeholders map[string]interface{},
-) *errors.ArgumentError {
+) *plugin.ArgumentError {
 	placeholders = fillPlaceholders(placeholders, ctx)
-	return errors.NewArgumentErrorl(cfg.
+	return plugin.NewArgumentErrorl(cfg.
 		WithPlaceholders(placeholders))
 }
 
@@ -154,15 +153,15 @@ func newArgumentError(
 // If raw is longer than a 100 characters, it will be shortened.
 func newArgumentError2(
 	argConfig, flagConfig *i18n.Config, ctx *Context, placeholders map[string]interface{},
-) *errors.ArgumentError {
+) *plugin.ArgumentError {
 	placeholders = fillPlaceholders(placeholders, ctx)
 
 	if ctx.Kind == KindArg {
-		return errors.NewArgumentErrorl(argConfig.
+		return plugin.NewArgumentErrorl(argConfig.
 			WithPlaceholders(placeholders))
 	}
 
-	return errors.NewArgumentErrorl(flagConfig.
+	return plugin.NewArgumentErrorl(flagConfig.
 		WithPlaceholders(placeholders))
 }
 

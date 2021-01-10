@@ -17,7 +17,11 @@ func TestBot_AddPluginProvider(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Panics(t, func() {
-			b.AddPluginProvider(plugin.BuiltInProvider, nil, plugin.Defaults{})
+			pfunc := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+				return nil, nil, nil
+			}
+
+			b.AddPluginProvider(plugin.BuiltInProvider, pfunc, plugin.Defaults{})
 		})
 	})
 
