@@ -136,8 +136,8 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 	return
 }
 
-// AwaitReply awaits a reaction of the user until they signal cancellation or the
-// timeout expires.
+// AwaitReply awaits a reaction of the user until they signal cancellation or
+// the timeout expires.
 //
 // If the timeout is reached, a *TimeoutError will be returned.
 // If the user cancels the wait, errors.Abort will be returned.
