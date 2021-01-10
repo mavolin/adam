@@ -93,7 +93,7 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	if err != nil {
 		b.ErrorHandler(err, b.State, ctx)
 
-		if rm != nil && b.ThrottlerErrorCheck(err) {
+		if rm != nil && b.ThrottlerCancelChecker(err) {
 			rm()
 		}
 	}

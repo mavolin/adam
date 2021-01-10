@@ -130,7 +130,7 @@ type Throttler interface {
 	//
 	// If the returned function gets called, the command invoke should not be
 	// counted, e.g. if a Command returns with an error.
-	// This will be the case, if the ThrottlerErrorCheck function in the bot's
+	// This will be the case, if the ThrottlerCancelChecker function in the bot's
 	// Options returns true.
 	//
 	// Note that the Throttler will be called before bot middlewares are

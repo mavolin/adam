@@ -44,7 +44,7 @@ type Bot struct {
 
 	PluginDefaults plugin.Defaults
 
-	ThrottlerErrorCheck func(error) bool
+	ThrottlerCancelChecker func(error) bool
 
 	ReplyMiddlewares []interface{}
 
@@ -122,7 +122,7 @@ func New(o Options) (*Bot, error) {
 		Restrictions: o.DefaultRestrictions,
 		Throttler:    o.DefaultThrottler,
 	}
-	b.ThrottlerErrorCheck = o.ThrottlerErrorCheck
+	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
 	b.ReplyMiddlewares = o.ReplyMiddlewares
 	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
