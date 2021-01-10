@@ -12,6 +12,7 @@ import (
 	"github.com/mavolin/adam/pkg/impl/replier"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
 var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
@@ -59,18 +60,42 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	if b.AsyncPluginProviders {
 		ctx.InvokedCommand, ctx.Provider, args = b.routeCommandAsync(invoke, base, msg)
 		if ctx.InvokedCommand == nil {
-			b.ErrorHandler(ErrUnknownCommand, b.State, ctx)
+			ctx.HandleError(ErrUnknownCommand)
 		}
 	} else {
 		ctx.InvokedCommand, ctx.Provider, args = b.routeCommand(invoke, base, msg)
 		if ctx.InvokedCommand == nil {
-			b.ErrorHandler(ErrUnknownCommand, b.State, ctx)
+			ctx.HandleError(ErrUnknownCommand)
 		}
 	}
 
-	err := b.invoke(ctx, args)
+	ctok, err := ctx.InvokedCommand.ChannelTypes.Check(ctx)
+	if err != nil {
+		ctx.HandleError(err)
+		return
+	} else if !ctok {
+		ctx.HandleError(plugin.NewChannelTypeError(ctx.InvokedCommand.ChannelTypes))
+		return
+	}
+
+	err = b.checkPermissions(ctx)
+	if err != nil {
+		ctx.HandleError(err)
+		return
+	}
+
+	rm, err := ctx.InvokedCommand.Throttler.Check(b.State, ctx)
+	if err != nil {
+		ctx.HandleError(err)
+	}
+
+	err = b.invoke(ctx, args)
 	if err != nil {
 		b.ErrorHandler(err, b.State, ctx)
+
+		if rm != nil && b.ThrottlerErrorCheck(err) {
+			rm()
+		}
 	}
 }
 
@@ -199,6 +224,28 @@ func (b *Bot) invoke(ctx *plugin.Context, args string) error {
 	}
 
 	return inv(b.State, ctx)
+}
+
+func (b *Bot) checkPermissions(ctx *plugin.Context) error {
+	if ctx.InvokedCommand.BotPermissions == 0 {
+		return nil
+	}
+
+	if ctx.GuildID == 0 && !permutil.DMPermissions.Has(ctx.InvokedCommand.BotPermissions) {
+		return plugin.NewChannelTypeError(plugin.DirectMessages & ctx.InvokedCommand.ChannelTypes)
+	} else if ctx.GuildID != 0 {
+		p, err := ctx.SelfPermissions()
+		if err != nil {
+			return err
+		}
+
+		if !p.Has(ctx.InvokedCommand.BotPermissions) {
+			missing := (p & ctx.InvokedCommand.BotPermissions) ^ ctx.InvokedCommand.BotPermissions
+			return plugin.NewBotPermissionsError(missing)
+		}
+	}
+
+	return nil
 }
 
 func (b *Bot) invokeCommand(ctx *plugin.Context, args string) error {

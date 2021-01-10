@@ -84,6 +84,23 @@ func (t ChannelTypes) Check(ctx *Context) (bool, error) {
 	return false, nil
 }
 
+func (t ChannelTypes) String() string {
+	switch {
+	case t&AllChannels == AllChannels:
+		return "all channels"
+	case t&GuildChannels == GuildChannels:
+		return "guild channels"
+	case t&GuildTextChannels == GuildTextChannels:
+		return "guild text channels"
+	case t&GuildNewsChannels == GuildNewsChannels:
+		return "guild news channels"
+	case t&DirectMessages == DirectMessages:
+		return "direct messages"
+	default:
+		return ""
+	}
+}
+
 type (
 	// RestrictionFunc is the function used to determine if a user is authorized
 	// to use a command or module.
@@ -109,11 +126,16 @@ type Throttler interface {
 	// if so.
 	// It returns non-nil, nil if the command may be executed and nil, non-nil
 	// if the command is throttled.
-	// The returned error should be of type errors.ThrottlingError.
+	// The returned error should be of type *plugin.ThrottlingError.
 	//
 	// If the returned function gets called, the command invoke should not be
 	// counted, e.g. if a Command returns with an error.
 	// This will be the case, if the ThrottlerErrorCheck function in the bot's
 	// Options returns true.
+	//
+	// Note that the Throttler will be called before bot middlewares are
+	// invoked.
+	// Therefore, only context data set through event handlers will be
+	// available.
 	Check(*state.State, *Context) (func(), error)
 }
