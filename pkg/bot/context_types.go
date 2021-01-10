@@ -216,11 +216,16 @@ func newCtxErrorHandler(
 }
 
 func (h ctxErrorHandler) HandleError(err error) {
-	h(err)
+	if err != nil {
+		h(err)
+	}
 }
 
 func (h ctxErrorHandler) HandleErrorSilent(err error) {
-	h(errors.Silent(err))
+	err = errors.Silent(err)
+	if err != nil {
+		h(err)
+	}
 }
 
 // =============================================================================
