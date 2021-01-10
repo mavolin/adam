@@ -61,10 +61,10 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// ActivityType is the type of activity.
 	// ActivityName must be set for this to take effect.
 	//
-	// Default: None
+	// Default: discord.GameActivity
 	ActivityType discord.ActivityType
 	// ActivityURL is the URL of the activity.
-	// Currently, this is only used if the activity is set to Watching.
+	// Currently, this is only used if the activity is set to Streaming.
 	//
 	// Default: None
 	ActivityURL discord.URL
