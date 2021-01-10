@@ -71,7 +71,7 @@ func newShellwordParserl(
 
 func (p *shellwordParser) parse() (plugin.Args, plugin.Flags, error) {
 	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && len(p.raw) != 0 {
-		return nil, nil, errors.NewArgumentParsingErrorl(noArgsError)
+		return nil, nil, errors.NewArgumentErrorl(noArgsError)
 	}
 
 	err := p.parseFlags()
@@ -214,7 +214,7 @@ func (p *shellwordParser) nextContent() (string, error) { //nolint:gocognit
 	}
 
 	if gc != 0 {
-		return "", errors.NewArgumentParsingErrorl(groupNotClosedError.
+		return "", errors.NewArgumentErrorl(groupNotClosedError.
 			WithPlaceholders(groupNotClosedErrorPlaceholders{
 				Quote: gc.String(),
 			}))
@@ -254,7 +254,7 @@ func (p *shellwordParser) parseFlags() error {
 
 		f := p.helper.flag(name)
 		if f == nil {
-			return errors.NewArgumentParsingErrorl(unknownFlagError.
+			return errors.NewArgumentErrorl(unknownFlagError.
 				WithPlaceholders(unknownFlagErrorPlaceholders{
 					Name: name,
 				}))

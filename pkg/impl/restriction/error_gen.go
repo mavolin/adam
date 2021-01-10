@@ -10,9 +10,9 @@ import (
 )
 
 // newInvalidChannelTypeError returns a new errors.RestrictionError wrapping
-// an errors.InvalidChannelTypeError.
+// an errors.ChannelTypeError.
 func newInvalidChannelTypeError(allowed plugin.ChannelTypes, l *i18n.Localizer, fatal bool) error {
-	err := errors.NewInvalidChannelTypeError(allowed)
+	err := errors.NewChannelTypeError(allowed)
 	desc := err.Description(l)
 
 	if fatal {
@@ -134,14 +134,14 @@ func newInsufficientBotPermissionsError(missing discord.Permissions, l *i18n.Loc
 		return nil
 	}
 
-	err := errors.NewInsufficientPermissionsError(missing)
+	err := errors.NewBotPermissionsError(missing)
 
 	desc := err.Description(l)
 	if err.IsSinglePermission() {
 		return errors.NewRestrictionError(desc)
 	}
 
-	missingNames := permutil.Namesl(err.MissingPermissions, l)
+	missingNames := permutil.Namesl(err.Missing, l)
 
 	embeddableDesc := desc
 	indent, _ := genIndent(1)

@@ -185,7 +185,7 @@ func (h *parseHelper) get() (plugin.Args, plugin.Flags, error) {
 	}
 
 	if len(h.args) < len(h.rargData) {
-		return nil, nil, errors.NewArgumentParsingErrorl(notEnoughArgsError)
+		return nil, nil, errors.NewArgumentErrorl(notEnoughArgsError)
 	}
 
 	h.mergeFlags()
@@ -324,7 +324,7 @@ func (h *parseHelper) addFlag(flag *flag, usedName, content string) (err error) 
 
 func (h *parseHelper) setSingleFlag(name, usedName string, val interface{}) error {
 	if _, ok := h.flags[name]; ok {
-		return errors.NewArgumentParsingErrorl(flagUsedMultipleTimesError.
+		return errors.NewArgumentErrorl(flagUsedMultipleTimesError.
 			WithPlaceholders(flagUsedMultipleTimesErrorPlaceholders{
 				Name: usedName,
 			}))
@@ -363,12 +363,12 @@ func (h *parseHelper) setMultiFlag(name string, val interface{}) {
 func (h *parseHelper) nextArg() (name string, typ Type, variadic bool, err error) {
 	totalArgs := len(h.rargData) + len(h.oargData)
 	if totalArgs == 0 {
-		return "", nil, false, errors.NewArgumentParsingErrorl(tooManyArgsError)
+		return "", nil, false, errors.NewArgumentErrorl(tooManyArgsError)
 	}
 
 	if h.argIndex >= totalArgs {
 		if !h.variadic {
-			return "", nil, false, errors.NewArgumentParsingErrorl(tooManyArgsError)
+			return "", nil, false, errors.NewArgumentErrorl(tooManyArgsError)
 		}
 
 		if len(h.oargData) > 0 {

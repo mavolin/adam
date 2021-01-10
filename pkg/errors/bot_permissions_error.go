@@ -12,33 +12,32 @@ import (
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
-// InsufficientPermissionsError is the error returned if the bot does not
-// have sufficient permissions to execute a command.
-type InsufficientPermissionsError struct {
-	// MissingPermissions are the missing permissions.
-	MissingPermissions discord.Permissions
+// BotPermissionsError is the error returned if the bot does not have
+// sufficient permissions to execute a command.
+type BotPermissionsError struct {
+	// Missing are the missing permissions.
+	Missing discord.Permissions
 }
 
-var DefaultInsufficientPermissionsError Error = new(InsufficientPermissionsError)
+var DefaultBotPermissionsError Error = new(BotPermissionsError)
 
 // allPermissions except admin
 var allPerms = discord.PermissionAll ^ discord.PermissionAdministrator
 
-// NewInsufficientPermissionError creates a new InsufficientPermissionsError
-// with the passed missing permissions.
+// NewBotPermissionsError creates a new BotPermissionsError with the passed
+// missing permissions.
 //
 // If the missing permissions contain discord.PermissionAdministrator, all
 // other permissions will be discarded, as they are included in Administrator.
 //
-// If missing is 0, a generic error message will be used.
-func NewInsufficientPermissionsError(missing discord.Permissions) *InsufficientPermissionsError {
-	return &InsufficientPermissionsError{MissingPermissions: missing}
+// If missing is 0 or invalid, a generic error message will be used.
+func NewBotPermissionsError(missing discord.Permissions) *BotPermissionsError {
+	return &BotPermissionsError{Missing: missing}
 }
 
 // IsSinglePermission checks if only a single permission is missing.
-func (e *InsufficientPermissionsError) IsSinglePermission() bool {
-	return e.MissingPermissions.Has(discord.PermissionAdministrator) || e.MissingPermissions.Has(allPerms) ||
-		(e.MissingPermissions&(e.MissingPermissions-1)) == 0
+func (e *BotPermissionsError) IsSinglePermission() bool {
+	return e.Missing.Has(discord.PermissionAdministrator) || e.Missing.Has(allPerms) || (e.Missing&(e.Missing-1)) == 0
 }
 
 // Description returns the description of the error and localizes it, if
@@ -46,14 +45,14 @@ func (e *InsufficientPermissionsError) IsSinglePermission() bool {
 // Note that if IsSinglePermission returns true, the description will already
 // contain the missing permissions, which otherwise would need to be retrieved
 // via PermissionList.
-func (e *InsufficientPermissionsError) Description(l *i18n.Localizer) (desc string) {
-	if e.MissingPermissions == 0 {
+func (e *BotPermissionsError) Description(l *i18n.Localizer) (desc string) {
+	if e.Missing == 0 {
 		// we can ignore this error, as there is a fallback
 		desc, _ = l.Localize(insufficientPermissionsDefault)
 		return desc
 	}
 
-	missing := e.MissingPermissions
+	missing := e.Missing
 
 	// if we require Administrator, we will automatically receive all other
 	// permissions once we get it
@@ -82,36 +81,36 @@ func (e *InsufficientPermissionsError) Description(l *i18n.Localizer) (desc stri
 
 // PermissionList returns a written bullet point list of the missing
 // permissions, as used if multiple permissions are missing.
-func (e *InsufficientPermissionsError) PermissionList(l *i18n.Localizer) string {
-	permNames := permutil.Namesl(e.MissingPermissions, l)
+func (e *BotPermissionsError) PermissionList(l *i18n.Localizer) string {
+	permNames := permutil.Namesl(e.Missing, l)
 	return "• " + strings.Join(permNames, "\n• ")
 }
 
-func (e *InsufficientPermissionsError) Error() string {
-	return fmt.Sprintf("missingPermissions bot permissions: %d", e.MissingPermissions)
+func (e *BotPermissionsError) Error() string {
+	return fmt.Sprintf("missing bot permissions: %d", e.Missing)
 }
 
-func (e *InsufficientPermissionsError) Is(target error) bool {
-	var typedTarget *InsufficientPermissionsError
+func (e *BotPermissionsError) Is(target error) bool {
+	var typedTarget *BotPermissionsError
 	if !As(target, &typedTarget) {
 		return false
 	}
 
-	return e.MissingPermissions == typedTarget.MissingPermissions
+	return e.Missing == typedTarget.Missing
 }
 
-// Handle handles the InsufficientPermissionsError.
+// Handle handles the BotPermissionsError.
 // By default it sends an error Embed stating the missing permissions.
-func (e *InsufficientPermissionsError) Handle(s *state.State, ctx *plugin.Context) error {
-	return HandleInsufficientPermissionsError(e, s, ctx)
+func (e *BotPermissionsError) Handle(s *state.State, ctx *plugin.Context) error {
+	return HandleBotPermissionsError(e, s, ctx)
 }
 
-var HandleInsufficientPermissionsError = func(
-	ierr *InsufficientPermissionsError, _ *state.State, ctx *plugin.Context,
+var HandleBotPermissionsError = func(
+	ierr *BotPermissionsError, _ *state.State, ctx *plugin.Context,
 ) error {
 	// if this error arose because of a missing send messages permission,
 	// do nothing, as we can't send an error message
-	if ierr.MissingPermissions.Has(discord.PermissionSendMessages) {
+	if ierr.Missing.Has(discord.PermissionSendMessages) {
 		return nil
 	}
 

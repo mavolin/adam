@@ -317,8 +317,8 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 		case discorderr.Is(derr, discorderr.InsufficientPermissions):
 			// prevent cyclic error handling, in case this error was cause by
 			// the same permission needed to handle the
-			// InsufficientPermissionError
-			_ = DefaultInsufficientPermissionsError.Handle(s, ctx)
+			// BotPermissionsError
+			_ = DefaultBotPermissionsError.Handle(s, ctx)
 
 			return
 		case discorderr.Is(derr, discorderr.TemporarilyDisabled):

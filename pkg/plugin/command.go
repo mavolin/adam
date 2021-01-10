@@ -15,6 +15,8 @@ type (
 		CommandMeta
 
 		// Invoke calls the command.
+		// The first return value is the reply sent to the user in the channel
+		// they invoked the command in.
 		//
 		// Possible first return values are:
 		//	• uint, uint8, uint16, uint32, uint64
@@ -29,12 +31,17 @@ type (
 		//	• any type implementing Reply
 		//	• nil for no reply
 		//
+		// All other values will be captured through a *bot.ReplyTypeError
+		//
 		// Error Handling
 		//
 		// If Invoke returns an error it will be handed to the error handler
 		// of the bot.
+		//
 		// As a special case if both return values are non-nil, both the
 		// reply and the error will be handled.
+		// Any errors that occur when sending the reply will be silently
+		// handled.
 		//
 		// Panic Handling
 		//

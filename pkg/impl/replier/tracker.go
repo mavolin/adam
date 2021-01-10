@@ -78,7 +78,7 @@ func (t *Tracker) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	t.guildMessagesMutex.Lock()
@@ -101,7 +101,7 @@ func (t *Tracker) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*disco
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	if !t.dmID.IsValid() { // lazily load dm id

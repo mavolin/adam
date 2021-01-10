@@ -16,22 +16,22 @@ func TestInvalidChannelError_Is(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		types := plugin.GuildChannels
 
-		err1 := NewInvalidChannelTypeError(types)
-		err2 := NewInvalidChannelTypeError(types)
+		err1 := NewChannelTypeError(types)
+		err2 := NewChannelTypeError(types)
 
 		assert.True(t, err1.Is(err2))
 	})
 
 	t.Run("different types", func(t *testing.T) {
-		err1 := NewInvalidChannelTypeError(plugin.DirectMessages)
+		err1 := NewChannelTypeError(plugin.DirectMessages)
 		err2 := New("abc")
 
 		assert.False(t, err1.Is(err2))
 	})
 
 	t.Run("different missing permissions", func(t *testing.T) {
-		err1 := NewInvalidChannelTypeError(plugin.DirectMessages)
-		err2 := NewInvalidChannelTypeError(plugin.GuildChannels)
+		err1 := NewChannelTypeError(plugin.DirectMessages)
+		err2 := NewChannelTypeError(plugin.GuildChannels)
 
 		assert.False(t, err1.Is(err2))
 	})
@@ -59,7 +59,7 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 		Embeds:    []discord.Embed{embed},
 	})
 
-	e := NewInvalidChannelTypeError(plugin.GuildChannels)
+	e := NewChannelTypeError(plugin.GuildChannels)
 
 	err := e.Handle(s, ctx)
 	require.NoError(t, err)

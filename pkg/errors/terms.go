@@ -36,7 +36,7 @@ var defaultRestrictionDesc = i18n.NewFallbackConfig(
 	"errors.restriction.description.default",
 	"👮 You are not allowed to use this command.")
 
-// ================================ InsufficientPermissionsError ================================
+// ================================ BotPermissionsError ================================
 
 var (
 	insufficientPermissionsDescSingle = i18n.NewFallbackConfig(
@@ -62,7 +62,7 @@ type insufficientBotPermissionsDescSinglePlaceholders struct {
 	MissingPermission string
 }
 
-// ================================ InvalidChannelTypeError ================================
+// ================================ ChannelTypeError ================================
 
 var (
 	channelTypeErrorGuildText = i18n.NewFallbackConfig(

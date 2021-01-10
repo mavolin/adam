@@ -29,7 +29,7 @@ func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	return r.s.SendMessageComplex(ctx.ChannelID, data)
@@ -42,7 +42,7 @@ func (r *wrappedReplier) ReplyDM(ctx *plugin.Context, data api.SendMessageData) 
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	if !r.dmID.IsValid() { // lazily load dm id
