@@ -42,6 +42,48 @@ func (t ChannelTypes) Has(target discord.ChannelType) bool {
 	}
 }
 
+// Check checks if the ChannelTypes match the channel type of the invoking
+// channel.
+// It tries to avoid a call to Channel.
+func (t ChannelTypes) Check(ctx *Context) (bool, error) {
+	if t&AllChannels == AllChannels { // we match all channel types
+		return true, nil
+	} else if t&AllChannels == 0 { // we match no valid channel types
+		return false, nil
+	}
+
+	if ctx.GuildID == 0 { // we are in a dm and...
+		if t&DirectMessages == DirectMessages { // ... allow them
+			return true, nil
+		}
+
+		// ... don't allow them
+
+		return false, nil
+	}
+
+	// we are in a guild channel and...
+
+	// ... allow all types of guild channels
+	if t&GuildChannels == GuildChannels {
+		return true, nil
+
+		// ... allow one of the guild channels, we just don't know if we match
+		// the right one
+	} else if t&GuildChannels != 0 {
+		// so we have to check
+		c, err := ctx.Channel()
+		if err != nil {
+			return false, err
+		}
+
+		return t.Has(c.Type), nil
+	}
+
+	// ... don't allow guild channels
+	return false, nil
+}
+
 type (
 	// RestrictionFunc is the function used to determine if a user is authorized
 	// to use a command or module.
