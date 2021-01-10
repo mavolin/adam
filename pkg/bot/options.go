@@ -2,6 +2,8 @@ package bot
 
 import (
 	"fmt"
+	"log"
+	"runtime/debug"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -10,36 +12,42 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store/defaultstore"
 	"github.com/diamondburned/arikawa/v2/utils/wsutil"
 	"github.com/mavolin/disstate/v3/pkg/state"
-	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // Options contains different configurations for a Bot.
-type Options struct { //nolint:maligned
+type Options struct { //nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
 	// Token is the bot token without the 'Bot' prefix.
 	//
 	// This field is required.
 	Token string
 
-	// PrefixProvider is the prefix provider for the bot.
+	// SettingsProvider is the settings provider for the bot.
+	// If left nil, only the mention prefix will be usable.
 	//
-	// Default: NewStaticPrefixProvider(",").
-	PrefixProvider PrefixProvider
+	// Default: NewStaticSettingsProvider()
+	SettingsProvider SettingsProvider
+	// LocalizationFunc is the function used to retrieve i18n.LangFuncs used
+	// for creating localized data.
+	// Leave this empty, if you don't want to use localization.
+	//
+	// Default: nil
+	LocalizationFunc i18n.Func
 	// Owners are the ids of the bot owners.
+	// These are accessible through plugin.Context.BotOwnerIDs.
 	//
 	// Default: nil
 	Owners []discord.UserID
-	// EditThreshold is the inclusive per channel threshold until which message
-	// edits will also be scanned for invokes.
-	// If this is set to 0, edited messages won't be watched.
-	//
-	// Make sure, that the MessageStore stores at least EditThreshold messages
-	// for this feature to work.
+	// EditAge is the oldest age an edit message may have, to trigger a
+	// command.
+	// If a message older than EditAge is edited, it will be ignored.
+	// If this is set to 0 or less, edited messages won't be watched.
 	//
 	// Default: 0
-	EditThreshold uint
+	EditAge time.Duration
 
 	// Status is the status of the bot.
 	//
@@ -72,18 +80,31 @@ type Options struct { //nolint:maligned
 	// Default: false
 	SendTyping bool
 
+	// NoAutoOpen defines whether to call the Open and Close methods of plugins
+	// automatically when bot.Open() and bot.Close is called.
+	// Both Open and Close may take in an optional *bot.Bot parameter, and may
+	// return an error.
+	//
+	// The call to Open will be made before the gateway is opened.
+	// It is therefore safe to add ReadyEvent handlers.
+	//
+	// The call to Close will be made after the event listener is Closed.
+	//
+	// Default: false
+	NoAutoOpen bool
+	// AutoAddHandlers specifies whether all methods of plugins that resemble
+	// a handler func should be added automatically.
+	// All methods that don't represent a handler will be discarded.
+	//
+	// Default: false
+	AutoAddHandlers bool
+
 	// DefaultChannelTypes are the default plugin.ChannelTypes, used if neither
 	// the parent modules of a command nor the command itself define channel
 	// types.
 	//
 	// Default: plugin.AllChannels
 	DefaultChannelTypes plugin.ChannelTypes
-	// DefaultBotPermissions are the default bot permissions, used if neither
-	// the parent modules of a command nor the command itself define any
-	// permissions.
-	//
-	// Default: 0
-	DefaultBotPermissions discord.Permissions
 	// DefaultRestrictions are the default restrictions, used if neither the
 	// parent modules of a command nor the command itself define any.
 	//
@@ -105,15 +126,33 @@ type Options struct { //nolint:maligned
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerErrorCheck func(error) bool
 
-	// Cabinet is the store.Cabinet used for caching.
+	// ReplyMiddlewares contains the middlewares that should be used when
+	// awaiting a reply.
 	//
-	// Every nil store of the cabinet, will be set to it's default store.
-	// Use store.Noop to deactivate Stores.
+	// The following types are permitted:
+	//  • func(*state.State, interface{})
+	//  • func(*state.State, interface{}) error
+	//  • func(*state.State, *state.Base)
+	//  • func(*state.State, *state.Base) error
+	//  • func(*state.State, *state.MessageCreateEvent)
+	//  • func(*state.State, *state.MessageCreateEvent) error
+	ReplyMiddlewares []interface{}
+
+	// AsyncPluginProviders specifies whether the plugins providers should be
+	// fetched asynchronously or one by one.
+	//
+	// Default: false
+	AsyncPluginProviders bool
+
+	// Cabinet is the store.Cabinet used for caching.
+	// Use store.NoopCabinet to deactivate caching.
+	//
+	// Default: defaultstore.New()
 	Cabinet store.Cabinet
 
 	// Shard is the shard of the bot.
 	//
-	// Default: &gateway.Shard[0, 1]
+	// Default: gateway.Shard[0, 1]
 	Shard gateway.Shard
 	// GatewayURL is the url of the gateway to use.
 	//
@@ -126,22 +165,20 @@ type Options struct { //nolint:maligned
 	GatewayTimeout time.Duration
 	// GatewayErrorHandler is the error handler of the gateway.
 	//
-	// Default: func(err error) { logstract.Error(err) }
+	// Default: func(err error) { log.Println(err) }
 	GatewayErrorHandler func(error)
 
 	// StateErrorHandler is the error handler of the *state.State, called if an
 	// event handler returns with an error.
 	//
-	// Default: func(err error) { logstract.Error(err) }
+	// Default: func(err error) { log.Println(err) }
 	StateErrorHandler func(error)
 	// StatePanicHandler is the panic handler of the *state.State, called if an
 	// event handler panics.
 	//
 	// Default:
 	// 	func(recovered interface{}) {
-	//		logstract.
-	//			WithField("recovered", recovered).
-	//			Error("recovered from panic")
+	// 		log.Printf("recovered from panic: %+v\n%s", recovered, debug.Stack())
 	//	}
 	StatePanicHandler func(recovered interface{})
 
@@ -158,8 +195,8 @@ type Options struct { //nolint:maligned
 
 // SetDefaults fills the defaults for all options, that weren't manually set.
 func (o *Options) SetDefaults() (err error) {
-	if o.PrefixProvider == nil {
-		o.PrefixProvider = NewStaticPrefixProvider(",")
+	if o.SettingsProvider == nil {
+		o.SettingsProvider = NewStaticSettingsProvider(",")
 	}
 
 	if len(o.Status) == 0 {
@@ -172,6 +209,19 @@ func (o *Options) SetDefaults() (err error) {
 
 	if o.ThrottlerErrorCheck == nil {
 		o.ThrottlerErrorCheck = DefaultThrottlerErrorCheck
+	}
+
+	for i, m := range o.ReplyMiddlewares {
+		switch m.(type) {
+		case func(*state.State, interface{}):
+		case func(*state.State, interface{}) error:
+		case func(*state.State, *state.Base):
+		case func(*state.State, *state.Base) error:
+		case func(*state.State, *state.MessageCreateEvent):
+		case func(*state.State, *state.MessageCreateEvent) error:
+		default:
+			return errors.NewWithStackf("bot: Options.ReplyMiddlewares[%d] is of unsupported type %T", i, m)
+		}
 	}
 
 	o.setCabinetDefaults()
@@ -192,18 +242,16 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	if o.GatewayErrorHandler == nil {
-		o.GatewayErrorHandler = func(err error) { log.Error(err) }
+		o.GatewayErrorHandler = func(err error) { log.Println(err) }
 	}
 
 	if o.StateErrorHandler == nil {
-		o.StateErrorHandler = func(err error) { log.Error(err) }
+		o.StateErrorHandler = func(err error) { log.Println(err) }
 	}
 
 	if o.StatePanicHandler == nil {
 		o.StatePanicHandler = func(recovered interface{}) {
-			log.
-				WithField("recovered", recovered).
-				Error("recovered from panic")
+			log.Printf("recovered from panic: %+v\n%s", recovered, debug.Stack())
 		}
 	}
 
@@ -239,13 +287,8 @@ func (o *Options) setCabinetDefaults() {
 		o.Cabinet.MemberStore = defaultstore.NewMember()
 	}
 
-	var maxMessages uint = 100
-	if o.EditThreshold > maxMessages {
-		maxMessages = o.EditThreshold
-	}
-
 	if o.Cabinet.MessageStore == nil {
-		o.Cabinet.MessageStore = defaultstore.NewMessage(int(maxMessages))
+		o.Cabinet.MessageStore = defaultstore.NewMessage(100)
 	}
 
 	if o.Cabinet.PresenceStore == nil {
@@ -261,16 +304,20 @@ func (o *Options) setCabinetDefaults() {
 	}
 }
 
-// PrefixProvider is the function used to retrieve the bot's prefix.
-// Prefixes may differ from user to user and from guild to guild.
+// SettingsProvider is the function used to retrieve the settings in the guild.
 //
-// The passed *state.Base is the base of the event triggering prefix check.
-// This will either be message create event, or a message update event, if
-// Options.EditThreshold is greater than 0.
-type PrefixProvider func(b *state.Base, m *discord.Message) (prefixes []string)
+// The passed *state.Base is the base of the event triggering settings check.
+// This will either stem from either message create event, or a message update
+// event, if Options.EditAge is greater than 0.
+type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, lang string)
 
-func NewStaticPrefixProvider(prefixes ...string) PrefixProvider {
-	return func(*state.Base, *discord.Message) []string { return prefixes }
+// NewStaticSettingsProvider creates a new SettingsProvider that returns the
+// same prefixes for all guilds and users.
+// The returned language will always be an empty string.
+func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
+	return func(*state.Base, *discord.Message) ([]string, string) {
+		return prefixes, ""
+	}
 }
 
 // =============================================================================
@@ -278,17 +325,11 @@ func NewStaticPrefixProvider(prefixes ...string) PrefixProvider {
 // =====================================================================================
 
 func DefaultThrottlerErrorCheck(err error) bool {
-	if errors.As(err, new(errors.InternalError)) {
-		return true
-	} else if errors.As(err, new(errors.SilentError)) {
-		return true
-	}
-
-	return false
+	return !errors.As(err, new(errors.InformationalError))
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
-	for i := 0; i < 25 && err != nil; i++ { // prevent error cycle
+	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
 		var Err errors.Error
 		if !errors.As(err, &Err) {
 			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
@@ -306,7 +347,7 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 		err = fmt.Errorf("panic: %+v", recovered)
 	}
 
-	for i := 0; i < 25 && err != nil; i++ { // prevent error cycle
+	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
 		var Err errors.Error
 		if !errors.As(err, &Err) {
 			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint

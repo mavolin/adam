@@ -134,35 +134,35 @@ func typeInfo(l *i18n.Localizer, t Type) plugin.TypeInfo {
 	}
 }
 
-// newArgParsingErr2 creates a new errors.ArgumentParsingError using the passed
+// newArgParsingErr2 creates a new errors.ArgumentError using the passed
 // i18n.Config.
 // It adds the following additional placeholders: name, used_name, raw and
 // position.
 // If raw is longer than a 100 characters, it will be shortened.
 func newArgParsingErr(
 	cfg *i18n.Config, ctx *Context, placeholders map[string]interface{},
-) *errors.ArgumentParsingError {
+) *errors.ArgumentError {
 	placeholders = fillPlaceholders(placeholders, ctx)
-	return errors.NewArgumentParsingErrorl(cfg.
+	return errors.NewArgumentErrorl(cfg.
 		WithPlaceholders(placeholders))
 }
 
-// newArgParsingErr2 creates a new errors.ArgumentParsingError and decides based
+// newArgParsingErr2 creates a new errors.ArgumentError and decides based
 // on the passed Context which of the two i18n.Configs to use.
 // It adds the following additional placeholders: name, used_name, raw and
 // position.
 // If raw is longer than a 100 characters, it will be shortened.
 func newArgParsingErr2(
 	argConfig, flagConfig *i18n.Config, ctx *Context, placeholders map[string]interface{},
-) *errors.ArgumentParsingError {
+) *errors.ArgumentError {
 	placeholders = fillPlaceholders(placeholders, ctx)
 
 	if ctx.Kind == KindArg {
-		return errors.NewArgumentParsingErrorl(argConfig.
+		return errors.NewArgumentErrorl(argConfig.
 			WithPlaceholders(placeholders))
 	}
 
-	return errors.NewArgumentParsingErrorl(flagConfig.
+	return errors.NewArgumentErrorl(flagConfig.
 		WithPlaceholders(placeholders))
 }
 

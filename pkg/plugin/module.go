@@ -1,6 +1,8 @@
 package plugin
 
-import "github.com/mavolin/adam/pkg/i18n"
+import (
+	"github.com/mavolin/adam/pkg/i18n"
+)
 
 type (
 	// Module is the abstraction of a module.
@@ -33,7 +35,7 @@ type (
 		// GetDefaultChannelTypes returns the ChannelTypes required to use this
 		// module.
 		//
-		// Commands can overwrite this, by setting a custom ChannelTypes.
+		// Commands can overwrite this, by setting custom ChannelTypes.
 		GetDefaultChannelTypes() ChannelTypes
 		// IsRestricted checks if the user calling the command is restricted
 		// from using this module.

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/mavolin/disstate/v3/pkg/state"
-	log "github.com/mavolin/logstract/pkg/logstract"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -318,8 +317,8 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 		case discorderr.Is(derr, discorderr.InsufficientPermissions):
 			// prevent cyclic error handling, in case this error was cause by
 			// the same permission needed to handle the
-			// InsufficientPermissionError
-			_ = DefaultInsufficientPermissionsError.Handle(s, ctx)
+			// BotPermissionsError
+			_ = DefaultBotPermissionsError.Handle(s, ctx)
 
 			return
 		case discorderr.Is(derr, discorderr.TemporarilyDisabled):
@@ -329,12 +328,7 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 		}
 	}
 
-	log.
-		WithFields(log.Fields{
-			"cmd_ident": ctx.InvokedCommand.Identifier,
-			"err":       ierr.cause,
-		}).
-		Error("internal error")
+	Log(ierr.Unwrap(), ctx)
 
 	embed := ErrorEmbed.Clone().
 		WithSimpleTitlel(internalErrorTitle).

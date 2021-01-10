@@ -69,7 +69,7 @@ type mockCommand struct {
 	examples       []string
 	hidden         bool
 	channelTypes   ChannelTypes
-	botPermissions *discord.Permissions
+	botPermissions discord.Permissions
 	restrictions   RestrictionFunc
 	throttler      Throttler
 	invokeFunc     func(*state.State, *Context) (interface{}, error)
@@ -83,7 +83,7 @@ func (c mockCommand) GetLongDescription(*i18n.Localizer) string  { return c.long
 func (c mockCommand) GetExamples(*i18n.Localizer) []string       { return c.examples }
 func (c mockCommand) IsHidden() bool                             { return c.hidden }
 func (c mockCommand) GetChannelTypes() ChannelTypes              { return c.channelTypes }
-func (c mockCommand) GetBotPermissions() *discord.Permissions    { return c.botPermissions }
+func (c mockCommand) GetBotPermissions() discord.Permissions     { return c.botPermissions }
 func (c mockCommand) GetRestrictionFunc() RestrictionFunc        { return c.restrictions }
 func (c mockCommand) GetThrottler() Throttler                    { return c.throttler }
 
@@ -132,16 +132,22 @@ type mockDiscordDataProvider struct {
 	SelfError  error
 }
 
-func (d mockDiscordDataProvider) Channel() (*discord.Channel, error) {
-	return d.ChannelReturn, d.ChannelError
+func (d mockDiscordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
+	return func() (*discord.Channel, error) {
+		return d.ChannelReturn, d.ChannelError
+	}
 }
 
-func (d mockDiscordDataProvider) Guild() (*discord.Guild, error) {
-	return d.GuildReturn, d.GuildError
+func (d mockDiscordDataProvider) GuildAsync() func() (*discord.Guild, error) {
+	return func() (*discord.Guild, error) {
+		return d.GuildReturn, d.GuildError
+	}
 }
 
-func (d mockDiscordDataProvider) Self() (*discord.Member, error) {
-	return d.SelfReturn, d.SelfError
+func (d mockDiscordDataProvider) SelfAsync() func() (*discord.Member, error) {
+	return func() (*discord.Member, error) {
+		return d.SelfReturn, d.SelfError
+	}
 }
 
 // removeRegisteredModuleFuncs sets all functions stored in the passed
@@ -182,7 +188,7 @@ func replierFromState(s *state.State, channelID discord.ChannelID, userID discor
 	}
 }
 
-func (r *wrappedReplier) ReplyMessage(_ *Context, data api.SendMessageData) (*discord.Message, error) {
+func (r *wrappedReplier) Reply(_ *Context, data api.SendMessageData) (*discord.Message, error) {
 	return r.s.SendMessageComplex(r.channelID, data)
 }
 

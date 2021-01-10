@@ -33,10 +33,7 @@ type LocalizedMeta struct {
 	ChannelTypes plugin.ChannelTypes
 	// BotPermissions are the permissions the bot needs to execute this
 	// command.
-	// You can use the helper function plugin.Permissions, to set some.
-	//
-	// If none are set, the bot permissions of the parent will be used.
-	BotPermissions *discord.Permissions
+	BotPermissions discord.Permissions
 	// Restrictions contains the restrictions of the command.
 	//
 	// If this is nil, the restrictions of the parent will be used.
@@ -96,6 +93,6 @@ func (m LocalizedMeta) GetExamples(l *i18n.Localizer) []string {
 func (m LocalizedMeta) GetArgs() plugin.ArgConfig                  { return m.Args }
 func (m LocalizedMeta) IsHidden() bool                             { return m.Hidden }
 func (m LocalizedMeta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
-func (m LocalizedMeta) GetBotPermissions() *discord.Permissions    { return m.BotPermissions }
+func (m LocalizedMeta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
 func (m LocalizedMeta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
 func (m LocalizedMeta) GetThrottler() plugin.Throttler             { return m.Throttler }

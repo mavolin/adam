@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -37,7 +36,6 @@ func (g *gemoji) UnmarshalJSON(bytes []byte) error {
 	if len(emoji.UnicodeVersion) > 0 {
 		ver, err := strconv.ParseFloat(emoji.UnicodeVersion, 32)
 		if err != nil {
-			fmt.Println(emoji.Emoji)
 			return err
 		}
 

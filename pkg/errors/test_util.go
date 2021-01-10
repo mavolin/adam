@@ -26,7 +26,7 @@ func replierFromState(s *state.State, channelID discord.ChannelID, userID discor
 	}
 }
 
-func (r *wrappedReplier) ReplyMessage(_ *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
+func (r *wrappedReplier) Reply(_ *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
 	return r.s.SendMessageComplex(r.channelID, data)
 }
 

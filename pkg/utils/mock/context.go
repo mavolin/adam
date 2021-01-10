@@ -3,7 +3,6 @@ package mock
 import (
 	"reflect"
 	"sort"
-	"strings"
 	"sync"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -26,16 +25,22 @@ type DiscordDataProvider struct {
 
 var _ plugin.DiscordDataProvider = DiscordDataProvider{}
 
-func (d DiscordDataProvider) Channel() (*discord.Channel, error) {
-	return d.ChannelReturn, d.ChannelError
+func (d DiscordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
+	return func() (*discord.Channel, error) {
+		return d.ChannelReturn, d.ChannelError
+	}
 }
 
-func (d DiscordDataProvider) Guild() (*discord.Guild, error) {
-	return d.GuildReturn, d.GuildError
+func (d DiscordDataProvider) GuildAsync() func() (*discord.Guild, error) {
+	return func() (*discord.Guild, error) {
+		return d.GuildReturn, d.GuildError
+	}
 }
 
-func (d DiscordDataProvider) Self() (*discord.Member, error) {
-	return d.SelfReturn, d.SelfError
+func (d DiscordDataProvider) SelfAsync() func() (*discord.Member, error) {
+	return func() (*discord.Member, error) {
+		return d.SelfReturn, d.SelfError
+	}
 }
 
 // PluginProvider is a mock implementation of plugin.Provider.
@@ -89,7 +94,7 @@ func (p PluginProvider) Command(id plugin.Identifier) *plugin.RegisteredCommand 
 		cmds := p.Commands()
 
 		i := sort.Search(len(cmds), func(i int) bool {
-			return cmds[i].Name == all[0].Name()
+			return cmds[i].Name >= all[0].Name()
 		})
 
 		if i == len(cmds) { // nothing found
@@ -99,13 +104,9 @@ func (p PluginProvider) Command(id plugin.Identifier) *plugin.RegisteredCommand 
 		return cmds[i]
 	}
 
-	mod := p.FindModule(all[0].Name())
-
-	for _, id := range all[1 : len(all)-1] {
-		mod = mod.FindModule(id.Name())
-		if mod == nil {
-			return nil
-		}
+	mod := p.Module(id.Parent())
+	if mod == nil {
+		return nil
 	}
 
 	return mod.FindCommand(id.Name())
@@ -122,7 +123,7 @@ func (p PluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModule {
 	mods := p.Modules()
 
 	i := sort.Search(len(mods), func(i int) bool {
-		return mods[i].Name == all[0].Name()
+		return mods[i].Name >= all[0].Name()
 	})
 
 	if i == len(mods) { // nothing found
@@ -142,13 +143,13 @@ func (p PluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModule {
 }
 
 func (p PluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
-	id := "." + strings.ReplaceAll(invoke, " ", ".")
-	return p.Command(plugin.Identifier(id))
+	id := plugin.NewIdentifierFromInvoke(invoke)
+	return p.Command(id)
 }
 
 func (p PluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
-	id := "." + strings.ReplaceAll(invoke, " ", ".")
-	return p.Module(plugin.Identifier(id))
+	id := plugin.NewIdentifierFromInvoke(invoke)
+	return p.Module(id)
 }
 
 func (p PluginProvider) UnavailablePluginProviders() []plugin.UnavailablePluginProvider {

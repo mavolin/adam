@@ -15,8 +15,8 @@ import (
 func TestNewInsufficientBotPermissionsError(t *testing.T) {
 	perms := discord.PermissionViewChannel | discord.PermissionManageEmojis
 
-	expect := &InsufficientPermissionsError{MissingPermissions: perms}
-	actual := NewInsufficientPermissionsError(perms)
+	expect := &BotPermissionsError{Missing: perms}
+	actual := NewBotPermissionsError(perms)
 
 	assert.Equal(t, expect, actual)
 }
@@ -25,22 +25,22 @@ func TestInsufficientBotPermissionsError_Is(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		var perms discord.Permissions = 123
 
-		err1 := NewInsufficientPermissionsError(perms)
-		err2 := NewInsufficientPermissionsError(perms)
+		err1 := NewBotPermissionsError(perms)
+		err2 := NewBotPermissionsError(perms)
 
 		assert.True(t, err1.Is(err2))
 	})
 
 	t.Run("different types", func(t *testing.T) {
-		err1 := NewInsufficientPermissionsError(1)
+		err1 := NewBotPermissionsError(1)
 		err2 := New("abc")
 
 		assert.False(t, err1.Is(err2))
 	})
 
 	t.Run("different missing permissions", func(t *testing.T) {
-		err1 := NewInsufficientPermissionsError(discord.PermissionStream)
-		err2 := NewInsufficientPermissionsError(discord.PermissionUseVAD)
+		err1 := NewBotPermissionsError(discord.PermissionStream)
+		err2 := NewBotPermissionsError(discord.PermissionUseVAD)
 
 		assert.False(t, err1.Is(err2))
 	})
@@ -67,7 +67,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 			Embeds:    []discord.Embed{embed},
 		})
 
-		e := NewInsufficientPermissionsError(discord.PermissionStream)
+		e := NewBotPermissionsError(discord.PermissionStream)
 
 		err := e.Handle(s, ctx)
 		require.NoError(t, err)
@@ -94,7 +94,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 			Embeds:    []discord.Embed{embed},
 		})
 
-		e := NewInsufficientPermissionsError(discord.PermissionViewAuditLog | discord.PermissionStream)
+		e := NewBotPermissionsError(discord.PermissionViewAuditLog | discord.PermissionStream)
 
 		err := e.Handle(s, ctx)
 		require.NoError(t, err)

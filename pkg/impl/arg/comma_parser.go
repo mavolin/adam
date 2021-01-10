@@ -49,7 +49,7 @@ func (p *commaParser) startParse() error {
 	}
 
 	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && item.typ != itemEOF {
-		return errors.NewArgumentParsingErrorl(noArgsError)
+		return errors.NewArgumentErrorl(noArgsError)
 	}
 
 	for ; err == nil && item.typ != itemEOF; item, err = p.lexer.nextItem() {
@@ -77,7 +77,7 @@ func (p *commaParser) startParse() error {
 func (p *commaParser) parseFlag(flagName commaItem) (err error) {
 	f := p.helper.flag(flagName.val)
 	if f == nil {
-		return errors.NewArgumentParsingErrorl(unknownFlagError.
+		return errors.NewArgumentErrorl(unknownFlagError.
 			WithPlaceholders(unknownFlagErrorPlaceholders{
 				Name: flagName.val,
 			}))
@@ -92,7 +92,7 @@ func (p *commaParser) parseFlag(flagName commaItem) (err error) {
 		if err != nil {
 			return err
 		} else if content.typ != itemFlagContent {
-			return errors.NewArgumentParsingErrorl(emptyFlagError.
+			return errors.NewArgumentErrorl(emptyFlagError.
 				WithPlaceholders(emptyFlagErrorPlaceholders{
 					Name: flagName.val,
 				}))
@@ -110,7 +110,7 @@ func (p *commaParser) parseFlag(flagName commaItem) (err error) {
 	case err != nil:
 		return err
 	case finalizer.typ == itemFlagContent && f.typ == Switch:
-		return errors.NewArgumentParsingErrorl(switchWithContentError.
+		return errors.NewArgumentErrorl(switchWithContentError.
 			WithPlaceholders(&switchWithContentErrorPlaceholders{
 				Name: flagName.val,
 			}))

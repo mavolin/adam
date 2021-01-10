@@ -431,7 +431,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
-				if ape, ok := err.(*errors.ArgumentParsingError); ok && ape != nil {
+				if ape, ok := err.(*errors.ArgumentError); ok && ape != nil {
 					desc, err := ape.Description(mock.NoOpLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
@@ -475,7 +475,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "",
-			expect:  errors.NewArgumentParsingErrorl(notEnoughArgsError),
+			expect:  errors.NewArgumentErrorl(notEnoughArgsError),
 		},
 		{
 			name: "too many args",
@@ -488,13 +488,13 @@ func TestCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "abc, def",
-			expect:  errors.NewArgumentParsingErrorl(tooManyArgsError),
+			expect:  errors.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
 			name:    "command accepts no args",
 			config:  CommaConfig{},
 			rawArgs: "abc",
-			expect:  errors.NewArgumentParsingErrorl(noArgsError),
+			expect:  errors.NewArgumentErrorl(noArgsError),
 		},
 		{
 			name: "empty arg",
@@ -517,7 +517,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "abc, , def",
-			expect: errors.NewArgumentParsingErrorl(emptyArgError.
+			expect: errors.NewArgumentErrorl(emptyArgError.
 				WithPlaceholders(emptyArgErrorPlaceholders{
 					Position: 2,
 				})),
@@ -533,7 +533,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-known 123, -unknown flag",
-			expect: errors.NewArgumentParsingErrorl(unknownFlagError.
+			expect: errors.NewArgumentErrorl(unknownFlagError.
 				WithPlaceholders(unknownFlagErrorPlaceholders{
 					Name: "unknown",
 				})),
@@ -550,7 +550,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc 123, -abc 456",
-			expect: errors.NewArgumentParsingErrorl(flagUsedMultipleTimesError.
+			expect: errors.NewArgumentErrorl(flagUsedMultipleTimesError.
 				WithPlaceholders(flagUsedMultipleTimesErrorPlaceholders{
 					Name: "abc",
 				})),
@@ -566,7 +566,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc 123",
-			expect: errors.NewArgumentParsingErrorl(switchWithContentError.
+			expect: errors.NewArgumentErrorl(switchWithContentError.
 				WithPlaceholders(&switchWithContentErrorPlaceholders{
 					Name: "abc",
 				})),
@@ -582,7 +582,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc",
-			expect: errors.NewArgumentParsingErrorl(emptyFlagError.
+			expect: errors.NewArgumentErrorl(emptyFlagError.
 				WithPlaceholders(emptyFlagErrorPlaceholders{
 					Name: "abc",
 				})),
@@ -1150,7 +1150,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
 
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, ctx)
-				if ape, ok := err.(*errors.ArgumentParsingError); ok && ape != nil {
+				if ape, ok := err.(*errors.ArgumentError); ok && ape != nil {
 					desc, err := ape.Description(mock.NoOpLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
@@ -1194,7 +1194,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "",
-			expect:  errors.NewArgumentParsingErrorl(notEnoughArgsError),
+			expect:  errors.NewArgumentErrorl(notEnoughArgsError),
 		},
 		{
 			name: "too many args",
@@ -1207,13 +1207,13 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "abc, def",
-			expect:  errors.NewArgumentParsingErrorl(tooManyArgsError),
+			expect:  errors.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
 			name:    "command accepts no args",
 			config:  CommaConfig{},
 			rawArgs: "abc",
-			expect:  errors.NewArgumentParsingErrorl(noArgsError),
+			expect:  errors.NewArgumentErrorl(noArgsError),
 		},
 		{
 			name: "empty arg",
@@ -1236,7 +1236,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "abc, , def",
-			expect: errors.NewArgumentParsingErrorl(emptyArgError.
+			expect: errors.NewArgumentErrorl(emptyArgError.
 				WithPlaceholders(emptyArgErrorPlaceholders{
 					Position: 2,
 				})),
@@ -1252,7 +1252,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-known 123, -unknown flag",
-			expect: errors.NewArgumentParsingErrorl(unknownFlagError.
+			expect: errors.NewArgumentErrorl(unknownFlagError.
 				WithPlaceholders(unknownFlagErrorPlaceholders{
 					Name: "unknown",
 				})),
@@ -1269,7 +1269,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc 123, -abc 456",
-			expect: errors.NewArgumentParsingErrorl(flagUsedMultipleTimesError.
+			expect: errors.NewArgumentErrorl(flagUsedMultipleTimesError.
 				WithPlaceholders(flagUsedMultipleTimesErrorPlaceholders{
 					Name: "abc",
 				})),
@@ -1285,7 +1285,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc 123",
-			expect: errors.NewArgumentParsingErrorl(switchWithContentError.
+			expect: errors.NewArgumentErrorl(switchWithContentError.
 				WithPlaceholders(&switchWithContentErrorPlaceholders{
 					Name: "abc",
 				})),
@@ -1301,7 +1301,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc",
-			expect: errors.NewArgumentParsingErrorl(emptyFlagError.
+			expect: errors.NewArgumentErrorl(emptyFlagError.
 				WithPlaceholders(emptyFlagErrorPlaceholders{
 					Name: "abc",
 				})),

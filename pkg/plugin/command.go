@@ -15,26 +15,33 @@ type (
 		CommandMeta
 
 		// Invoke calls the command.
+		// The first return value is the reply sent to the user in the channel
+		// they invoked the command in.
 		//
 		// Possible first return values are:
 		//	• uint, uint8, uint16, uint32, uint64
 		//	• int, int8, int16, int32, int64
 		// 	• float32, float64
 		//	• string
-		//	• discord.Embed
+		//	• discord.Embed, *discord.Embed
 		//	• *embedutil.Builder
 		//	• api.SendMessageData
 		//	• i18n.Term
-		//	• i18n.Config
+		//	• *i18n.Config
 		//	• any type implementing Reply
 		//	• nil for no reply
+		//
+		// All other values will be captured through a *bot.ReplyTypeError.
 		//
 		// Error Handling
 		//
 		// If Invoke returns an error it will be handed to the error handler
 		// of the bot.
+		//
 		// As a special case if both return values are non-nil, both the
 		// reply and the error will be handled.
+		// Any errors that occur when sending the reply will be silently
+		// handled.
 		//
 		// Panic Handling
 		//
@@ -80,12 +87,9 @@ type (
 		// If the bot lacks one ore more permissions command execution will
 		// stop with an errors.InsufficientPermissionsError.
 		//
-		// Setting this to a non-nil value overrides bot permissions defined by
-		// parents.
-		//
 		// Note that that direct messages may also pass this, if the passed
 		// permissions only require permutil.DMPermissions.
-		GetBotPermissions() *discord.Permissions
+		GetBotPermissions() discord.Permissions
 		// GetRestrictionFunc checks if the user is restricted from using the
 		// command.
 		//

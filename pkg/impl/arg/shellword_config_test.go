@@ -407,7 +407,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
-				if aerr, ok := err.(*errors.ArgumentParsingError); ok && aerr != nil {
+				if aerr, ok := err.(*errors.ArgumentError); ok && aerr != nil {
 					desc, err := aerr.Description(mock.NoOpLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
@@ -451,7 +451,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "",
-			expect:  errors.NewArgumentParsingErrorl(notEnoughArgsError),
+			expect:  errors.NewArgumentErrorl(notEnoughArgsError),
 		},
 		{
 			name: "too many args",
@@ -464,13 +464,13 @@ func TestShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "abc, def",
-			expect:  errors.NewArgumentParsingErrorl(tooManyArgsError),
+			expect:  errors.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
 			name:    "command accepts no args",
 			config:  ShellwordConfig{},
 			rawArgs: "abc",
-			expect:  errors.NewArgumentParsingErrorl(noArgsError),
+			expect:  errors.NewArgumentErrorl(noArgsError),
 		},
 		{
 			name: "unknown flag",
@@ -483,7 +483,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-known 123 -unknown flag",
-			expect: errors.NewArgumentParsingErrorl(unknownFlagError.
+			expect: errors.NewArgumentErrorl(unknownFlagError.
 				WithPlaceholders(unknownFlagErrorPlaceholders{
 					Name: "unknown",
 				})),
@@ -500,7 +500,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc 123 -abc 456",
-			expect: errors.NewArgumentParsingErrorl(flagUsedMultipleTimesError.
+			expect: errors.NewArgumentErrorl(flagUsedMultipleTimesError.
 				WithPlaceholders(flagUsedMultipleTimesErrorPlaceholders{
 					Name: "abc",
 				})),
@@ -516,7 +516,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "'abc def",
-			expect: errors.NewArgumentParsingErrorl(groupNotClosedError.
+			expect: errors.NewArgumentErrorl(groupNotClosedError.
 				WithPlaceholders(groupNotClosedErrorPlaceholders{
 					Quote: "'",
 				})),
@@ -1060,7 +1060,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
 
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, ctx)
-				if aerr, ok := err.(*errors.ArgumentParsingError); ok && aerr != nil {
+				if aerr, ok := err.(*errors.ArgumentError); ok && aerr != nil {
 					desc, err := aerr.Description(mock.NoOpLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
@@ -1104,7 +1104,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "",
-			expect:  errors.NewArgumentParsingErrorl(notEnoughArgsError),
+			expect:  errors.NewArgumentErrorl(notEnoughArgsError),
 		},
 		{
 			name: "too many args",
@@ -1117,13 +1117,13 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "abc, def",
-			expect:  errors.NewArgumentParsingErrorl(tooManyArgsError),
+			expect:  errors.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
 			name:    "command accepts no args",
 			config:  LocalizedShellwordConfig{},
 			rawArgs: "abc",
-			expect:  errors.NewArgumentParsingErrorl(noArgsError),
+			expect:  errors.NewArgumentErrorl(noArgsError),
 		},
 		{
 			name: "unknown flag",
@@ -1136,7 +1136,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-known 123 -unknown flag",
-			expect: errors.NewArgumentParsingErrorl(unknownFlagError.
+			expect: errors.NewArgumentErrorl(unknownFlagError.
 				WithPlaceholders(unknownFlagErrorPlaceholders{
 					Name: "unknown",
 				})),
@@ -1153,7 +1153,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "-abc 123 -abc 456",
-			expect: errors.NewArgumentParsingErrorl(flagUsedMultipleTimesError.
+			expect: errors.NewArgumentErrorl(flagUsedMultipleTimesError.
 				WithPlaceholders(flagUsedMultipleTimesErrorPlaceholders{
 					Name: "abc",
 				})),
@@ -1169,7 +1169,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				},
 			},
 			rawArgs: "'abc def",
-			expect: errors.NewArgumentParsingErrorl(groupNotClosedError.
+			expect: errors.NewArgumentErrorl(groupNotClosedError.
 				WithPlaceholders(groupNotClosedErrorPlaceholders{
 					Quote: "'",
 				})),

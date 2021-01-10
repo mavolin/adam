@@ -1,6 +1,8 @@
 package plugin
 
 import (
+	"fmt"
+
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
@@ -44,6 +46,7 @@ type Context struct {
 
 	// ReplyMiddlewares contains the middlewares that should be used when
 	// awaiting a reply.
+	//
 	// The following types are permitted:
 	//		• func(*state.State, interface{})
 	//		• func(*state.State, interface{}) error
@@ -84,8 +87,16 @@ func (c *Context) IsBotOwner() bool {
 
 // Reply replies with the passed message in the channel the command was
 // originally sent in.
-func (c *Context) Reply(content string) (*discord.Message, error) {
-	return c.ReplyMessage(api.SendMessageData{Content: content})
+// The message will be formatted as fmt.Sprint(content...).
+func (c *Context) Reply(content ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprint(content...)})
+}
+
+// Reply replies with the passed message in the channel the command was
+// originally sent in.
+// The message will be formatted as fmt.Sprintf(format, a...).
+func (c *Context) Replyf(format string, a ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a...)})
 }
 
 // Replyl replies with the message translated from the passed
@@ -112,7 +123,7 @@ func (c *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed
-// discordutil.EmbedBuilder and sends it in the channel the command was sent
+// embedutil.Builder and sends it in the channel the command was sent
 // in.
 func (c *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(c.Localizer)
@@ -126,14 +137,22 @@ func (c *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, err
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (c *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	msg, err := c.Replier.ReplyMessage(c, data)
+	msg, err := c.Replier.Reply(c, data)
 	return msg, errorutil.WithStack(err)
 }
 
 // ReplyDM replies with the passed message in in a direct message to the
 // invoking user.
-func (c *Context) ReplyDM(content string) (*discord.Message, error) {
-	return c.ReplyMessageDM(api.SendMessageData{Content: content})
+// The message will be formatted as fmt.Sprint(content...).
+func (c *Context) ReplyDM(content ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessageDM(api.SendMessageData{Content: fmt.Sprint(content...)})
+}
+
+// ReplyfDM replies with the passed message in the channel the command was
+// originally sent in.
+// The message will be formatted as fmt.Sprintf(format, a...).
+func (c *Context) ReplyfDM(format string, a ...interface{}) (*discord.Message, error) {
+	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a...)})
 }
 
 // ReplylDM replies with the message translated from the passed i18n.Config in
@@ -147,8 +166,8 @@ func (c *Context) ReplylDM(cfg *i18n.Config) (*discord.Message, error) {
 	return c.ReplyDM(s)
 }
 
-// Replylt replies with the message generated from the passed term in a direct
-// message to the invoking user.
+// ReplyltDM replies with the message generated from the passed term in a
+// direct message to the invoking user.
 func (c *Context) ReplyltDM(term i18n.Term) (*discord.Message, error) {
 	return c.ReplylDM(term.AsConfig())
 }
@@ -159,8 +178,8 @@ func (c *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
 	return c.ReplyMessageDM(api.SendMessageData{Embed: &e})
 }
 
-// ReplyEmbedBuilder builds the discord.Embed from the passed embedutil.Builder
-// and sends it in a direct message to the invoking user.
+// ReplyEmbedBuilderDM builds the discord.Embed from the passed
+// embedutil.Builder and sends it in a direct message to the invoking user.
 func (c *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(c.Localizer)
 	if err != nil {
@@ -177,6 +196,22 @@ func (c *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message
 	return msg, errorutil.WithStack(err)
 }
 
+// Guild returns the guild the command was invoked in.
+func (c *Context) Guild() (*discord.Guild, error) {
+	return c.GuildAsync()()
+}
+
+// Channel returns the *discord.Channel the command was invoked in.
+func (c *Context) Channel() (*discord.Channel, error) {
+	return c.ChannelAsync()()
+}
+
+// Self returns the *discord.Member that belongs to the bot.
+// It will return (nil, nil) if the command was not invoked in a guild.
+func (c *Context) Self() (*discord.Member, error) {
+	return c.SelfAsync()()
+}
+
 // SelfPermissions checks if the bot has the passed permissions.
 // If this command is executed in a direct message, constant.DMPermissions will
 // be returned instead.
@@ -185,17 +220,20 @@ func (c *Context) SelfPermissions() (discord.Permissions, error) {
 		return permutil.DMPermissions, nil
 	}
 
-	g, err := c.Guild()
-	if err != nil {
-		return 0, err
-	}
-
-	ch, err := c.Channel()
-	if err != nil {
-		return 0, err
-	}
+	gf := c.GuildAsync()
+	cf := c.ChannelAsync()
 
 	s, err := c.Self()
+	if err != nil {
+		return 0, err
+	}
+
+	g, err := gf()
+	if err != nil {
+		return 0, err
+	}
+
+	ch, err := cf()
 	if err != nil {
 		return 0, err
 	}
@@ -212,12 +250,14 @@ func (c *Context) UserPermissions() (discord.Permissions, error) {
 		return permutil.DMPermissions, nil
 	}
 
-	g, err := c.Guild()
+	gf := c.GuildAsync()
+
+	ch, err := c.Channel()
 	if err != nil {
 		return 0, err
 	}
 
-	ch, err := c.Channel()
+	g, err := gf()
 	if err != nil {
 		return 0, err
 	}
@@ -233,7 +273,7 @@ type (
 	// responds.
 	Replier interface {
 		// ReplyMessage sends a message in the invoking channel.
-		ReplyMessage(ctx *Context, data api.SendMessageData) (*discord.Message, error)
+		Reply(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 		// ReplyDM sends the passed message in a direct message to the user.
 		ReplyDM(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 	}
@@ -241,15 +281,16 @@ type (
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
 	DiscordDataProvider interface {
-		// Channel returns the channel the message was sent in.
-		Channel() (*discord.Channel, error)
-		// Guild returns the guild the message was sent in.
+		// Guild returns a callback returning guild the message was sent in.
 		// If this happened in a private channel, Guild will return nil, nil.
-		Guild() (*discord.Guild, error)
-		// Self returns the bot as a member, if the command was invoked in a
-		// guild.
-		// If this happened in a private channel, Self will return nil, nil.
-		Self() (*discord.Member, error)
+		GuildAsync() func() (*discord.Guild, error)
+		// Self returns a callback returning the *discord.Member the bot
+		// Channel returns a callback returning channel the message was sent
+		// in.
+		ChannelAsync() func() (*discord.Channel, error)
+		// represents in the calling guild.
+		// If this happened in a private channel, Self will return (nil, nil).
+		SelfAsync() func() (*discord.Member, error)
 	}
 
 	// Provider provides copies if the plugins of the bot in the Context.
@@ -338,10 +379,10 @@ type (
 		// ProviderName is the name of the bot.RuntimePluginProvider that provides
 		// these plugins.
 		ProviderName string
-		// Modules are the top-level modules of the repository.
-		Modules []Module
 		// Commands are the top-level commands of the repository.
 		Commands []Command
+		// Modules are the top-level modules of the repository.
+		Modules []Module
 
 		// Defaults are the global defaults for settings, the provider
 		// uses.
@@ -353,8 +394,6 @@ type (
 	Defaults struct {
 		// ChannelTypes specifies the default channel types.
 		ChannelTypes ChannelTypes
-		// BotPermissions are the default permissions for Commands.
-		BotPermissions discord.Permissions
 		// Restrictions is the default restriction func.
 		Restrictions RestrictionFunc
 		// Throttler is the default global throttler.

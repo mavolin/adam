@@ -12,10 +12,9 @@ import (
 func Test_GenerateRegisteredCommands(t *testing.T) {
 	t.Run("use defaults", func(t *testing.T) {
 		defaults := Defaults{
-			ChannelTypes:   12,
-			BotPermissions: 456,
-			Throttler:      mockThrottler{cmp: "abc"},
-			Restrictions:   nil,
+			ChannelTypes: 12,
+			Throttler:    mockThrottler{cmp: "abc"},
+			Restrictions: nil,
 		}
 
 		repos := []Repository{
@@ -38,7 +37,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				Identifier:      ".abc",
 				Name:            "abc",
 				ChannelTypes:    defaults.ChannelTypes,
-				BotPermissions:  defaults.BotPermissions,
+				BotPermissions:  0,
 				Throttler:       defaults.Throttler,
 				restrictionFunc: defaults.Restrictions,
 			},
@@ -51,10 +50,9 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 
 	t.Run("command overwrite", func(t *testing.T) {
 		defaults := Defaults{
-			ChannelTypes:   12,
-			BotPermissions: 456,
-			Throttler:      mockThrottler{cmp: "abc"},
-			Restrictions:   nil,
+			ChannelTypes: 12,
+			Throttler:    mockThrottler{cmp: "abc"},
+			Restrictions: nil,
 		}
 
 		repos := []Repository{
@@ -63,11 +61,10 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				Modules:      nil,
 				Commands: []Command{
 					mockCommand{
-						name:           "abc",
-						hidden:         true,
-						channelTypes:   23,
-						botPermissions: Permissions(567),
-						throttler:      mockThrottler{cmp: "bcd"},
+						name:         "abc",
+						hidden:       true,
+						channelTypes: 23,
+						throttler:    mockThrottler{cmp: "bcd"},
 					},
 				},
 				Defaults: defaults,
@@ -81,18 +78,17 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				parent:       &nilRegisteredModule,
 				ProviderName: "",
 				Source: mockCommand{
-					name:           "abc",
-					hidden:         true,
-					channelTypes:   23,
-					botPermissions: Permissions(567),
-					throttler:      mockThrottler{cmp: "bcd"},
+					name:         "abc",
+					hidden:       true,
+					channelTypes: 23,
+					throttler:    mockThrottler{cmp: "bcd"},
 				},
 				SourceParents:   nil,
 				Identifier:      ".abc",
 				Name:            "abc",
 				Hidden:          true,
 				ChannelTypes:    23,
-				BotPermissions:  567,
+				BotPermissions:  0,
 				Throttler:       mockThrottler{cmp: "bcd"},
 				restrictionFunc: nil,
 			},

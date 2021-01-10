@@ -6,6 +6,8 @@
 package errors
 
 import (
+	"log"
+
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
@@ -26,4 +28,9 @@ type Error interface {
 	// should never return errors, or it must be made sure that only a finite
 	// error chain will arise.
 	Handle(s *state.State, ctx *plugin.Context) error
+}
+
+// Log is the logger used to log InternalErrors and SilentErrors.
+var Log = func(err error, ctx *plugin.Context) {
+	log.Println("internal error in command", string(ctx.InvokedCommand.Identifier)+":", err.Error())
 }

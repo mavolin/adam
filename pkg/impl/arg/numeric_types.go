@@ -1,7 +1,6 @@
 package arg
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -165,8 +164,6 @@ func (i Decimal) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 
 		return nil, newArgParsingErr(decimalSyntaxError, ctx, nil)
 	}
-
-	fmt.Println(parsed)
 
 	if i.Min != nil && parsed < *i.Min {
 		return nil, newArgParsingErr2(numberBelowMinErrorArg, numberBelowMinErrorFlag, ctx, map[string]interface{}{

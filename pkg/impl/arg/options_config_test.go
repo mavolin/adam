@@ -42,7 +42,7 @@ func TestOptions_Parse(t *testing.T) {
 		{
 			name:   "empty args",
 			args:   "",
-			expect: errors.NewArgumentParsingErrorl(notEnoughArgsError),
+			expect: errors.NewArgumentErrorl(notEnoughArgsError),
 		},
 		{
 			name: "nil config with args",
@@ -53,13 +53,13 @@ func TestOptions_Parse(t *testing.T) {
 					Config: nil,
 				},
 			},
-			expect: errors.NewArgumentParsingErrorl(tooManyArgsError),
+			expect: errors.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
 			name:    "unknown prefix",
 			args:    "unknown_prefix",
 			options: Options{{Prefix: "1"}},
-			expect: errors.NewArgumentParsingErrorl(unknownPrefixError.
+			expect: errors.NewArgumentErrorl(unknownPrefixError.
 				WithPlaceholders(unknownPrefixErrorPlaceholders{
 					Name: "unknown_prefix",
 				})),

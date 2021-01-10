@@ -9,6 +9,33 @@ import (
 // All plugins are dot-separated, e.g. '.mod.ban'.
 type Identifier string
 
+const whitespace = " \t\n"
+
+// NewIdentifierFromInvoke creates a new Identifier from the passed invoke.
+func NewIdentifierFromInvoke(invoke string) Identifier {
+	invoke = strings.Trim(invoke, whitespace)
+
+	var b strings.Builder
+	b.Grow(len(invoke) + 1)
+	b.WriteRune('.')
+
+	var prevWhitespace bool
+
+	for _, r := range invoke {
+		if strings.ContainsRune(whitespace, r) {
+			if !prevWhitespace {
+				b.WriteRune('.')
+				prevWhitespace = true
+			}
+		} else {
+			prevWhitespace = false
+			b.WriteRune(r)
+		}
+	}
+
+	return Identifier(b.String())
+}
+
 // Parent returns the parent module of the plugin, or '.' if this Identifier
 // already represents root.
 //

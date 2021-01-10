@@ -46,7 +46,7 @@ func Test_wrappedReplier_ReplyMessage(t *testing.T) {
 
 	m.SendMessageComplex(data, expect)
 
-	actual, err := r.ReplyMessage(ctx, data)
+	actual, err := r.Reply(ctx, data)
 	require.NoError(t, err)
 	assert.Equal(t, expect, *actual)
 }

@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
@@ -65,7 +64,7 @@ type (
 
 	cancelReaction struct {
 		messageID discord.MessageID
-		reaction  api.Emoji
+		reaction  discord.APIEmoji
 	}
 )
 
@@ -201,7 +200,7 @@ func (w *ReplyWaiter) WithCancelKeywordslt(keywords ...i18n.Term) *ReplyWaiter {
 // WithCancelReactions adds the passed cancel reactions.
 // If the user reacts with one of the passed emojis, AwaitReply will return
 // errors.Abort.
-func (w *ReplyWaiter) WithCancelReactions(messageID discord.MessageID, reactions ...api.Emoji) *ReplyWaiter {
+func (w *ReplyWaiter) WithCancelReactions(messageID discord.MessageID, reactions ...discord.APIEmoji) *ReplyWaiter {
 	for _, r := range reactions {
 		w.cancelReactions = append(w.cancelReactions, cancelReaction{
 			messageID: messageID,
@@ -287,9 +286,9 @@ func (w *ReplyWaiter) AwaitWithContext(
 	// make sure we have permission to send messages and create reactions, if
 	// time extensions are enabled or we have cancel reactions.
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
 	} else if !w.noAutoReact && len(w.cancelReactions) > 0 && !perms.Has(discord.PermissionAddReactions) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionAddReactions)
+		return nil, errors.NewBotPermissionsError(discord.PermissionAddReactions)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)

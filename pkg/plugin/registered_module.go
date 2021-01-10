@@ -355,7 +355,6 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d D
 			Args:            cmd.GetArgs(),
 			Hidden:          cmd.IsHidden(),
 			ChannelTypes:    d.ChannelTypes,
-			BotPermissions:  d.BotPermissions,
 			Throttler:       d.Throttler,
 			restrictionFunc: d.Restrictions,
 		}
@@ -367,10 +366,6 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d D
 
 		if t := cmd.GetChannelTypes(); t != 0 {
 			rcmd.ChannelTypes = t
-		}
-
-		if perms := cmd.GetBotPermissions(); perms != nil {
-			rcmd.BotPermissions = *perms
 		}
 
 		if t := cmd.GetThrottler(); t != nil {

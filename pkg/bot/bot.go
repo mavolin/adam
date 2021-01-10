@@ -2,14 +2,16 @@
 package bot
 
 import (
-	"os"
-	"os/signal"
+	"regexp"
+	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/diamondburned/arikawa/v2/session"
+	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -22,18 +24,29 @@ type Bot struct {
 	modules         []plugin.Module
 	pluginProviders []*pluginProvider
 
+	selfID            discord.UserID
+	selfMentionRegexp *regexp.Regexp
+
 	// ----- Settings -----
 
-	PrefixProvider PrefixProvider
-	Owners         []discord.UserID
-	EditThreshold  uint
+	SettingsProvider    SettingsProvider
+	LocalizationManager *i18n.Manager
+	Owners              []discord.UserID
+	EditAge             time.Duration
 
 	AllowBot   bool
 	SendTyping bool
 
+	autoOpen        bool
+	autoAddHandlers bool
+
+	AsyncPluginProviders bool
+
 	PluginDefaults plugin.Defaults
 
 	ThrottlerErrorCheck func(error) bool
+
+	ReplyMiddlewares []interface{}
 
 	ErrorHandler func(error, *state.State, *plugin.Context)
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
@@ -42,6 +55,7 @@ type Bot struct {
 type pluginProvider struct {
 	name     string
 	provider PluginProvider
+	defaults plugin.Defaults
 }
 
 // Plugin provider is the function used by plugin providers.
@@ -64,13 +78,13 @@ func New(o Options) (*Bot, error) {
 		return nil, err
 	}
 
-	gw := gateway.NewCustomGateway(o.GatewayURL, o.Token)
+	gw := gateway.NewCustomGateway(o.GatewayURL, "Bot "+o.Token)
 
 	gw.WSTimeout = o.GatewayTimeout
 	gw.WS.Timeout = o.GatewayTimeout
 	gw.ErrorLog = o.GatewayErrorHandler
-	gw.Identifier.Presence.Status = o.Status
-	gw.Identifier.Shard = &o.Shard
+	gw.Identifier.IdentifyData.Shard = &o.Shard
+	gw.Identifier.IdentifyData.Presence = &gateway.UpdateStatusData{Status: o.Status}
 
 	if len(o.ActivityName) > 0 {
 		gw.Identifier.Presence.Activities = &[]discord.Activity{
@@ -85,19 +99,32 @@ func New(o Options) (*Bot, error) {
 	b.State = state.NewFromSession(session.NewWithGateway(gw), o.Cabinet)
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
+	b.MiddlewareManager = new(MiddlewareManager)
 
-	b.PrefixProvider = o.PrefixProvider
+	if o.EditAge > 0 {
+		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+			if e.Timestamp.Time().Add(o.EditAge).Before(time.Now()) {
+				b.Route(e.Base, &e.Message, e.Member)
+			}
+		})
+	}
+
+	b.SettingsProvider = o.SettingsProvider
+	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
-	b.EditThreshold = o.EditThreshold
+	b.EditAge = o.EditAge
 	b.AllowBot = o.AllowBot
 	b.SendTyping = o.SendTyping
+	b.autoOpen = !o.NoAutoOpen
+	b.autoAddHandlers = o.AutoAddHandlers
 	b.PluginDefaults = plugin.Defaults{
-		ChannelTypes:   o.DefaultChannelTypes,
-		BotPermissions: o.DefaultBotPermissions,
-		Restrictions:   o.DefaultRestrictions,
-		Throttler:      o.DefaultThrottler,
+		ChannelTypes: o.DefaultChannelTypes,
+		Restrictions: o.DefaultRestrictions,
+		Throttler:    o.DefaultThrottler,
 	}
 	b.ThrottlerErrorCheck = o.ThrottlerErrorCheck
+	b.ReplyMiddlewares = o.ReplyMiddlewares
+	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
@@ -108,23 +135,160 @@ func New(o Options) (*Bot, error) {
 //
 // If no gateway.Intents were added to the State before opening, Open will
 // derive intents from the registered handlers.
-// Additionally, gateway.IntentGuilds will be added, to ensure caching of guild
-// data.
+// Additionally, gateway.IntentGuilds will be added, if guild caching is
+// enabled.
 func (b *Bot) Open() error {
 	if b.State.Gateway.Identifier.Intents == 0 {
 		b.AddIntents(b.State.DeriveIntents())
-		b.AddIntents(gateway.IntentGuilds)
+		b.AddIntents(gateway.IntentGuildMessages)
+		b.AddIntents(gateway.IntentDirectMessages)
+
+		if b.State.Cabinet.GuildStore != store.Noop {
+			b.AddIntents(gateway.IntentGuilds)
+		}
 	}
 
-	return b.State.Open()
+	if b.autoOpen {
+		for _, cmd := range b.commands {
+			if err := b.callOpen(cmd); err != nil {
+				return err
+			}
+		}
+
+		for _, mod := range b.modules {
+			if err := b.openModule(mod); err != nil {
+				return err
+			}
+		}
+	}
+
+	done := make(chan struct{})
+
+	rm := b.State.MustAddHandler(func(_ *state.State, r *state.ReadyEvent) {
+		b.selfID = r.User.ID
+		b.selfMentionRegexp = regexp.MustCompile("^<@!?" + r.User.ID.String() + ">")
+
+		done <- struct{}{}
+	})
+
+	b.State.MustAddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
+		b.Route(e.Base, &e.Message, e.Member)
+	})
+
+	err := b.State.Open()
+	if err != nil {
+		return err
+	}
+
+	<-done
+	rm()
+
+	b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+		if time.Since(e.EditedTimestamp.Time()) <= b.EditAge {
+			b.Route(e.Base, &e.Message, e.Member)
+		}
+	})
+
+	return nil
 }
 
-// Wait blockingly waits for SIGINT and returns, when it receives it.
-func (b *Bot) Wait() {
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt)
+func (b *Bot) openModule(mod plugin.Module) error {
+	for _, cmd := range mod.Commands() {
+		if err := b.callOpen(cmd); err != nil {
+			return err
+		}
+	}
 
-	<-stop
+	for _, mod := range mod.Modules() {
+		if err := b.openModule(mod); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// callOpen tries to call i.Open.
+// Open may have an optional *Bot argument and an optional error return.
+//
+// If none of i's methods match those parameters, the function is a no-op.
+//
+// An error will only be returned if i.Open returns it.
+func (b *Bot) callOpen(i interface{}) error {
+	switch opener := i.(type) {
+	case interface{ Open() }:
+		opener.Open()
+	case interface{ Open(*Bot) }:
+		opener.Open(b)
+	case interface{ Open() error }:
+		return opener.Open()
+	case interface{ Open(*Bot) error }:
+		return opener.Open(b)
+	}
+
+	return nil
+}
+
+// Close closes the websocket connection to Discord's gateway.
+func (b *Bot) Close() error {
+	if err := b.State.Close(); err != nil {
+		return err
+	}
+
+	if !b.autoOpen {
+		return nil
+	}
+
+	for _, cmd := range b.commands {
+		if err := b.callClose(cmd); err != nil {
+			return err
+		}
+	}
+
+	for _, mod := range b.modules {
+		if err := b.closeModule(mod); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (b *Bot) closeModule(mod plugin.Module) error {
+	for _, cmd := range mod.Commands() {
+		if err := b.callClose(cmd); err != nil {
+			return err
+		}
+	}
+
+	for _, mod := range mod.Modules() {
+		if err := b.closeModule(mod); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// callClose tries to call i.Close.
+// Close may have an optional *Bot argument and an optional error return.
+//
+// If none of i's methods match those parameters, the function is a no-op.
+//
+// An error will only be returned if i.Close returns it.
+func (b *Bot) callClose(i interface{}) error {
+	switch closer := i.(type) {
+	case interface{ Close() }:
+		closer.Close()
+	case interface{ Close(*Bot) }:
+		closer.Close(b)
+	case interface{ Close() error }:
+		return closer.Close()
+	case interface{ Close(*Bot) error }:
+		return closer.Close(b)
+	}
+
+	return nil
 }
 
 // AddIntents adds the passed gateway.Intents to the bot.
@@ -132,14 +296,39 @@ func (b *Bot) AddIntents(i gateway.Intents) {
 	b.State.Gateway.AddIntents(i)
 }
 
-// AddCommand adds the passed command to the bot.
+// AddCommand adds the passed top-level command to the bot.
+//
+// If automatic handler adding is enabled, all methods of the Command
+// representing a handler func will be added to the State's event handler.
 func (b *Bot) AddCommand(cmd plugin.Command) {
 	b.commands = append(b.commands, cmd)
+
+	if b.autoAddHandlers {
+		b.State.AutoAddHandlers(b.commands)
+	}
 }
 
-// AddModule adds the passed module to the Bot.
+// AddModule adds the passed top-level module to the Bot.
+//
+// If automatic handler adding is enabled, all methods of the Module
+// representing a handler func will be added to the State's event handler.
+// The same goes for all sub-modules and sub-commands of the module.
 func (b *Bot) AddModule(mod plugin.Module) {
 	b.modules = append(b.modules, mod)
+
+	if b.autoAddHandlers {
+		b.autoAddModuleHandlers(mod)
+	}
+}
+
+func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
+	for _, cmd := range mod.Commands() {
+		b.State.AutoAddHandlers(cmd)
+	}
+
+	for _, mod := range mod.Modules() {
+		b.autoAddModuleHandlers(mod)
+	}
 }
 
 // AddPluginProvider adds the passed PluginProvider under the passed name.
@@ -154,9 +343,13 @@ func (b *Bot) AddModule(mod plugin.Module) {
 // first.
 //
 // The plugin providers will be used in the order they are added in.
-func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
+func (b *Bot) AddPluginProvider(name string, p PluginProvider, defaults plugin.Defaults) {
 	if name == plugin.BuiltInProvider {
 		panic("you cannot use " + name + " as plugin provider")
+	}
+
+	if p == nil {
+		return
 	}
 
 	for i, rp := range b.pluginProviders {
@@ -168,5 +361,6 @@ func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
 	b.pluginProviders = append(b.pluginProviders, &pluginProvider{
 		name:     name,
 		provider: p,
+		defaults: defaults,
 	})
 }

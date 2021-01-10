@@ -30,7 +30,7 @@ var (
 
 func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	if len(args) == 0 {
-		return nil, nil, errors.NewArgumentParsingErrorl(notEnoughArgsError)
+		return nil, nil, errors.NewArgumentErrorl(notEnoughArgsError)
 	}
 
 	prefix := firstWord(args)
@@ -41,7 +41,7 @@ func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin
 
 			if o.Config == nil {
 				if len(args) != 0 {
-					return nil, nil, errors.NewArgumentParsingErrorl(tooManyArgsError)
+					return nil, nil, errors.NewArgumentErrorl(tooManyArgsError)
 				}
 
 				return nil, nil, nil
@@ -51,7 +51,7 @@ func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin
 		}
 	}
 
-	return nil, nil, errors.NewArgumentParsingErrorl(unknownPrefixError.
+	return nil, nil, errors.NewArgumentErrorl(unknownPrefixError.
 		WithPlaceholders(unknownPrefixErrorPlaceholders{
 			Name: prefix,
 		}))

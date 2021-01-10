@@ -240,7 +240,7 @@ func (l *commaLexer) arg() (commaStateFunc, error) {
 	}
 
 	if l.pos == l.start { // make sure we actually collected some flagContent
-		return nil, errors.NewArgumentParsingErrorl(emptyArgError.
+		return nil, errors.NewArgumentErrorl(emptyArgError.
 			WithPlaceholders(emptyArgErrorPlaceholders{
 				Position: l.nextArg + 1,
 			}))

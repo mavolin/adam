@@ -17,7 +17,7 @@ func TestArgumentParsingError_Description(t *testing.T) {
 	t.Run("string description", func(t *testing.T) {
 		expect := "abc"
 
-		e := NewArgumentParsingError(expect)
+		e := NewArgumentError(expect)
 
 		actual, err := e.Description(nil)
 		assert.NoError(t, err)
@@ -34,7 +34,7 @@ func TestArgumentParsingError_Description(t *testing.T) {
 			On(term, expect).
 			Build()
 
-		e := NewArgumentParsingErrorlt(term)
+		e := NewArgumentErrorlt(term)
 
 		actual, err := e.Description(l)
 		require.NoError(t, err)
@@ -65,7 +65,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		},
 	})
 
-	e := NewArgumentParsingError(expectDesc)
+	e := NewArgumentError(expectDesc)
 
 	err := e.Handle(s, ctx)
 	require.NoError(t, err)

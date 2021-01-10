@@ -13,16 +13,32 @@ type Module struct {
 
 var _ plugin.Module = Module{}
 
-func (c Module) Commands() []plugin.Command { return c.CommandsReturn }
-func (c Module) Modules() []plugin.Module   { return c.ModulesReturn }
+func (m Module) Commands() []plugin.Command { return m.CommandsReturn }
+func (m Module) Modules() []plugin.Module   { return m.ModulesReturn }
 
 // GenerateRegisteredModule generates a RegisteredModule from the passed source
 // module using the passed provider name.
-func GenerateRegisteredModule(providerName string, smod plugin.Module) *plugin.RegisteredModule {
+func GenerateRegisteredModule(providerName string, mod plugin.Module) *plugin.RegisteredModule {
 	rmod := plugin.GenerateRegisteredModules([]plugin.Repository{
 		{
 			ProviderName: providerName,
-			Modules:      []plugin.Module{smod},
+			Modules:      []plugin.Module{mod},
+		},
+	})
+
+	return rmod[0]
+}
+
+// GenerateRegisteredModule generates a RegisteredModule from the passed source
+// module using the passed provider name and defaults.
+func GenerateRegisteredModuleWithDefaults(
+	providerName string, mod plugin.Module, defaults plugin.Defaults,
+) *plugin.RegisteredModule {
+	rmod := plugin.GenerateRegisteredModules([]plugin.Repository{
+		{
+			ProviderName: providerName,
+			Modules:      []plugin.Module{mod},
+			Defaults:     defaults,
 		},
 	})
 
@@ -42,10 +58,10 @@ type ModuleMeta struct {
 
 var _ plugin.ModuleMeta = ModuleMeta{}
 
-func (c ModuleMeta) GetName() string                                   { return c.Name }
-func (c ModuleMeta) GetShortDescription(*i18n.Localizer) string        { return c.ShortDescription }
-func (c ModuleMeta) GetLongDescription(*i18n.Localizer) string         { return c.LongDescription }
-func (c ModuleMeta) IsHidden() bool                                    { return c.Hidden }
-func (c ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes       { return c.DefaultChannelTypes }
-func (c ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc { return c.DefaultRestrictions }
-func (c ModuleMeta) GetDefaultThrottler() plugin.Throttler             { return c.DefaultThrottler }
+func (m ModuleMeta) GetName() string                                   { return m.Name }
+func (m ModuleMeta) GetShortDescription(*i18n.Localizer) string        { return m.ShortDescription }
+func (m ModuleMeta) GetLongDescription(*i18n.Localizer) string         { return m.LongDescription }
+func (m ModuleMeta) IsHidden() bool                                    { return m.Hidden }
+func (m ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes       { return m.DefaultChannelTypes }
+func (m ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc { return m.DefaultRestrictions }
+func (m ModuleMeta) GetDefaultThrottler() plugin.Throttler             { return m.DefaultThrottler }

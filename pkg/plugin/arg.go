@@ -139,6 +139,9 @@ func (a Args) Float64(i int) float64 { return a[i].(float64) }
 // String returns the argument with the passed index as string.
 func (a Args) String(i int) string { return a[i].(string) }
 
+// Member returns the argument with the passed index as *discord.User.
+func (a Args) User(i int) *discord.User { return a[i].(*discord.User) }
+
 // Member returns the argument with the passed index as *discord.Member.
 func (a Args) Member(i int) *discord.Member { return a[i].(*discord.Member) }
 
@@ -147,6 +150,9 @@ func (a Args) Channel(i int) *discord.Channel { return a[i].(*discord.Channel) }
 
 // Role returns the argument with the passed index as *discord.Role.
 func (a Args) Role(i int) *discord.Role { return a[i].(*discord.Role) }
+
+// APIEmoji returns the argument with the passed index as discord.APIEmoji.
+func (a Args) APIEmoji(i int) discord.APIEmoji { return a[i].(discord.APIEmoji) }
 
 // Emoji returns the argument with the passed index as *discord.Emoji.
 func (a Args) Emoji(i int) *discord.Emoji { return a[i].(*discord.Emoji) }
@@ -159,6 +165,12 @@ func (a Args) Time(i int) time.Time { return a[i].(time.Time) }
 
 // Regexp returns the flag with the passed index as *regexp.Regexp.
 func (a Args) Regexp(i int) *regexp.Regexp { return a[i].(*regexp.Regexp) }
+
+// Command returns the argument with the passed index as *RegisteredCommand.
+func (a Args) Command(i int) *RegisteredCommand { return a[i].(*RegisteredCommand) }
+
+// Module returns the argument with the passed index as *RegisteredRegexp.
+func (a Args) Module(i int) *RegisteredModule { return a[i].(*RegisteredModule) }
 
 // VariadicInt returns the last argument as []int.
 func (a Args) VariadicInt() []int { return a[len(a)-1].([]int) }
@@ -181,17 +193,23 @@ func (a Args) VariadicFloat64() []float64 { return a[len(a)-1].([]float64) }
 // VariadicString returns the last argument as []string.
 func (a Args) VariadicString() []string { return a[len(a)-1].([]string) }
 
-// VariadicBool returns the last argument as []discord.Member.
-func (a Args) VariadicMember() []discord.Member { return a[len(a)-1].([]discord.Member) }
+// VariadicMember returns the last argument as []*discord.Member.
+func (a Args) VariadicMember() []*discord.Member { return a[len(a)-1].([]*discord.Member) }
+
+// VariadicUser returns the last argument as []*discord.Member.
+func (a Args) VariadicUser() []*discord.User { return a[len(a)-1].([]*discord.User) }
 
 // VariadicChannel returns the last argument as []discord.Channel.
-func (a Args) VariadicChannel() []discord.Channel { return a[len(a)-1].([]discord.Channel) }
+func (a Args) VariadicChannel() []*discord.Channel { return a[len(a)-1].([]*discord.Channel) }
 
-// VariadicRole returns the last argument as []discord.Role.
-func (a Args) VariadicRole() []discord.Role { return a[len(a)-1].([]discord.Role) }
+// VariadicRole returns the last argument as []*discord.Role.
+func (a Args) VariadicRole() []*discord.Role { return a[len(a)-1].([]*discord.Role) }
 
-// VariadicEmoji returns the last argument as []discord.Emoji.
-func (a Args) VariadicEmoji() []discord.Emoji { return a[len(a)-1].([]discord.Emoji) }
+// VariadicAPIEmoji returns the last argument as []discord.APIEmoji.
+func (a Args) VariadicAPIEmoji() []discord.APIEmoji { return a[len(a)-1].([]discord.APIEmoji) }
+
+// VariadicEmoji returns the last argument as []*discord.Emoji.
+func (a Args) VariadicEmoji() []*discord.Emoji { return a[len(a)-1].([]*discord.Emoji) }
 
 // VariadicDuration returns the last argument as []time.Duration.
 func (a Args) VariadicDuration() []time.Duration { return a[len(a)-1].([]time.Duration) }
@@ -201,6 +219,12 @@ func (a Args) VariadicTime() []time.Time { return a[len(a)-1].([]time.Time) }
 
 // VariadicRegexp returns the last argument as []*regexp.Regexp.
 func (a Args) VariadicRegexp() []*regexp.Regexp { return a[len(a)-1].([]*regexp.Regexp) }
+
+// VariadicCommand returns the last argument as []*RegisteredCommand.
+func (a Args) VariadicCommand() []*RegisteredCommand { return a[len(a)-1].([]*RegisteredCommand) }
+
+// VariadicModule returns the last argument as []*RegisteredModule.
+func (a Args) VariadicModule() []*RegisteredModule { return a[len(a)-1].([]*RegisteredModule) }
 
 // Flags are the parsed flags of a command.
 type Flags map[string]interface{}
@@ -229,6 +253,9 @@ func (f Flags) Float64(name string) float64 { return f[name].(float64) }
 // String returns the flag with the passed name as string.
 func (f Flags) String(name string) string { return f[name].(string) }
 
+// User returns the flag with the passed name as *discord.User.
+func (f Flags) User(name string) *discord.User { return f[name].(*discord.User) }
+
 // Member returns the flag with the passed name as *discord.Member.
 func (f Flags) Member(name string) *discord.Member { return f[name].(*discord.Member) }
 
@@ -237,6 +264,9 @@ func (f Flags) Channel(name string) *discord.Channel { return f[name].(*discord.
 
 // Role returns the flag with the passed name as *discord.Role.
 func (f Flags) Role(name string) *discord.Role { return f[name].(*discord.Role) }
+
+// APIEmoji returns the flag with the passed name as discord.APIEmoji.
+func (f Flags) APIEmoji(name string) discord.APIEmoji { return f[name].(discord.APIEmoji) }
 
 // Emoji returns the flag with the passed name as *discord.Emoji.
 func (f Flags) Emoji(name string) *discord.Emoji { return f[name].(*discord.Emoji) }
@@ -249,6 +279,12 @@ func (f Flags) Time(name string) time.Time { return f[name].(time.Time) }
 
 // Regexp returns the flag with the passed name as *regexp.Regexp.
 func (f Flags) Regexp(name string) *regexp.Regexp { return f[name].(*regexp.Regexp) }
+
+// Command returns the flag with the passed name as *RegisteredCommand.
+func (f Flags) Command(name string) *RegisteredCommand { return f[name].(*RegisteredCommand) }
+
+// Module returns the flag with the passed name as *RegisteredModule.
+func (f Flags) Module(name string) *RegisteredModule { return f[name].(*RegisteredModule) }
 
 // MultiInt returns the flag with the passed name as []int.
 func (f Flags) MultiInt(name string) []int { return f[name].([]int) }
@@ -271,17 +307,23 @@ func (f Flags) MultiFloat64(name string) []float64 { return f[name].([]float64) 
 // MultiString returns the flag with the passed name as []string.
 func (f Flags) MultiString(name string) []string { return f[name].([]string) }
 
-// MultiBool returns the flag with the passed name as []discord.Member.
-func (f Flags) MultiMember(name string) []discord.Member { return f[name].([]discord.Member) }
+// MultiUser returns the flag with the passed name as []*discord.User.
+func (f Flags) MultiUser(name string) []*discord.User { return f[name].([]*discord.User) }
 
-// MultiChannel returns the flag with the passed name as []discord.Channel.
-func (f Flags) MultiChannel(name string) []discord.Channel { return f[name].([]discord.Channel) }
+// MultiMember returns the flag with the passed name as []*discord.Member.
+func (f Flags) MultiMember(name string) []*discord.Member { return f[name].([]*discord.Member) }
 
-// MultiRole returns the flag with the passed name as []discord.Role.
-func (f Flags) MultiRole(name string) []discord.Role { return f[name].([]discord.Role) }
+// MultiChannel returns the flag with the passed name as []*discord.Channel.
+func (f Flags) MultiChannel(name string) []*discord.Channel { return f[name].([]*discord.Channel) }
 
-// MultiEmoji returns the flag with the passed name as []discord.Emoji.
-func (f Flags) MultiEmoji(name string) []discord.Emoji { return f[name].([]discord.Emoji) }
+// MultiRole returns the flag with the passed name as []*discord.Role.
+func (f Flags) MultiRole(name string) []*discord.Role { return f[name].([]*discord.Role) }
+
+// MultiAPIEmoji returns the flag with the passed name as []discord.APIEmoji.
+func (f Flags) MultiAPIEmoji(name string) []discord.APIEmoji { return f[name].([]discord.APIEmoji) }
+
+// MultiEmoji returns the flag with the passed name as []*discord.Emoji.
+func (f Flags) MultiEmoji(name string) []*discord.Emoji { return f[name].([]*discord.Emoji) }
 
 // MultiDuration returns the flag with the passed name as []time.Duration.
 func (f Flags) MultiDuration(name string) []time.Duration { return f[name].([]time.Duration) }
@@ -291,3 +333,9 @@ func (f Flags) MultiTime(name string) []time.Time { return f[name].([]time.Time)
 
 // MultiRegexp returns the flag with the passed name as []*regexp.Regexp.
 func (f Flags) MultiRegexp(name string) []*regexp.Regexp { return f[name].([]*regexp.Regexp) }
+
+// MultiCommand returns the flag with the passed name as []*RegisteredCommand.
+func (f Flags) MultiCommand(name string) []*RegisteredCommand { return f[name].([]*RegisteredCommand) }
+
+// MultiModule returns the flag with the passed name as []*RegisteredModule.
+func (f Flags) MultiModule(name string) []*RegisteredModule { return f[name].([]*RegisteredModule) }

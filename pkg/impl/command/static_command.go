@@ -36,11 +36,11 @@ func (c *StaticCommand) GetLongDescription(l *i18n.Localizer) string {
 	return c.Meta.GetLongDescription(l)
 }
 
-func (c *StaticCommand) GetExamples(l *i18n.Localizer) []string  { return c.Meta.GetExamples(l) }
-func (c *StaticCommand) GetArgs() plugin.ArgConfig               { return c.Meta.GetArgs() }
-func (c *StaticCommand) IsHidden() bool                          { return c.Meta.IsHidden() }
-func (c *StaticCommand) GetChannelTypes() plugin.ChannelTypes    { return c.Meta.GetChannelTypes() }
-func (c *StaticCommand) GetBotPermissions() *discord.Permissions { return c.Meta.GetBotPermissions() }
+func (c *StaticCommand) GetExamples(l *i18n.Localizer) []string { return c.Meta.GetExamples(l) }
+func (c *StaticCommand) GetArgs() plugin.ArgConfig              { return c.Meta.GetArgs() }
+func (c *StaticCommand) IsHidden() bool                         { return c.Meta.IsHidden() }
+func (c *StaticCommand) GetChannelTypes() plugin.ChannelTypes   { return c.Meta.GetChannelTypes() }
+func (c *StaticCommand) GetBotPermissions() discord.Permissions { return c.Meta.GetBotPermissions() }
 
 func (c *StaticCommand) GetRestrictionFunc() plugin.RestrictionFunc {
 	return c.Meta.GetRestrictionFunc()

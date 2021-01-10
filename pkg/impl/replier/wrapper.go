@@ -22,14 +22,14 @@ func WrapState(s *state.State) plugin.Replier {
 	return &wrappedReplier{s: s}
 }
 
-func (r *wrappedReplier) ReplyMessage(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
+func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
 	perms, err := ctx.SelfPermissions()
 	if err != nil {
 		return nil, err
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	return r.s.SendMessageComplex(ctx.ChannelID, data)
@@ -42,7 +42,7 @@ func (r *wrappedReplier) ReplyDM(ctx *plugin.Context, data api.SendMessageData) 
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewInsufficientPermissionsError(discord.PermissionSendMessages)
+		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	if !r.dmID.IsValid() { // lazily load dm id

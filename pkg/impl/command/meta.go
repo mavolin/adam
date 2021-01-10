@@ -37,7 +37,7 @@ type Meta struct {
 	// You can use the helper function plugin.Permissions, to set some.
 	//
 	// If none are set, the bot permissions of the parent will be used.
-	BotPermissions *discord.Permissions
+	BotPermissions discord.Permissions
 	// Restrictions contains the restrictions of the command.
 	//
 	// If this is nil, the restrictions of the parent will be used.
@@ -60,6 +60,6 @@ func (m Meta) GetExamples(*i18n.Localizer) []string       { return m.Examples }
 func (m Meta) GetArgs() plugin.ArgConfig                  { return m.Args }
 func (m Meta) IsHidden() bool                             { return m.Hidden }
 func (m Meta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
-func (m Meta) GetBotPermissions() *discord.Permissions    { return m.BotPermissions }
+func (m Meta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
 func (m Meta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
 func (m Meta) GetThrottler() plugin.Throttler             { return m.Throttler }
