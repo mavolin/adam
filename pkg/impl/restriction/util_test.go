@@ -141,7 +141,7 @@ func Test_assertChannelTypes(t *testing.T) {
 		}
 
 		actual := assertChannelTypes(ctx, plugin.DirectMessages, noRemainingError)
-		assert.Equal(t, errors.DefaultFatalRestrictionError, actual)
+		assert.Equal(t, plugin.DefaultFatalRestrictionError, actual)
 	})
 }
 

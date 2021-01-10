@@ -24,7 +24,7 @@ func TestUserError_Handle(t *testing.T) {
 			Replier:   replierFromState(s, 123, 0),
 		}
 
-		embed := ErrorEmbed.Clone().
+		embed := NewErrorEmbed().
 			WithDescription(expectDesc).
 			MustBuild(ctx.Localizer)
 
@@ -55,7 +55,7 @@ func TestUserError_Handle(t *testing.T) {
 			Replier:   replierFromState(s, 123, 0),
 		}
 
-		embed := ErrorEmbed.Clone().
+		embed := NewErrorEmbed().
 			WithDescription(expectDesc).
 			WithField(expectFieldName, expectFieldValue).
 			MustBuild(ctx.Localizer)

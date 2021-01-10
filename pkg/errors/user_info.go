@@ -21,7 +21,7 @@ var _ Error = new(UserInfo)
 
 // NewCustomUserInfo creates a new UserInfo using the InfoEmbed as template.
 func NewCustomUserInfo() *UserInfo {
-	return &UserInfo{Embed: InfoEmbed.Clone()}
+	return &UserInfo{Embed: NewInfoEmbed()}
 }
 
 // NewUserInfoFromEmbed creates a new UserInfo from the passed

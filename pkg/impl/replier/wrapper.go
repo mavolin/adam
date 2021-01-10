@@ -5,7 +5,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -29,7 +28,7 @@ func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	return r.s.SendMessageComplex(ctx.ChannelID, data)
@@ -42,7 +41,7 @@ func (r *wrappedReplier) ReplyDM(ctx *plugin.Context, data api.SendMessageData) 
 	}
 
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
 	if !r.dmID.IsValid() { // lazily load dm id

@@ -5,7 +5,6 @@ import (
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
@@ -185,7 +184,7 @@ func (h *parseHelper) get() (plugin.Args, plugin.Flags, error) {
 	}
 
 	if len(h.args) < len(h.rargData) {
-		return nil, nil, errors.NewArgumentErrorl(notEnoughArgsError)
+		return nil, nil, plugin.NewArgumentErrorl(notEnoughArgsError)
 	}
 
 	h.mergeFlags()
@@ -324,7 +323,7 @@ func (h *parseHelper) addFlag(flag *flag, usedName, content string) (err error) 
 
 func (h *parseHelper) setSingleFlag(name, usedName string, val interface{}) error {
 	if _, ok := h.flags[name]; ok {
-		return errors.NewArgumentErrorl(flagUsedMultipleTimesError.
+		return plugin.NewArgumentErrorl(flagUsedMultipleTimesError.
 			WithPlaceholders(flagUsedMultipleTimesErrorPlaceholders{
 				Name: usedName,
 			}))
@@ -363,12 +362,12 @@ func (h *parseHelper) setMultiFlag(name string, val interface{}) {
 func (h *parseHelper) nextArg() (name string, typ Type, variadic bool, err error) {
 	totalArgs := len(h.rargData) + len(h.oargData)
 	if totalArgs == 0 {
-		return "", nil, false, errors.NewArgumentErrorl(tooManyArgsError)
+		return "", nil, false, plugin.NewArgumentErrorl(tooManyArgsError)
 	}
 
 	if h.argIndex >= totalArgs {
 		if !h.variadic {
-			return "", nil, false, errors.NewArgumentErrorl(tooManyArgsError)
+			return "", nil, false, plugin.NewArgumentErrorl(tooManyArgsError)
 		}
 
 		if len(h.oargData) > 0 {

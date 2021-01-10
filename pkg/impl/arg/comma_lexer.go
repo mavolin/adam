@@ -3,7 +3,7 @@ package arg
 import (
 	"strings"
 
-	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 type (
@@ -240,7 +240,7 @@ func (l *commaLexer) arg() (commaStateFunc, error) {
 	}
 
 	if l.pos == l.start { // make sure we actually collected some flagContent
-		return nil, errors.NewArgumentErrorl(emptyArgError.
+		return nil, plugin.NewArgumentErrorl(emptyArgError.
 			WithPlaceholders(emptyArgErrorPlaceholders{
 				Position: l.nextArg + 1,
 			}))

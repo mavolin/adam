@@ -163,7 +163,7 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 	}
 
 	if !perms.Has(discord.PermissionAddReactions) {
-		return "", errors.NewBotPermissionsError(discord.PermissionAddReactions)
+		return "", plugin.NewBotPermissionsError(discord.PermissionAddReactions)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)

@@ -3,7 +3,6 @@ package restriction
 import (
 	"github.com/diamondburned/arikawa/v2/discord"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/permutil"
@@ -12,14 +11,14 @@ import (
 // newInvalidChannelTypeError returns a new errors.RestrictionError wrapping
 // an errors.ChannelTypeError.
 func newInvalidChannelTypeError(allowed plugin.ChannelTypes, l *i18n.Localizer, fatal bool) error {
-	err := errors.NewChannelTypeError(allowed)
+	err := plugin.NewChannelTypeError(allowed)
 	desc := err.Description(l)
 
 	if fatal {
-		return errors.NewFatalRestrictionError(desc)
+		return plugin.NewFatalRestrictionError(desc)
 	}
 
-	return errors.NewRestrictionError(desc)
+	return plugin.NewRestrictionError(desc)
 }
 
 // newAllMissingRolesError creates a new error containing an
@@ -29,7 +28,7 @@ func newAllMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	if len(missing) == 0 {
 		return nil
 	} else if len(missing) == 1 {
-		return errors.NewFatalRestrictionErrorl(
+		return plugin.NewFatalRestrictionErrorl(
 			missingRoleError.
 				WithPlaceholders(&missingRoleErrorPlaceholders{
 					Role: missing[0].Mention(),
@@ -52,8 +51,8 @@ func newAllMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	}
 
 	return &EmbeddableError{
-		EmbeddableVersion: errors.NewFatalRestrictionError(embeddableDesc),
-		DefaultVersion:    errors.NewFatalRestrictionError(defaultDesc),
+		EmbeddableVersion: plugin.NewFatalRestrictionError(embeddableDesc),
+		DefaultVersion:    plugin.NewFatalRestrictionError(defaultDesc),
 	}
 }
 
@@ -64,7 +63,7 @@ func newAnyMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	if len(missing) == 0 {
 		return nil
 	} else if len(missing) == 1 {
-		return errors.NewFatalRestrictionErrorl(
+		return plugin.NewFatalRestrictionErrorl(
 			missingRoleError.
 				WithPlaceholders(&missingRoleErrorPlaceholders{
 					Role: missing[0].Mention(),
@@ -87,8 +86,8 @@ func newAnyMissingRolesError(missing []discord.Role, l *i18n.Localizer) error {
 	}
 
 	return &EmbeddableError{
-		EmbeddableVersion: errors.NewFatalRestrictionError(embeddableDesc),
-		DefaultVersion:    errors.NewFatalRestrictionError(defaultDesc),
+		EmbeddableVersion: plugin.NewFatalRestrictionError(embeddableDesc),
+		DefaultVersion:    plugin.NewFatalRestrictionError(defaultDesc),
 	}
 }
 
@@ -99,7 +98,7 @@ func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 	if len(allowed) == 0 {
 		return nil
 	} else if len(allowed) == 1 {
-		return errors.NewRestrictionErrorl(
+		return plugin.NewRestrictionErrorl(
 			blockedChannelErrorSingle.
 				WithPlaceholders(&blockedChannelErrorSinglePlaceholders{
 					Channel: allowed[0].Mention(),
@@ -122,23 +121,23 @@ func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 	}
 
 	return &EmbeddableError{
-		EmbeddableVersion: errors.NewRestrictionError(embeddableDesc),
-		DefaultVersion:    errors.NewRestrictionError(defaultDesc),
+		EmbeddableVersion: plugin.NewRestrictionError(embeddableDesc),
+		DefaultVersion:    plugin.NewRestrictionError(defaultDesc),
 	}
 }
 
 // newInsufficientBotPermissions creates a new error containing the missing
 // bot permissions
-func newInsufficientBotPermissionsError(missing discord.Permissions, l *i18n.Localizer) error {
+func newBotPermissionsError(missing discord.Permissions, l *i18n.Localizer) error {
 	if missing == 0 {
 		return nil
 	}
 
-	err := errors.NewBotPermissionsError(missing)
+	err := plugin.NewBotPermissionsError(missing)
 
 	desc := err.Description(l)
 	if err.IsSinglePermission() {
-		return errors.NewRestrictionError(desc)
+		return plugin.NewRestrictionError(desc)
 	}
 
 	missingNames := permutil.Namesl(err.Missing, l)
@@ -153,14 +152,14 @@ func newInsufficientBotPermissionsError(missing discord.Permissions, l *i18n.Loc
 	defaultDesc := desc + "\n\n" + err.PermissionList(l)
 
 	return &EmbeddableError{
-		EmbeddableVersion: errors.NewRestrictionError(embeddableDesc),
-		DefaultVersion:    errors.NewRestrictionError(defaultDesc),
+		EmbeddableVersion: plugin.NewRestrictionError(embeddableDesc),
+		DefaultVersion:    plugin.NewRestrictionError(defaultDesc),
 	}
 }
 
-// newInsufficientUserPermissionsError returns a new error containing the
+// newUserPermissionsError returns a new error containing the
 // missing permissions.
-func newInsufficientUserPermissionsError(missing discord.Permissions, l *i18n.Localizer) error {
+func newUserPermissionsError(missing discord.Permissions, l *i18n.Localizer) error {
 	if missing == 0 {
 		return nil
 	}
@@ -172,15 +171,15 @@ func newInsufficientUserPermissionsError(missing discord.Permissions, l *i18n.Lo
 	} else if len(missingNames) == 1 {
 		// we can ignore this error, as there is a fallback
 		desc, _ := l.Localize(
-			insufficientUserPermissionsDescSingle.
-				WithPlaceholders(&insufficientUserPermissionsDescSinglePlaceholders{
+			userPermissionsDescSingle.
+				WithPlaceholders(&userPermissionsDescSinglePlaceholders{
 					MissingPermission: missingNames[0],
 				}))
 
-		return errors.NewFatalRestrictionError(desc)
+		return plugin.NewFatalRestrictionError(desc)
 	}
 
-	desc, _ := l.Localize(insufficientUserPermissionsDescMulti)
+	desc, _ := l.Localize(userPermissionsDescMulti)
 
 	embeddableDesc := desc
 	indent, _ := genIndent(1)
@@ -196,7 +195,7 @@ func newInsufficientUserPermissionsError(missing discord.Permissions, l *i18n.Lo
 	}
 
 	return &EmbeddableError{
-		EmbeddableVersion: errors.NewFatalRestrictionError(embeddableDesc),
-		DefaultVersion:    errors.NewFatalRestrictionError(defaultDesc),
+		EmbeddableVersion: plugin.NewFatalRestrictionError(embeddableDesc),
+		DefaultVersion:    plugin.NewFatalRestrictionError(defaultDesc),
 	}
 }

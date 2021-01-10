@@ -443,7 +443,7 @@ func TestInternalError_Handle(t *testing.T) {
 		Replier: replierFromState(s, 123, 0),
 	}
 
-	embed := ErrorEmbed.Clone().
+	embed := NewErrorEmbed().
 		WithSimpleTitlelt(internalErrorTitle.Term).
 		WithDescription(expectDesc).
 		MustBuild(ctx.Localizer)

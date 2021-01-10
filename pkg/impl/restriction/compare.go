@@ -25,7 +25,7 @@ type EmbeddableError struct {
 	// error.
 	// This MUST be of type *errors.RestrictionError or
 	// *errors.FatalRestrictionError.
-	EmbeddableVersion *errors.RestrictionError
+	EmbeddableVersion *plugin.RestrictionError
 	// DefaultVersion is the version returned if the error won't get embedded.
 	DefaultVersion error
 }
@@ -57,12 +57,12 @@ func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:goco
 				continue
 			}
 
-			if rerr := new(errors.RestrictionError); errors.As(err, &rerr) {
+			if rerr := new(plugin.RestrictionError); errors.As(err, &rerr) {
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
-				if errors.Is(err, errors.DefaultRestrictionError) {
+				if errors.Is(err, plugin.DefaultRestrictionError) {
 					return err
-				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
+				} else if errors.Is(err, plugin.DefaultFatalRestrictionError) {
 					return err
 				}
 
@@ -70,9 +70,9 @@ func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:goco
 			} else if eerr := new(EmbeddableError); errors.As(err, &eerr) {
 				embeddable = eerr
 
-				if errors.Is(eerr.EmbeddableVersion, errors.DefaultRestrictionError) {
+				if errors.Is(eerr.EmbeddableVersion, plugin.DefaultRestrictionError) {
 					return err
-				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
+				} else if errors.Is(err, plugin.DefaultFatalRestrictionError) {
 					return err
 				}
 
@@ -149,20 +149,20 @@ func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 				return nil
 			}
 
-			if rerr := new(errors.RestrictionError); errors.As(err, &rerr) {
+			if rerr := new(plugin.RestrictionError); errors.As(err, &rerr) {
 				// there is no need to create a full error message, if we don't have complete
 				// information about what is missing
-				if errors.Is(err, errors.DefaultRestrictionError) {
+				if errors.Is(err, plugin.DefaultRestrictionError) {
 					return err
-				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
+				} else if errors.Is(err, plugin.DefaultFatalRestrictionError) {
 					return err
 				}
 
 				missing.restrictions = append(missing.restrictions, rerr)
 			} else if eerr := new(EmbeddableError); errors.As(err, &eerr) {
-				if errors.Is(eerr.EmbeddableVersion, errors.DefaultRestrictionError) {
+				if errors.Is(eerr.EmbeddableVersion, plugin.DefaultRestrictionError) {
 					return err
-				} else if errors.Is(err, errors.DefaultFatalRestrictionError) {
+				} else if errors.Is(err, plugin.DefaultFatalRestrictionError) {
 					return err
 				}
 
@@ -203,7 +203,7 @@ func Anyf(returnError error, funcs ...plugin.RestrictionFunc) plugin.Restriction
 var newlineRegexp = regexp.MustCompile(`\n[^\n]`)
 
 type allError struct {
-	restrictions []*errors.RestrictionError
+	restrictions []*plugin.RestrictionError
 	anys         []*anyError
 }
 
@@ -258,10 +258,10 @@ func (e *allError) Wrap(_ *state.State, ctx *plugin.Context) error {
 	header, _ := ctx.Localize(allMessageHeader)
 
 	if fatal {
-		return errors.NewFatalRestrictionError(header + "\n\n" + missing)
+		return plugin.NewFatalRestrictionError(header + "\n\n" + missing)
 	}
 
-	return errors.NewRestrictionError(header + "\n\n" + missing)
+	return plugin.NewRestrictionError(header + "\n\n" + missing)
 }
 
 func (e *allError) Error() string {
@@ -269,7 +269,7 @@ func (e *allError) Error() string {
 }
 
 type anyError struct {
-	restrictions []*errors.RestrictionError
+	restrictions []*plugin.RestrictionError
 	alls         []*allError
 }
 
@@ -324,10 +324,10 @@ func (e *anyError) Wrap(_ *state.State, ctx *plugin.Context) error {
 	header, _ := ctx.Localize(anyMessageHeader)
 
 	if fatal {
-		return errors.NewFatalRestrictionError(header + "\n\n" + missing)
+		return plugin.NewFatalRestrictionError(header + "\n\n" + missing)
 	}
 
-	return errors.NewRestrictionError(header + "\n\n" + missing)
+	return plugin.NewRestrictionError(header + "\n\n" + missing)
 }
 
 func (e *anyError) Error() string {

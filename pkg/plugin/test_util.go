@@ -12,6 +12,14 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
+// boOpLocalizer is a copy of mock.NoOpLocalizer, used to prevent import
+// cycles.
+var noOpLocalizer = i18n.NewManager(func(lang string) i18n.LangFunc {
+	return func(i18n.Term, map[string]interface{}, interface{}) (string, error) {
+		return "", errors.New("")
+	}
+}).Localizer("")
+
 // mockLocalizer is a copy of mock.Localizer, used to prevent import cycles.
 type mockLocalizer struct {
 	t *testing.T

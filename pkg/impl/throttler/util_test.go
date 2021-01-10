@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 func Test_genError(t *testing.T) {
@@ -52,12 +52,12 @@ func Test_genError(t *testing.T) {
 
 			switch {
 			case c.expectSeconds > 0:
-				assert.Equal(t, errors.NewThrottlingErrorl(secondConfig.
+				assert.Equal(t, plugin.NewThrottlingErrorl(secondConfig.
 					WithPlaceholders(&secondPlaceholders{
 						Seconds: c.expectSeconds,
 					})), acutal)
 			case c.expectMinutes > 0:
-				assert.Equal(t, errors.NewThrottlingErrorl(minuteConfig.
+				assert.Equal(t, plugin.NewThrottlingErrorl(minuteConfig.
 					WithPlaceholders(&minutePlaceholders{
 						Minutes: c.expectMinutes,
 					})), acutal)

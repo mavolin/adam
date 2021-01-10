@@ -51,7 +51,7 @@ func TestAll(t *testing.T) {
 			name:  "multiple fatal embeddable errors",
 			funcs: []plugin.RestrictionFunc{fatalEmbeddableErrorFunc, embeddableErrorFunc},
 			expect: &allError{
-				restrictions: []*errors.RestrictionError{
+				restrictions: []*plugin.RestrictionError{
 					fatalEmbeddableErrorFuncReturn.EmbeddableVersion,
 					embeddableErrorFuncReturn.EmbeddableVersion,
 				},
@@ -76,25 +76,25 @@ func TestAll(t *testing.T) {
 			name:  "multiple restriction funcs - multiple errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, errorFunc2},
 			expect: &allError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
 			name:  "multiple restriction funcs - multiple fatal errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, fatalErrorFunc},
 			expect: &allError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
 			},
 		},
 		{
 			name:   "multiple restriction funcs - default error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, defaultRestrictionErrorFunc},
-			expect: errors.DefaultRestrictionError,
+			expect: plugin.DefaultRestrictionError,
 		},
 		{
 			name:   "multiple restriction funcs - default fatal error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, defaultFatalRestrictionErrorFunc},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 		{
 			name:   "multiple restriction funcs - unexpected error",
@@ -110,21 +110,21 @@ func TestAll(t *testing.T) {
 			name:  "nested all - multiple errors",
 			funcs: []plugin.RestrictionFunc{All(errorFunc1, errorFunc2)},
 			expect: &allError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
 			name:  "restriction func and nested all",
 			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3)},
 			expect: &allError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2, errorFuncReturn3},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2, errorFuncReturn3},
 			},
 		},
 		{
 			name:  "nested any",
 			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2)},
 			expect: &anyError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
@@ -132,8 +132,8 @@ func TestAll(t *testing.T) {
 			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), Any(errorFunc3, errorFunc4)},
 			expect: &allError{
 				anys: []*anyError{
-					{restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2}},
-					{restrictions: []*errors.RestrictionError{errorFuncReturn3, errorFuncReturn4}},
+					{restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2}},
+					{restrictions: []*plugin.RestrictionError{errorFuncReturn3, errorFuncReturn4}},
 				},
 			},
 		},
@@ -141,9 +141,9 @@ func TestAll(t *testing.T) {
 			name:  "restriction func and nested any",
 			funcs: []plugin.RestrictionFunc{errorFunc1, Any(errorFunc2, errorFunc3)},
 			expect: &allError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1},
 				anys: []*anyError{
-					{restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
+					{restrictions: []*plugin.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
 				},
 			},
 		},
@@ -219,7 +219,7 @@ func TestAny(t *testing.T) {
 			name:  "multiple fatal embeddable errors",
 			funcs: []plugin.RestrictionFunc{fatalEmbeddableErrorFunc, embeddableErrorFunc},
 			expect: &anyError{
-				restrictions: []*errors.RestrictionError{
+				restrictions: []*plugin.RestrictionError{
 					fatalEmbeddableErrorFuncReturn.EmbeddableVersion,
 					embeddableErrorFuncReturn.EmbeddableVersion,
 				},
@@ -239,25 +239,25 @@ func TestAny(t *testing.T) {
 			name:  "multiple restriction funcs - multiple errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, errorFunc2},
 			expect: &anyError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
 			name:  "multiple restriction funcs - multiple fatal errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, fatalErrorFunc},
 			expect: &anyError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
 			},
 		},
 		{
 			name:   "multiple restriction funcs - default error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, defaultRestrictionErrorFunc},
-			expect: errors.DefaultRestrictionError,
+			expect: plugin.DefaultRestrictionError,
 		},
 		{
 			name:   "multiple restriction funcs - default fatal error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, defaultFatalRestrictionErrorFunc},
-			expect: errors.DefaultFatalRestrictionError,
+			expect: plugin.DefaultFatalRestrictionError,
 		},
 		{
 			name:   "multiple restriction funcs - unexpected error",
@@ -273,16 +273,16 @@ func TestAny(t *testing.T) {
 			name:  "nested all - multiple errors",
 			funcs: []plugin.RestrictionFunc{All(errorFunc1, errorFunc2)},
 			expect: &allError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
 			},
 		},
 		{
 			name:  "restriction func and nested all",
 			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3)},
 			expect: &anyError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1},
 				alls: []*allError{
-					{restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
+					{restrictions: []*plugin.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
 				},
 			},
 		},
@@ -290,7 +290,7 @@ func TestAny(t *testing.T) {
 			name:  "multiple nested anys",
 			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), Any(errorFunc3, errorFunc4)},
 			expect: &anyError{
-				restrictions: []*errors.RestrictionError{
+				restrictions: []*plugin.RestrictionError{
 					errorFuncReturn1, errorFuncReturn2, errorFuncReturn3, errorFuncReturn4,
 				},
 			},
@@ -299,9 +299,9 @@ func TestAny(t *testing.T) {
 			name:  "restriction func and nested any",
 			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3, nilFunc)},
 			expect: &anyError{
-				restrictions: []*errors.RestrictionError{errorFuncReturn1},
+				restrictions: []*plugin.RestrictionError{errorFuncReturn1},
 				alls: []*allError{
-					{restrictions: []*errors.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
+					{restrictions: []*plugin.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
 				},
 			},
 		},
@@ -347,9 +347,9 @@ func Test_allError_format(t *testing.T) {
 		{
 			name: "only restrictions",
 			err: allError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
+				restrictions: []*plugin.RestrictionError{
+					plugin.NewRestrictionError("abc"),
+					plugin.NewRestrictionError("def"),
 				},
 			},
 			expect: entryPrefix + "abc\n" +
@@ -361,15 +361,15 @@ func Test_allError_format(t *testing.T) {
 			err: allError{
 				anys: []*anyError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("abc"),
-							errors.NewRestrictionError("def"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("abc"),
+							plugin.NewRestrictionError("def"),
 						},
 					},
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("ghi"),
-							errors.NewRestrictionError("jkl"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("ghi"),
+							plugin.NewRestrictionError("jkl"),
 						},
 					},
 				},
@@ -385,21 +385,21 @@ func Test_allError_format(t *testing.T) {
 		{
 			name: "restrictions and anys",
 			err: allError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
+				restrictions: []*plugin.RestrictionError{
+					plugin.NewRestrictionError("abc"),
+					plugin.NewRestrictionError("def"),
 				},
 				anys: []*anyError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("ghi"),
-							errors.NewRestrictionError("jkl"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("ghi"),
+							plugin.NewRestrictionError("jkl"),
 						},
 					},
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("mno"),
-							errors.NewRestrictionError("pqr"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("mno"),
+							plugin.NewRestrictionError("pqr"),
 						},
 					},
 				},
@@ -417,21 +417,21 @@ func Test_allError_format(t *testing.T) {
 		{
 			name: "any with fatals",
 			err: allError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
+				restrictions: []*plugin.RestrictionError{
+					plugin.NewRestrictionError("abc"),
+					plugin.NewRestrictionError("def"),
 				},
 				anys: []*anyError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewFatalRestrictionError("ghi"),
-							errors.NewFatalRestrictionError("jkl"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewFatalRestrictionError("ghi"),
+							plugin.NewFatalRestrictionError("jkl"),
 						},
 					},
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("mno"),
-							errors.NewRestrictionError("pqr"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("mno"),
+							plugin.NewRestrictionError("pqr"),
 						},
 					},
 				},
@@ -451,28 +451,28 @@ func Test_allError_format(t *testing.T) {
 			err: allError{
 				anys: []*anyError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("abc"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("abc"),
 						},
 						alls: []*allError{
 							{
-								restrictions: []*errors.RestrictionError{
-									errors.NewRestrictionError("def"),
-									errors.NewRestrictionError("ghi"),
+								restrictions: []*plugin.RestrictionError{
+									plugin.NewRestrictionError("def"),
+									plugin.NewRestrictionError("ghi"),
 								},
 								anys: []*anyError{
 									{
-										restrictions: []*errors.RestrictionError{
-											errors.NewRestrictionError("jkl"),
-											errors.NewRestrictionError("mno"),
+										restrictions: []*plugin.RestrictionError{
+											plugin.NewRestrictionError("jkl"),
+											plugin.NewRestrictionError("mno"),
 										},
 									},
 								},
 							},
 							{
-								restrictions: []*errors.RestrictionError{
-									errors.NewRestrictionError("pqr"),
-									errors.NewRestrictionError("stu"),
+								restrictions: []*plugin.RestrictionError{
+									plugin.NewRestrictionError("pqr"),
+									plugin.NewRestrictionError("stu"),
 								},
 							},
 						},
@@ -506,7 +506,7 @@ func Test_allError_format(t *testing.T) {
 
 func Test_allError_Wrap(t *testing.T) {
 	t.Run("fatal", func(t *testing.T) {
-		expect := errors.NewFatalRestrictionError("You need to fulfill all of these requirements to execute the " +
+		expect := plugin.NewFatalRestrictionError("You need to fulfill all of these requirements to execute the " +
 			"command:\n\n" +
 			entryPrefix + "mno\n" +
 			entryPrefix + "mno")
@@ -529,7 +529,7 @@ func Test_allError_Wrap(t *testing.T) {
 	})
 
 	t.Run("not fatal", func(t *testing.T) {
-		expect := errors.NewRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
+		expect := plugin.NewRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
 			entryPrefix + "abc\n" +
 			entryPrefix + "def")
 
@@ -561,9 +561,9 @@ func Test_anyError_format(t *testing.T) {
 		{
 			name: "only restrictions",
 			err: anyError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
+				restrictions: []*plugin.RestrictionError{
+					plugin.NewRestrictionError("abc"),
+					plugin.NewRestrictionError("def"),
 				},
 			},
 			expect: entryPrefix + "abc\n" +
@@ -573,9 +573,9 @@ func Test_anyError_format(t *testing.T) {
 		{
 			name: "fatal restrictions",
 			err: anyError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewFatalRestrictionError("abc"),
-					errors.NewFatalRestrictionError("def"),
+				restrictions: []*plugin.RestrictionError{
+					plugin.NewFatalRestrictionError("abc"),
+					plugin.NewFatalRestrictionError("def"),
 				},
 			},
 			expect: entryPrefix + "abc\n" +
@@ -587,15 +587,15 @@ func Test_anyError_format(t *testing.T) {
 			err: anyError{
 				alls: []*allError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewFatalRestrictionError("abc"),
-							errors.NewFatalRestrictionError("def"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewFatalRestrictionError("abc"),
+							plugin.NewFatalRestrictionError("def"),
 						},
 					},
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewFatalRestrictionError("ghi"),
-							errors.NewFatalRestrictionError("jkl"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewFatalRestrictionError("ghi"),
+							plugin.NewFatalRestrictionError("jkl"),
 						},
 					},
 				},
@@ -613,15 +613,15 @@ func Test_anyError_format(t *testing.T) {
 			err: anyError{
 				alls: []*allError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("abc"),
-							errors.NewRestrictionError("def"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("abc"),
+							plugin.NewRestrictionError("def"),
 						},
 					},
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("ghi"),
-							errors.NewRestrictionError("jkl"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("ghi"),
+							plugin.NewRestrictionError("jkl"),
 						},
 					},
 				},
@@ -637,21 +637,21 @@ func Test_anyError_format(t *testing.T) {
 		{
 			name: "restrictions and alls",
 			err: anyError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
+				restrictions: []*plugin.RestrictionError{
+					plugin.NewRestrictionError("abc"),
+					plugin.NewRestrictionError("def"),
 				},
 				alls: []*allError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("ghi"),
-							errors.NewRestrictionError("jkl"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("ghi"),
+							plugin.NewRestrictionError("jkl"),
 						},
 					},
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("mno"),
-							errors.NewRestrictionError("pqr"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("mno"),
+							plugin.NewRestrictionError("pqr"),
 						},
 					},
 				},
@@ -669,21 +669,21 @@ func Test_anyError_format(t *testing.T) {
 		{
 			name: "all with fatals",
 			err: anyError{
-				restrictions: []*errors.RestrictionError{
-					errors.NewRestrictionError("abc"),
-					errors.NewRestrictionError("def"),
+				restrictions: []*plugin.RestrictionError{
+					plugin.NewRestrictionError("abc"),
+					plugin.NewRestrictionError("def"),
 				},
 				alls: []*allError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewFatalRestrictionError("ghi"),
-							errors.NewFatalRestrictionError("jkl"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewFatalRestrictionError("ghi"),
+							plugin.NewFatalRestrictionError("jkl"),
 						},
 					},
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("mno"),
-							errors.NewRestrictionError("pqr"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("mno"),
+							plugin.NewRestrictionError("pqr"),
 						},
 					},
 				},
@@ -703,28 +703,28 @@ func Test_anyError_format(t *testing.T) {
 			err: anyError{
 				alls: []*allError{
 					{
-						restrictions: []*errors.RestrictionError{
-							errors.NewRestrictionError("abc"),
+						restrictions: []*plugin.RestrictionError{
+							plugin.NewRestrictionError("abc"),
 						},
 						anys: []*anyError{
 							{
-								restrictions: []*errors.RestrictionError{
-									errors.NewRestrictionError("def"),
-									errors.NewRestrictionError("ghi"),
+								restrictions: []*plugin.RestrictionError{
+									plugin.NewRestrictionError("def"),
+									plugin.NewRestrictionError("ghi"),
 								},
 								alls: []*allError{
 									{
-										restrictions: []*errors.RestrictionError{
-											errors.NewRestrictionError("jkl"),
-											errors.NewRestrictionError("mno"),
+										restrictions: []*plugin.RestrictionError{
+											plugin.NewRestrictionError("jkl"),
+											plugin.NewRestrictionError("mno"),
 										},
 									},
 								},
 							},
 							{
-								restrictions: []*errors.RestrictionError{
-									errors.NewRestrictionError("pqr"),
-									errors.NewRestrictionError("stu"),
+								restrictions: []*plugin.RestrictionError{
+									plugin.NewRestrictionError("pqr"),
+									plugin.NewRestrictionError("stu"),
 								},
 							},
 						},
@@ -758,7 +758,7 @@ func Test_anyError_format(t *testing.T) {
 
 func Test_anyError_Wrap(t *testing.T) {
 	t.Run("fatal", func(t *testing.T) {
-		expect := errors.NewFatalRestrictionError("You need to fulfill at least one of these requirements to " +
+		expect := plugin.NewFatalRestrictionError("You need to fulfill at least one of these requirements to " +
 			"execute the command:\n\n" +
 			entryPrefix + "mno\n" +
 			entryPrefix + "mno")
@@ -781,7 +781,7 @@ func Test_anyError_Wrap(t *testing.T) {
 	})
 
 	t.Run("not fatal", func(t *testing.T) {
-		expect := errors.NewRestrictionError("You need to fulfill at least one of these requirements to execute " +
+		expect := plugin.NewRestrictionError("You need to fulfill at least one of these requirements to execute " +
 			"the command:\n\n" +
 			entryPrefix + "abc\n" +
 			entryPrefix + "def")

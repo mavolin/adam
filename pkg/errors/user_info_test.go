@@ -24,7 +24,7 @@ func TestUserInfo_Handle(t *testing.T) {
 			Replier:   replierFromState(s, 123, 0),
 		}
 
-		embed := InfoEmbed.Clone().
+		embed := NewInfoEmbed().
 			WithDescription(expectDesc).
 			MustBuild(ctx.Localizer)
 
@@ -55,7 +55,7 @@ func TestUserInfo_Handle(t *testing.T) {
 			Replier:   replierFromState(s, 123, 0),
 		}
 
-		embed := InfoEmbed.Clone().
+		embed := NewInfoEmbed().
 			WithDescription(expectDesc).
 			WithField(expectFieldName, expectFieldValue).
 			MustBuild(ctx.Localizer)

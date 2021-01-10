@@ -286,9 +286,9 @@ func (w *ReplyWaiter) AwaitWithContext(
 	// make sure we have permission to send messages and create reactions, if
 	// time extensions are enabled or we have cancel reactions.
 	if !perms.Has(discord.PermissionSendMessages) {
-		return nil, errors.NewBotPermissionsError(discord.PermissionSendMessages)
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	} else if !w.noAutoReact && len(w.cancelReactions) > 0 && !perms.Has(discord.PermissionAddReactions) {
-		return nil, errors.NewBotPermissionsError(discord.PermissionAddReactions)
+		return nil, plugin.NewBotPermissionsError(discord.PermissionAddReactions)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
