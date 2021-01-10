@@ -19,7 +19,7 @@ var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
 
 // Route attempts to route the passed message.
 // It aborts, if the message is not a valid invoke.
-func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Member) {
+func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Member) { //nolint:funlen
 	// Only accept regular text messages.
 	// Also check if a bot wrote the message, if !b.AllowBot.
 	if msg.Type != discord.DefaultMessage || (!b.AllowBot && msg.Author.Bot) {
@@ -84,9 +84,19 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		return
 	}
 
-	rm, err := ctx.InvokedCommand.Throttler.Check(b.State, ctx)
-	if err != nil {
-		ctx.HandleError(err)
+	defer func() {
+		if rec := recover(); rec != nil {
+			b.PanicHandler(rec, b.State, ctx)
+		}
+	}()
+
+	var rm func()
+
+	if ctx.InvokedCommand.Throttler != nil {
+		rm, err = ctx.InvokedCommand.Throttler.Check(b.State, ctx)
+		if err != nil {
+			ctx.HandleError(err)
+		}
 	}
 
 	err = b.invoke(ctx, args)

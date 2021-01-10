@@ -342,14 +342,20 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 // If there is another plugin provider with the passed name, it will be removed
 // first.
 //
+// If defaults.ChannelTypes is 0, it will be set to plugin.AllChannels.
+//
 // The plugin providers will be used in the order they are added in.
 func (b *Bot) AddPluginProvider(name string, p PluginProvider, defaults plugin.Defaults) {
+	if p == nil {
+		return
+	}
+
 	if name == plugin.BuiltInProvider {
 		panic("you cannot use " + plugin.BuiltInProvider + " as plugin provider")
 	}
 
-	if p == nil {
-		return
+	if defaults.ChannelTypes == 0 {
+		defaults.ChannelTypes = plugin.AllChannels
 	}
 
 	for i, rp := range b.pluginProviders {
