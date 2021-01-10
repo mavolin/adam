@@ -101,14 +101,6 @@ func New(o Options) (*Bot, error) {
 	b.State.PanicHandler = o.StatePanicHandler
 	b.MiddlewareManager = new(MiddlewareManager)
 
-	if o.EditAge > 0 {
-		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
-			if e.Timestamp.Time().Add(o.EditAge).Before(time.Now()) {
-				b.Route(e.Base, &e.Message, e.Member)
-			}
-		})
-	}
-
 	b.SettingsProvider = o.SettingsProvider
 	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
@@ -175,6 +167,14 @@ func (b *Bot) Open() error {
 		b.Route(e.Base, &e.Message, e.Member)
 	})
 
+	if b.EditAge > 0 {
+		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+			if time.Since(e.Timestamp.Time()) <= b.EditAge {
+				b.Route(e.Base, &e.Message, e.Member)
+			}
+		})
+	}
+
 	err := b.State.Open()
 	if err != nil {
 		return err
@@ -182,12 +182,6 @@ func (b *Bot) Open() error {
 
 	<-done
 	rm()
-
-	b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
-		if time.Since(e.EditedTimestamp.Time()) <= b.EditAge {
-			b.Route(e.Base, &e.Message, e.Member)
-		}
-	})
 
 	return nil
 }
