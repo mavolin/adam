@@ -102,17 +102,17 @@ var (
 
 	numberBelowMinErrorArg = i18n.NewFallbackConfig(
 		"args.types.number.errors.below_min.arg",
-		"Argument {{.position}} must be larger or equal to {{.min}}.")
+		"Argument {{.position}} may be no smaller than {{.min}}.")
 	numberBelowMinErrorFlag = i18n.NewFallbackConfig(
 		"args.types.number.errors.below_min.flag",
-		"The `{{.used_name}}`-flag must be larger or equal to {{.min}}.")
+		"The `{{.used_name}}`-flag may be smaller than {{.min}}.")
 
 	numberAboveMaxErrorArg = i18n.NewFallbackConfig(
 		"args.types.number.errors.below_min.arg",
-		"Argument {{.position}} must be smaller or equal to {{.max}}.")
+		"Argument {{.position}} may be no larger than {{.max}}.")
 	numberAboveMaxErrorFlag = i18n.NewFallbackConfig(
 		"args.types.number.errors.below_min.flag",
-		"The `{{.used_name}}`-flag must be smaller or equal to {{.max}}.")
+		"The `{{.used_name}}`-flag may be no larger than {{.max}}.")
 )
 
 // =============================================================================
@@ -125,8 +125,8 @@ var (
 	durationName        = i18n.NewFallbackConfig("args.types.duration.name", "Duration")
 	durationDescription = i18n.NewFallbackConfig(
 		"args.types.duration.description", "A timespan. For example: 1h 3 min 4s.\n"+
-			"Available units are `s` for seconds, `min` for minutes, `h` for hours, `d` for days, "+
-			"`w` for weeks, and `m` for months (30 days).")
+			"Available units are `ms` for milliseconds, `s` for seconds, `min` for minutes, `h` for hours, "+
+			"`d` for days, `w` for weeks, and `m` for months (30 days).")
 )
 
 // ================================ Error ================================
@@ -152,17 +152,17 @@ var (
 
 	durationBelowMinErrorArg = i18n.NewFallbackConfig(
 		"args.types.duration.errors.below_min.arg",
-		"Argument {{.position}} must be larger or equal to {{.min}}.")
+		"The duration in argument {{.position}} may not be smaller than {{.min}}.")
 	durationBelowMinErrorFlag = i18n.NewFallbackConfig(
 		"args.types.duration.errors.below_min.flag",
-		"The `{{.used_name}}`-flag must be larger or equal to {{.min}}.")
+		"The duration in the `{{.used_name}}`-flag may not be smaller than {{.min}}.")
 
 	durationAboveMaxErrorArg = i18n.NewFallbackConfig(
 		"args.types.duration.errors.below_min.arg",
-		"Argument {{.position}} must be smaller or equal to {{.max}}.")
+		"The duration in argument {{.position}} may not be larger than {{.max}}.")
 	durationAboveMaxErrorFlag = i18n.NewFallbackConfig(
 		"args.types.duration.errors.below_min.flag",
-		"The `{{.used_name}}`-flag must be smaller or equal to {{.max}}.")
+		"The duration in the `{{.used_name}}`-flag may not be larger than {{.max}}.")
 )
 
 // =============================================================================
@@ -249,11 +249,11 @@ var (
 	dateRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
 		"args.types.date.errors.require_utc_offset.arg",
 		"You need to add an UTC offset to the date in argument {{.position}}, "+
-			"e.g. `13:01 +0100` to use the Britain's daylight time.")
+			"e.g. `13:01 -0600` to use Costa Ricas time.")
 	dateRequireUTCOffsetErrorFlag = i18n.NewFallbackConfig(
 		"args.types.date.errors.require_utc_offset.flag",
 		"You need to add an UTC offset to the date used as `{{.used_name}}`-flag, "+
-			"e.g. `13:01 +0100` to use the Britain's daylight time.")
+			"e.g. `13:01 -0600` to use Costa Ricas time.")
 
 	dateBeforeMinErrorArg = i18n.NewFallbackConfig(
 		"args.types.date.errors.before_min.arg", "The date in argument {{.position}} may not be before {{.min}}.")
@@ -303,7 +303,7 @@ var (
 	timeZoneName        = i18n.NewFallbackConfig("args.types.time_zone.name", "Time Zone")
 	timeZoneDescription = i18n.NewFallbackConfig(
 		"args.types.time_zone.description",
-		"The name of a IANA time zone, e.g. America/New_York.")
+		"The name of a IANA time zone, e.g. `America/New_York`.")
 )
 
 // ================================ Errors ================================
@@ -368,7 +368,7 @@ var (
 
 var (
 	linkName        = i18n.NewFallbackConfig("args.types.link.name", "Link")
-	linkDescription = i18n.NewFallbackConfig("args.types.link.description", "A link to something on the web.")
+	linkDescription = i18n.NewFallbackConfig("args.types.link.description", "A link to something.")
 )
 
 // ================================ Errors ================================
@@ -561,10 +561,10 @@ var (
 
 	textChannelDescriptionNoID = i18n.NewFallbackConfig(
 		"args.types.text_channel.description.no_id",
-		"A mention of a id or announcement channel.")
+		"A mention of a text or announcement channel.")
 	textChannelDescriptionWithID = i18n.NewFallbackConfig(
 		"args.types.text_channel.description.with_id",
-		"A mention of a id or a announcement channel or an id of such.")
+		"A mention of a text or a announcement channel or an id of such.")
 )
 
 // ================================ Errors ================================

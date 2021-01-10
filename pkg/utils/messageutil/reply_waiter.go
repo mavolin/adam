@@ -23,8 +23,8 @@ var (
 		maxTimeout:     ReplyMaxTimeout,
 	}
 
-	// ReplyMaxTimeout is the default maximum amount of time a ReplyWaiter will wait,
-	// even if a user is still typing.
+	// ReplyMaxTimeout is the default maximum amount of time a ReplyWaiter will
+	// wait, even if a user is still typing.
 	ReplyMaxTimeout = 30 * time.Minute
 )
 
@@ -39,7 +39,7 @@ var typingInterval = 11 * time.Second
 
 type (
 	// A ReplyWaiter is used to await messages.
-	// Wait can be cancelled either by the user by using a cancel keyword or
+	// Wait can be cancelled either by the user through a cancel keyword or by
 	// using a cancel reaction.
 	// Furthermore, wait may be cancelled by the ReplyWaiter if the initial
 	// timeout expires and the user is not typing or the user stopped typing
@@ -212,8 +212,8 @@ func (w *ReplyWaiter) WithCancelReactions(messageID discord.MessageID, reactions
 }
 
 // WithMaxTimeout changes the maximum timeout of the waiter to max.
-// The maximum timeout is the timeout after which the ReplyWaiter will exit, even if
-// the user is still typing.
+// The maximum timeout is the timeout after which the ReplyWaiter will exit,
+// even if the user is still typing.
 func (w *ReplyWaiter) WithMaxTimeout(max time.Duration) *ReplyWaiter {
 	if w.maxTimeout > 0 {
 		w.maxTimeout = max
@@ -242,9 +242,9 @@ func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 	return
 }
 
-// AwaitReply awaits a reply of the user until the user signals cancellation, the
-// initial timeout expires and the user is not typing or the user stops typing
-// and the typing timeout is reached. Note you need the typing intent to
+// AwaitReply awaits a reply of the user until the user signals cancellation,
+// the initial timeout expires and the user is not typing, or the user stops
+// typing and the typing timeout is reached. Note you need the typing intent to
 // monitor typing.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.
@@ -260,9 +260,9 @@ func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*disco
 	return w.AwaitWithContext(context.Background(), initialTimeout, typingTimeout)
 }
 
-// AwaitReply awaits a reply of the user until the user signals cancellation, the
-// initial timeout expires and the user is not typing or the user stops typing
-// and the typing timeout is reached. Note you need the typing intent to
+// AwaitReply awaits a reply of the user until the user signals cancellation,
+// the initial timeout expires and the user is not typing or the user stops
+// typing and the typing timeout is reached. Note you need the typing intent to
 // monitor typing.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.

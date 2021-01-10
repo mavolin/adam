@@ -57,7 +57,7 @@ func TestChoice_Parse(t *testing.T) {
 
 		ctx := &Context{Raw: "def"}
 
-		expect := newArgParsingErr(choiceInvalidError, ctx, nil)
+		expect := newArgumentError(choiceInvalidError, ctx, nil)
 
 		_, actual := choice.Parse(nil, ctx)
 		assert.Equal(t, expect, actual)
@@ -129,7 +129,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 			Raw:     "jkl",
 		}
 
-		expect := newArgParsingErr(choiceInvalidError, ctx, nil)
+		expect := newArgumentError(choiceInvalidError, ctx, nil)
 
 		_, actual := choice.Parse(nil, ctx)
 		assert.Equal(t, expect, actual)

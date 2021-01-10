@@ -63,28 +63,28 @@ func (d Duration) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	if errors.As(err, &perr) {
 		switch perr.Code {
 		case duration.ErrSize:
-			return nil, newArgParsingErr2(durationSizeErrorArg, durationSizeErrorFlag, ctx, nil)
+			return nil, newArgumentError2(durationSizeErrorArg, durationSizeErrorFlag, ctx, nil)
 		case duration.ErrMissingUnit:
-			return nil, newArgParsingErr2(durationMissingUnitErrorArg, durationMissingUnitErrorFlag, ctx, nil)
+			return nil, newArgumentError2(durationMissingUnitErrorArg, durationMissingUnitErrorFlag, ctx, nil)
 		case duration.ErrInvalidUnit:
-			return nil, newArgParsingErr(durationInvalidUnitError, ctx, map[string]interface{}{
+			return nil, newArgumentError(durationInvalidUnitError, ctx, map[string]interface{}{
 				"unit": perr.Val,
 			})
 		case duration.ErrSyntax:
 			fallthrough
 		default:
-			return nil, newArgParsingErr(durationInvalidError, ctx, nil)
+			return nil, newArgumentError(durationInvalidError, ctx, nil)
 		}
 	} else if err != nil {
-		return nil, newArgParsingErr(durationInvalidError, ctx, nil)
+		return nil, newArgumentError(durationInvalidError, ctx, nil)
 	}
 
 	if d.Min > 0 && parsed < d.Min {
-		return nil, newArgParsingErr2(durationBelowMinErrorArg, durationBelowMinErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(durationBelowMinErrorArg, durationBelowMinErrorFlag, ctx, map[string]interface{}{
 			"min": duration.Format(d.Min),
 		})
 	} else if d.Max > 0 && parsed > d.Max {
-		return nil, newArgParsingErr2(durationAboveMaxErrorArg, durationAboveMaxErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(durationAboveMaxErrorArg, durationAboveMaxErrorFlag, ctx, map[string]interface{}{
 			"max": duration.Format(d.Max),
 		})
 	}
@@ -152,7 +152,7 @@ func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolin
 		}
 
 		if loc == nil {
-			return nil, newArgParsingErr2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
+			return nil, newArgumentError2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
 		}
 
 		parsed, err = time.ParseInLocation(timeFormat, ctx.Raw, loc)
@@ -161,15 +161,15 @@ func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolin
 	}
 
 	if err != nil || parsed.IsZero() {
-		return nil, newArgParsingErr2(timeInvalidErrorArg, timeInvalidErrorFlag, ctx, nil)
+		return nil, newArgumentError2(timeInvalidErrorArg, timeInvalidErrorFlag, ctx, nil)
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
-		return nil, newArgParsingErr2(timeBeforeMinErrorArg, timeBeforeMinErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(timeBeforeMinErrorArg, timeBeforeMinErrorFlag, ctx, map[string]interface{}{
 			"min": t.Min.In(parsed.Location()).Format(timeFormat),
 		})
 	} else if !t.Max.IsZero() && parsed.After(t.Max) {
-		return nil, newArgParsingErr2(timeAfterMaxErrorArg, timeAfterMaxErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(timeAfterMaxErrorArg, timeAfterMaxErrorFlag, ctx, map[string]interface{}{
 			"max": t.Max.In(parsed.Location()).Format(timeFormat),
 		})
 	}
@@ -250,7 +250,7 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 
 		if loc == nil {
 			if t.RequireTimezone {
-				return nil, newArgParsingErr2(dateRequireUTCOffsetErrorArg, dateRequireUTCOffsetErrorFlag, ctx, nil)
+				return nil, newArgumentError2(dateRequireUTCOffsetErrorArg, dateRequireUTCOffsetErrorFlag, ctx, nil)
 			}
 
 			loc = time.UTC
@@ -262,15 +262,15 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if err != nil || parsed.IsZero() {
-		return nil, newArgParsingErr2(dateInvalidErrorArg, dateInvalidErrorFlag, ctx, nil)
+		return nil, newArgumentError2(dateInvalidErrorArg, dateInvalidErrorFlag, ctx, nil)
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
-		return nil, newArgParsingErr2(dateBeforeMinErrorArg, dateBeforeMinErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(dateBeforeMinErrorArg, dateBeforeMinErrorFlag, ctx, map[string]interface{}{
 			"min": t.Min.In(parsed.Location()).Format(dateFormat),
 		})
 	} else if !t.Max.IsZero() && parsed.After(t.Max) {
-		return nil, newArgParsingErr2(dateAfterMaxErrorArg, dateAfterMaxErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(dateAfterMaxErrorArg, dateAfterMaxErrorFlag, ctx, map[string]interface{}{
 			"max": t.Max.In(parsed.Location()).Format(dateFormat),
 		})
 	}
@@ -338,7 +338,7 @@ func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) { //n
 		}
 
 		if loc == nil {
-			return nil, newArgParsingErr2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
+			return nil, newArgumentError2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
 		}
 
 		parsed, err = time.ParseInLocation(dateTimeFormat, ctx.Raw, loc)
@@ -347,15 +347,15 @@ func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) { //n
 	}
 
 	if err != nil || parsed.IsZero() {
-		return nil, newArgParsingErr2(dateTimeInvalidErrorArg, dateTimeInvalidErrorFlag, ctx, nil)
+		return nil, newArgumentError2(dateTimeInvalidErrorArg, dateTimeInvalidErrorFlag, ctx, nil)
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
-		return nil, newArgParsingErr2(dateBeforeMinErrorArg, dateBeforeMinErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(dateBeforeMinErrorArg, dateBeforeMinErrorFlag, ctx, map[string]interface{}{
 			"min": t.Min.In(parsed.Location()).Format(dateTimeFormat),
 		})
 	} else if !t.Max.IsZero() && parsed.After(t.Max) {
-		return nil, newArgParsingErr2(dateAfterMaxErrorArg, dateAfterMaxErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(dateAfterMaxErrorArg, dateAfterMaxErrorFlag, ctx, map[string]interface{}{
 			"max": t.Max.In(parsed.Location()).Format(dateTimeFormat),
 		})
 	}
@@ -397,7 +397,7 @@ func (z timeZone) Description(l *i18n.Localizer) string {
 func (z timeZone) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := time.LoadLocation(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(timeZoneInvalidError, ctx, nil)
+		return nil, newArgumentError(timeZoneInvalidError, ctx, nil)
 	}
 
 	return parsed, nil

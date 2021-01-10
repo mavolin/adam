@@ -128,41 +128,41 @@ func (t textChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
+			return nil, newArgumentError2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		c, err := s.Channel(discord.ChannelID(id))
 		if err != nil {
-			return nil, newArgParsingErr2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
+			return nil, newArgumentError2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		if c.GuildID != ctx.GuildID {
-			return nil, newArgParsingErr(textChannelGuildNotMatchingError, ctx, nil)
+			return nil, newArgumentError(textChannelGuildNotMatchingError, ctx, nil)
 		} else if c.Type != discord.GuildText && c.Type != discord.GuildNews {
-			return nil, newArgParsingErr(textChannelInvalidTypeError, ctx, nil)
+			return nil, newArgumentError(textChannelInvalidTypeError, ctx, nil)
 		}
 
 		return c, nil
 	}
 
 	if !TextChannelAllowIDs {
-		return nil, newArgParsingErr(textChannelInvalidMentionWithRawError, ctx, nil)
+		return nil, newArgumentError(textChannelInvalidMentionWithRawError, ctx, nil)
 	}
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(textChannelInvalidError, ctx, nil)
+		return nil, newArgumentError(textChannelInvalidError, ctx, nil)
 	}
 
 	c, err := s.Channel(discord.ChannelID(id))
 	if err != nil {
-		return nil, newArgParsingErr(channelIDInvalidError, ctx, nil)
+		return nil, newArgumentError(channelIDInvalidError, ctx, nil)
 	}
 
 	if c.GuildID != ctx.GuildID {
-		return nil, newArgParsingErr(textChannelIDGuildNotMatchingError, ctx, nil)
+		return nil, newArgumentError(textChannelIDGuildNotMatchingError, ctx, nil)
 	} else if c.Type != discord.GuildText && c.Type != discord.GuildNews {
-		return nil, newArgParsingErr(textChannelIDInvalidTypeError, ctx, nil)
+		return nil, newArgumentError(textChannelIDInvalidTypeError, ctx, nil)
 	}
 
 	return c, nil
@@ -211,7 +211,7 @@ func (c category) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if !CategoryAllowSearch {
-		return nil, newArgParsingErr2(categoryIDInvalidErrorArg, categoryIDInvalidErrorFlag, ctx, nil)
+		return nil, newArgumentError2(categoryIDInvalidErrorArg, categoryIDInvalidErrorFlag, ctx, nil)
 	}
 
 	return c.handleName(s, ctx)
@@ -223,7 +223,7 @@ func (c category) handleID(s *state.State, ctx *Context, id discord.ChannelID) (
 	channel, err := s.Channel(id)
 	if err == nil {
 		if channel.Type != discord.GuildCategory {
-			return nil, newArgParsingErr(categoryIDInvalidTypeError, ctx, nil)
+			return nil, newArgumentError(categoryIDInvalidTypeError, ctx, nil)
 		}
 
 		return channel, err
@@ -269,7 +269,7 @@ func (c category) handleName(s *state.State, ctx *Context) (*discord.Channel, er
 
 		if lowerName == lowerRaw {
 			if len(fullMatches) >= len(CategoryOptionEmojis) {
-				return nil, newArgParsingErr(categoryTooManyMatchesError, ctx, nil)
+				return nil, newArgumentError(categoryTooManyMatchesError, ctx, nil)
 			}
 
 			fullMatches = append(fullMatches, categoryMatch{
@@ -291,9 +291,9 @@ func (c category) handleName(s *state.State, ctx *Context) (*discord.Channel, er
 
 	switch {
 	case len(fullMatches) == 0 && len(partialMatches) == 0:
-		return nil, newArgParsingErr(categoryNotFoundError, ctx, nil)
+		return nil, newArgumentError(categoryNotFoundError, ctx, nil)
 	case len(fullMatches) == 0 && partialOverflow:
-		return nil, newArgParsingErr(categoryTooManyPartialMatchesError, ctx, nil)
+		return nil, newArgumentError(categoryTooManyPartialMatchesError, ctx, nil)
 	case len(fullMatches) == 1 && len(partialMatches) == 0:
 		return fullMatches[0].channel, nil
 	case len(fullMatches) == 0 && len(partialMatches) == 1:
@@ -473,7 +473,7 @@ func (c voiceChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if !VoiceChannelAllowSearch {
-		return nil, newArgParsingErr2(voiceChannelIDInvalidErrorArg, voiceChannelIDInvalidErrorFlag, ctx, nil)
+		return nil, newArgumentError2(voiceChannelIDInvalidErrorArg, voiceChannelIDInvalidErrorFlag, ctx, nil)
 	}
 
 	return c.handleName(s, ctx)
@@ -485,7 +485,7 @@ func (c voiceChannel) handleID(s *state.State, ctx *Context, id discord.ChannelI
 	channel, err := s.Channel(id)
 	if err == nil {
 		if channel.Type != discord.GuildVoice {
-			return nil, newArgParsingErr(voiceChannelIDInvalidTypeError, ctx, nil)
+			return nil, newArgumentError(voiceChannelIDInvalidTypeError, ctx, nil)
 		}
 
 		return channel, err
@@ -540,7 +540,7 @@ func (c voiceChannel) handleName(s *state.State, ctx *Context) (*discord.Channel
 
 			if lowerName == lowerRaw {
 				if len(fullMatches) >= len(VoiceChannelOptionEmojis) {
-					return nil, newArgParsingErr(voiceChannelTooManyMatchesError, ctx, nil)
+					return nil, newArgumentError(voiceChannelTooManyMatchesError, ctx, nil)
 				}
 
 				fullMatches = append(fullMatches, voiceMatch{
@@ -565,9 +565,9 @@ func (c voiceChannel) handleName(s *state.State, ctx *Context) (*discord.Channel
 
 	switch {
 	case len(fullMatches) == 0 && len(partialMatches) == 0:
-		return nil, newArgParsingErr(voiceChannelNotFoundError, ctx, nil)
+		return nil, newArgumentError(voiceChannelNotFoundError, ctx, nil)
 	case len(fullMatches) == 0 && partialOverflow:
-		return nil, newArgParsingErr(voiceChannelTooManyPartialMatchesError, ctx, nil)
+		return nil, newArgumentError(voiceChannelTooManyPartialMatchesError, ctx, nil)
 	case len(fullMatches) == 1 && len(partialMatches) == 0:
 		return fullMatches[0].channel, nil
 	case len(fullMatches) == 0 && len(partialMatches) == 1:

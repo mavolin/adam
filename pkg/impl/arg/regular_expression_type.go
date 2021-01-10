@@ -35,7 +35,7 @@ func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, err
 
 	var regerr *resyntax.Error
 	if !errors.As(err, &regerr) {
-		return nil, newArgParsingErr2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, nil)
+		return nil, newArgumentError2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, nil)
 	}
 
 	placeholders := map[string]interface{}{
@@ -45,40 +45,40 @@ func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, err
 	switch regerr.Code {
 	case resyntax.ErrInvalidCharClass:
 		return nil,
-			newArgParsingErr2(regexpInvalidCharClassErrorArg, regexpInvalidCharClassErrorFlag, ctx, placeholders)
+			newArgumentError2(regexpInvalidCharClassErrorArg, regexpInvalidCharClassErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidCharRange:
 		return nil,
-			newArgParsingErr2(regexpInvalidCharRangeErrorArg, regexpInvalidCharRangeErrorFlag, ctx, placeholders)
+			newArgumentError2(regexpInvalidCharRangeErrorArg, regexpInvalidCharRangeErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidEscape:
-		return nil, newArgParsingErr2(regexpInvalidEscapeErrorArg, regexpInvalidEscapeErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpInvalidEscapeErrorArg, regexpInvalidEscapeErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidNamedCapture:
 		return nil,
-			newArgParsingErr2(regexpInvalidNamedCaptureErrorArg, regexpInvalidNamedCaptureErrorFlag, ctx, placeholders)
+			newArgumentError2(regexpInvalidNamedCaptureErrorArg, regexpInvalidNamedCaptureErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidPerlOp:
-		return nil, newArgParsingErr2(regexpInvalidPerlOpErrorArg, regexpInvalidPerlOpErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpInvalidPerlOpErrorArg, regexpInvalidPerlOpErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidRepeatOp:
-		return nil, newArgParsingErr2(regexpInvalidRepeatOpErrorArg, regexpInvalidRepeatOpErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpInvalidRepeatOpErrorArg, regexpInvalidRepeatOpErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidRepeatSize:
 		return nil,
-			newArgParsingErr2(regexpInvalidRepeatSizeErrorArg, regexpInvalidRepeatSizeErrorFlag, ctx, placeholders)
+			newArgumentError2(regexpInvalidRepeatSizeErrorArg, regexpInvalidRepeatSizeErrorFlag, ctx, placeholders)
 	case resyntax.ErrInvalidUTF8:
-		return nil, newArgParsingErr2(regexpInvalidUTF8ErrorArg, regexpInvalidUTF8ErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpInvalidUTF8ErrorArg, regexpInvalidUTF8ErrorFlag, ctx, placeholders)
 	case resyntax.ErrMissingBracket:
-		return nil, newArgParsingErr2(regexpMissingBracketErrorArg, regexpMissingBracketErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpMissingBracketErrorArg, regexpMissingBracketErrorFlag, ctx, placeholders)
 	case resyntax.ErrMissingParen:
-		return nil, newArgParsingErr2(regexpMissingParenErrorArg, regexpMissingParenErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpMissingParenErrorArg, regexpMissingParenErrorFlag, ctx, placeholders)
 	case resyntax.ErrMissingRepeatArgument:
 		return nil,
-			newArgParsingErr2(regexpMissingRepeatArgErrorArg, regexpMissingRepeatArgErrorFlag, ctx, placeholders)
+			newArgumentError2(regexpMissingRepeatArgErrorArg, regexpMissingRepeatArgErrorFlag, ctx, placeholders)
 	case resyntax.ErrTrailingBackslash:
 		return nil,
-			newArgParsingErr2(regexpTrailingBackslashErrorArg, regexpTrailingBackslashErrorFlag, ctx, placeholders)
+			newArgumentError2(regexpTrailingBackslashErrorArg, regexpTrailingBackslashErrorFlag, ctx, placeholders)
 	case resyntax.ErrUnexpectedParen:
-		return nil, newArgParsingErr2(regexpUnexpectedParenErrorArg, regexpUnexpectedParenErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpUnexpectedParenErrorArg, regexpUnexpectedParenErrorFlag, ctx, placeholders)
 	case resyntax.ErrInternalError:
 		fallthrough
 	default:
-		return nil, newArgParsingErr2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, placeholders)
+		return nil, newArgumentError2(regexpInvalidErrorArg, regexpInvalidErrorFlag, ctx, placeholders)
 	}
 }
 

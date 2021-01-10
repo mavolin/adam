@@ -39,6 +39,10 @@ var defaultRestrictionDesc = i18n.NewFallbackConfig(
 // ================================ BotPermissionsError ================================
 
 var (
+	insufficientPermissionsDefault = i18n.NewFallbackConfig(
+		"errors.insufficient_permissions.default",
+		"I don't have sufficient permission to execute this command.")
+
 	insufficientPermissionsDescSingle = i18n.NewFallbackConfig(
 		"errors.insufficient_permissions.description.single",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the "+
@@ -48,10 +52,6 @@ var (
 		"errors.insufficient_permissions.description.multi",
 		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
 			"permissions and try again:")
-
-	insufficientPermissionsDefault = i18n.NewFallbackConfig(
-		"errors.insufficient_permissions.default",
-		"I don't have sufficient permission to execute this command.")
 
 	insufficientPermissionsMissingPermissionsFieldName = i18n.NewFallbackConfig(
 		"errors.insufficient_permissions.fields.missing_permissions.name",

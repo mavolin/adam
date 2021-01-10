@@ -9,9 +9,9 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// ErrNotAMiddleware is the error returned if a middleware given to
+// ErrMiddleware is the error returned if a middleware given to
 // MiddlewareManager.AddMiddleware is not a valid middleware type.
-var ErrNotAMiddleware = errors.New("the passed function does not resemble a valid middleware")
+var ErrMiddleware = errors.New("the passed function does not resemble a valid middleware")
 
 type (
 	// CommandFunc is the signature of the Invoke function of a plugin.Command,
@@ -41,7 +41,7 @@ type MiddlewareManager struct {
 
 // AddMiddleware adds the passed middleware to the MiddlewareManager.
 // If the middleware's type is invalid, AddMiddleware will return
-// ErrNotAMiddleware.
+// ErrMiddleware.
 //
 // Valid middleware types are:
 //		• func(*state.State, interface{})
@@ -152,7 +152,7 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 	case MiddlewareFunc:
 		mf = f
 	default:
-		return errors.WithStack(ErrNotAMiddleware)
+		return errors.WithStack(ErrMiddleware)
 	}
 
 	m.mutex.Lock()

@@ -47,7 +47,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
+			return nil, newArgumentError2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		for _, m := range ctx.Mentions {
@@ -58,7 +58,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		user, err := s.User(discord.UserID(id))
 		if err != nil {
-			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
+			return nil, newArgumentError2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		return user, nil
@@ -66,12 +66,12 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidError, ctx, nil)
+		return nil, newArgumentError(userInvalidError, ctx, nil)
 	}
 
 	user, err := s.User(discord.UserID(id))
 	if err != nil {
-		return nil, newArgParsingErr(userIDInvalidError, ctx, nil)
+		return nil, newArgumentError(userIDInvalidError, ctx, nil)
 	}
 
 	return user, nil
@@ -125,7 +125,7 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
+			return nil, newArgumentError2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		for _, m := range ctx.Mentions {
@@ -137,24 +137,24 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		member, err := s.Member(ctx.GuildID, discord.UserID(id))
 		if err != nil {
-			return nil, newArgParsingErr2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
+			return nil, newArgumentError2(userInvalidMentionErrorArg, userInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		return member, nil
 	}
 
 	if !MemberAllowIDs {
-		return nil, newArgParsingErr(userInvalidMentionWithRawError, ctx, nil)
+		return nil, newArgumentError(userInvalidMentionWithRawError, ctx, nil)
 	}
 
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err != nil {
-		return nil, newArgParsingErr(userInvalidError, ctx, nil)
+		return nil, newArgumentError(userInvalidError, ctx, nil)
 	}
 
 	member, err := s.Member(ctx.GuildID, discord.UserID(id))
 	if err != nil {
-		return nil, newArgParsingErr(userIDInvalidError, ctx, nil)
+		return nil, newArgumentError(userIDInvalidError, ctx, nil)
 	}
 
 	return member, nil

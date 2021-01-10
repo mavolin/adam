@@ -68,7 +68,7 @@ var (
 		"You can only use this command in {{.channel}}.")
 	blockedChannelErrorMulti = i18n.NewFallbackConfig(
 		"restrictions.channels.errors.blocked_channel.multi",
-		"You must use this command in one of these channels:")
+		"You can only use this command in one of these channels:")
 )
 
 type blockedChannelErrorSinglePlaceholders struct {

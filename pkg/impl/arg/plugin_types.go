@@ -35,12 +35,12 @@ func (c command) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
-		return nil, newArgParsingErr(commandNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+		return nil, newArgumentError(commandNotFoundProvidersUnavailable, ctx, map[string]interface{}{
 			"invoke": ctx.Raw,
 		})
 	}
 
-	return nil, newArgParsingErr(commandNotFound, ctx, map[string]interface{}{
+	return nil, newArgumentError(commandNotFound, ctx, map[string]interface{}{
 		"invoke": ctx.Raw,
 	})
 }
@@ -77,12 +77,12 @@ func (m module) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
-		return nil, newArgParsingErr(moduleNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+		return nil, newArgumentError(moduleNotFoundProvidersUnavailable, ctx, map[string]interface{}{
 			"invoke": ctx.Raw,
 		})
 	}
 
-	return nil, newArgParsingErr(moduleNotFound, ctx, map[string]interface{}{
+	return nil, newArgumentError(moduleNotFound, ctx, map[string]interface{}{
 		"invoke": ctx.Raw,
 	})
 }
@@ -122,12 +122,12 @@ func (p pluginType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
-		return nil, newArgParsingErr(pluginNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+		return nil, newArgumentError(pluginNotFoundProvidersUnavailable, ctx, map[string]interface{}{
 			"invoke": ctx.Raw,
 		})
 	}
 
-	return nil, newArgParsingErr(pluginNotFound, ctx, map[string]interface{}{
+	return nil, newArgumentError(pluginNotFound, ctx, map[string]interface{}{
 		"invoke": ctx.Raw,
 	})
 }

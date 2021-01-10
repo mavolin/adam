@@ -114,13 +114,13 @@ func TestText_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := c.text.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.text.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -184,13 +184,13 @@ func TestLink_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, nil)
+				expect := newArgumentError(c.expectArg, ctx, nil)
 
 				_, actual := c.link.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, nil)
+				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				_, actual = c.link.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -341,13 +341,13 @@ func TestAlphanumericID_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := c.id.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.id.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)

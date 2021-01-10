@@ -77,13 +77,13 @@ func TestUser_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
+			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
 
 			_, actual := User.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
-			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
+			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = User.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -106,7 +106,7 @@ func TestUser_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
+			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
 
 			m, s := state.CloneMocker(srcMocker, t)
 
@@ -116,7 +116,7 @@ func TestUser_Parse(t *testing.T) {
 			m.Eval()
 
 			ctx.Kind = KindFlag
-			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
+			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
 
@@ -129,7 +129,7 @@ func TestUser_Parse(t *testing.T) {
 		t.Run("not id", func(t *testing.T) {
 			ctx := &Context{Raw: "abc"}
 
-			expect := newArgParsingErr(userInvalidError, ctx, nil)
+			expect := newArgumentError(userInvalidError, ctx, nil)
 
 			_, actual := User.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -149,7 +149,7 @@ func TestUser_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := newArgParsingErr(userIDInvalidError, ctx, nil)
+			expect := newArgumentError(userIDInvalidError, ctx, nil)
 
 			_, actual := User.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
@@ -236,13 +236,13 @@ func TestMember_Parse(t *testing.T) {
 				Kind:    KindArg,
 			}
 
-			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
+			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
 
 			_, actual := Member.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
-			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
+			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = Member.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -265,7 +265,7 @@ func TestMember_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := newArgParsingErr(userInvalidMentionErrorArg, ctx, nil)
+			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
 
 			m, s := state.CloneMocker(srcMocker, t)
 
@@ -275,7 +275,7 @@ func TestMember_Parse(t *testing.T) {
 			m.Eval()
 
 			ctx.Kind = KindFlag
-			expect = newArgParsingErr(userInvalidMentionErrorFlag, ctx, nil)
+			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
 
@@ -291,7 +291,7 @@ func TestMember_Parse(t *testing.T) {
 				Raw:     "abc",
 			}
 
-			expect := newArgParsingErr(userInvalidError, ctx, nil)
+			expect := newArgumentError(userInvalidError, ctx, nil)
 
 			_, actual := Member.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -314,7 +314,7 @@ func TestMember_Parse(t *testing.T) {
 				Message: "Unknown user",
 			})
 
-			expect := newArgParsingErr(userIDInvalidError, ctx, nil)
+			expect := newArgumentError(userIDInvalidError, ctx, nil)
 
 			_, actual := Member.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
