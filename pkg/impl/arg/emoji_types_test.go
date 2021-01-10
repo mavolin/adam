@@ -250,12 +250,12 @@ func TestRawEmoji_Parse(t *testing.T) {
 
 		raw string
 
-		expect string
+		expect discord.APIEmoji
 	}{
 		{
 			name:   "unicode",
 			raw:    emojiutil.SmilingFaceWithHeartEyes,
-			expect: emojiutil.SmilingFaceWithHeartEyes,
+			expect: discord.APIEmoji(emojiutil.SmilingFaceWithHeartEyes),
 		},
 		{
 			name:   "custom emoji",

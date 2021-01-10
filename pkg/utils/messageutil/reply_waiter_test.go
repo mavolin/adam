@@ -272,7 +272,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 			c.waiter.state = s
 
 			var reactionMessageID discord.MessageID = 123
-			reaction := "🍆"
+			var reaction discord.APIEmoji = "🍆"
 
 			c.waiter.
 				WithCancelReactions(reactionMessageID, reaction)

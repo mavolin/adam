@@ -152,7 +152,7 @@ func (c *Context) ReplyDM(content ...interface{}) (*discord.Message, error) {
 // originally sent in.
 // The message will be formatted as fmt.Sprintf(format, a...).
 func (c *Context) ReplyfDM(format string, a ...interface{}) (*discord.Message, error) {
-	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a)})
+	return c.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a...)})
 }
 
 // ReplylDM replies with the message translated from the passed i18n.Config in
