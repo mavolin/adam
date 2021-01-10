@@ -203,27 +203,28 @@ func (h *parseHelper) mergeFlags() {
 func (h *parseHelper) fillFlagDefaults() {
 	for _, f := range h.flagData {
 		if _, ok := h.flags[f.name]; !ok {
-			val := f.dfault
-			if val == nil {
-				val = f.typ.Default()
-			}
+			var val interface{}
 
 			if f.multi {
-				rval := reflect.ValueOf(val)
-				var t reflect.Type
-
-				if val == nil {
-					t = interfaceType
+				if f.dfault != nil {
+					val = f.dfault
 				} else {
-					t = rval.Type()
+					var t reflect.Type
+
+					if def := f.typ.Default(); def == nil {
+						t = interfaceType
+					} else {
+						t = reflect.TypeOf(def)
+					}
+
+					t = reflect.SliceOf(t)
+					val = reflect.Zero(t).Interface()
 				}
-
-				sliceType := reflect.SliceOf(t)
-
-				slice := reflect.MakeSlice(sliceType, 1, 1)
-				slice.Index(0).Set(rval)
-
-				val = slice.Interface()
+			} else {
+				val = f.dfault
+				if val == nil {
+					val = f.typ.Default()
+				}
 			}
 
 			h.flags[f.name] = val

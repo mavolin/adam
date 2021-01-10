@@ -80,7 +80,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 					{
 						Name:    "default",
 						Type:    mockTypeInt,
-						Default: 123,
+						Default: []int{123},
 						Multi:   true,
 					},
 				},
@@ -201,7 +201,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 					{
 						Name:    "arg2",
 						Type:    mockTypeString,
-						Default: "abc",
+						Default: []string{"abc"},
 					},
 				},
 				Variadic: true,
@@ -285,7 +285,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 					{
 						Name:    "arg1",
 						Type:    mockTypeInt,
-						Default: 123,
+						Default: []int{123},
 					},
 				},
 				Variadic: true,
@@ -731,7 +731,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 					{
 						Name:    "default",
 						Type:    mockTypeInt,
-						Default: 123,
+						Default: []int{123},
 						Multi:   true,
 					},
 				},
@@ -852,7 +852,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 					{
 						Name:    i18n.NewFallbackConfig("", "arg2"),
 						Type:    mockTypeString,
-						Default: "abc",
+						Default: []string{"abc"},
 					},
 				},
 				Variadic: true,
@@ -936,7 +936,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 					{
 						Name:    i18n.NewFallbackConfig("", "arg1"),
 						Type:    mockTypeInt,
-						Default: 123,
+						Default: []int{123},
 					},
 				},
 				Variadic: true,
