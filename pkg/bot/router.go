@@ -3,12 +3,15 @@ package bot
 import (
 	"strings"
 
+	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/replier"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
 var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
@@ -29,7 +32,9 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		return
 	}
 
-	var args string
+	if member != nil {
+		member.User = msg.Author
+	}
 
 	ctx := &plugin.Context{
 		Message:          *msg,
@@ -49,6 +54,8 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	}
 	ctx.ErrorHandler = newCtxErrorHandler(b.State, ctx, b.ErrorHandler)
 
+	var args string
+
 	if b.AsyncPluginProviders {
 		ctx.InvokedCommand, ctx.Provider, args = b.routeCommandAsync(invoke, base, msg)
 		if ctx.InvokedCommand == nil {
@@ -61,24 +68,9 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		}
 	}
 
-	err := ctx.InvokedCommand.IsRestricted(b.State, ctx)
+	err := b.invoke(ctx, args)
 	if err != nil {
 		b.ErrorHandler(err, b.State, ctx)
-		return
-	}
-
-	if ctx.InvokedCommand.Args != nil {
-		ctx.Args, ctx.Flags, err = ctx.InvokedCommand.Args.Parse(args, b.State, ctx)
-		if err != nil {
-			b.ErrorHandler(err, b.State, ctx)
-			return
-		}
-	}
-
-	_, err = ctx.InvokedCommand.Invoke(b.State, ctx)
-	if err != nil {
-		b.ErrorHandler(err, b.State, ctx)
-		return
 	}
 }
 
@@ -185,4 +177,103 @@ func (b *Bot) routeCommandAsync(
 	}
 
 	return nil, nil, ""
+}
+
+func (b *Bot) invoke(ctx *plugin.Context, args string) error {
+	middlewares := b.Middlewares()
+
+	for _, mod := range ctx.InvokedCommand.SourceParents {
+		if m, ok := mod.(Middlewarer); ok {
+			middlewares = append(middlewares, m.Middlewares()...)
+		}
+	}
+
+	if m, ok := ctx.InvokedCommand.Source.(Middlewarer); ok {
+		middlewares = append(middlewares, m.Middlewares()...)
+	}
+
+	inv := func(_ *state.State, ctx *plugin.Context) error { return b.invokeCommand(ctx, args) }
+
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		inv = middlewares[i](inv)
+	}
+
+	return inv(b.State, ctx)
+}
+
+func (b *Bot) invokeCommand(ctx *plugin.Context, args string) error {
+	err := ctx.InvokedCommand.IsRestricted(b.State, ctx)
+	if err != nil {
+		return err
+	}
+
+	if ctx.InvokedCommand.Args != nil {
+		ctx.Args, ctx.Flags, err = ctx.InvokedCommand.Args.Parse(args, b.State, ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	reply, err := ctx.InvokedCommand.Invoke(b.State, ctx)
+	rerr := b.handleReply(reply, ctx)
+	if err != nil {
+		ctx.HandleErrorSilent(rerr)
+
+		return err
+	}
+
+	return rerr
+}
+
+func (b *Bot) handleReply(reply interface{}, ctx *plugin.Context) (err error) {
+	if reply == nil {
+		return nil
+	}
+
+	switch reply := reply.(type) {
+	case uint:
+		_, err = ctx.Reply(reply)
+	case uint8:
+		_, err = ctx.Reply(reply)
+	case uint16:
+		_, err = ctx.Reply(reply)
+	case uint32:
+		_, err = ctx.Reply(reply)
+	case uint64:
+		_, err = ctx.Reply(reply)
+	case int:
+		_, err = ctx.Reply(reply)
+	case int8:
+		_, err = ctx.Reply(reply)
+	case int16:
+		_, err = ctx.Reply(reply)
+	case int32:
+		_, err = ctx.Reply(reply)
+	case int64:
+		_, err = ctx.Reply(reply)
+	case float32:
+		_, err = ctx.Reply(reply)
+	case float64:
+		_, err = ctx.Reply(reply)
+	case string:
+		_, err = ctx.Reply(reply)
+	case discord.Embed:
+		_, err = ctx.ReplyEmbed(reply)
+	case *discord.Embed:
+		_, err = ctx.ReplyEmbed(*reply)
+	case *embedutil.Builder:
+		_, err = ctx.ReplyEmbedBuilder(reply)
+	case api.SendMessageData:
+		_, err = ctx.ReplyMessage(reply)
+	case i18n.Term:
+		_, err = ctx.Replylt(reply)
+	case *i18n.Config:
+		_, err = ctx.Replyl(reply)
+	case plugin.Reply:
+		err = reply.SendReply(b.State, ctx)
+	default:
+		err = &ReplyTypeError{Reply: reply}
+	}
+
+	return err
 }

@@ -2,8 +2,6 @@
 package bot
 
 import (
-	"os"
-	"os/signal"
 	"regexp"
 	"time"
 
@@ -101,6 +99,7 @@ func New(o Options) (*Bot, error) {
 	b.State = state.NewFromSession(session.NewWithGateway(gw), o.Cabinet)
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
+	b.MiddlewareManager = new(MiddlewareManager)
 
 	if o.EditAge > 0 {
 		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
@@ -141,9 +140,25 @@ func New(o Options) (*Bot, error) {
 func (b *Bot) Open() error {
 	if b.State.Gateway.Identifier.Intents == 0 {
 		b.AddIntents(b.State.DeriveIntents())
+		b.AddIntents(gateway.IntentGuildMessages)
+		b.AddIntents(gateway.IntentDirectMessages)
 
 		if b.State.Cabinet.GuildStore != store.Noop {
 			b.AddIntents(gateway.IntentGuilds)
+		}
+	}
+
+	if b.autoOpen {
+		for _, cmd := range b.commands {
+			if err := b.callOpen(cmd); err != nil {
+				return err
+			}
+		}
+
+		for _, mod := range b.modules {
+			if err := b.openModule(mod); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -156,17 +171,9 @@ func (b *Bot) Open() error {
 		done <- struct{}{}
 	})
 
-	for _, cmd := range b.commands {
-		if err := b.pluginOpen(cmd); err != nil {
-			return err
-		}
-	}
-
-	for _, mod := range b.modules {
-		if err := b.openModule(mod); err != nil {
-			return err
-		}
-	}
+	b.State.MustAddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
+		b.Route(e.Base, &e.Message, e.Member)
+	})
 
 	err := b.State.Open()
 	if err != nil {
@@ -176,8 +183,10 @@ func (b *Bot) Open() error {
 	<-done
 	rm()
 
-	b.State.MustAddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
-		b.Route(e.Base, &e.Message, e.Member)
+	b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+		if time.Since(e.EditedTimestamp.Time()) <= b.EditAge {
+			b.Route(e.Base, &e.Message, e.Member)
+		}
 	})
 
 	return nil
@@ -185,7 +194,7 @@ func (b *Bot) Open() error {
 
 func (b *Bot) openModule(mod plugin.Module) error {
 	for _, cmd := range mod.Commands() {
-		if err := b.pluginOpen(cmd); err != nil {
+		if err := b.callOpen(cmd); err != nil {
 			return err
 		}
 	}
@@ -199,13 +208,13 @@ func (b *Bot) openModule(mod plugin.Module) error {
 	return nil
 }
 
-// pluginOpen tries to call i.Open.
+// callOpen tries to call i.Open.
 // Open may have an optional *Bot argument and an optional error return.
 //
 // If none of i's methods match those parameters, the function is a no-op.
 //
 // An error will only be returned if i.Open returns it.
-func (b *Bot) pluginOpen(i interface{}) error {
+func (b *Bot) callOpen(i interface{}) error {
 	switch opener := i.(type) {
 	case interface{ Open() }:
 		opener.Open()
@@ -222,15 +231,64 @@ func (b *Bot) pluginOpen(i interface{}) error {
 
 // Close closes the websocket connection to Discord's gateway.
 func (b *Bot) Close() error {
-	return b.State.Close()
+	if err := b.State.Close(); err != nil {
+		return err
+	}
+
+	if !b.autoOpen {
+		return nil
+	}
+
+	for _, cmd := range b.commands {
+		if err := b.callClose(cmd); err != nil {
+			return err
+		}
+	}
+
+	for _, mod := range b.modules {
+		if err := b.closeModule(mod); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-// Wait blockingly waits for SIGINT and returns, when it receives it.
-func (b *Bot) Wait() {
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt)
+func (b *Bot) closeModule(mod plugin.Module) error {
+	for _, cmd := range mod.Commands() {
+		if err := b.callClose(cmd); err != nil {
+			return err
+		}
+	}
 
-	<-stop
+	for _, mod := range mod.Modules() {
+		if err := b.closeModule(mod); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// callClose tries to call i.Close.
+// Close may have an optional *Bot argument and an optional error return.
+//
+// If none of i's methods match those parameters, the function is a no-op.
+//
+// An error will only be returned if i.Close returns it.
+func (b *Bot) callClose(i interface{}) error {
+	switch closer := i.(type) {
+	case interface{ Close() }:
+		closer.Close()
+	case interface{ Close(*Bot) }:
+		closer.Close(b)
+	case interface{ Close() error }:
+		return closer.Close()
+	case interface{ Close(*Bot) error }:
+		return closer.Close(b)
+	}
+
+	return nil
 }
 
 // AddIntents adds the passed gateway.Intents to the bot.

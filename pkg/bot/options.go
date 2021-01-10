@@ -80,13 +80,15 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: false
 	SendTyping bool
 
-	// NoAutoOpen defines whether to call the Open method of plugins
-	// automatically when bot.Open() is called.
-	// The plugin's Open method may take in an optional *bot.Bot parameter, and
-	// may return an error.
+	// NoAutoOpen defines whether to call the Open and Close methods of plugins
+	// automatically when bot.Open() and bot.Close is called.
+	// Both Open and Close may take in an optional *bot.Bot parameter, and may
+	// return an error.
 	//
 	// The call to Open will be made before the gateway is opened.
 	// It is therefore safe to add ReadyEvent handlers.
+	//
+	// The call to Close will be made after the event listener is Closed.
 	//
 	// Default: false
 	NoAutoOpen bool

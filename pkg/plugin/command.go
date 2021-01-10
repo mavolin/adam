@@ -23,15 +23,15 @@ type (
 		//	• int, int8, int16, int32, int64
 		// 	• float32, float64
 		//	• string
-		//	• discord.Embed
+		//	• discord.Embed, *discord.Embed
 		//	• *embedutil.Builder
 		//	• api.SendMessageData
 		//	• i18n.Term
-		//	• i18n.Config
+		//	• *i18n.Config
 		//	• any type implementing Reply
 		//	• nil for no reply
 		//
-		// All other values will be captured through a *bot.ReplyTypeError
+		// All other values will be captured through a *bot.ReplyTypeError.
 		//
 		// Error Handling
 		//
