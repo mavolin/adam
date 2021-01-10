@@ -39,6 +39,9 @@ type Bot struct {
 	AllowBot   bool
 	SendTyping bool
 
+	autoOpen        bool
+	autoAddHandlers bool
+
 	AsyncPluginProviders bool
 
 	PluginDefaults plugin.Defaults
@@ -113,6 +116,8 @@ func New(o Options) (*Bot, error) {
 	b.EditAge = o.EditAge
 	b.AllowBot = o.AllowBot
 	b.SendTyping = o.SendTyping
+	b.autoOpen = !o.NoAutoOpen
+	b.autoAddHandlers = o.AutoAddHandlers
 	b.PluginDefaults = plugin.Defaults{
 		ChannelTypes: o.DefaultChannelTypes,
 		Restrictions: o.DefaultRestrictions,
@@ -142,11 +147,6 @@ func (b *Bot) Open() error {
 		}
 	}
 
-	err := b.State.Open()
-	if err != nil {
-		return err
-	}
-
 	done := make(chan struct{})
 
 	rm := b.State.MustAddHandler(func(_ *state.State, r *state.ReadyEvent) {
@@ -156,12 +156,66 @@ func (b *Bot) Open() error {
 		done <- struct{}{}
 	})
 
+	for _, cmd := range b.commands {
+		if err := b.pluginOpen(cmd); err != nil {
+			return err
+		}
+	}
+
+	for _, mod := range b.modules {
+		if err := b.openModule(mod); err != nil {
+			return err
+		}
+	}
+
+	err := b.State.Open()
+	if err != nil {
+		return err
+	}
+
 	<-done
 	rm()
 
 	b.State.MustAddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
 		b.Route(e.Base, &e.Message, e.Member)
 	})
+
+	return nil
+}
+
+func (b *Bot) openModule(mod plugin.Module) error {
+	for _, cmd := range mod.Commands() {
+		if err := b.pluginOpen(cmd); err != nil {
+			return err
+		}
+	}
+
+	for _, mod := range mod.Modules() {
+		if err := b.openModule(mod); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// pluginOpen tries to call i.Open.
+// Open may have an optional *Bot argument and an optional error return.
+//
+// If none of i's methods match those parameters, the function is a no-op.
+//
+// An error will only be returned if i.Open returns it.
+func (b *Bot) pluginOpen(i interface{}) error {
+	switch opener := i.(type) {
+	case interface{ Open() }:
+		opener.Open()
+	case interface{ Open(*Bot) }:
+		opener.Open(b)
+	case interface{ Open() error }:
+		return opener.Open()
+	case interface{ Open(*Bot) error }:
+		return opener.Open(b)
+	}
 
 	return nil
 }
@@ -184,14 +238,39 @@ func (b *Bot) AddIntents(i gateway.Intents) {
 	b.State.Gateway.AddIntents(i)
 }
 
-// AddCommand adds the passed command to the bot.
+// AddCommand adds the passed top-level command to the bot.
+//
+// If automatic handler adding is enabled, all methods of the Command
+// representing a handler func will be added to the State's event handler.
 func (b *Bot) AddCommand(cmd plugin.Command) {
 	b.commands = append(b.commands, cmd)
+
+	if b.autoAddHandlers {
+		b.State.AutoAddHandlers(b.commands)
+	}
 }
 
-// AddModule adds the passed module to the Bot.
+// AddModule adds the passed top-level module to the Bot.
+//
+// If automatic handler adding is enabled, all methods of the Module
+// representing a handler func will be added to the State's event handler.
+// The same goes for all sub-modules and sub-commands of the module.
 func (b *Bot) AddModule(mod plugin.Module) {
 	b.modules = append(b.modules, mod)
+
+	if b.autoAddHandlers {
+		b.autoAddModuleHandlers(mod)
+	}
+}
+
+func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
+	for _, cmd := range mod.Commands() {
+		b.State.AutoAddHandlers(cmd)
+	}
+
+	for _, mod := range mod.Modules() {
+		b.autoAddModuleHandlers(mod)
+	}
 }
 
 // AddPluginProvider adds the passed PluginProvider under the passed name.

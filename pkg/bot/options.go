@@ -80,6 +80,23 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: false
 	SendTyping bool
 
+	// NoAutoOpen defines whether to call the Open method of plugins
+	// automatically when bot.Open() is called.
+	// The plugin's Open method may take in an optional *bot.Bot parameter, and
+	// may return an error.
+	//
+	// The call to Open will be made before the gateway is opened.
+	// It is therefore safe to add ReadyEvent handlers.
+	//
+	// Default: false
+	NoAutoOpen bool
+	// AutoAddHandlers specifies whether all methods of plugins that resemble
+	// a handler func should be added automatically.
+	// All methods that don't represent a handler will be discarded.
+	//
+	// Default: false
+	AutoAddHandlers bool
+
 	// DefaultChannelTypes are the default plugin.ChannelTypes, used if neither
 	// the parent modules of a command nor the command itself define channel
 	// types.
