@@ -238,9 +238,7 @@ func (h *parseHelper) fillArgDefaults() {
 		return
 	}
 
-	for i := argIndex; i < len(h.oargData)-1; i++ {
-		arg := h.oargData[i]
-
+	for _, arg := range h.oargData[argIndex : len(h.oargData)-1] {
 		val := arg.dfault
 		if val == nil {
 			val = arg.typ.Default()
@@ -251,27 +249,28 @@ func (h *parseHelper) fillArgDefaults() {
 
 	last := h.oargData[len(h.oargData)-1]
 
-	val := last.dfault
-	if val == nil {
-		val = last.typ.Default()
-	}
+	var val interface{}
 
 	if h.variadic {
-		rval := reflect.ValueOf(val)
-		var t reflect.Type
-
-		if val == nil {
-			t = interfaceType
+		if last.dfault != nil {
+			val = last.dfault
 		} else {
-			t = rval.Type()
+			var t reflect.Type
+
+			if def := last.typ.Default(); def == nil {
+				t = interfaceType
+			} else {
+				t = reflect.TypeOf(def)
+			}
+
+			t = reflect.SliceOf(t)
+			val = reflect.Zero(t).Interface()
 		}
-
-		sliceType := reflect.SliceOf(t)
-
-		slice := reflect.MakeSlice(sliceType, 1, 1)
-		slice.Index(0).Set(rval)
-
-		val = slice.Interface()
+	} else {
+		val = last.dfault
+		if val == nil {
+			val = last.typ.Default()
+		}
 	}
 
 	h.args = append(h.args, val)
