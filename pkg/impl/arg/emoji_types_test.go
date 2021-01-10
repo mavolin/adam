@@ -192,14 +192,14 @@ func TestEmoji_Parse(t *testing.T) {
 				emoji := new(emoji)
 				emoji.customEmojis = c.customEmojis
 
-				expect := newArgParsingErr(c.expectArg, ctx, nil)
+				expect := newArgumentError(c.expectArg, ctx, nil)
 
 				_, actual := emoji.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
 
-				expect = newArgParsingErr(c.expectFlag, ctx, nil)
+				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				_, actual = emoji.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -220,7 +220,7 @@ func TestEmoji_Parse(t *testing.T) {
 
 				srcMocker.Emojis(ctx.GuildID, []discord.Emoji{})
 
-				expect := newArgParsingErr(c.expectArg, ctx, nil)
+				expect := newArgumentError(c.expectArg, ctx, nil)
 
 				m, s := state.CloneMocker(srcMocker, t)
 
@@ -231,7 +231,7 @@ func TestEmoji_Parse(t *testing.T) {
 
 				ctx.Kind = KindFlag
 
-				expect = newArgParsingErr(c.expectFlag, ctx, nil)
+				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
 
@@ -279,7 +279,7 @@ func TestRawEmoji_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		ctx := &Context{Raw: "abc"}
 
-		expect := newArgParsingErr(emojiInvalidError, ctx, nil)
+		expect := newArgumentError(emojiInvalidError, ctx, nil)
 
 		_, actual := RawEmoji.Parse(nil, ctx)
 		assert.Equal(t, expect, actual)

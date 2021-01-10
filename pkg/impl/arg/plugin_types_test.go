@@ -48,7 +48,7 @@ func TestCommand_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgParsingErr(commandNotFound, ctx, map[string]interface{}{
+			expect := newArgumentError(commandNotFound, ctx, map[string]interface{}{
 				"invoke": ctx.Raw,
 			})
 
@@ -71,7 +71,7 @@ func TestCommand_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgParsingErr(commandNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+			expect := newArgumentError(commandNotFoundProvidersUnavailable, ctx, map[string]interface{}{
 				"invoke": ctx.Raw,
 			})
 
@@ -118,7 +118,7 @@ func TestModule_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgParsingErr(moduleNotFound, ctx, map[string]interface{}{
+			expect := newArgumentError(moduleNotFound, ctx, map[string]interface{}{
 				"invoke": ctx.Raw,
 			})
 
@@ -141,7 +141,7 @@ func TestModule_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgParsingErr(moduleNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+			expect := newArgumentError(moduleNotFoundProvidersUnavailable, ctx, map[string]interface{}{
 				"invoke": ctx.Raw,
 			})
 
@@ -215,7 +215,7 @@ func TestPlugin_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgParsingErr(pluginNotFound, ctx, map[string]interface{}{
+			expect := newArgumentError(pluginNotFound, ctx, map[string]interface{}{
 				"invoke": ctx.Raw,
 			})
 
@@ -238,7 +238,7 @@ func TestPlugin_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgParsingErr(pluginNotFoundProvidersUnavailable, ctx, map[string]interface{}{
+			expect := newArgumentError(pluginNotFoundProvidersUnavailable, ctx, map[string]interface{}{
 				"invoke": ctx.Raw,
 			})
 

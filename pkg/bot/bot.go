@@ -332,12 +332,12 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 }
 
 // AddPluginProvider adds the passed PluginProvider under the passed name.
-// The is similar to a key and can be used later on to distinguish between
+// The is similar name to a key and can be used later on to distinguish between
 // different plugin providers.
 // It is typically snake_case.
 //
-// 'built_in' is not allowed as name, and AddPluginProvider will panic if
-// attempting to use it.
+// 'built_in' is reserved for built-in plugins, and AddPluginProvider will
+// panic if attempting to use it.
 //
 // If there is another plugin provider with the passed name, it will be removed
 // first.
@@ -345,7 +345,7 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 // The plugin providers will be used in the order they are added in.
 func (b *Bot) AddPluginProvider(name string, p PluginProvider, defaults plugin.Defaults) {
 	if name == plugin.BuiltInProvider {
-		panic("you cannot use " + name + " as plugin provider")
+		panic("you cannot use " + plugin.BuiltInProvider + " as plugin provider")
 	}
 
 	if p == nil {

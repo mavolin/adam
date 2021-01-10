@@ -9,9 +9,9 @@ import (
 	"github.com/mavolin/adam/internal/errorutil"
 )
 
-// ErrInvalidPlaceholders gets returned, if the type of Placeholders is
+// ErrPlaceholders gets returned, if the type of Placeholders is
 // invalid.
-var ErrInvalidPlaceholders = errors.New("placeholders must be of type map[string]string or struct")
+var ErrPlaceholders = errors.New("i18n: placeholders must be of type map[string]string or struct")
 
 // Config is a data struct that contains all information needed to create
 // a localized message.
@@ -85,7 +85,7 @@ func (c Config) placeholdersToMap() (map[string]interface{}, error) {
 	t := v.Type()
 
 	if v.Kind() != reflect.Struct {
-		return nil, errorutil.WithStack(ErrInvalidPlaceholders)
+		return nil, errorutil.WithStack(ErrPlaceholders)
 	}
 
 	placeholders := make(map[string]interface{}, v.NumField())

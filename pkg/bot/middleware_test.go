@@ -46,6 +46,6 @@ func TestMiddlewareManager_AddMiddleware(t *testing.T) {
 		var m MiddlewareManager
 
 		err := m.AddMiddleware("invalid")
-		assert.True(t, errors.Is(err, ErrNotAMiddleware))
+		assert.True(t, errors.Is(err, ErrMiddleware))
 	})
 }

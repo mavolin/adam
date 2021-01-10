@@ -62,13 +62,13 @@ func TestRole_Parse(t *testing.T) {
 				Kind:    KindArg,
 			}
 
-			expect := newArgParsingErr(roleInvalidMentionErrorArg, ctx, nil)
+			expect := newArgumentError(roleInvalidMentionErrorArg, ctx, nil)
 
 			_, actual := Role.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
-			expect = newArgParsingErr(roleInvalidMentionErrorFlag, ctx, nil)
+			expect = newArgumentError(roleInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = Role.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -87,7 +87,7 @@ func TestRole_Parse(t *testing.T) {
 
 			srcMocker.Roles(ctx.GuildID, []discord.Role{})
 
-			expect := newArgParsingErr(roleInvalidMentionErrorArg, ctx, nil)
+			expect := newArgumentError(roleInvalidMentionErrorArg, ctx, nil)
 
 			m, s := state.CloneMocker(srcMocker, t)
 
@@ -97,7 +97,7 @@ func TestRole_Parse(t *testing.T) {
 			m.Eval()
 
 			ctx.Kind = KindFlag
-			expect = newArgParsingErr(roleInvalidMentionErrorFlag, ctx, nil)
+			expect = newArgumentError(roleInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
 
@@ -113,7 +113,7 @@ func TestRole_Parse(t *testing.T) {
 				Raw:     "abc",
 			}
 
-			expect := newArgParsingErr(roleInvalidError, ctx, nil)
+			expect := newArgumentError(roleInvalidError, ctx, nil)
 
 			_, actual := Role.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -130,7 +130,7 @@ func TestRole_Parse(t *testing.T) {
 
 			m.Roles(ctx.GuildID, []discord.Role{})
 
-			expect := newArgParsingErr(roleIDInvalidError, ctx, nil)
+			expect := newArgumentError(roleIDInvalidError, ctx, nil)
 
 			_, actual := Role.Parse(s, ctx)
 			assert.Equal(t, expect, actual)

@@ -92,13 +92,13 @@ func TestCode_Parse(t *testing.T) {
 			Kind: KindArg,
 		}
 
-		expect := newArgParsingErr(codeInvalidErrorArg, ctx, nil)
+		expect := newArgumentError(codeInvalidErrorArg, ctx, nil)
 
 		_, actual := Code.Parse(nil, ctx)
 		assert.Equal(t, expect, actual)
 
 		ctx.Kind = KindFlag
-		expect = newArgParsingErr(codeInvalidErrorFlag, ctx, nil)
+		expect = newArgumentError(codeInvalidErrorFlag, ctx, nil)
 
 		_, actual = Code.Parse(nil, ctx)
 		assert.Equal(t, expect, actual)

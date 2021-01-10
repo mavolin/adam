@@ -72,23 +72,23 @@ func (i Integer) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		var nerr *strconv.NumError
 		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint:errorlint
 			if strings.HasPrefix(ctx.Raw, "-") {
-				return nil, newArgParsingErr(numberBelowRangeError, ctx, nil)
+				return nil, newArgumentError(numberBelowRangeError, ctx, nil)
 			}
 
-			return nil, newArgParsingErr(numberOverRangeError, ctx, nil)
+			return nil, newArgumentError(numberOverRangeError, ctx, nil)
 		}
 
-		return nil, newArgParsingErr(integerSyntaxError, ctx, nil)
+		return nil, newArgumentError(integerSyntaxError, ctx, nil)
 	}
 
 	if i.Min != nil && parsed < *i.Min {
-		return nil, newArgParsingErr2(numberBelowMinErrorArg, numberBelowMinErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(numberBelowMinErrorArg, numberBelowMinErrorFlag, ctx, map[string]interface{}{
 			"min": *i.Min,
 		})
 	}
 
 	if i.Max != nil && parsed > *i.Max {
-		return nil, newArgParsingErr2(numberAboveMaxErrorArg, numberAboveMaxErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(numberAboveMaxErrorArg, numberAboveMaxErrorFlag, ctx, map[string]interface{}{
 			"max": *i.Max,
 		})
 	}
@@ -156,23 +156,23 @@ func (i Decimal) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		var nerr *strconv.NumError
 		if errors.As(err, &nerr) && nerr.Err == strconv.ErrRange { //nolint:errorlint
 			if strings.HasPrefix(ctx.Raw, "-") {
-				return nil, newArgParsingErr(numberBelowRangeError, ctx, nil)
+				return nil, newArgumentError(numberBelowRangeError, ctx, nil)
 			}
 
-			return nil, newArgParsingErr(numberOverRangeError, ctx, nil)
+			return nil, newArgumentError(numberOverRangeError, ctx, nil)
 		}
 
-		return nil, newArgParsingErr(decimalSyntaxError, ctx, nil)
+		return nil, newArgumentError(decimalSyntaxError, ctx, nil)
 	}
 
 	if i.Min != nil && parsed < *i.Min {
-		return nil, newArgParsingErr2(numberBelowMinErrorArg, numberBelowMinErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(numberBelowMinErrorArg, numberBelowMinErrorFlag, ctx, map[string]interface{}{
 			"min": *i.Min,
 		})
 	}
 
 	if i.Max != nil && parsed > *i.Max {
-		return nil, newArgParsingErr2(numberAboveMaxErrorArg, numberAboveMaxErrorFlag, ctx, map[string]interface{}{
+		return nil, newArgumentError2(numberAboveMaxErrorArg, numberAboveMaxErrorFlag, ctx, map[string]interface{}{
 			"max": *i.Max,
 		})
 	}
@@ -248,16 +248,16 @@ func (id NumericID) Description(l *i18n.Localizer) string {
 func (id NumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := strconv.ParseUint(ctx.Raw, 10, 64)
 	if err != nil {
-		return nil, newArgParsingErr2(idNotANumberErrorArg, idNotANumberErrorFlag, ctx, nil)
+		return nil, newArgumentError2(idNotANumberErrorArg, idNotANumberErrorFlag, ctx, nil)
 	}
 
 	if uint(len(ctx.Raw)) < id.MinLength {
-		return nil, newArgParsingErr2(
+		return nil, newArgumentError2(
 			idBelowMinLengthErrorArg, idBelowMinLengthErrorFlag, ctx, map[string]interface{}{
 				"min": id.MinLength,
 			})
 	} else if id.MaxLength > 0 && uint(len(ctx.Raw)) > id.MaxLength {
-		return nil, newArgParsingErr2(
+		return nil, newArgumentError2(
 			idAboveMaxLengthErrorArg, idAboveMaxLengthErrorFlag, ctx, map[string]interface{}{
 				"max": id.MaxLength,
 			})

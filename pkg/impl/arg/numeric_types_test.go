@@ -99,13 +99,13 @@ func TestInteger_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := i.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = i.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -196,13 +196,13 @@ func TestDecimal_Parse(t *testing.T) {
 				Kind: KindArg,
 			}
 
-			expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+			expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 			_, actual := d.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
 			ctx.Kind = KindFlag
-			expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+			expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 			_, actual = d.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -337,13 +337,13 @@ func TestNumericID_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := c.id.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.id.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)

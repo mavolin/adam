@@ -191,13 +191,13 @@ func TestTextChannel_Parse(t *testing.T) {
 					Kind:    KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, nil)
+				expect := newArgumentError(c.expectArg, ctx, nil)
 
 				_, actual := TextChannel.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, nil)
+				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				_, actual = TextChannel.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -221,7 +221,7 @@ func TestTextChannel_Parse(t *testing.T) {
 					Kind:    KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, nil)
+				expect := newArgumentError(c.expectArg, ctx, nil)
 
 				m, s := state.CloneMocker(srcMocker, t)
 
@@ -231,7 +231,7 @@ func TestTextChannel_Parse(t *testing.T) {
 				m.Eval()
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, nil)
+				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
 
@@ -255,7 +255,7 @@ func TestTextChannel_Parse(t *testing.T) {
 					Kind:    KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, nil)
+				expect := newArgumentError(c.expectArg, ctx, nil)
 
 				m, s := state.CloneMocker(srcMocker, t)
 
@@ -265,7 +265,7 @@ func TestTextChannel_Parse(t *testing.T) {
 				m.Eval()
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectArg, ctx, nil)
+				expect = newArgumentError(c.expectArg, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
 

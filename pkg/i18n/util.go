@@ -12,7 +12,7 @@ import (
 
 // ErrNaN gets returned, if a plural value is neither a number type nor a
 // string containing a number
-var ErrNaN = errors.New("the used plural value is not a number")
+var ErrNaN = errors.New("i18n: the used plural value is not a number")
 
 // isOne checks if the passed plural is a number or a string of such that is
 // 1 or -1.

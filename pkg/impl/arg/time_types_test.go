@@ -90,14 +90,14 @@ func TestDuration_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := c.duration.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
 
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.duration.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -231,13 +231,13 @@ func TestTime_Parse(t *testing.T) {
 
 				ctx.Set(LocationKey, c.location)
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -388,13 +388,13 @@ func TestDate_Parse(t *testing.T) {
 
 				ctx.Set(LocationKey, c.location)
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -526,13 +526,13 @@ func TestDateTime_Parse(t *testing.T) {
 
 				ctx.Set(LocationKey, c.location)
 
-				expect := newArgParsingErr(c.expectArg, ctx, c.placeholders)
+				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
 				_, actual := ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, c.placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
@@ -559,7 +559,7 @@ func TestTimeZone_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		ctx := &Context{Raw: "not a timezone"}
 
-		expect := newArgParsingErr(timeZoneInvalidError, ctx, nil)
+		expect := newArgumentError(timeZoneInvalidError, ctx, nil)
 
 		_, actual := TimeZone.Parse(nil, ctx)
 		assert.Equal(t, expect, actual)

@@ -121,13 +121,13 @@ func TestRegularExpression_Parse(t *testing.T) {
 
 				placeholders := map[string]interface{}{"expression": c.expression}
 
-				expect := newArgParsingErr(c.expectArg, ctx, placeholders)
+				expect := newArgumentError(c.expectArg, ctx, placeholders)
 
 				_, actual := RegularExpression.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
 				ctx.Kind = KindFlag
-				expect = newArgParsingErr(c.expectFlag, ctx, placeholders)
+				expect = newArgumentError(c.expectFlag, ctx, placeholders)
 
 				_, actual = RegularExpression.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
