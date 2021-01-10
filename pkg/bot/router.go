@@ -2,6 +2,7 @@ package bot
 
 import (
 	"strings"
+	"time"
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -69,6 +70,13 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		}
 	}
 
+	if b.SendTyping && ctx.InvokedCommand.BotPermissions.Has(discord.PermissionSendMessages) {
+		stop := make(chan struct{})
+		defer func() { close(stop) }()
+
+		b.startTyping(ctx, stop)
+	}
+
 	ctok, err := ctx.InvokedCommand.ChannelTypes.Check(ctx)
 	if err != nil {
 		ctx.HandleError(err)
@@ -107,6 +115,32 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 			rm()
 		}
 	}
+}
+
+// startTyping starts a goroutine that sends the typing command in 6 second
+// intervals until stop closed.
+func (b *Bot) startTyping(ctx *plugin.Context, stop chan struct{}) {
+	go func() {
+		t := time.NewTicker(6 * time.Second)
+
+		err := b.State.Typing(ctx.ChannelID)
+		if err != nil {
+			ctx.HandleErrorSilent(err)
+		}
+
+		for {
+			select {
+			case <-stop:
+				t.Stop()
+				return
+			case <-t.C:
+				err := b.State.Typing(ctx.ChannelID)
+				if err != nil {
+					ctx.HandleErrorSilent(err)
+				}
+			}
+		}
+	}()
 }
 
 // hasPrefix checks if the passed invoke starts with one of the passed

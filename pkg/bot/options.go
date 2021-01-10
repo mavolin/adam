@@ -73,7 +73,8 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: false
 	AllowBot bool
-	// SendTyping specifies whether to send a typing event before responding.
+	// SendTyping specifies whether to send a typing event if the command has
+	// the SendMessagesPermission.
 	// The event will be sent in 6 second intervals, until the Invoke method
 	// of the command returns.
 	//
@@ -354,5 +355,8 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 		}
 
 		err = Err.Handle(s, ctx)
+		if i == 0 {
+			fmt.Println(string(debug.Stack()))
+		}
 	}
 }
