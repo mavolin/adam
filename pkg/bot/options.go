@@ -53,16 +53,16 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: gateway.OnlineStatus
 	Status gateway.Status
-	// ActivityName is the name of the activity the bot will display, if any.
-	// If this left empty, the bot won't display any activity.
-	//
-	// Default: None
-	ActivityName string
 	// ActivityType is the type of activity.
 	// ActivityName must be set for this to take effect.
 	//
 	// Default: discord.GameActivity
 	ActivityType discord.ActivityType
+	// ActivityName is the name of the activity the bot will display, if any.
+	// If this left empty, the bot won't display any activity.
+	//
+	// Default: None
+	ActivityName string
 	// ActivityURL is the URL of the activity.
 	// Currently, this is only used if the activity is set to Streaming.
 	//
