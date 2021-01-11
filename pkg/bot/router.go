@@ -29,8 +29,8 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 
 	prefixes, lang := b.SettingsProvider(base, msg)
 
-	ok, invoke := b.hasPrefix(msg.Content, prefixes)
-	if !ok { // not an invoke
+	invoke := b.hasPrefix(msg.Content, prefixes)
+	if len(invoke) == 0 { // not an invoke or just the prefix
 		return
 	}
 
@@ -145,20 +145,21 @@ func (b *Bot) startTyping(ctx *plugin.Context, stop chan struct{}) {
 
 // hasPrefix checks if the passed invoke starts with one of the passed
 // prefixes or a mention of the bot.
-// If so it returns true and the invoke stripped of the prefix.
-func (b *Bot) hasPrefix(invoke string, prefixes []string) (bool, string) {
+// If so it the invoke stripped of the prefix.
+// Otherwise it returns an empty string.
+func (b *Bot) hasPrefix(invoke string, prefixes []string) string {
 	indexes := b.selfMentionRegexp.FindStringIndex(invoke)
 	if indexes != nil {
-		return true, strings.TrimLeft(invoke[indexes[1]:], whitespace)
+		return strings.TrimLeft(invoke[indexes[1]:], whitespace)
 	}
 
 	for _, p := range prefixes {
 		if strings.HasPrefix(invoke, p) {
-			return true, strings.TrimLeft(invoke[len(p):], whitespace)
+			return strings.TrimLeft(invoke[len(p):], whitespace)
 		}
 	}
 
-	return false, ""
+	return ""
 }
 
 func (b *Bot) routeCommand(
