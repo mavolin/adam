@@ -82,7 +82,7 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	SendTyping bool
 
 	// NoAutoOpen defines whether to call the Open and Close methods of plugins
-	// automatically when bot.Open() and bot.Close is called.
+	// automatically when bot.Open() and bot.Close() is called.
 	// Both Open and Close may take in an optional *bot.Bot parameter, and may
 	// return an error.
 	//
