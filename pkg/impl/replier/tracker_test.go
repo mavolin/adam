@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -96,6 +97,92 @@ func TestTracker_DMs(t *testing.T) {
 	expectDMs := []discord.Message{expectMessage}
 
 	actualDMs := r.DMs()
+	assert.Equal(t, expectDMs, actualDMs)
+}
+
+func TestTracker_EditedGuildMessages(t *testing.T) {
+	m, s := state.NewMocker(t)
+	defer m.Eval()
+
+	ctx := &plugin.Context{
+		Message: discord.Message{
+			ChannelID: 123,
+			Author:    discord.User{ID: 456},
+		},
+		DiscordDataProvider: mock.DiscordDataProvider{
+			ChannelReturn: &discord.Channel{},
+			GuildReturn: &discord.Guild{
+				Roles: []discord.Role{
+					{ID: 789, Permissions: discord.PermissionAdministrator},
+				},
+			},
+			SelfReturn: &discord.Member{RoleIDs: []discord.RoleID{789}},
+		},
+	}
+
+	r := NewTracker(s)
+
+	data := api.EditMessageData{Content: option.NewNullableString("abc")}
+
+	expectMessage := discord.Message{
+		ID:        012,
+		ChannelID: ctx.ChannelID,
+		Author:    ctx.Author,
+		Content:   data.Content.Val,
+	}
+
+	m.EditMessageComplex(data, expectMessage)
+
+	actualMessage, err := r.Edit(ctx, expectMessage.ID, data)
+	require.NoError(t, err)
+	assert.Equal(t, expectMessage, *actualMessage)
+
+	expectGuildMessage := []discord.Message{expectMessage}
+
+	actualGuildMessages := r.EditedGuildMessages()
+	assert.Equal(t, expectGuildMessage, actualGuildMessages)
+}
+
+func TestTracker_EditedDMs(t *testing.T) {
+	m, s := state.NewMocker(t)
+	defer m.Eval()
+
+	ctx := &plugin.Context{
+		Message: discord.Message{Author: discord.User{ID: 123}},
+		DiscordDataProvider: mock.DiscordDataProvider{
+			ChannelReturn: &discord.Channel{},
+			GuildReturn: &discord.Guild{
+				Roles: []discord.Role{
+					{ID: 456, Permissions: discord.PermissionAdministrator},
+				},
+			},
+			SelfReturn: &discord.Member{RoleIDs: []discord.RoleID{456}},
+		},
+	}
+
+	r := &Tracker{
+		s:    s,
+		dmID: 789,
+	}
+
+	data := api.EditMessageData{Content: option.NewNullableString("abc")}
+
+	expectMessage := discord.Message{
+		ID:        012,
+		ChannelID: r.dmID,
+		Author:    ctx.Author,
+		Content:   data.Content.Val,
+	}
+
+	m.EditMessageComplex(data, expectMessage)
+
+	actualMessage, err := r.EditDM(ctx, expectMessage.ID, data)
+	require.NoError(t, err)
+	assert.Equal(t, expectMessage, *actualMessage)
+
+	expectDMs := []discord.Message{expectMessage}
+
+	actualDMs := r.EditedDMs()
 	assert.Equal(t, expectDMs, actualDMs)
 }
 

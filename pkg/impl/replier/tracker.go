@@ -14,12 +14,18 @@ import (
 type Tracker struct {
 	s *state.State
 
+	guildMessages      []discord.Message
+	guildMessagesMutex sync.Mutex
+
+	editedGuildMessages      []discord.Message
+	editedGuildMessagesMutex sync.Mutex
+
 	dms     []discord.Message
-	dmMutex sync.RWMutex
+	dmMutex sync.Mutex
 	dmID    discord.ChannelID
 
-	guildMessages      []discord.Message
-	guildMessagesMutex sync.RWMutex
+	editedDMs   []discord.Message
+	editDMMutex sync.Mutex
 }
 
 var _ plugin.Replier = new(Tracker)
@@ -55,6 +61,7 @@ func NewTracker(s *state.State) *Tracker {
 }
 
 // GuildMessages returns the guild messages that were sent.
+// This may include edited messages, if they were sent earlier by the command.
 func (t *Tracker) GuildMessages() (cp []discord.Message) {
 	cp = make([]discord.Message, len(t.guildMessages))
 	copy(cp, t.guildMessages)
@@ -63,9 +70,28 @@ func (t *Tracker) GuildMessages() (cp []discord.Message) {
 }
 
 // DMs returns the direct messages that were sent.
+// This may include edited messages, if they were sent earlier by the command.
 func (t *Tracker) DMs() (cp []discord.Message) {
 	cp = make([]discord.Message, len(t.dms))
 	copy(cp, t.dms)
+
+	return
+}
+
+// EditedGuildMessages returns the guild messages that were edited, but not
+// previously sent by the command.
+func (t *Tracker) EditedGuildMessages() (cp []discord.Message) {
+	cp = make([]discord.Message, len(t.editedGuildMessages))
+	copy(cp, t.editedGuildMessages)
+
+	return
+}
+
+// EditedDMs returns the guild messages that were edited, but not previously
+// sent by the command.
+func (t *Tracker) EditedDMs() (cp []discord.Message) {
+	cp = make([]discord.Message, len(t.editedDMs))
+	copy(cp, t.editedDMs)
 
 	return
 }
@@ -80,13 +106,13 @@ func (t *Tracker) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
-	t.guildMessagesMutex.Lock()
-	defer t.guildMessagesMutex.Unlock()
-
 	msg, err := t.s.SendMessageComplex(ctx.ChannelID, data)
 	if err != nil {
 		return nil, err
 	}
+
+	t.guildMessagesMutex.Lock()
+	defer t.guildMessagesMutex.Unlock()
 
 	t.guildMessages = append(t.guildMessages, *msg)
 
@@ -103,24 +129,90 @@ func (t *Tracker) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*disco
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
-	if !t.dmID.IsValid() { // lazily load dm id
-		c, err := t.s.CreatePrivateChannel(ctx.Author.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		t.dmID = c.ID
+	err = t.lazyDM(ctx)
+	if err != nil {
+		return nil, err
 	}
-
-	t.dmMutex.Lock()
-	defer t.dmMutex.Unlock()
 
 	msg, err := t.s.SendMessageComplex(t.dmID, data)
 	if err != nil {
 		return nil, err
 	}
 
+	t.dmMutex.Lock()
+	defer t.dmMutex.Unlock()
+
 	t.dms = append(t.dms, *msg)
 
 	return msg, nil
+}
+
+func (t *Tracker) Edit(
+	ctx *plugin.Context, messageID discord.MessageID, data api.EditMessageData,
+) (*discord.Message, error) {
+	perms, err := ctx.SelfPermissions()
+	if err != nil {
+		return nil, err
+	}
+
+	if !perms.Has(discord.PermissionSendMessages) {
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
+	}
+
+	msg, err := t.s.EditMessageComplex(ctx.ChannelID, messageID, data)
+	if err != nil {
+		return nil, err
+	}
+
+	t.editedGuildMessagesMutex.Lock()
+	defer t.editedGuildMessagesMutex.Unlock()
+
+	t.editedGuildMessages = append(t.editedGuildMessages, *msg)
+
+	return msg, nil
+}
+
+func (t *Tracker) EditDM(
+	ctx *plugin.Context, messageID discord.MessageID, data api.EditMessageData,
+) (*discord.Message, error) {
+	perms, err := ctx.SelfPermissions()
+	if err != nil {
+		return nil, err
+	}
+
+	if !perms.Has(discord.PermissionSendMessages) {
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
+	}
+
+	err = t.lazyDM(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err := t.s.EditMessageComplex(t.dmID, messageID, data)
+	if err != nil {
+		return nil, err
+	}
+
+	t.editDMMutex.Lock()
+	defer t.editDMMutex.Unlock()
+
+	t.editedDMs = append(t.editedDMs, *msg)
+
+	return msg, nil
+}
+
+// lazyDM lazily gets the id of the direct message channel with the invoking
+// user.
+func (t *Tracker) lazyDM(ctx *plugin.Context) error {
+	if !t.dmID.IsValid() {
+		c, err := t.s.CreatePrivateChannel(ctx.Author.ID)
+		if err != nil {
+			return err
+		}
+
+		t.dmID = c.ID
+	}
+
+	return nil
 }
