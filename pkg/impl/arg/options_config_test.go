@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestOptions_Parse(t *testing.T) {
@@ -23,7 +23,7 @@ func TestOptions_Parse(t *testing.T) {
 
 		expect := plugin.Args{"abc"}
 
-		ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
+		ctx := &plugin.Context{Localizer: i18n.FallbackLocalizer}
 
 		actual, flags, err := options.Parse("1 abc", nil, ctx)
 		require.NoError(t, err)
@@ -69,7 +69,7 @@ func TestOptions_Parse(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
 				ctx := &plugin.Context{
-					Localizer: mock.NoOpLocalizer,
+					Localizer: i18n.FallbackLocalizer,
 				}
 
 				_, _, actual := c.options.Parse(c.args, nil, ctx)

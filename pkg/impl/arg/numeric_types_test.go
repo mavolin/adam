@@ -11,7 +11,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestInteger_Parse(t *testing.T) {
@@ -212,11 +211,11 @@ func TestDecimal_Parse(t *testing.T) {
 
 func TestNumericID_Name(t *testing.T) {
 	t.Run("default name", func(t *testing.T) {
-		expect := mock.NoOpLocalizer.MustLocalize(idName)
+		expect := i18n.FallbackLocalizer.MustLocalize(idName)
 
 		id := SimpleNumericID
 
-		actual := id.Name(mock.NoOpLocalizer)
+		actual := id.Name(i18n.FallbackLocalizer)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -227,18 +226,18 @@ func TestNumericID_Name(t *testing.T) {
 			CustomName: i18nutil.NewText(expect),
 		}
 
-		actual := id.Name(mock.NoOpLocalizer)
+		actual := id.Name(i18n.FallbackLocalizer)
 		assert.Equal(t, expect, actual)
 	})
 }
 
 func TestNumericID_Description(t *testing.T) {
 	t.Run("default description", func(t *testing.T) {
-		expect := mock.NoOpLocalizer.MustLocalize(idDescription)
+		expect := i18n.FallbackLocalizer.MustLocalize(idDescription)
 
 		id := SimpleNumericID
 
-		actual := id.Description(mock.NoOpLocalizer)
+		actual := id.Description(i18n.FallbackLocalizer)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -249,7 +248,7 @@ func TestNumericID_Description(t *testing.T) {
 			CustomDescription: i18nutil.NewText(expect),
 		}
 
-		actual := id.Description(mock.NoOpLocalizer)
+		actual := id.Description(i18n.FallbackLocalizer)
 		assert.Equal(t, expect, actual)
 	})
 }

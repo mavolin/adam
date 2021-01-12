@@ -7,8 +7,8 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/require"
 
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestUserError_Handle(t *testing.T) {
@@ -20,7 +20,7 @@ func TestUserError_Handle(t *testing.T) {
 
 		ctx := &plugin.Context{
 			Message:   discord.Message{ChannelID: 123},
-			Localizer: mock.NoOpLocalizer,
+			Localizer: i18n.FallbackLocalizer,
 			Replier:   replierFromState(s, 123, 0),
 		}
 
@@ -51,7 +51,7 @@ func TestUserError_Handle(t *testing.T) {
 
 		ctx := &plugin.Context{
 			Message:   discord.Message{ChannelID: 123},
-			Localizer: mock.NoOpLocalizer,
+			Localizer: i18n.FallbackLocalizer,
 			Replier:   replierFromState(s, 123, 0),
 		}
 

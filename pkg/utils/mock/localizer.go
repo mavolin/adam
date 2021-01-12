@@ -9,13 +9,6 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
-// NoOpLocalizer is a localizer that only returns errors.
-var NoOpLocalizer = i18n.NewManager(func(lang string) i18n.LangFunc {
-	return func(i18n.Term, map[string]interface{}, interface{}) (string, error) {
-		return "", errors.New("")
-	}
-}).Localizer("")
-
 type Localizer struct {
 	t *testing.T
 
@@ -79,27 +72,23 @@ func (l *Localizer) Clone(t *testing.T) *Localizer {
 
 // Build build the localizer.
 func (l *Localizer) Build() *i18n.Localizer {
-	m := i18n.NewManager(func(lang string) i18n.LangFunc {
-		return func(term i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
-			r, ok := l.on[term]
-			if ok {
-				return r, nil
-			}
-
-			_, ok = l.errOn[term]
-			if ok {
-				return r, errors.New("error")
-			}
-
-			if l.def == "" {
-				assert.Failf(l.t, "unexpected call to Localize", "unknown term %s", term)
-
-				return string(term), errors.New("unknown term")
-			}
-
-			return l.def, nil
+	return i18n.NewLocalizer("dev", func(term i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
+		r, ok := l.on[term]
+		if ok {
+			return r, nil
 		}
-	})
 
-	return m.Localizer("")
+		_, ok = l.errOn[term]
+		if ok {
+			return r, errors.New("error")
+		}
+
+		if l.def == "" {
+			assert.Failf(l.t, "unexpected call to Localize", "unknown term %s", term)
+
+			return string(term), errors.New("unknown term")
+		}
+
+		return l.def, nil
+	})
 }

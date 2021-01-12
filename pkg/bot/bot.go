@@ -11,7 +11,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -29,10 +28,9 @@ type Bot struct {
 
 	// ----- Settings -----
 
-	SettingsProvider    SettingsProvider
-	LocalizationManager *i18n.Manager
-	Owners              []discord.UserID
-	EditAge             time.Duration
+	SettingsProvider SettingsProvider
+	Owners           []discord.UserID
+	EditAge          time.Duration
 
 	AllowBot   bool
 	SendTyping bool
@@ -102,7 +100,6 @@ func New(o Options) (*Bot, error) {
 	b.MiddlewareManager = new(MiddlewareManager)
 
 	b.SettingsProvider = o.SettingsProvider
-	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
 	b.AllowBot = o.AllowBot

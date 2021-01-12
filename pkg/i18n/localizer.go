@@ -1,18 +1,33 @@
 package i18n
 
+// FallbackLocalizer is a *Localizer that always uses the fallback message.
+var FallbackLocalizer = new(Localizer)
+
 // Localizer is a translator for a specific language.
-// It provides multiple utility functions and wraps a LangFunc.
+// It provides multiple utility functions and wraps a Func.
+//
+// The zero value of a Localizer is a fallback localizer.
 type Localizer struct {
-	// f is the LangFunc used to create translations.
-	f LangFunc
+	// f is the Func used to create translations.
+	f Func
 	// Lang is the language the Localizer is translating to.
 	// This does not account for possible fallbacks being used, because
 	// the wanted language was not available.
+	//
+	// It is unique to every language and dialect.
 	Lang string
 
 	// defaultPlaceholders is a list of placeholders that is automatically
 	// added to every config.
 	defaultPlaceholders map[string]interface{}
+}
+
+// NewLocalizer creates a new Localizer for the passed language that generates
+// text using the passed Func.
+//
+// Lang must be unique to every language and dialect used.
+func NewLocalizer(lang string, f Func) *Localizer {
+	return &Localizer{f: f, Lang: lang}
 }
 
 // WithPlaceholder adds the passed default placeholder to the Localizer.

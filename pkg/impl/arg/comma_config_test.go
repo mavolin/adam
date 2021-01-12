@@ -8,7 +8,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestCommaConfig_Parse(t *testing.T) {
@@ -431,7 +430,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
 				if ape, ok := err.(*plugin.ArgumentError); ok && ape != nil {
-					desc, err := ape.Description(mock.NoOpLocalizer)
+					desc, err := ape.Description(i18n.FallbackLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}
@@ -1146,11 +1145,11 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
+				ctx := &plugin.Context{Localizer: i18n.FallbackLocalizer}
 
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, ctx)
 				if ape, ok := err.(*plugin.ArgumentError); ok && ape != nil {
-					desc, err := ape.Description(mock.NoOpLocalizer)
+					desc, err := ape.Description(i18n.FallbackLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}
@@ -1443,6 +1442,6 @@ func TestLocalizedCommaConfig_Info(t *testing.T) {
 		},
 	}
 
-	actual := cfg.Info(mock.NoOpLocalizer)
+	actual := cfg.Info(i18n.FallbackLocalizer)
 	assert.Equal(t, expect, actual)
 }

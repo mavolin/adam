@@ -32,27 +32,23 @@ func (l *mockLocalizer) on(term i18n.Term, response string) *mockLocalizer {
 }
 
 func (l *mockLocalizer) build() *i18n.Localizer {
-	m := i18n.NewManager(func(lang string) i18n.LangFunc {
-		return func(term i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
-			r, ok := l.onReturn[term]
-			if ok {
-				return r, nil
-			}
-
-			_, ok = l.errOn[term]
-			if ok {
-				return r, errors.New("error")
-			}
-
-			if l.def == "" {
-				assert.Failf(l.t, "unexpected call to Localize", "unknown term %s", term)
-
-				return string(term), errors.New("unknown term")
-			}
-
-			return l.def, nil
+	return i18n.NewLocalizer("dev", func(term i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
+		r, ok := l.onReturn[term]
+		if ok {
+			return r, nil
 		}
-	})
 
-	return m.Localizer("")
+		_, ok = l.errOn[term]
+		if ok {
+			return r, errors.New("error")
+		}
+
+		if l.def == "" {
+			assert.Failf(l.t, "unexpected call to Localize", "unknown term %s", term)
+
+			return string(term), errors.New("unknown term")
+		}
+
+		return l.def, nil
+	})
 }

@@ -30,12 +30,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: NewStaticSettingsProvider()
 	SettingsProvider SettingsProvider
-	// LocalizationFunc is the function used to retrieve i18n.LangFuncs used
-	// for creating localized data.
-	// Leave this empty, if you don't want to use localization.
-	//
-	// Default: nil
-	LocalizationFunc i18n.Func
 	// Owners are the ids of the bot owners.
 	// These are accessible through plugin.Context.BotOwnerIDs.
 	//
@@ -310,14 +304,17 @@ func (o *Options) setCabinetDefaults() {
 // The passed *state.Base is the base of the event triggering settings check.
 // This will either stem from either message create event, or a message update
 // event, if Options.EditAge is greater than 0.
-type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, lang string)
+//
+// If the returned *18n.Localizer is nil, a fallback localizer will be used,
+// that always uses fallback messages.
+type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer)
 
 // NewStaticSettingsProvider creates a new SettingsProvider that returns the
 // same prefixes for all guilds and users.
-// The returned language will always be an empty string.
+// The returned localizer will always be a fallback localizer.
 func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
-	return func(*state.Base, *discord.Message) ([]string, string) {
-		return prefixes, ""
+	return func(*state.Base, *discord.Message) ([]string, *i18n.Localizer) {
+		return prefixes, nil
 	}
 }
 

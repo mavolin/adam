@@ -27,7 +27,10 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		return
 	}
 
-	prefixes, lang := b.SettingsProvider(base, msg)
+	prefixes, localizer := b.SettingsProvider(base, msg)
+	if localizer == nil {
+		localizer = i18n.FallbackLocalizer
+	}
 
 	invoke := b.hasPrefix(msg.Content, prefixes)
 	if len(invoke) == 0 { // not an invoke or just the prefix
@@ -42,7 +45,7 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		Message:          *msg,
 		Member:           member,
 		Base:             base,
-		Localizer:        b.LocalizationManager.Localizer(lang),
+		Localizer:        localizer,
 		Prefixes:         prefixes,
 		BotOwnerIDs:      b.Owners,
 		ReplyMiddlewares: b.ReplyMiddlewares,

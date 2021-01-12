@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/replier"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -28,7 +29,7 @@ func TestWaiter_Await(t *testing.T) {
 				GuildID:   456,
 				Author:    discord.User{ID: 789},
 			},
-			Localizer: mock.NoOpLocalizer,
+			Localizer: i18n.FallbackLocalizer,
 			DiscordDataProvider: mock.DiscordDataProvider{
 				ChannelReturn: &discord.Channel{},
 				ChannelError:  nil,

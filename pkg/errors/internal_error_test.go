@@ -405,7 +405,7 @@ func TestInternalError_Description(t *testing.T) {
 
 		err := WithDescription(New(""), expect)
 
-		actual := err.(*InternalError).Description(mock.NoOpLocalizer)
+		actual := err.(*InternalError).Description(i18n.FallbackLocalizer)
 		assert.Equal(t, expect, actual)
 	})
 

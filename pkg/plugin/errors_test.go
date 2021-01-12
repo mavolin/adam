@@ -55,7 +55,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: channelID},
-		Localizer: noOpLocalizer,
+		Localizer: i18n.FallbackLocalizer,
 		Replier:   replierFromState(s, 123, 0),
 	}
 
@@ -119,7 +119,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 		ctx := &Context{
 			Message:   discord.Message{ChannelID: 123},
-			Localizer: noOpLocalizer,
+			Localizer: i18n.FallbackLocalizer,
 			Replier:   replierFromState(s, 123, 0),
 		}
 
@@ -145,7 +145,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 		ctx := &Context{
 			Message:   discord.Message{ChannelID: 123},
-			Localizer: noOpLocalizer,
+			Localizer: i18n.FallbackLocalizer,
 			Replier:   replierFromState(s, 123, 0),
 		}
 
@@ -234,7 +234,7 @@ func TestRestrictionError_Description(t *testing.T) {
 
 		e := NewRestrictionError(expect)
 
-		actual, err := e.Description(noOpLocalizer)
+		actual, err := e.Description(i18n.FallbackLocalizer)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
@@ -264,7 +264,7 @@ func TestRestrictionError_Handle(t *testing.T) {
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
-		Localizer: noOpLocalizer,
+		Localizer: i18n.FallbackLocalizer,
 		Replier:   replierFromState(s, 123, 0),
 	}
 
@@ -293,7 +293,7 @@ func TestThrottlingError_Description(t *testing.T) {
 
 		e := NewThrottlingError(expect)
 
-		actual, err := e.Description(noOpLocalizer)
+		actual, err := e.Description(i18n.FallbackLocalizer)
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
@@ -323,7 +323,7 @@ func TestThrottlingError_Handle(t *testing.T) {
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
-		Localizer: noOpLocalizer,
+		Localizer: i18n.FallbackLocalizer,
 		Replier:   replierFromState(s, 123, 0),
 	}
 

@@ -8,7 +8,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestShellwordConfig_Parse(t *testing.T) {
@@ -407,7 +406,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
 				if aerr, ok := err.(*plugin.ArgumentError); ok && aerr != nil {
-					desc, err := aerr.Description(mock.NoOpLocalizer)
+					desc, err := aerr.Description(i18n.FallbackLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}
@@ -1056,11 +1055,11 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
+				ctx := &plugin.Context{Localizer: i18n.FallbackLocalizer}
 
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, ctx)
 				if aerr, ok := err.(*plugin.ArgumentError); ok && aerr != nil {
-					desc, err := aerr.Description(mock.NoOpLocalizer)
+					desc, err := aerr.Description(i18n.FallbackLocalizer)
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}
@@ -1178,7 +1177,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
+				ctx := &plugin.Context{Localizer: i18n.FallbackLocalizer}
 
 				_, _, actual := c.config.Parse(c.rawArgs, nil, ctx)
 				assert.Equal(t, c.expect, actual)
@@ -1313,6 +1312,6 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 		},
 	}
 
-	actual := cfg.Info(mock.NoOpLocalizer)
+	actual := cfg.Info(i18n.FallbackLocalizer)
 	assert.Equal(t, expect, actual)
 }
