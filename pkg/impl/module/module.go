@@ -16,6 +16,8 @@ type Module struct {
 	modules  []plugin.Module
 }
 
+var _ plugin.Module = new(Module)
+
 // New creates a new *Module using the passed plugin.ModuleMeta.
 func New(meta plugin.ModuleMeta) *Module {
 	return &Module{
@@ -32,4 +34,12 @@ func (m *Module) AddCommand(cmd plugin.Command) {
 // AddModule adds the passed module to the module.
 func (m *Module) AddModule(mod plugin.Module) {
 	m.modules = append(m.modules, mod)
+}
+
+func (m *Module) Commands() []plugin.Command {
+	return m.commands
+}
+
+func (m *Module) Modules() []plugin.Module {
+	return m.modules
 }
