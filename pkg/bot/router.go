@@ -60,14 +60,13 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 
 	if b.AsyncPluginProviders {
 		ctx.InvokedCommand, ctx.Provider, args = b.routeCommandAsync(invoke, base, msg)
-		if ctx.InvokedCommand == nil {
-			ctx.HandleError(ErrUnknownCommand)
-		}
 	} else {
 		ctx.InvokedCommand, ctx.Provider, args = b.routeCommand(invoke, base, msg)
-		if ctx.InvokedCommand == nil {
-			ctx.HandleError(ErrUnknownCommand)
-		}
+	}
+
+	if ctx.InvokedCommand == nil {
+		ctx.HandleError(ErrUnknownCommand)
+		return
 	}
 
 	if b.SendTyping && ctx.InvokedCommand.BotPermissions.Has(discord.PermissionSendMessages) {
@@ -77,11 +76,11 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		b.startTyping(ctx, stop)
 	}
 
-	ctok, err := ctx.InvokedCommand.ChannelTypes.Check(ctx)
+	ok, err := ctx.InvokedCommand.ChannelTypes.Check(ctx)
 	if err != nil {
 		ctx.HandleError(err)
 		return
-	} else if !ctok {
+	} else if !ok {
 		ctx.HandleError(plugin.NewChannelTypeError(ctx.InvokedCommand.ChannelTypes))
 		return
 	}
@@ -92,18 +91,23 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		return
 	}
 
+	var rm func()
+
 	defer func() {
 		if rec := recover(); rec != nil {
+			if rm != nil {
+				rm()
+			}
+
 			b.PanicHandler(rec, b.State, ctx)
 		}
 	}()
-
-	var rm func()
 
 	if ctx.InvokedCommand.Throttler != nil {
 		rm, err = ctx.InvokedCommand.Throttler.Check(b.State, ctx)
 		if err != nil {
 			ctx.HandleError(err)
+			return
 		}
 	}
 
