@@ -44,14 +44,60 @@ func (r *wrappedReplier) ReplyDM(ctx *plugin.Context, data api.SendMessageData) 
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
-	if !r.dmID.IsValid() { // lazily load dm id
+	err = r.lazyDM(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.s.SendMessageComplex(r.dmID, data)
+}
+
+func (r *wrappedReplier) Edit(
+	ctx *plugin.Context, messageID discord.MessageID, data api.EditMessageData,
+) (*discord.Message, error) {
+	perms, err := ctx.SelfPermissions()
+	if err != nil {
+		return nil, err
+	}
+
+	if !perms.Has(discord.PermissionSendMessages) {
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
+	}
+
+	return r.s.EditMessageComplex(ctx.ChannelID, messageID, data)
+}
+
+func (r *wrappedReplier) EditDM(
+	ctx *plugin.Context, messageID discord.MessageID, data api.EditMessageData,
+) (*discord.Message, error) {
+	perms, err := ctx.SelfPermissions()
+	if err != nil {
+		return nil, err
+	}
+
+	if !perms.Has(discord.PermissionSendMessages) {
+		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
+	}
+
+	err = r.lazyDM(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.s.EditMessageComplex(r.dmID, messageID, data)
+}
+
+// lazyDM lazily gets the id of the direct message channel with the invoking
+// user.
+func (r *wrappedReplier) lazyDM(ctx *plugin.Context) error {
+	if !r.dmID.IsValid() {
 		c, err := r.s.CreatePrivateChannel(ctx.Author.ID)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		r.dmID = c.ID
 	}
 
-	return r.s.SendMessageComplex(r.dmID, data)
+	return nil
 }

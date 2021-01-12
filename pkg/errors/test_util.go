@@ -18,7 +18,7 @@ type wrappedReplier struct {
 	dmID   discord.ChannelID
 }
 
-func replierFromState(s *state.State, channelID discord.ChannelID, userID discord.UserID) plugin.Replier {
+func replierFromState(s *state.State, channelID discord.ChannelID, userID discord.UserID) *wrappedReplier {
 	return &wrappedReplier{
 		s:         s,
 		userID:    userID,
@@ -41,4 +41,25 @@ func (r *wrappedReplier) ReplyDM(_ *plugin.Context, data api.SendMessageData) (*
 	}
 
 	return r.s.SendMessageComplex(r.dmID, data)
+}
+
+func (r *wrappedReplier) Edit(
+	_ *plugin.Context, messageID discord.MessageID, data api.EditMessageData,
+) (*discord.Message, error) {
+	return r.s.EditMessageComplex(r.channelID, messageID, data)
+}
+
+func (r *wrappedReplier) EditDM(
+	_ *plugin.Context, messageID discord.MessageID, data api.EditMessageData,
+) (*discord.Message, error) {
+	if !r.dmID.IsValid() {
+		c, err := r.s.CreatePrivateChannel(r.userID)
+		if err != nil {
+			return nil, err
+		}
+
+		r.dmID = c.ID
+	}
+
+	return r.s.EditMessageComplex(r.dmID, messageID, data)
 }
