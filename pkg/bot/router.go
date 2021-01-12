@@ -352,21 +352,33 @@ func (b *Bot) handleReply(reply interface{}, ctx *plugin.Context) (err error) {
 	case float64:
 		_, err = ctx.Reply(reply)
 	case string:
-		_, err = ctx.Reply(reply)
+		if len(reply) > 0 {
+			_, err = ctx.Reply(reply)
+		}
 	case discord.Embed:
 		_, err = ctx.ReplyEmbed(reply)
 	case *discord.Embed:
-		_, err = ctx.ReplyEmbed(*reply)
+		if reply != nil {
+			_, err = ctx.ReplyEmbed(*reply)
+		}
 	case *embedutil.Builder:
-		_, err = ctx.ReplyEmbedBuilder(reply)
+		if reply != nil {
+			_, err = ctx.ReplyEmbedBuilder(reply)
+		}
 	case api.SendMessageData:
 		_, err = ctx.ReplyMessage(reply)
 	case i18n.Term:
-		_, err = ctx.Replylt(reply)
+		if len(reply) > 0 {
+			_, err = ctx.Replylt(reply)
+		}
 	case *i18n.Config:
-		_, err = ctx.Replyl(reply)
+		if reply != nil {
+			_, err = ctx.Replyl(reply)
+		}
 	case plugin.Reply:
-		err = reply.SendReply(b.State, ctx)
+		if reply != nil {
+			err = reply.SendReply(b.State, ctx)
+		}
 	default:
 		err = &ReplyTypeError{Reply: reply}
 	}
