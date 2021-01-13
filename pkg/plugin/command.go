@@ -63,6 +63,9 @@ type (
 		GetShortDescription(l *i18n.Localizer) string
 		// GetLongDescription returns an optional long description of the
 		// command.
+		//
+		// Implementations should return the short description if no long
+		// description is available.
 		GetLongDescription(l *i18n.Localizer) string
 		// GetExamples returns optional example usages of the command.
 		GetExamples(l *i18n.Localizer) []string

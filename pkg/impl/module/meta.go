@@ -41,9 +41,17 @@ type Meta struct {
 
 var _ plugin.ModuleMeta = Meta{}
 
-func (m Meta) GetName() string                                   { return m.Name }
-func (m Meta) GetShortDescription(*i18n.Localizer) string        { return m.ShortDescription }
-func (m Meta) GetLongDescription(*i18n.Localizer) string         { return m.LongDescription }
+func (m Meta) GetName() string                            { return m.Name }
+func (m Meta) GetShortDescription(*i18n.Localizer) string { return m.ShortDescription }
+
+func (m Meta) GetLongDescription(*i18n.Localizer) string {
+	if len(m.LongDescription) > 0 {
+		return m.LongDescription
+	}
+
+	return m.ShortDescription
+}
+
 func (m Meta) IsHidden() bool                                    { return m.Hidden }
 func (m Meta) GetDefaultChannelTypes() plugin.ChannelTypes       { return m.DefaultChannelTypes }
 func (m Meta) GetDefaultRestrictionFunc() plugin.RestrictionFunc { return m.DefaultRestrictions }

@@ -27,6 +27,9 @@ type (
 		// the module.
 		GetShortDescription(l *i18n.Localizer) string
 		// GetLongDescription returns an option long description of the module.
+		//
+		// Implementations should return short description if no long
+		// description is available.
 		GetLongDescription(l *i18n.Localizer) string
 
 		// IsHidden specifies whether this module will be hidden from the help
