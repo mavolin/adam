@@ -56,7 +56,7 @@ func (c ShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context)
 
 func (c ShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	info := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
-	info.Formatter = newShellwordFormatter(info)
+	info.ArgsFormatter = newShellwordFormatter(info)
 
 	return []plugin.ArgsInfo{info}
 }
@@ -114,7 +114,7 @@ func (c LocalizedShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 		return nil
 	}
 
-	info.Formatter = newShellwordFormatter(info)
+	info.ArgsFormatter = newShellwordFormatter(info)
 
 	return []plugin.ArgsInfo{info}
 }

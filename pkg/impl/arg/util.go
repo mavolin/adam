@@ -11,10 +11,11 @@ func genArgsInfo(
 	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
 ) (info plugin.ArgsInfo) {
 	info = plugin.ArgsInfo{
-		Required: make([]plugin.ArgInfo, len(rargs)),
-		Optional: make([]plugin.ArgInfo, len(oargs)),
-		Flags:    make([]plugin.FlagInfo, len(flags)),
-		Variadic: variadic,
+		Required:      make([]plugin.ArgInfo, len(rargs)),
+		Optional:      make([]plugin.ArgInfo, len(oargs)),
+		Flags:         make([]plugin.FlagInfo, len(flags)),
+		FlagFormatter: func(name string) string { return "-" + name },
+		Variadic:      variadic,
 	}
 
 	for i, arg := range rargs {
@@ -55,10 +56,11 @@ func genArgsInfol(
 	rargs []LocalizedRequiredArg, oargs []LocalizedOptionalArg, flags []LocalizedFlag, variadic bool,
 ) (plugin.ArgsInfo, error) {
 	info := plugin.ArgsInfo{
-		Required: make([]plugin.ArgInfo, len(rargs)),
-		Optional: make([]plugin.ArgInfo, len(oargs)),
-		Flags:    make([]plugin.FlagInfo, len(flags)),
-		Variadic: variadic,
+		Required:      make([]plugin.ArgInfo, len(rargs)),
+		Optional:      make([]plugin.ArgInfo, len(oargs)),
+		Flags:         make([]plugin.FlagInfo, len(flags)),
+		FlagFormatter: func(name string) string { return "-" + name },
+		Variadic:      variadic,
 	}
 
 	var err error

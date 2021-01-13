@@ -661,7 +661,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 	actual := cfg.Info(nil)
 
 	for i := range actual {
-		actual[i].Formatter = nil
+		actual[i].ArgsFormatter = nil
 	}
 
 	assert.Equal(t, expect, actual)
@@ -1321,7 +1321,7 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 	actual := cfg.Info(i18n.FallbackLocalizer)
 
 	for i := range actual {
-		actual[i].Formatter = nil
+		actual[i].ArgsFormatter = nil
 	}
 
 	assert.Equal(t, expect, actual)
@@ -1340,11 +1340,11 @@ func Test_newShellwordFormatter(t *testing.T) {
 		Variadic: true,
 	}
 
-	info.Formatter = newShellwordFormatter(info)
+	info.ArgsFormatter = newShellwordFormatter(info)
 
 	expect := fmt.Sprintf("<%s:%s> <%s:%s> [%s:%s] [%s:%s+]",
 		info.Required[0].Name, info.Required[0].Type.Name, info.Required[1].Name, info.Required[1].Type.Name,
 		info.Optional[0].Name, info.Optional[0].Type.Name, info.Optional[1].Name, info.Optional[1].Type.Name)
 
-	assert.Equal(t, expect, info.Formatter(testArgFormatter))
+	assert.Equal(t, expect, info.ArgsFormatter(testArgFormatter))
 }

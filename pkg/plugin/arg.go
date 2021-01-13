@@ -70,15 +70,19 @@ type (
 		// is variadic.
 		Variadic bool
 
-		// Formatter formats arguments using the delimiter of the command.
+		// ArgsFormatter formats arguments using the delimiter of the command.
 		//
 		// Individual args are formatted using the passed ArgFormatter, so that
 		// if the placeholders were to be replaced with actual values, the
 		// command would run without any errors.
-		Formatter func(f ArgFormatter) string
+		ArgsFormatter func(f ArgFormatter) string
 
 		// Flags contains information about the command's flags.
 		Flags []FlagInfo
+
+		// FlagFormatter returns a flag with the passed name formatted, so that
+		// it would get recognized as such if a value were to be added.
+		FlagFormatter func(name string) string
 	}
 
 	// ArgInfo contains information about an argument.
@@ -92,7 +96,7 @@ type (
 	}
 
 	// ArgFormatter is a formatter function used to format a single argument
-	// using ArgsInfo.Formatter.
+	// using ArgsInfo.ArgsFormatter.
 	ArgFormatter func(i ArgInfo, optional, variadic bool) string
 
 	// FlagInfo contains information about a flag.

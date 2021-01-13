@@ -54,7 +54,7 @@ func (c CommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	// still use a Localizer, so replacements for the type information will
 	// be used, if there are any
 	info := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
-	info.Formatter = newCommaFormatter(info)
+	info.ArgsFormatter = newCommaFormatter(info)
 
 	return []plugin.ArgsInfo{info}
 }
@@ -108,7 +108,7 @@ func (c LocalizedCommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 		return nil
 	}
 
-	info.Formatter = newCommaFormatter(info)
+	info.ArgsFormatter = newCommaFormatter(info)
 
 	return []plugin.ArgsInfo{info}
 }

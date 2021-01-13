@@ -337,7 +337,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 	actual := options.Info(nil)
 
 	for i := range actual {
-		actual[i].Formatter = nil
+		actual[i].ArgsFormatter = nil
 	}
 
 	assert.Equal(t, expect, actual)

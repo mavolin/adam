@@ -83,6 +83,9 @@ func (o Options) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 		}
 
 		info[0].Prefix = o.Prefix
+		info[0].ArgsFormatter = func(f plugin.ArgFormatter) string {
+			return o.Prefix + " " + info[0].ArgsFormatter(f)
+		}
 
 		infos = append(infos, info[0])
 	}
