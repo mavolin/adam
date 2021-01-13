@@ -8,8 +8,7 @@ var (
 	internalErrorTitle = i18n.NewFallbackConfig("errors.internal.title", "Internal Error")
 
 	defaultInternalDesc = i18n.NewFallbackConfig("errors.internal.description.default",
-		"Oh no! Something went wrong and I couldn't finish executing your command. I've informed my team and they'll "+
-			"get on fixing the bug asap.")
+		"Oh no! Something went wrong and I couldn't finish executing your command. Try again in a bit.")
 )
 
 // ================================ Discord Error ================================
