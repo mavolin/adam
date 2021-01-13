@@ -1,11 +1,13 @@
 package arg
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 type mockType struct {
@@ -40,3 +42,19 @@ var (
 		dfault: "",
 	}
 )
+
+var testArgFormatter plugin.ArgFormatter = func(i plugin.ArgInfo, optional, variadic bool) string {
+	if optional {
+		if variadic {
+			return fmt.Sprintf("[%s:%s+]", i.Name, i.Type.Name)
+		}
+
+		return fmt.Sprintf("[%s:%s]", i.Name, i.Type.Name)
+	}
+
+	if variadic {
+		return fmt.Sprintf("<%s:%s+>", i.Name, i.Type.Name)
+	}
+
+	return fmt.Sprintf("<%s:%s>", i.Name, i.Type.Name)
+}
