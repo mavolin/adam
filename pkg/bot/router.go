@@ -33,7 +33,7 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	}
 
 	invoke := b.hasPrefix(msg.Content, prefixes)
-	if len(invoke) == 0 { // not an invoke or just the prefix
+	if len(invoke) == 0 && msg.GuildID != 0 { // not an invoke or just the prefix; ignoring dms
 		return
 	}
 

@@ -307,6 +307,10 @@ func (o *Options) setCabinetDefaults() {
 //
 // If the returned *18n.Localizer is nil, a fallback localizer will be used,
 // that always uses fallback messages.
+//
+// Note that messages sent in a direct message don't require a prefix.
+// However, all prefixes for a direct messages will still be stripped, if the
+// message starts with one.
 type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer)
 
 // NewStaticSettingsProvider creates a new SettingsProvider that returns the
