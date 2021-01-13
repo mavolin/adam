@@ -145,6 +145,9 @@ func (p *ctxPluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModul
 	}
 
 	mod := p.modules[i]
+	if mod.Name != name {
+		return nil
+	}
 
 	for _, id := range all[1:] {
 		mod = mod.FindModule(id.Name())
