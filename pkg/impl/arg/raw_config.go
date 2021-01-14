@@ -5,56 +5,101 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
-type raw struct {
-	desc *i18nutil.Text
+// Raw is the type used for unlocalized raw arguments.
+type Raw struct {
+	// Name is the name of the single argument.
+	//
+	// This field is required.
+	Name string
+	// TypeName is the name of the type of the argument.
+	TypeName string
+	// Description is the description used for the argument.
+	Description string
+
+	// Optional, if set to true, won't enforce a minimum argument length of 0.
+	Optional bool
 }
 
-var (
-	// Raw is a plugin.ArgConfig that returns the arguments as is.
-	Raw plugin.ArgConfig  = new(raw)
-	_   plugin.ArgsInfoer = new(raw)
-)
+func (r Raw) Parse(args string, _ *state.State, _ *plugin.Context) (plugin.Args, plugin.Flags, error) {
+	if !r.Optional && len(args) == 0 {
+		return nil, nil, plugin.NewArgumentErrorl(notEnoughArgsError)
+	}
 
-// RawWithDescription creates a argument config for raw arguments, that uses
-// the passed description as argument config.
-func RawWithDescription(description string) plugin.ArgConfig {
-	return &raw{desc: i18nutil.NewText(description)}
-}
-
-// RawWithDescription creates a argument config for raw arguments, that uses
-// the passed description as argument config.
-func RawWithDescriptionl(description *i18n.Config) plugin.ArgConfig {
-	return &raw{desc: i18nutil.NewTextl(description)}
-}
-
-// RawWithDescriptionlt creates a argument config for raw arguments, that uses
-// the passed description as argument config.
-func RawWithDescriptionlt(description i18n.Term) plugin.ArgConfig {
-	return &raw{desc: i18nutil.NewTextl(description.AsConfig())}
-}
-
-func (r raw) Parse(args string, _ *state.State, _ *plugin.Context) (plugin.Args, plugin.Flags, error) {
 	return []interface{}{args}, nil, nil
 }
 
-func (r raw) Info(l *i18n.Localizer) []plugin.ArgsInfo {
-	desc, err := r.desc.Get(l)
-	if err != nil || desc == "" {
+func (r Raw) Info(*i18n.Localizer) []plugin.ArgsInfo {
+	ai := []plugin.ArgInfo{
+		{
+			Name:        r.Name,
+			Type:        plugin.TypeInfo{Name: r.TypeName},
+			Description: r.Description,
+		},
+	}
+
+	if r.Optional {
+		return []plugin.ArgsInfo{{Optional: ai}}
+	}
+
+	return []plugin.ArgsInfo{{Required: ai}}
+}
+
+// LocalizedRaw is the type used for localized raw arguments.
+type LocalizedRaw struct {
+	// Name is the name of the single argument.
+	//
+	// This field is required.
+	Name *i18n.Config
+	// TypeName is the name of the type of the argument.
+	TypeName *i18n.Config
+	// Description is the description used for the argument.
+	Description *i18n.Config
+
+	// Optional, if set to true, won't enforce a minimum argument length of 0.
+	Optional bool
+}
+
+func (r LocalizedRaw) Parse(args string, _ *state.State, _ *plugin.Context) (plugin.Args, plugin.Flags, error) {
+	if !r.Optional && len(args) == 0 {
+		return nil, nil, plugin.NewArgumentErrorl(notEnoughArgsError)
+	}
+
+	return []interface{}{args}, nil, nil
+}
+
+func (r LocalizedRaw) Info(l *i18n.Localizer) []plugin.ArgsInfo {
+	name, err := l.Localize(r.Name)
+	if err != nil {
 		return nil
 	}
 
-	return []plugin.ArgsInfo{
-		{
-			Required: []plugin.ArgInfo{
-				{
-					Name:        "",
-					Type:        plugin.ArgTypeRaw,
-					Description: desc,
-				},
-			},
-		},
+	var typeName string
+	if r.TypeName != nil {
+		typeName, err = l.Localize(r.TypeName)
+		if err != nil {
+			return nil
+		}
 	}
+
+	var desc string
+	if r.Description != nil {
+		desc, err = l.Localize(r.Description)
+		if err != nil {
+			return nil
+		}
+	}
+
+	ai := []plugin.ArgInfo{{Name: name, Description: desc}}
+
+	if len(typeName) > 0 {
+		ai[0].Type = plugin.TypeInfo{Name: typeName}
+	}
+
+	if r.Optional {
+		return []plugin.ArgsInfo{{Optional: ai}}
+	}
+
+	return []plugin.ArgsInfo{{Required: ai}}
 }

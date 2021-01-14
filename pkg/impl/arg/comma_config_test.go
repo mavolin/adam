@@ -728,6 +728,7 @@ func TestCommaConfig_Info(t *testing.T) {
 
 	for i := range actual {
 		actual[i].ArgsFormatter = nil
+		actual[i].FlagFormatter = nil
 	}
 
 	assert.Equal(t, expect, actual)
@@ -1452,6 +1453,7 @@ func TestLocalizedCommaConfig_Info(t *testing.T) {
 
 	for i := range actual {
 		actual[i].ArgsFormatter = nil
+		actual[i].FlagFormatter = nil
 	}
 
 	assert.Equal(t, expect, actual)

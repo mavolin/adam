@@ -338,6 +338,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 
 	for i := range actual {
 		actual[i].ArgsFormatter = nil
+		actual[i].FlagFormatter = nil
 	}
 
 	assert.Equal(t, expect, actual)
