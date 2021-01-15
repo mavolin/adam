@@ -795,11 +795,11 @@ var (
 var (
 	commandNotFound = i18n.NewFallbackConfig(
 		"args.types.command.errors.not_found",
-		"I don't know any commands by the name of {{.invoke}}. Make sure you spelled it right.")
+		"I don't know any commands by the name of `{{.invoke}}`. Make sure you spelled it right.")
 
 	commandNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
 		"args.types.command.errors.not_found.providers_unavailable",
-		"I couldn't find any commands by the name of {{.invoke}}, "+
+		"I couldn't find any commands by the name of `{{.invoke}}`, "+
 			"but I don't have access to some commands right now. Try again later or check your spelling.")
 )
 
@@ -821,11 +821,11 @@ var (
 var (
 	moduleNotFound = i18n.NewFallbackConfig(
 		"args.types.module.errors.not_found",
-		"I don't know any commands by the name of {{.invoke}}. Make sure you spelled it right.")
+		"I don't know any commands by the name of `{{.invoke}}`. Make sure you spelled it right.")
 
 	moduleNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
 		"args.types.module.errors.not_found.providers_unavailable",
-		"I couldn't find any commands by the name of {{.invoke}}, "+
+		"I couldn't find any commands by the name of `{{.invoke}}`, "+
 			"but I don't have access to some commands right now. Try again later or check your spelling.")
 )
 
@@ -847,11 +847,11 @@ var (
 var (
 	pluginNotFound = i18n.NewFallbackConfig(
 		"args.types.plugin.errors.not_found",
-		"I don't know any commands or modules by the name of {{.invoke}}. Make sure you spelled it right.")
+		"I don't know any commands or modules by the name of `{{.invoke}}`. Make sure you spelled it right.")
 
 	pluginNotFoundProvidersUnavailable = i18n.NewFallbackConfig(
 		"args.types.plugin.errors.not_found.providers_unavailable",
-		"I couldn't find any commands or modules by the name of {{.invoke}}, "+
+		"I couldn't find any commands or modules by the name of `{{.invoke}}`, "+
 			"but I don't have access to some of them right now. Try again later or check your spelling.")
 )
 
