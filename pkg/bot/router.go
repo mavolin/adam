@@ -12,6 +12,7 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/replier"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
@@ -256,28 +257,6 @@ func (b *Bot) routeCommandAsync(
 	return nil, nil, ""
 }
 
-func (b *Bot) invoke(ctx *plugin.Context, args string) error {
-	middlewares := b.Middlewares()
-
-	for _, mod := range ctx.InvokedCommand.SourceParents {
-		if m, ok := mod.(Middlewarer); ok {
-			middlewares = append(middlewares, m.Middlewares()...)
-		}
-	}
-
-	if m, ok := ctx.InvokedCommand.Source.(Middlewarer); ok {
-		middlewares = append(middlewares, m.Middlewares()...)
-	}
-
-	inv := func(_ *state.State, ctx *plugin.Context) error { return b.invokeCommand(ctx, args) }
-
-	for i := len(middlewares) - 1; i >= 0; i-- {
-		inv = middlewares[i](inv)
-	}
-
-	return inv(b.State, ctx)
-}
-
 func (b *Bot) checkPermissions(ctx *plugin.Context) error {
 	if ctx.InvokedCommand.BotPermissions == 0 {
 		return nil
@@ -300,6 +279,28 @@ func (b *Bot) checkPermissions(ctx *plugin.Context) error {
 	return nil
 }
 
+func (b *Bot) invoke(ctx *plugin.Context, args string) error {
+	middlewares := b.Middlewares()
+
+	for _, mod := range ctx.InvokedCommand.SourceParents {
+		if m, ok := mod.(Middlewarer); ok {
+			middlewares = append(middlewares, m.Middlewares()...)
+		}
+	}
+
+	if m, ok := ctx.InvokedCommand.Source.(Middlewarer); ok {
+		middlewares = append(middlewares, m.Middlewares()...)
+	}
+
+	inv := func(_ *state.State, ctx *plugin.Context) error { return b.invokeCommand(ctx, args) }
+
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		inv = middlewares[i](inv)
+	}
+
+	return inv(b.State, ctx)
+}
+
 func (b *Bot) invokeCommand(ctx *plugin.Context, args string) error {
 	err := ctx.InvokedCommand.IsRestricted(b.State, ctx)
 	if err != nil {
@@ -315,6 +316,12 @@ func (b *Bot) invokeCommand(ctx *plugin.Context, args string) error {
 
 	reply, err := ctx.InvokedCommand.Invoke(b.State, ctx)
 	rerr := b.handleReply(reply, ctx)
+
+	// special case, prevent this from going through as an *InternalError
+	if discorderr.Is(discorderr.As(err), discorderr.InsufficientPermissions) {
+		err = plugin.DefaultBotPermissionsError
+	}
+
 	if err != nil {
 		ctx.HandleErrorSilent(rerr)
 

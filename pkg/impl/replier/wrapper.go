@@ -5,6 +5,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -93,7 +94,7 @@ func (r *wrappedReplier) lazyDM(ctx *plugin.Context) error {
 	if !r.dmID.IsValid() {
 		c, err := r.s.CreatePrivateChannel(ctx.Author.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		r.dmID = c.ID

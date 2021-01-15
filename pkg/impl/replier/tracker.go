@@ -7,6 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -208,7 +209,7 @@ func (t *Tracker) lazyDM(ctx *plugin.Context) error {
 	if !t.dmID.IsValid() {
 		c, err := t.s.CreatePrivateChannel(ctx.Author.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		t.dmID = c.ID

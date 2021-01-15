@@ -138,8 +138,7 @@ func (ctx *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, e
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (ctx *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	msg, err := ctx.Replier.Reply(ctx, data)
-	return msg, errorutil.WithStack(err)
+	return ctx.Replier.Reply(ctx, data)
 }
 
 // ReplyDM replies with the passed message in in a direct message to the
@@ -309,8 +308,7 @@ func (ctx *Context) EditEmbedBuilderDM(messageID discord.MessageID, e *embedutil
 // EditMessageDM sends the passed api.EditMessageData to the direct message
 // channel with the invoking user.
 func (ctx *Context) EditMessageDM(messageID discord.MessageID, data api.EditMessageData) (*discord.Message, error) {
-	msg, err := ctx.Replier.EditDM(ctx, messageID, data)
-	return msg, errorutil.WithStack(err)
+	return ctx.Replier.EditDM(ctx, messageID, data)
 }
 
 // Guild returns the guild the command was invoked in.
