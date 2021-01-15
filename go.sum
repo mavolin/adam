@@ -8,6 +8,8 @@ github.com/diamondburned/arikawa/v2 v2.0.0-20201215163218-7a7a56d613f4/go.mod h1
 github.com/diamondburned/arikawa/v2 v2.0.0-20201216225132-fdeff18f5d9e/go.mod h1:e+lhS20ni2luFEU06Pc8paCxgZL99/RZb77dOC82CF0=
 github.com/diamondburned/arikawa/v2 v2.0.0-20210106051538-d9a159d948af h1:Q1NROEw872Yy4puFMgpJDEbJM5OpYYW1w9v4gGMH5Dc=
 github.com/diamondburned/arikawa/v2 v2.0.0-20210106051538-d9a159d948af/go.mod h1:e+lhS20ni2luFEU06Pc8paCxgZL99/RZb77dOC82CF0=
+github.com/diamondburned/arikawa/v2 v2.0.0-20210113232245-de3049b730df h1:2YOdivndM+AoJKDHC3Y9V1b9o15xbmgcwPQDZlT7ZKs=
+github.com/diamondburned/arikawa/v2 v2.0.0-20210113232245-de3049b730df/go.mod h1:e+lhS20ni2luFEU06Pc8paCxgZL99/RZb77dOC82CF0=
 github.com/gorilla/schema v1.2.0 h1:YufUaxZYCKGFuAq3c96BOhjgd5nmXiOY9NGzF247Tsc=
 github.com/gorilla/schema v1.2.0/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
