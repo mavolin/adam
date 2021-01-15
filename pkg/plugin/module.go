@@ -43,7 +43,7 @@ type (
 		// IsRestricted checks if the user calling the command is restricted
 		// from using this module.
 		// If the bot lacks one ore more permissions command execution will
-		// stop with an errors.InsufficientPermissionsError.
+		// stop with an plugin.BotPermissionsError.
 		//
 		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
 		// To override a RestrictionFunc defined by a parent without defining a

@@ -14,7 +14,7 @@ func NewText(src string) *Text {
 	return &Text{string: src}
 }
 
-// NewTextl returns a new localized Text using the passed i18n.Config.
+// NewTextl returns a new localized Text using the passed *i18n.Config.
 func NewTextl(src *i18n.Config) *Text {
 	if src == nil {
 		return nil

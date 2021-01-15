@@ -31,7 +31,7 @@ func NewArgumentError(description string) *ArgumentError {
 	return &ArgumentError{desc: i18nutil.NewText(description)}
 }
 
-// NewArgumentErrorl returns a new ArgumentError using the passed i18n.Config
+// NewArgumentErrorl returns a new ArgumentError using the passed *i18n.Config
 // to generate a description.
 func NewArgumentErrorl(description *i18n.Config) *ArgumentError {
 	return &ArgumentError{desc: i18nutil.NewTextl(description)}
@@ -305,7 +305,7 @@ func NewRestrictionError(description string) *RestrictionError {
 }
 
 // NewRestrictionErrorl creates a new RestrictionError using the message
-// generated from the passed i18n.Config as description.
+// generated from the passed *i18n.Config as description.
 func NewRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{desc: i18nutil.NewTextl(description)}
 }
@@ -326,7 +326,7 @@ func NewFatalRestrictionError(description string) *RestrictionError {
 }
 
 // NewFatalRestrictionErrorl creates a new fatal RestrictionError using the
-// message generated from the passed i18n.Config as description.
+// message generated from the passed *i18n.Config as description.
 func NewFatalRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{
 		desc:  i18nutil.NewTextl(description),
@@ -387,7 +387,7 @@ func NewThrottlingError(description string) *ThrottlingError {
 }
 
 // NewThrottlingErrorl creates a new ThrottlingError using the message
-// generated from the passed i18n.Config as description.
+// generated from the passed *i18n.Config as description.
 func NewThrottlingErrorl(description *i18n.Config) *ThrottlingError {
 	return &ThrottlingError{desc: i18nutil.NewTextl(description)}
 }

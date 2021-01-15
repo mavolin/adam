@@ -25,7 +25,7 @@ func NewCustomUserInfo() *UserInfo {
 }
 
 // NewUserInfoFromEmbed creates a new UserInfo from the passed
-// embedutil.Builder.
+// *embedutil.Builder.
 func NewUserInfoFromEmbed(e *embedutil.Builder) *UserInfo {
 	return &UserInfo{Embed: e}
 }
@@ -38,7 +38,7 @@ func NewUserInfo(description string) *UserInfo {
 }
 
 // NewUserInfol creates a new UserInfo using the message generated from the
-// passed i18n.Config.
+// passed *i18n.Config.
 func NewUserInfol(description *i18n.Config) *UserInfo {
 	return NewCustomUserInfo().
 		WithDescriptionl(description)

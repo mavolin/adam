@@ -58,7 +58,7 @@ type Context struct {
 	ReplyMiddlewares []interface{}
 
 	// Replier is the interface used to send replies to a command.
-	// Defaults to replier.WrapState, found in impl/replier
+	// Defaults to replier.WrapState, as found in impl/replier.
 	Replier Replier
 
 	// Provider is an embedded interface that provides access to the Commands
@@ -100,8 +100,8 @@ func (ctx *Context) Replyf(format string, a ...interface{}) (*discord.Message, e
 	return ctx.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a...)})
 }
 
-// Replyl replies with the message generated from the passed i18n.Config in the
-// channel the command was originally sent in.
+// Replyl replies with the message generated from the passed *i18n.Config in
+// the channel the command was originally sent in.
 func (ctx *Context) Replyl(c *i18n.Config) (*discord.Message, error) {
 	s, err := ctx.Localizer.Localize(c)
 	if err != nil {
@@ -124,8 +124,7 @@ func (ctx *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed
-// embedutil.Builder and sends it in the channel the command was sent
-// in.
+// *embedutil.Builder and sends it in the channel the command was sent in.
 func (ctx *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(ctx.Localizer)
 	if err != nil {
@@ -155,7 +154,7 @@ func (ctx *Context) ReplyfDM(format string, a ...interface{}) (*discord.Message,
 	return ctx.ReplyDM(fmt.Sprintf(format, a...))
 }
 
-// ReplylDM replies with the message translated from the passed i18n.Config in
+// ReplylDM replies with the message translated from the passed *i18n.Config in
 // a direct message to the invoking user.
 func (ctx *Context) ReplylDM(c *i18n.Config) (*discord.Message, error) {
 	s, err := ctx.Localizer.Localize(c)
@@ -179,7 +178,7 @@ func (ctx *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
 }
 
 // ReplyEmbedBuilderDM builds the discord.Embed from the passed
-// embedutil.Builder and sends it in a direct message to the invoking user.
+// *embedutil.Builder and sends it in a direct message to the invoking user.
 func (ctx *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(ctx.Localizer)
 	if err != nil {
@@ -328,7 +327,7 @@ func (ctx *Context) Self() (*discord.Member, error) {
 }
 
 // SelfPermissions checks if the bot has the passed permissions.
-// If this command is executed in a direct message, constant.DMPermissions will
+// If this command is executed in a direct message, permutil.DMPermissions will
 // be returned instead.
 func (ctx *Context) SelfPermissions() (discord.Permissions, error) {
 	if ctx.GuildID == 0 {
@@ -358,7 +357,7 @@ func (ctx *Context) SelfPermissions() (discord.Permissions, error) {
 
 // UserPermissions returns the permissions of the invoking user in the
 // channel.
-// If this command is executed in a direct message, constant.DMPermissions will
+// If this command is executed in a direct message, permutil.DMPermissions will
 // be returned instead.
 func (ctx *Context) UserPermissions() (discord.Permissions, error) {
 	if ctx.GuildID == 0 {
@@ -497,7 +496,7 @@ type (
 	// Repository is the struct returned by Provider.PluginRepositories.
 	// It contains the top-level plugins of a single repository.
 	Repository struct {
-		// ProviderName is the name of the bot.RuntimePluginProvider that provides
+		// ProviderName is the name of the bot.PluginProvider that provides
 		// these plugins.
 		ProviderName string
 		// Commands are the top-level commands of the repository.

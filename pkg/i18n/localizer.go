@@ -97,7 +97,7 @@ func (l *Localizer) Localize(c *Config) (s string, err error) {
 }
 
 // LocalizeTerm is a short for
-//		l.Localize(i18n.Config{
+//		l.Localize(&i18n.Config{
 //			Term: term,
 //		})
 func (l *Localizer) LocalizeTerm(term Term) (string, error) {

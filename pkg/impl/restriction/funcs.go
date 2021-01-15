@@ -80,7 +80,7 @@ var _ plugin.RestrictionFunc = BotOwner
 
 // Users creates a plugin.RestrictionFunc that defines a set of users that may
 // use a command.
-// It returns a errors.DefaultRestrictionError if the author isn't one of them.
+// It returns a plugin.DefaultRestrictionError if the author isn't one of them.
 func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if len(allowed) == 0 {
@@ -98,7 +98,7 @@ func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 }
 
 // MustAllRoles asserts that the user has all of the passed roles or is able
-// to assign themself any of the passed roles.
+// to assign themself all of the passed roles.
 // You can mix roles from different guilds, roles that aren't available in a
 // guild are ignored.
 // However, the guild the command was invoked in must have at least one of the
@@ -419,7 +419,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 // type.
 //
 // Note that the resulting plugin.RestrictionFunc won't return a
-// errors.ChannelTypeError but a errors.RestrictionError.
+// errors.ChannelTypeError but a *plugin.RestrictionError.
 func ChannelTypes(allowed plugin.ChannelTypes) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		return assertChannelTypes(ctx, allowed,
@@ -428,14 +428,13 @@ func ChannelTypes(allowed plugin.ChannelTypes) plugin.RestrictionFunc {
 }
 
 // BotPermissions asserts that the bot has the passed permissions.
-// When using this, the commands bot permissions should be set to
-// plugin.NoPermissions.
+// When using this, the commands bot permissions should be set to 0.
 //
 // Note that direct messages may also pass this, if the passed permissions
-// only require constant.DMPermissions.
+// only require permutil.DMPermissions.
 //
 // Also note that the resulting plugin.RestrictionFunc won't return a
-// errors.BotPermissionsError but a errors.RestrictionError.
+// *plugin.BotPermissionsError but a *plugin.RestrictionError.
 func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if required == 0 {
@@ -469,7 +468,7 @@ func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 // UserPermissions asserts that the invoking user has the passed permissions.
 //
 // Note that direct messages may also pass this, if the passed permissions
-// only require constant.DMPermissions.
+// only require permutil.DMPermissions.
 func UserPermissions(perms discord.Permissions) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if perms == 0 {

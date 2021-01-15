@@ -23,8 +23,6 @@ const (
 type EmbeddableError struct {
 	// EmbeddableVersion is the version used when embedded in an any or all
 	// error.
-	// This MUST be of type *errors.RestrictionError or
-	// *errors.FatalRestrictionError.
 	EmbeddableVersion *plugin.RestrictionError
 	// DefaultVersion is the version returned if the error won't get embedded.
 	DefaultVersion error
@@ -37,7 +35,7 @@ func (e *EmbeddableError) Error() string                            { return e.D
 // If not, it will create an error containing a list of all missing
 // requirements using the returned errors.
 // This list can only be created, if the returned errors are of type
-// *errors.RestrictionError or *EmbeddableError, or are error lists returned by
+// *plugin.RestrictionError or *EmbeddableError, or are error lists returned by
 // nested Alls or Anys.
 func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:gocognit
 	return func(s *state.State, ctx *plugin.Context) error {
@@ -131,7 +129,7 @@ func Allf(returnError error, funcs ...plugin.RestrictionFunc) plugin.Restriction
 // If not it will return a list of the needed requirements using the returned
 // errors.
 // This list can only be created, if the returned errors are of type
-// *errors.RestrictionError or *EmbeddableError, or are error lists returned by
+// *plugin.RestrictionError or *EmbeddableError, or are error lists returned by
 // nested Alls or Anys.
 func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {

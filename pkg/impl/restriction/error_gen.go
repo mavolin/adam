@@ -8,8 +8,8 @@ import (
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
-// newInvalidChannelTypeError returns a new errors.RestrictionError wrapping
-// an errors.ChannelTypeError.
+// newInvalidChannelTypeError returns a new *plugin.RestrictionError wrapping
+// a plugin.ChannelTypeError.
 func newInvalidChannelTypeError(allowed plugin.ChannelTypes, l *i18n.Localizer, fatal bool) error {
 	err := plugin.NewChannelTypeError(allowed)
 	desc := err.Description(l)

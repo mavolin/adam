@@ -26,7 +26,7 @@ func NewCustomUserError() *UserError {
 }
 
 // NewUserErrorFromEmbed creates a new UserError from the passed
-// embedutil.Builder.
+// *embedutil.Builder.
 func NewUserErrorFromEmbed(e *embedutil.Builder) *UserError {
 	return &UserError{Embed: e}
 }
@@ -39,7 +39,7 @@ func NewUserError(description string) *UserError {
 }
 
 // NewUserErrorl creates a new UserError using the message generated from the
-// passed i18n.Config as description.
+// passed *i18n.Config as description.
 func NewUserErrorl(description *i18n.Config) *UserError {
 	return NewCustomUserError().
 		WithDescriptionl(description)

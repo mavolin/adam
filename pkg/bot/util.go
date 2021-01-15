@@ -14,7 +14,7 @@ import (
 const whitespace = " \t\n"
 
 // newMessageCreateEvent creates a new state.MessageCreateEvent from the passed
-// plugin.Context.
+// *plugin.Context.
 func newMessageCreateEvent(ctx *plugin.Context) *state.MessageCreateEvent {
 	return &state.MessageCreateEvent{
 		MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -26,7 +26,7 @@ func newMessageCreateEvent(ctx *plugin.Context) *state.MessageCreateEvent {
 }
 
 // newMessageUpdateEvent creates a new state.MessageUpdateEvent from the passed
-// plugin.Context.
+// *plugin.Context.
 func newMessageUpdateEvent(ctx *plugin.Context) *state.MessageUpdateEvent {
 	return &state.MessageUpdateEvent{
 		MessageUpdateEvent: &gateway.MessageUpdateEvent{
