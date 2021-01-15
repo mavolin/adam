@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"runtime/debug"
+	"syscall"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -11,6 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/diamondburned/arikawa/v2/state/store/defaultstore"
 	"github.com/diamondburned/arikawa/v2/utils/wsutil"
+	"github.com/gorilla/websocket"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -160,7 +162,7 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	GatewayTimeout time.Duration
 	// GatewayErrorHandler is the error handler of the gateway.
 	//
-	// Default: func(err error) { log.Println(err) }
+	// Default: DefaultGatewayErrorHandler
 	GatewayErrorHandler func(error)
 
 	// StateErrorHandler is the error handler of the *state.State, called if an
@@ -237,7 +239,7 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	if o.GatewayErrorHandler == nil {
-		o.GatewayErrorHandler = func(err error) { log.Println(err) }
+		o.GatewayErrorHandler = DefaultGatewayErrorHandler
 	}
 
 	if o.StateErrorHandler == nil {
@@ -327,7 +329,21 @@ func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
 // =====================================================================================
 
 func DefaultThrottlerErrorCheck(err error) bool {
-	return !errors.As(err, new(errors.InformationalError))
+	ierr := new(errors.InformationalError)
+	return !errors.As(err, ierr)
+}
+
+func DefaultGatewayErrorHandler(err error) {
+	// ignore error used on reconnect
+
+	var cerr *websocket.CloseError
+	if errors.As(err, cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+		return
+	} else if errors.Is(err, syscall.ECONNRESET) {
+		return
+	}
+
+	log.Println(err)
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
