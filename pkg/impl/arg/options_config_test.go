@@ -23,7 +23,7 @@ func TestOptions_Parse(t *testing.T) {
 
 		expect := plugin.Args{"abc"}
 
-		ctx := &plugin.Context{Localizer: i18n.FallbackLocalizer}
+		ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
 		actual, flags, err := options.Parse("1 abc", nil, ctx)
 		require.NoError(t, err)
@@ -69,7 +69,7 @@ func TestOptions_Parse(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
 				ctx := &plugin.Context{
-					Localizer: i18n.FallbackLocalizer,
+					Localizer: i18n.NewFallbackLocalizer(),
 				}
 
 				_, _, actual := c.options.Parse(c.args, nil, ctx)

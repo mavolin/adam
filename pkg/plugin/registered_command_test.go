@@ -258,16 +258,32 @@ func TestRegisteredCommand_ShortDescription(t *testing.T) {
 }
 
 func TestRegisteredCommand_LongDescription(t *testing.T) {
-	expect := "abc"
+	t.Run("long description", func(t *testing.T) {
+		expect := "abc"
 
-	rcmd := &RegisteredCommand{
-		Source: mockCommand{
-			longDesc: expect,
-		},
-	}
+		rcmd := &RegisteredCommand{
+			Source: mockCommand{
+				longDesc: expect,
+			},
+		}
 
-	actual := rcmd.LongDescription(nil)
-	assert.Equal(t, expect, actual)
+		actual := rcmd.LongDescription(nil)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("short description", func(t *testing.T) {
+		expect := "abc"
+
+		rcmd := &RegisteredCommand{
+			Source: mockCommand{
+				shortDesc: expect,
+				// no long description defined
+			},
+		}
+
+		actual := rcmd.LongDescription(nil)
+		assert.Equal(t, expect, actual)
+	})
 }
 
 func TestRegisteredCommand_Examples(t *testing.T) {

@@ -105,7 +105,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 
 		ctx := &Context{
 			Context: &plugin.Context{
-				Localizer: i18n.FallbackLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 			},
 			Raw: "def",
 		}
@@ -124,7 +124,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 		}
 
 		ctx := &Context{
-			Context: &plugin.Context{Localizer: i18n.FallbackLocalizer},
+			Context: &plugin.Context{Localizer: i18n.NewFallbackLocalizer()},
 			Raw:     "jkl",
 		}
 

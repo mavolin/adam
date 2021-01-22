@@ -29,7 +29,7 @@ func TestWaiter_Await(t *testing.T) {
 				GuildID:   456,
 				Author:    discord.User{ID: 789},
 			},
-			Localizer: i18n.FallbackLocalizer,
+			Localizer: i18n.NewFallbackLocalizer(),
 			DiscordDataProvider: mock.DiscordDataProvider{
 				ChannelReturn: &discord.Channel{},
 				ChannelError:  nil,

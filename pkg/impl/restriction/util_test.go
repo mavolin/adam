@@ -34,13 +34,13 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "fail guild channels",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: i18n.FallbackLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildTextChannels},
 				}),
 			},
 			allowed: plugin.GuildChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.FallbackLocalizer, true),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "pass direct messages",
@@ -57,13 +57,13 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "fail direct messages",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
-				Localizer: i18n.FallbackLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			allowed: plugin.DirectMessages,
-			expect:  newInvalidChannelTypeError(plugin.DirectMessages, i18n.FallbackLocalizer, true),
+			expect:  newInvalidChannelTypeError(plugin.DirectMessages, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "all channels",
@@ -96,19 +96,19 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "fail guild text - fatal",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: i18n.FallbackLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.FallbackLocalizer, true),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "fail guild text - not fatal",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
-				Localizer: i18n.FallbackLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
@@ -117,7 +117,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				},
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.FallbackLocalizer, false),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), false),
 		},
 	}
 
@@ -133,7 +133,7 @@ func Test_assertChannelTypes(t *testing.T) {
 
 		ctx := &plugin.Context{
 			Message:   discord.Message{GuildID: 123},
-			Localizer: i18n.FallbackLocalizer,
+			Localizer: i18n.NewFallbackLocalizer(),
 			InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 				CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 			}),

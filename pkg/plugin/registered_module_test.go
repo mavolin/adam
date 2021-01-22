@@ -1052,8 +1052,22 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{Modules: []Module{mockModule{longDesc: ""}}},
+				{Modules: []Module{mockModule{}}},
 				{Modules: []Module{mockModule{longDesc: expect}}},
+			},
+		}
+
+		actual := rmod.LongDescription(nil)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("short description", func(t *testing.T) {
+		expect := "abc"
+
+		rmod := &RegisteredModule{
+			Sources: []SourceModule{
+				{Modules: []Module{mockModule{}}},
+				{Modules: []Module{mockModule{shortDesc: expect}}},
 			},
 		}
 
@@ -1064,7 +1078,7 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 	t.Run("none", func(t *testing.T) {
 		rmod := &RegisteredModule{
 			Sources: []SourceModule{
-				{Modules: []Module{mockModule{longDesc: ""}}},
+				{Modules: []Module{mockModule{}}},
 				{Modules: []Module{mockModule{longDesc: ""}}},
 			},
 		}

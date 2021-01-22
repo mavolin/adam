@@ -211,11 +211,11 @@ func TestDecimal_Parse(t *testing.T) {
 
 func TestNumericID_Name(t *testing.T) {
 	t.Run("default name", func(t *testing.T) {
-		expect := i18n.FallbackLocalizer.MustLocalize(idName)
+		expect := i18n.NewFallbackLocalizer().MustLocalize(idName)
 
 		id := SimpleNumericID
 
-		actual := id.Name(i18n.FallbackLocalizer)
+		actual := id.Name(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
@@ -226,18 +226,18 @@ func TestNumericID_Name(t *testing.T) {
 			CustomName: i18nutil.NewText(expect),
 		}
 
-		actual := id.Name(i18n.FallbackLocalizer)
+		actual := id.Name(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }
 
 func TestNumericID_Description(t *testing.T) {
 	t.Run("default description", func(t *testing.T) {
-		expect := i18n.FallbackLocalizer.MustLocalize(idDescription)
+		expect := i18n.NewFallbackLocalizer().MustLocalize(idDescription)
 
 		id := SimpleNumericID
 
-		actual := id.Description(i18n.FallbackLocalizer)
+		actual := id.Description(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
@@ -248,7 +248,7 @@ func TestNumericID_Description(t *testing.T) {
 			CustomDescription: i18nutil.NewText(expect),
 		}
 
-		actual := id.Description(i18n.FallbackLocalizer)
+		actual := id.Description(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }

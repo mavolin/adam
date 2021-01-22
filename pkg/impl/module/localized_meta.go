@@ -18,8 +18,6 @@ type LocalizedMeta struct {
 
 	// Hidden specifies whether this module should be hidden from the help
 	// message.
-	//
-	// All subcommands and submodules will be hidden as well.
 	Hidden bool
 
 	// DefaultChannelTypes are the plugin.ChannelTypes the used as default, for
@@ -58,11 +56,7 @@ func (m LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
 		return ""
 	}
 
-	if len(desc) > 0 {
-		return desc
-	}
-
-	return m.GetShortDescription(l)
+	return desc
 }
 
 func (m LocalizedMeta) IsHidden() bool                              { return m.Hidden }

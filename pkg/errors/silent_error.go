@@ -21,11 +21,11 @@ type SilentError struct {
 
 var _ Error = new(SilentError)
 
-// Silent creates a new silent error using the passed error as cause.
+// Silent creates a new *SilentError using the passed error as cause.
 //
 // If the error is already a *SilentError, it will be returned as is, and if
 // the error is of type *InternalError, the cause of the error will be
-// extracted first, before creating a SilentError.
+// extracted first, before creating a *SilentError.
 // Furthermore, if the passed error fulfills As for Error but neither of the
 // above conditions, nil will be returned, to prevent logging of errors that
 // normally wouldn't be logged either.
@@ -49,8 +49,11 @@ func Silent(err error) error {
 //
 // If the error is already a *SilentError, it will be returned as is, and if
 // the error is of type *InternalError, the cause of the error
-// will be extracted first, before creating a SilentError.
-// In any other case, unlike Silent, the error will wrapped in a silent error.
+// will be extracted first, before creating a *SilentError.
+//
+// In any other case, unlike Silent, the error will wrapped in a *SilentError.
+// MustSilent is therefore considered more forceful than Silent, and cases that
+// don't explicitly require this, should use Silent.
 func MustSilent(err error) error {
 	if err == nil {
 		return nil
@@ -94,7 +97,7 @@ func WrapSilent(err error, message string) error {
 	}
 }
 
-// WrapSilent wraps the passed error using the formatted passed message,
+// WrapSilentf wraps the passed error using the formatted passed message,
 // enriches the error with a stack trace, and marks the error as log-only.
 //
 // If the error is already a *SilentError, it will be returned as is, and if
@@ -105,8 +108,8 @@ func WrapSilent(err error, message string) error {
 // normally wouldn't be logged either.
 //
 // The returned error will print as
-// '$fmt.Sprintf(format, args...): $err.Error()'.
-func WrapSilentf(err error, format string, args ...interface{}) error {
+// '$fmt.Sprintf(format, a...): $err.Error()'.
+func WrapSilentf(err error, format string, a ...interface{}) error {
 	if err == nil {
 		return nil
 	}
@@ -118,7 +121,7 @@ func WrapSilentf(err error, format string, args ...interface{}) error {
 
 	return &SilentError{
 		cause: &messageError{
-			msg:   fmt.Sprintf(format, args...),
+			msg:   fmt.Sprintf(format, a...),
 			cause: err,
 		},
 		stack: stack,

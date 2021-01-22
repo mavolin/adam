@@ -19,32 +19,32 @@ type UserInfo struct {
 
 var _ Error = new(UserInfo)
 
-// NewCustomUserInfo creates a new UserInfo using the InfoEmbed as template.
+// NewCustomUserInfo creates a new *UserInfo using the InfoEmbed as template.
 func NewCustomUserInfo() *UserInfo {
 	return &UserInfo{Embed: NewInfoEmbed()}
 }
 
-// NewUserInfoFromEmbed creates a new UserInfo from the passed
+// NewUserInfoFromEmbed creates a new *UserInfo from the passed
 // *embedutil.Builder.
 func NewUserInfoFromEmbed(e *embedutil.Builder) *UserInfo {
 	return &UserInfo{Embed: e}
 }
 
-// NewUserInfo creates a new UserInfo using the passed description.
+// NewUserInfo creates a new *UserInfo using the passed description.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserInfo(description string) *UserInfo {
 	return NewCustomUserInfo().
 		WithDescription(description)
 }
 
-// NewUserInfol creates a new UserInfo using the message generated from the
+// NewUserInfol creates a new *UserInfo using the message generated from the
 // passed *i18n.Config.
 func NewUserInfol(description *i18n.Config) *UserInfo {
 	return NewCustomUserInfo().
 		WithDescriptionl(description)
 }
 
-// NewUserInfolt creates a new UserInfo using the message generated from the
+// NewUserInfolt creates a new *UserInfo using the message generated from the
 // passed term.
 func NewUserInfolt(description i18n.Term) *UserInfo {
 	return NewUserInfol(description.AsConfig())

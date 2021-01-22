@@ -66,11 +66,7 @@ func (m LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
 		return ""
 	}
 
-	if len(desc) > 0 {
-		return desc
-	}
-
-	return m.GetShortDescription(l)
+	return desc
 }
 
 func (m LocalizedMeta) GetExamples(l *i18n.Localizer) []string {

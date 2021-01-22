@@ -20,7 +20,7 @@ func TestUserError_Handle(t *testing.T) {
 
 		ctx := &plugin.Context{
 			Message:   discord.Message{ChannelID: 123},
-			Localizer: i18n.FallbackLocalizer,
+			Localizer: i18n.NewFallbackLocalizer(),
 			Replier:   replierFromState(s, 123, 0),
 		}
 
@@ -51,7 +51,7 @@ func TestUserError_Handle(t *testing.T) {
 
 		ctx := &plugin.Context{
 			Message:   discord.Message{ChannelID: 123},
-			Localizer: i18n.FallbackLocalizer,
+			Localizer: i18n.NewFallbackLocalizer(),
 			Replier:   replierFromState(s, 123, 0),
 		}
 

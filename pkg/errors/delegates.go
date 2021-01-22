@@ -20,8 +20,8 @@ func NewWithStack(text string) error { return withStack(New(text)) }
 // passed text as cause.
 // Each call to NewWithStackf returns a distinct error value even if the text
 // is identical.
-func NewWithStackf(format string, args ...interface{}) error {
-	return withStack(New(fmt.Sprintf(format, args...)))
+func NewWithStackf(format string, a ...interface{}) error {
+	return withStack(New(fmt.Sprintf(format, a...)))
 }
 
 // NewSilent returns a new SilentError with an error with the passed text as
@@ -36,8 +36,8 @@ func NewSilent(text string) error {
 // text as cause.
 // Each call to NewSilentf returns a distinct error value even if the text
 // is identical.
-func NewSilentf(format string, args ...interface{}) error {
-	return Silent(New(fmt.Sprintf(format, args...)))
+func NewSilentf(format string, a ...interface{}) error {
+	return Silent(New(fmt.Sprintf(format, a...)))
 }
 
 // Unwrap returns the result of calling the Unwrap method on err, if err's

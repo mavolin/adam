@@ -30,7 +30,7 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 
 	prefixes, localizer := b.SettingsProvider(base, msg)
 	if localizer == nil {
-		localizer = i18n.FallbackLocalizer
+		localizer = i18n.NewFallbackLocalizer()
 	}
 
 	invoke := b.hasPrefix(msg.Content, prefixes)

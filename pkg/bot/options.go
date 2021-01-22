@@ -144,7 +144,7 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Cabinet is the store.Cabinet used for caching.
 	// Use store.NoopCabinet to deactivate caching.
 	//
-	// Default: defaultstore.New()
+	// Defaulot: defaultstore.New()
 	Cabinet store.Cabinet
 
 	// Shard is the shard of the bot.

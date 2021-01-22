@@ -174,16 +174,20 @@ func (c *RegisteredCommand) Parent() *RegisteredModule {
 	return parent
 }
 
-// ShortDescription returns an optional one-sentence description of the
-// command.
+// ShortDescription returns an optional brief description of the command.
 func (c *RegisteredCommand) ShortDescription(l *i18n.Localizer) string {
 	return c.Source.GetShortDescription(l)
 }
 
-// LongDescription returns an optional thorough description of the
-// command.
+// LongDescription returns an optional long description of the command.
+//
+// If the command only provides a short description, that will be used instead.
 func (c *RegisteredCommand) LongDescription(l *i18n.Localizer) string {
-	return c.Source.GetLongDescription(l)
+	if desc := c.Source.GetLongDescription(l); len(desc) > 0 {
+		return desc
+	}
+
+	return c.ShortDescription(l)
 }
 
 // Examples returns optional examples for the command.

@@ -154,7 +154,7 @@ func TestAll(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			f := All(c.funcs...)
 
-			actual := f(nil, &plugin.Context{Localizer: i18n.FallbackLocalizer})
+			actual := f(nil, &plugin.Context{Localizer: i18n.NewFallbackLocalizer()})
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -312,7 +312,7 @@ func TestAny(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			f := Any(c.funcs...)
 
-			actual := f(nil, &plugin.Context{Localizer: i18n.FallbackLocalizer})
+			actual := f(nil, &plugin.Context{Localizer: i18n.NewFallbackLocalizer()})
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -497,7 +497,7 @@ func Test_allError_format(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual, fatal, err := c.err.format(0, i18n.FallbackLocalizer)
+			actual, fatal, err := c.err.format(0, i18n.NewFallbackLocalizer())
 			require.NoError(t, err)
 			assert.Equal(t, c.fatal, fatal)
 			assert.Equal(t, c.expect, actual)
@@ -749,7 +749,7 @@ func Test_anyError_format(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual, fatal, err := c.err.format(0, i18n.FallbackLocalizer)
+			actual, fatal, err := c.err.format(0, i18n.NewFallbackLocalizer())
 			require.NoError(t, err)
 			assert.Equal(t, c.fatal, fatal)
 			assert.Equal(t, c.expect, actual)
