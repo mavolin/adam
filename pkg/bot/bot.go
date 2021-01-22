@@ -32,11 +32,11 @@ type Bot struct {
 	Owners           []discord.UserID
 	EditAge          time.Duration
 
-	AllowBot   bool
-	SendTyping bool
+	AllowBot bool
 
 	autoOpen        bool
 	autoAddHandlers bool
+	manualChecks    bool
 
 	AsyncPluginProviders bool
 
@@ -103,7 +103,7 @@ func New(o Options) (*Bot, error) {
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
 	b.AllowBot = o.AllowBot
-	b.SendTyping = o.SendTyping
+	b.manualChecks = o.ManualChecks
 	b.autoOpen = !o.NoAutoOpen
 	b.autoAddHandlers = o.AutoAddHandlers
 	b.PluginDefaults = plugin.Defaults{
@@ -116,6 +116,12 @@ func New(o Options) (*Bot, error) {
 	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
+
+	if !b.manualChecks {
+		b.MustAddMiddleware(CheckChannelTypes)
+		b.MustAddMiddleware(CheckBotPermissions)
+		b.MustAddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+	}
 
 	return b, nil
 }

@@ -28,6 +28,8 @@ type Context struct {
 	// Localizer is the localizer set to the guilds language.
 	*i18n.Localizer
 
+	// RawArgs are the trimmed raw arguments stripped of prefix and invoke.
+	RawArgs string
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Args Args

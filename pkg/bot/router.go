@@ -2,7 +2,6 @@ package bot
 
 import (
 	"strings"
-	"time"
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -14,7 +13,6 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
-	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
 var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
@@ -60,12 +58,10 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	}
 	ctx.ErrorHandler = newCtxErrorHandler(b.State, ctx, b.ErrorHandler)
 
-	var args string
-
 	if b.AsyncPluginProviders {
-		ctx.InvokedCommand, ctx.Provider, args = b.routeCommandAsync(invoke, base, msg)
+		ctx.InvokedCommand, ctx.Provider, ctx.RawArgs = b.findCommandAsync(invoke, base, msg)
 	} else {
-		ctx.InvokedCommand, ctx.Provider, args = b.routeCommand(invoke, base, msg)
+		ctx.InvokedCommand, ctx.Provider, ctx.RawArgs = b.findCommand(invoke, base, msg)
 	}
 
 	if ctx.InvokedCommand == nil {
@@ -73,82 +69,10 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		return
 	}
 
-	if b.SendTyping && ctx.InvokedCommand.BotPermissions.Has(discord.PermissionSendMessages) {
-		stop := make(chan struct{})
-		defer func() { close(stop) }()
-
-		b.startTyping(ctx, stop)
-	}
-
-	ok, err := ctx.InvokedCommand.ChannelTypes.Check(ctx)
-	if err != nil {
-		ctx.HandleError(err)
-		return
-	} else if !ok {
-		ctx.HandleError(plugin.NewChannelTypeError(ctx.InvokedCommand.ChannelTypes))
-		return
-	}
-
-	err = b.checkPermissions(ctx)
-	if err != nil {
-		ctx.HandleError(err)
-		return
-	}
-
-	var rm func()
-
-	defer func() {
-		if rec := recover(); rec != nil {
-			if rm != nil {
-				rm()
-			}
-
-			b.PanicHandler(rec, b.State, ctx)
-		}
-	}()
-
-	if ctx.InvokedCommand.Throttler != nil {
-		rm, err = ctx.InvokedCommand.Throttler.Check(b.State, ctx)
-		if err != nil {
-			ctx.HandleError(err)
-			return
-		}
-	}
-
-	err = b.invoke(ctx, args)
+	err := b.applyMiddlewares(ctx)
 	if err != nil {
 		b.ErrorHandler(err, b.State, ctx)
-
-		if rm != nil && b.ThrottlerCancelChecker(err) {
-			rm()
-		}
 	}
-}
-
-// startTyping starts a goroutine that sends the typing command in 6 second
-// intervals until stop closed.
-func (b *Bot) startTyping(ctx *plugin.Context, stop chan struct{}) {
-	go func() {
-		t := time.NewTicker(6 * time.Second)
-
-		err := b.State.Typing(ctx.ChannelID)
-		if err != nil {
-			ctx.HandleErrorSilent(err)
-		}
-
-		for {
-			select {
-			case <-stop:
-				t.Stop()
-				return
-			case <-t.C:
-				err := b.State.Typing(ctx.ChannelID)
-				if err != nil {
-					ctx.HandleErrorSilent(err)
-				}
-			}
-		}
-	}()
 }
 
 // hasPrefix checks if the passed invoke starts with one of the passed
@@ -170,7 +94,7 @@ func (b *Bot) hasPrefix(invoke string, prefixes []string) string {
 	return ""
 }
 
-func (b *Bot) routeCommand(
+func (b *Bot) findCommand(
 	invoke string, base *state.Base, msg *discord.Message,
 ) (*plugin.RegisteredCommand, plugin.Provider, string) {
 	ctxprovider := &ctxPluginProvider{
@@ -220,7 +144,7 @@ func (b *Bot) routeCommand(
 	return nil, nil, ""
 }
 
-func (b *Bot) routeCommandAsync(
+func (b *Bot) findCommandAsync(
 	invoke string, base *state.Base, msg *discord.Message,
 ) (*plugin.RegisteredCommand, plugin.Provider, string) {
 	ctxprovider := &ctxPluginProvider{
@@ -257,29 +181,7 @@ func (b *Bot) routeCommandAsync(
 	return nil, nil, ""
 }
 
-func (b *Bot) checkPermissions(ctx *plugin.Context) error {
-	if ctx.InvokedCommand.BotPermissions == 0 {
-		return nil
-	}
-
-	if ctx.GuildID == 0 && !permutil.DMPermissions.Has(ctx.InvokedCommand.BotPermissions) {
-		return plugin.NewChannelTypeError(plugin.DirectMessages & ctx.InvokedCommand.ChannelTypes)
-	} else if ctx.GuildID != 0 {
-		p, err := ctx.SelfPermissions()
-		if err != nil {
-			return err
-		}
-
-		if !p.Has(ctx.InvokedCommand.BotPermissions) {
-			missing := (p & ctx.InvokedCommand.BotPermissions) ^ ctx.InvokedCommand.BotPermissions
-			return plugin.NewBotPermissionsError(missing)
-		}
-	}
-
-	return nil
-}
-
-func (b *Bot) invoke(ctx *plugin.Context, args string) error {
+func (b *Bot) applyMiddlewares(ctx *plugin.Context) error {
 	middlewares := b.Middlewares()
 
 	for _, mod := range ctx.InvokedCommand.SourceParents {
@@ -292,7 +194,11 @@ func (b *Bot) invoke(ctx *plugin.Context, args string) error {
 		middlewares = append(middlewares, m.Middlewares()...)
 	}
 
-	inv := func(_ *state.State, ctx *plugin.Context) error { return b.invokeCommand(ctx, args) }
+	if !b.manualChecks {
+		middlewares = append(middlewares, CheckRestrictions, ParseArgs)
+	}
+
+	inv := func(_ *state.State, ctx *plugin.Context) error { return b.invoke(ctx) }
 
 	for i := len(middlewares) - 1; i >= 0; i-- {
 		inv = middlewares[i](inv)
@@ -301,37 +207,24 @@ func (b *Bot) invoke(ctx *plugin.Context, args string) error {
 	return inv(b.State, ctx)
 }
 
-func (b *Bot) invokeCommand(ctx *plugin.Context, args string) error {
-	err := ctx.InvokedCommand.IsRestricted(b.State, ctx)
-	if err != nil {
-		return err
-	}
-
-	if ctx.InvokedCommand.Args != nil {
-		ctx.Args, ctx.Flags, err = ctx.InvokedCommand.Args.Parse(args, b.State, ctx)
-		if err != nil {
-			return err
-		}
-	}
-
+func (b *Bot) invoke(ctx *plugin.Context) error {
 	reply, err := ctx.InvokedCommand.Invoke(b.State, ctx)
-	rerr := b.handleReply(reply, ctx)
+	rerr := b.sendReply(reply, ctx)
 
 	// special case, prevent this from going through as an *InternalError
 	if discorderr.Is(discorderr.As(err), discorderr.InsufficientPermissions) {
 		err = plugin.DefaultBotPermissionsError
 	}
 
-	if err != nil {
+	if err != nil { // both response and the command itself failed
 		ctx.HandleErrorSilent(rerr)
-
 		return err
 	}
 
 	return rerr
 }
 
-func (b *Bot) handleReply(reply interface{}, ctx *plugin.Context) (err error) {
+func (b *Bot) sendReply(reply interface{}, ctx *plugin.Context) (err error) {
 	if reply == nil {
 		return nil
 	}

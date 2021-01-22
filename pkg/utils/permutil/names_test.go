@@ -22,8 +22,8 @@ func TestPermissionNamesl(t *testing.T) {
 	perms := discord.PermissionBanMembers | discord.PermissionViewChannel
 
 	l := newMockedLocalizer(t).
-		on("permissions.ban_members", "Ban Members").
-		on("permissions.view_channel", "View Channel").
+		on("permission.ban_members", "Ban Members").
+		on("permission.view_channel", "View Channel").
 		build()
 
 	actual := Namesl(perms, l)

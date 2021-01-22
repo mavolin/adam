@@ -69,13 +69,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: false
 	AllowBot bool
-	// SendTyping specifies whether to send a typing event if the command has
-	// the SendMessagesPermission.
-	// The event will be sent in 6 second intervals, until the Invoke method
-	// of the command returns.
-	//
-	// Default: false
-	SendTyping bool
 
 	// NoAutoOpen defines whether to call the Open and Close methods of plugins
 	// automatically when bot.Open() and bot.Close() is called.
@@ -120,6 +113,8 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// If the function returns true, the command's throttler will not count the
 	// invoke.
 	//
+	// Settings this field has no effect, if ManualChecks is set to true.
+	//
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerCancelChecker func(error) bool
 
@@ -144,7 +139,7 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Cabinet is the store.Cabinet used for caching.
 	// Use store.NoopCabinet to deactivate caching.
 	//
-	// Defaulot: defaultstore.New()
+	// Default: defaultstore.New()
 	Cabinet store.Cabinet
 
 	// Shard is the shard of the bot.
@@ -188,6 +183,32 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: DefaultPanicHandler
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
+
+	// ManualChecks specifies whether the checks are performed by the user and
+	// should not be added automatically.
+	//
+	// By default, the following checks are performed in the following order.
+	// Steps enclosed in parentheses are just steps executed in-between checks.
+	//
+	//	(command invoke received and routed) ->
+	//	CheckChannelTypes ->
+	//	CheckBotPermissions ->
+	// 	NewThrottlerChecker(b.ThrottlerCancelChecker) ->
+	//	(run custom middlewares) ->
+	//	CheckRestrictions ->
+	//	ParseArgs ->
+	//	(invoke command)
+	//
+	// If you set this to true, you are responsible for ensuring that all
+	// (desired) checks are performed, by adding them as middlewares.
+	// All default checks can be found in package bot.
+	//
+	// Note that leaving out these checks may lead to unexpected or undesired
+	// behavior, as default and third-party plugins will assume that these
+	// checks are run.
+	// Therefore this is only recommended, to change order or use custom
+	// checks.
+	ManualChecks bool
 }
 
 // SetDefaults fills the defaults for all options, that weren't manually set.
