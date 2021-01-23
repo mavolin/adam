@@ -26,6 +26,11 @@ var (
 	// ReplyMaxTimeout is the default maximum amount of time a ReplyWaiter will
 	// wait, even if a user is still typing.
 	ReplyMaxTimeout = 30 * time.Minute
+
+	// ReplyMiddlewaresKey is the key used to automatically retrieve
+	// middlewares used for ReplyWaiters.
+	// If the ReplyMiddlewaresKey is empty, no middlewares will be added.
+	ReplyMiddlewaresKey = "reply_middlewares"
 )
 
 // typingInterval is the interval in which the client of the user sends the
@@ -72,10 +77,21 @@ type (
 // context.
 // It will wait for a message from the message author in the channel the
 // command was invoked in.
-// Additionally, the ReplyMiddlewares stored in the Context will be added to
-// the waiter.
 // ctx.Author will be assumed as the user allowed to make the reply and
 // ctx.ChannelID will be assumed as the channel the reply will be made in.
+//
+// If the context stores an element with the key ReplyMiddlewaresKey, of type
+// []interface{}, those will be automatically added as middlewares.
+// The respective interfaces may be of the following types:
+//
+//	• func(*state.State, interface{})
+//  • func(*state.State, interface{}) error
+//  • func(*state.State, *state.Base)
+//  • func(*state.State, *state.Base) error
+//  • func(*state.State, *state.MessageCreateEvent)
+//  • func(*state.State, *state.MessageCreateEvent) error
+//
+// All values of other types will be discarded.
 func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 	w = &ReplyWaiter{
 		state:      s,
@@ -85,7 +101,10 @@ func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 		maxTimeout: ReplyMaxTimeout,
 	}
 
-	w.WithMiddlewares(ctx.ReplyMiddlewares...)
+	m := ctx.Get(ReplyMiddlewaresKey)
+	if tm, ok := m.([]interface{}); ok && len(tm) > 0 {
+		w.WithMiddlewares(tm...)
+	}
 
 	return w
 }
@@ -99,7 +118,10 @@ func NewReplyWaiterFromDefault(s *state.State, ctx *plugin.Context) (w *ReplyWai
 	w.userID = ctx.Author.ID
 	w.channelID = ctx.ChannelID
 
-	w.WithMiddlewares(ctx.ReplyMiddlewares...)
+	m := ctx.Get(ReplyMiddlewaresKey)
+	if tm, ok := m.([]interface{}); ok && len(tm) > 0 {
+		w.WithMiddlewares(tm)
+	}
 
 	return
 }

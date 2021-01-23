@@ -44,8 +44,6 @@ type Bot struct {
 
 	ThrottlerCancelChecker func(error) bool
 
-	ReplyMiddlewares []interface{}
-
 	ErrorHandler func(error, *state.State, *plugin.Context)
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
 }
@@ -112,7 +110,6 @@ func New(o Options) (*Bot, error) {
 		Throttler:    o.DefaultThrottler,
 	}
 	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
-	b.ReplyMiddlewares = o.ReplyMiddlewares
 	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler

@@ -118,18 +118,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerCancelChecker func(error) bool
 
-	// ReplyMiddlewares contains the middlewares that should be used when
-	// awaiting a reply.
-	//
-	// The following types are permitted:
-	//  • func(*state.State, interface{})
-	//  • func(*state.State, interface{}) error
-	//  • func(*state.State, *state.Base)
-	//  • func(*state.State, *state.Base) error
-	//  • func(*state.State, *state.MessageCreateEvent)
-	//  • func(*state.State, *state.MessageCreateEvent) error
-	ReplyMiddlewares []interface{}
-
 	// AsyncPluginProviders specifies whether the plugins providers should be
 	// fetched asynchronously or one by one.
 	//
@@ -227,19 +215,6 @@ func (o *Options) SetDefaults() (err error) {
 
 	if o.ThrottlerCancelChecker == nil {
 		o.ThrottlerCancelChecker = DefaultThrottlerErrorCheck
-	}
-
-	for i, m := range o.ReplyMiddlewares {
-		switch m.(type) {
-		case func(*state.State, interface{}):
-		case func(*state.State, interface{}) error:
-		case func(*state.State, *state.Base):
-		case func(*state.State, *state.Base) error:
-		case func(*state.State, *state.MessageCreateEvent):
-		case func(*state.State, *state.MessageCreateEvent) error:
-		default:
-			return errors.NewWithStackf("bot: Options.ReplyMiddlewares[%d] is of unsupported type %T", i, m)
-		}
 	}
 
 	o.setCabinetDefaults()

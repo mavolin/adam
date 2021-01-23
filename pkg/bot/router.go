@@ -41,14 +41,13 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	}
 
 	ctx := &plugin.Context{
-		Message:          *msg,
-		Member:           member,
-		Base:             base,
-		Localizer:        localizer,
-		Prefixes:         prefixes,
-		BotOwnerIDs:      b.Owners,
-		ReplyMiddlewares: b.ReplyMiddlewares,
-		Replier:          replier.WrapState(b.State),
+		Message:     *msg,
+		Member:      member,
+		Base:        base,
+		Localizer:   localizer,
+		Prefixes:    prefixes,
+		BotOwnerIDs: b.Owners,
+		Replier:     replier.WrapState(b.State),
 		DiscordDataProvider: &discordDataProvider{
 			s:         b.State,
 			guildID:   msg.GuildID,
