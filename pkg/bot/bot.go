@@ -18,8 +18,8 @@ import (
 type Bot struct {
 	State *state.State
 
-	*MiddlewareManager
-	postMiddlewares *MiddlewareManager
+	MiddlewareManager
+	postMiddlewares MiddlewareManager
 
 	commands        []plugin.Command
 	modules         []plugin.Module
@@ -97,7 +97,6 @@ func New(o Options) (*Bot, error) {
 	b.State = state.NewFromSession(session.NewWithGateway(gw), o.Cabinet)
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
-	b.MiddlewareManager = new(MiddlewareManager)
 
 	b.SettingsProvider = o.SettingsProvider
 	b.Owners = o.Owners
