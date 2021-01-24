@@ -390,17 +390,9 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 	})
 
 	if !w.noAutoReact {
-		unavailableMessages := make(map[discord.MessageID]struct{})
-
 		for _, r := range w.cancelReactions {
-			if _, ok := unavailableMessages[r.messageID]; ok {
-				continue
-			}
-
 			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
-				if discorderr.Is(discorderr.As(err), discorderr.UnknownMessage) {
-					unavailableMessages[r.messageID] = struct{}{}
-				} else if !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
+				if !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 					w.ctx.HandleErrorSilent(err)
 				}
 			}
