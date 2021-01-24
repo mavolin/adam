@@ -41,15 +41,15 @@ type MiddlewareManager struct {
 // ErrMiddleware.
 //
 // Valid middleware types are:
-//		• func(*state.State, interface{})
-//		• func(*state.State, interface{}) error
-//		• func(*state.State, *state.Base)
-//		• func(*state.State, *state.Base) error
-//		• func(*state.State, *state.MessageCreateEvent)
-//		• func(*state.State, *state.MessageCreateEvent) error
-//		• func(*state.State, *state.MessageUpdateEvent)
-//		• func(*state.State, *state.MessageUpdateEvent) error
-//		• func(next CommandFunc) CommandFunc
+//	• func(*state.State, interface{})
+//	• func(*state.State, interface{}) error
+//	• func(*state.State, *state.Base)
+//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *state.MessageCreateEvent)
+//	• func(*state.State, *state.MessageCreateEvent) error
+//	• func(*state.State, *state.MessageUpdateEvent)
+//	• func(*state.State, *state.MessageUpdateEvent) error
+//	• func(next CommandFunc) CommandFunc
 func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen,gocognit
 	var mf MiddlewareFunc
 
@@ -165,7 +165,7 @@ func (m *MiddlewareManager) MustAddMiddleware(f interface{}) {
 	}
 }
 
-// Middlewares returns a copy of the middlewares of the manager.
-func (m *MiddlewareManager) Middlewares() (cp []MiddlewareFunc) {
+// Middlewares returns the middlewares of the MiddlewareManager.
+func (m *MiddlewareManager) Middlewares() []MiddlewareFunc {
 	return m.middlewares
 }

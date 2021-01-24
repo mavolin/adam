@@ -68,6 +68,12 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		return
 	}
 
+	defer func() {
+		if rec := recover(); rec != nil {
+			b.PanicHandler(rec, b.State, ctx)
+		}
+	}()
+
 	err := b.applyMiddlewares(ctx)
 	if err != nil {
 		b.ErrorHandler(err, b.State, ctx)
@@ -193,9 +199,7 @@ func (b *Bot) applyMiddlewares(ctx *plugin.Context) error {
 		middlewares = append(middlewares, m.Middlewares()...)
 	}
 
-	if !b.manualChecks {
-		middlewares = append(middlewares, CheckRestrictions, ParseArgs)
-	}
+	middlewares = append(middlewares, b.postMiddlewares.Middlewares()...)
 
 	inv := func(_ *state.State, ctx *plugin.Context) error { return b.invoke(ctx) }
 

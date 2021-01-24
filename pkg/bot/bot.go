@@ -17,7 +17,9 @@ import (
 // Bot is the bot executing all commands.
 type Bot struct {
 	State *state.State
+
 	*MiddlewareManager
+	postMiddlewares *MiddlewareManager
 
 	commands        []plugin.Command
 	modules         []plugin.Module
@@ -118,6 +120,9 @@ func New(o Options) (*Bot, error) {
 		b.MustAddMiddleware(CheckChannelTypes)
 		b.MustAddMiddleware(CheckBotPermissions)
 		b.MustAddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+
+		b.MustAddPostMiddleware(CheckRestrictions)
+		b.MustAddPostMiddleware(ParseArgs)
 	}
 
 	return b, nil
@@ -323,6 +328,34 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 	for _, mod := range mod.Modules() {
 		b.autoAddModuleHandlers(mod)
 	}
+}
+
+// AddPostMiddleware adds a middleware to the Bot, that is invoked after all
+// command and module middlewares were called.
+// The order of invocation of post middlewares is the same as the order they
+// were added in.
+//
+// If the middleware's type is invalid, AddMiddleware will return
+// ErrMiddleware.
+//
+// Valid middleware types are:
+//	• func(*state.State, interface{})
+//	• func(*state.State, interface{}) error
+//	• func(*state.State, *state.Base)
+//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *state.MessageCreateEvent)
+//	• func(*state.State, *state.MessageCreateEvent) error
+//	• func(*state.State, *state.MessageUpdateEvent)
+//	• func(*state.State, *state.MessageUpdateEvent) error
+//	• func(next CommandFunc) CommandFunc
+func (b *Bot) AddPostMiddleware(f interface{}) error {
+	return b.postMiddlewares.AddMiddleware(f)
+}
+
+// MustAddPostMiddleware is the same as AddPostMiddleware, but panics if
+// AddPostMiddleware returns an error.
+func (b *Bot) MustAddPostMiddleware(f interface{}) {
+	b.postMiddlewares.MustAddMiddleware(f)
 }
 
 // AddPluginProvider adds the passed PluginProvider under the passed name.
