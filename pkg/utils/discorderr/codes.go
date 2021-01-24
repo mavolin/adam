@@ -2,6 +2,7 @@ package discorderr
 
 import "github.com/diamondburned/arikawa/v2/utils/httputil"
 
+// https://discord.com/developers/docs/topics/opcodes-and-status-codes#json
 const (
 	// GeneralError is a general error (such as a malformed request body,
 	// amongst other things).

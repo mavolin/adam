@@ -318,7 +318,7 @@ func (c category) sendChooser( //nolint:dupl
 
 	defer func() {
 		err := s.DeleteMessage(msg.ChannelID, msg.ID)
-		if err != nil && !discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
+		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 			ctx.HandleErrorSilent(err)
 		}
 	}()
@@ -592,7 +592,7 @@ func (c voiceChannel) sendChooser( //nolint:dupl
 
 	defer func() {
 		err := s.DeleteMessage(msg.ChannelID, msg.ID)
-		if err != nil && !discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
+		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 			ctx.HandleErrorSilent(err)
 		}
 	}()
