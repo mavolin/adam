@@ -318,27 +318,15 @@ func (w *ReplyWaiter) AwaitWithContext(
 
 	result := make(chan interface{})
 
-	msgCleanup, err := w.handleMessages(ctx, result)
-	if err != nil {
-		return nil, err
-	}
-
+	msgCleanup := w.handleMessages(ctx, result)
 	defer msgCleanup()
 
 	if len(w.cancelReactions) > 0 {
-		reactCleanup, err := w.handleCancelReactions(ctx, result)
-		if err != nil {
-			return nil, err
-		}
-
+		reactCleanup := w.handleCancelReactions(ctx, result)
 		defer reactCleanup()
 	}
 
-	timeoutCleanup, err := w.watchTimeout(ctx, initialTimeout, typingTimeout, result)
-	if err != nil {
-		return nil, err
-	}
-
+	timeoutCleanup := w.watchTimeout(ctx, initialTimeout, typingTimeout, result)
 	defer timeoutCleanup()
 
 	select {
@@ -356,8 +344,8 @@ func (w *ReplyWaiter) AwaitWithContext(
 	}
 }
 
-func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interface{}) (func(), error) {
-	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageCreateEvent) {
+func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interface{}) func() {
+	rm := w.state.MustAddHandler(func(s *state.State, e *state.MessageCreateEvent) {
 		if e.ChannelID != w.channelID || e.Author.ID != w.userID { // not the message we are waiting for
 			return
 		}
@@ -384,11 +372,11 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 		sendResult(ctx, result, &e.Message)
 	})
 
-	return rm, errors.WithStack(err)
+	return rm
 }
 
-func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
-	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
+func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) func() {
+	rm := w.state.MustAddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
 		if e.UserID != w.userID {
 			return
 		}
@@ -400,14 +388,21 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 			}
 		}
 	})
-	if err != nil { // this should never happen
-		return nil, errors.WithStack(err)
-	}
 
 	if !w.noAutoReact {
+		unavailableMessages := make(map[discord.MessageID]struct{})
+
 		for _, r := range w.cancelReactions {
+			if _, ok := unavailableMessages[r.messageID]; ok {
+				continue
+			}
+
 			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
-				w.ctx.HandleErrorSilent(err)
+				if discorderr.Is(discorderr.As(err), discorderr.UnknownMessage) {
+					unavailableMessages[r.messageID] = struct{}{}
+				} else if !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
+					w.ctx.HandleErrorSilent(err)
+				}
 			}
 		}
 	}
@@ -421,7 +416,7 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 					err := w.state.DeleteReactions(w.channelID, r.messageID, r.reaction)
 					if err != nil {
 						// someone else deleted the resource we are accessing
-						if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
+						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 							return
 						}
 
@@ -430,17 +425,17 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 				}
 			}()
 		}
-	}, nil
+	}
 }
 
 func (w *ReplyWaiter) watchTimeout(
 	ctx context.Context, initialTimeout, typingTimeout time.Duration, result chan<- interface{},
-) (rm func(), err error) {
+) (rm func()) {
 	maxTimer := time.NewTimer(w.maxTimeout)
 	t := time.NewTimer(initialTimeout)
 
 	if typingTimeout > 0 {
-		rm, err = w.state.AddHandler(func(s *state.State, e *state.TypingStartEvent) {
+		rm = w.state.MustAddHandler(func(s *state.State, e *state.TypingStartEvent) {
 			if e.ChannelID != w.channelID || e.UserID != w.userID {
 				return
 			}
@@ -451,9 +446,6 @@ func (w *ReplyWaiter) watchTimeout(
 				t.Reset(typingTimeout + typingInterval)
 			}
 		})
-		if err != nil {
-			return nil, err
-		}
 	} else {
 		rm = func() {}
 	}
@@ -480,5 +472,5 @@ func (w *ReplyWaiter) watchTimeout(
 		}
 	}()
 
-	return rm, err
+	return rm
 }

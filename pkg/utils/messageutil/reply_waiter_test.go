@@ -175,8 +175,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 				result = make(chan interface{})
 			}
 
-			rm, err := c.waiter.handleMessages(context.TODO(), result)
-			assert.NoError(t, err)
+			rm := c.waiter.handleMessages(context.TODO(), result)
 
 			s.Call(c.e)
 
@@ -294,9 +293,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 				result = make(chan interface{})
 			}
 
-			_, err := c.waiter.handleCancelReactions(context.TODO(), result)
-			assert.NoError(t, err)
-
+			c.waiter.handleCancelReactions(context.TODO(), result)
 			s.Call(c.e)
 
 			if c.expect != nil {

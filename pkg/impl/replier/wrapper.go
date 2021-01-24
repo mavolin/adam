@@ -7,6 +7,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 )
 
 type wrappedReplier struct {
@@ -32,7 +33,13 @@ func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
-	return r.s.SendMessageComplex(ctx.ChannelID, data)
+	msg, err := r.s.SendMessageComplex(ctx.ChannelID, data)
+	if discorderr.Is(discorderr.As(err), discorderr.UnknownChannel) {
+		// user deleted channel
+		return nil, errors.Abort
+	}
+
+	return msg, errors.WithStack(err)
 }
 
 func (r *wrappedReplier) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
@@ -50,7 +57,8 @@ func (r *wrappedReplier) ReplyDM(ctx *plugin.Context, data api.SendMessageData) 
 		return nil, err
 	}
 
-	return r.s.SendMessageComplex(r.dmID, data)
+	msg, err := r.s.SendMessageComplex(r.dmID, data)
+	return msg, errors.WithStack(err)
 }
 
 func (r *wrappedReplier) Edit(
@@ -65,7 +73,13 @@ func (r *wrappedReplier) Edit(
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
-	return r.s.EditMessageComplex(ctx.ChannelID, messageID, data)
+	msg, err := r.s.EditMessageComplex(ctx.ChannelID, messageID, data)
+	if discorderr.Is(discorderr.As(err), discorderr.UnknownChannel) {
+		// user deleted channel
+		return nil, errors.Abort
+	}
+
+	return msg, errors.WithStack(err)
 }
 
 func (r *wrappedReplier) EditDM(
@@ -85,7 +99,8 @@ func (r *wrappedReplier) EditDM(
 		return nil, err
 	}
 
-	return r.s.EditMessageComplex(r.dmID, messageID, data)
+	msg, err := r.s.EditMessageComplex(r.dmID, messageID, data)
+	return msg, errors.WithStack(err)
 }
 
 // lazyDM lazily gets the id of the direct message channel with the invoking
