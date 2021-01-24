@@ -220,7 +220,7 @@ func (b *Bot) invoke(ctx *plugin.Context) error {
 	}
 
 	if err != nil { // both response and the command itself failed
-		ctx.HandleErrorSilent(rerr)
+		ctx.HandleErrorSilently(rerr)
 		return err
 	}
 

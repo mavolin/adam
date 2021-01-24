@@ -530,6 +530,6 @@ type (
 		HandleError(err error)
 		// HandleErrorSilent wraps the error using errors.Silent and hands it
 		// to the bot's error handler.
-		HandleErrorSilent(err error)
+		HandleErrorSilently(err error)
 	}
 )

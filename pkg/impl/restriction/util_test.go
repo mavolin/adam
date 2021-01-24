@@ -131,14 +131,17 @@ func Test_assertChannelTypes(t *testing.T) {
 	t.Run("fail - no remaining", func(t *testing.T) {
 		noRemainingError := errors.New("no remaining error")
 
+		errHandler := mock.NewErrorHandler(t).
+			ExpectSilentError(noRemainingError)
+		defer errHandler.Eval()
+
 		ctx := &plugin.Context{
 			Message:   discord.Message{GuildID: 123},
 			Localizer: i18n.NewFallbackLocalizer(),
 			InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 				CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 			}),
-			ErrorHandler: mock.NewErrorHandler().
-				ExpectSilentError(noRemainingError),
+			ErrorHandler: errHandler,
 		}
 
 		actual := assertChannelTypes(ctx, plugin.DirectMessages, noRemainingError)

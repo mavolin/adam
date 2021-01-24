@@ -359,7 +359,7 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 		for _, kt := range w.cancelKeywords {
 			k, err := kt.Get(w.ctx.Localizer)
 			if err != nil {
-				w.ctx.HandleErrorSilent(err)
+				w.ctx.HandleErrorSilently(err)
 				continue
 			}
 
@@ -393,7 +393,7 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 		for _, r := range w.cancelReactions {
 			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
 				if !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
-					w.ctx.HandleErrorSilent(err)
+					w.ctx.HandleErrorSilently(err)
 				}
 			}
 		}
@@ -412,7 +412,7 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 							return
 						}
 
-						w.ctx.HandleErrorSilent(err)
+						w.ctx.HandleErrorSilently(err)
 					}
 				}
 			}()

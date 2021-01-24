@@ -224,7 +224,7 @@ func (h ctxErrorHandler) HandleError(err error) {
 	}
 }
 
-func (h ctxErrorHandler) HandleErrorSilent(err error) {
+func (h ctxErrorHandler) HandleErrorSilently(err error) {
 	err = errors.Silent(err)
 	if err != nil {
 		h(err)

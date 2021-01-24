@@ -244,7 +244,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 					return nil, errors.Abort
 				}
 
-				w.ctx.HandleErrorSilent(err)
+				w.ctx.HandleErrorSilently(err)
 			}
 		}
 
@@ -257,7 +257,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 					return nil, errors.Abort
 				}
 
-				w.ctx.HandleErrorSilent(err)
+				w.ctx.HandleErrorSilently(err)
 			}
 		}
 	}
@@ -276,7 +276,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 							return
 						}
 
-						w.ctx.HandleErrorSilent(err)
+						w.ctx.HandleErrorSilently(err)
 					}
 				}
 
@@ -288,7 +288,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 							return
 						}
 
-						w.ctx.HandleErrorSilent(err)
+						w.ctx.HandleErrorSilently(err)
 					}
 				}
 			}()

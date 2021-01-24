@@ -26,7 +26,7 @@ func SendTyping(next CommandFunc) CommandFunc {
 
 			err := s.Typing(ctx.ChannelID)
 			if err != nil {
-				ctx.HandleErrorSilent(err)
+				ctx.HandleErrorSilently(err)
 			}
 
 			for {
@@ -37,7 +37,7 @@ func SendTyping(next CommandFunc) CommandFunc {
 				case <-t.C:
 					err := s.Typing(ctx.ChannelID)
 					if err != nil {
-						ctx.HandleErrorSilent(err)
+						ctx.HandleErrorSilently(err)
 					}
 				}
 			}
