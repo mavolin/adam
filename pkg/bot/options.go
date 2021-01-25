@@ -333,7 +333,7 @@ func DefaultGatewayErrorHandler(err error) {
 	// ignore error used on reconnect
 
 	var cerr *websocket.CloseError
-	if errors.As(err, cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+	if errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 		return
 	} else if errors.Is(err, syscall.ECONNRESET) {
 		return
