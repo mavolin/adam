@@ -149,10 +149,10 @@ func (p *shellwordParser) nextContent() (string, error) { //nolint:gocognit
 	defer p.builder.Reset()
 
 	switch p.peek(1) {
-	case '\'':
+	case '\'', '‘', '’', '‚', '‛':
 		gc = singleQuote
 		p.skip(1)
-	case '"':
+	case '"', '“', '”', '„', '‟':
 		gc = doubleQuote
 		p.skip(1)
 	case '`':
@@ -173,7 +173,7 @@ func (p *shellwordParser) nextContent() (string, error) { //nolint:gocognit
 	for char := p.next(); char != 0; char = p.next() {
 		switch {
 		case upEscape:
-			if char != '\\' && char != '"' {
+			if char != '\\' && strings.ContainsRune(`“”„‟`, char) {
 				p.builder.WriteRune('"')
 			}
 
