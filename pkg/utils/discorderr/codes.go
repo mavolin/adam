@@ -38,8 +38,8 @@ const (
 	// OnlyBots signals that only bots can use the endpoint.
 	OnlyBots httputil.ErrorCode = 20002
 
-	// AnnouncementRatelimit signals that the message cannot be edited due to
-	// announcement rate limits.
+	// AnnouncementEditRateLimit signals that the message cannot be edited due
+	// to announcement rate limits.
 	AnnouncementEditRateLimit httputil.ErrorCode = 20022
 	// ChannelWriteRateLimit signals that the channel you are writing has hit
 	// the write rate limit.

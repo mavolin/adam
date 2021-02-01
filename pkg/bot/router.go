@@ -263,13 +263,22 @@ func (b *Bot) sendReply(reply interface{}, ctx *plugin.Context) (err error) {
 		}
 	case discord.Embed:
 		_, err = ctx.ReplyEmbed(reply)
+		if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
+			err = nil
+		}
 	case *discord.Embed:
 		if reply != nil {
 			_, err = ctx.ReplyEmbed(*reply)
+			if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
+				err = nil
+			}
 		}
 	case *embedutil.Builder:
 		if reply != nil {
 			_, err = ctx.ReplyEmbedBuilder(reply)
+			if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
+				err = nil
+			}
 		}
 	case api.SendMessageData:
 		_, err = ctx.ReplyMessage(reply)

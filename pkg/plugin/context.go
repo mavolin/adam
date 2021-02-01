@@ -5,11 +5,13 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/httputil"
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
@@ -127,7 +129,15 @@ func (ctx *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, e
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (ctx *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	return ctx.Replier.Reply(ctx, data)
+	if len(data.Content) > 0 || (data.Embed != nil && !embedEmpty(*data.Embed)) ||
+		len(data.Files) > 0 {
+		return ctx.Replier.Reply(ctx, data)
+	}
+
+	return nil, &httputil.HTTPError{
+		Code:    discorderr.CannotSendEmptyMessage,
+		Message: "cannot send empty message",
+	}
 }
 
 // ReplyDM replies with the passed message in in a direct message to the
@@ -181,8 +191,15 @@ func (ctx *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message,
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
 // the invoking user.
 func (ctx *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message, err error) {
-	msg, err = ctx.Replier.ReplyDM(ctx, data)
-	return msg, errorutil.WithStack(err)
+	if len(data.Content) > 0 || (data.Embed != nil && !embedEmpty(*data.Embed)) ||
+		len(data.Files) > 0 {
+		return ctx.Replier.ReplyDM(ctx, data)
+	}
+
+	return nil, &httputil.HTTPError{
+		Code:    discorderr.CannotSendEmptyMessage,
+		Message: "cannot send empty message",
+	}
 }
 
 // Edit edits the message with the passed id in the invoking channel.
