@@ -58,7 +58,7 @@ func CheckChannelTypes(lvl HiddenLevel) HideFunc {
 	}
 }
 
-// CheckRestriction returns a HideFunc that returns the passed HiddenLevel, if
+// CheckRestrictions returns a HideFunc that returns the passed HiddenLevel, if
 // the checked command is restricted.
 // If plugin.RegisteredCommand.IsRestricted returns an error, for which
 // errors.As(err, **plugin.RestrictionError) fails, the error will be
