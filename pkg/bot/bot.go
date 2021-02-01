@@ -56,7 +56,7 @@ type pluginProvider struct {
 	defaults plugin.Defaults
 }
 
-// Plugin provider is the function used by plugin providers.
+// PluginProvider is the function used by plugin providers.
 // PluginProviders will be called in the order they were added to a Bot, until
 // one of the returns a matching plugin.
 //
@@ -227,9 +227,11 @@ func (b *Bot) callOpen(i interface{}) error {
 	return nil
 }
 
-// Close closes the websocket connection to Discord's gateway.
+// Close closes the websocket connection to Discord's gateway gracefully.
+// Afterwards, if AutoOpen is enabled, it calls Close on all commands.
+// Close may take in an optional *Bot argument, and may return an error.
 func (b *Bot) Close() error {
-	if err := b.State.Close(); err != nil {
+	if err := b.State.CloseGracefully(); err != nil {
 		return err
 	}
 
