@@ -16,6 +16,8 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 
 	b := newCappedBuilder(embedutil.MaxChars-embedutil.CountChars(e), 1024)
 
+	maxMods := 25 - len(e.Fields)
+
 	if ctx.GuildID > 0 && !h.NoPrefix {
 		prefixes, err := h.allPrefixes(b, ctx)
 		if err != nil {
@@ -23,28 +25,29 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 		}
 
 		e.Fields = append([]discord.EmbedField{prefixes}, e.Fields...)
+		maxMods--
 	}
 
-	if f := h.allCommands(b, s, ctx); len(f.Name) > 0 {
+	if f := h.commands(b, s, ctx, ctx.Commands()); len(f.Name) > 0 {
 		e.Fields = append(e.Fields, f)
+		maxMods--
 	}
 
-	e.Fields = append(e.Fields, h.allModules(b, s, ctx)...)
-
+	e.Fields = append(e.Fields, h.modules(b, s, ctx, ctx.Modules(), maxMods)...)
 	return e, nil
 }
 
 func newAllEmbed(ctx *plugin.Context) (discord.Embed, error) {
-	eb := BaseEmbed.Clone().
+	e := BaseEmbed.Clone().
 		WithSimpleTitlel(allTitle)
 
 	if ctx.GuildID == 0 {
-		eb.WithDescriptionl(allDescriptionDM)
+		e.WithDescriptionl(allDescriptionDM)
 	} else {
-		eb.WithDescriptionl(allDescriptionGuild)
+		e.WithDescriptionl(allDescriptionGuild)
 	}
 
-	return eb.Build(ctx.Localizer)
+	return e.Build(ctx.Localizer)
 }
 
 func (h *Help) allPrefixes(b *cappedBuilder, ctx *plugin.Context) (discord.EmbedField, error) {
@@ -75,64 +78,4 @@ func (h *Help) allPrefixes(b *cappedBuilder, ctx *plugin.Context) (discord.Embed
 	f.Value = b.string()
 
 	return f, nil
-}
-
-func (h *Help) allCommands(b *cappedBuilder, s *state.State, ctx *plugin.Context) (f discord.EmbedField) {
-	b.reset(1024)
-
-	h.formatCommands(b, ctx.Commands(), s, ctx, Show)
-	if b.b.Len() == 0 {
-		return
-	}
-
-	f.Name = ctx.MustLocalize(commandsFieldName)
-	b.use(len(f.Name))
-
-	f.Value = b.string()
-	return
-}
-
-func (h *Help) allModules(b *cappedBuilder, s *state.State, ctx *plugin.Context) []discord.EmbedField {
-	max := 25
-	if ctx.GuildID != 0 {
-		max--
-	}
-
-	if len(ctx.Commands()) > 0 {
-		max--
-	}
-
-	mods := ctx.Modules()
-	if len(mods) > max {
-		mods = mods[:max]
-	}
-
-	fields := make([]discord.EmbedField, 0, len(mods))
-
-	for _, mod := range mods {
-		b.reset(1024)
-
-		var f discord.EmbedField
-
-		f.Name = ctx.MustLocalize(allModuleFieldName.
-			WithPlaceholders(allModuleFieldNamePlaceholders{Module: mod.Name}))
-		b.use(len(f.Name))
-
-		if b.rem() < 10+len(f.Name) {
-			return fields
-		}
-
-		h.formatModule(b, mod, s, ctx, Show)
-
-		if b.b.Len() == 0 { // hidden, skip
-			b.use(-len(f.Name))
-			continue
-		}
-
-		f.Value = b.string()
-
-		fields = append(fields, f)
-	}
-
-	return fields
 }

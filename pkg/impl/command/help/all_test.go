@@ -17,6 +17,7 @@ func TestHelp_all(t *testing.T) {
 		ctx := &plugin.Context{
 			Message:   discord.Message{GuildID: 123},
 			Localizer: i18n.NewFallbackLocalizer(),
+			Args:      plugin.Args{nil},
 			Prefixes:  []string{"my_cool_prefix"},
 			Provider: mock.PluginProvider{
 				PluginRepositoriesReturn: []plugin.Repository{
@@ -118,17 +119,17 @@ func TestHelp_all(t *testing.T) {
 			WithDescriptionl(allDescriptionGuild).
 			WithField(ctx.MustLocalize(allPrefixesFieldName), "`@Testy`, `my_cool_prefix`").
 			WithField(ctx.MustLocalize(commandsFieldName), "`def` - def desc\n`ghi`").
-			WithField(ctx.MustLocalize(allModuleFieldName.
-				WithPlaceholders(allModuleFieldNamePlaceholders{"jkl"})),
+			WithField(ctx.MustLocalize(moduleTitle.
+				WithPlaceholders(moduleTitlePlaceholders{"jkl"})),
 				"`jkl def` - def desc\n`jkl ghi abc` - abc desc").
-			WithField(ctx.MustLocalize(allModuleFieldName.
-				WithPlaceholders(allModuleFieldNamePlaceholders{"mno"})),
+			WithField(ctx.MustLocalize(moduleTitle.
+				WithPlaceholders(moduleTitlePlaceholders{"mno"})),
 				"`mno abc` - abc desc\n`mno def` - def desc").
 			MustBuild(ctx.Localizer)
 
 		actual, err := New(Options{
 			HideFuncs: []HideFunc{CheckHidden(HideList)},
-		}).all(nil, ctx)
+		}).Invoke(nil, ctx)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
@@ -137,6 +138,7 @@ func TestHelp_all(t *testing.T) {
 	t.Run("dm", func(t *testing.T) {
 		ctx := &plugin.Context{
 			Localizer: i18n.NewFallbackLocalizer(),
+			Args:      plugin.Args{nil},
 			Provider: mock.PluginProvider{
 				PluginRepositoriesReturn: []plugin.Repository{
 					{
@@ -160,7 +162,7 @@ func TestHelp_all(t *testing.T) {
 			WithField(ctx.MustLocalize(commandsFieldName), "`abc`\n`def`").
 			MustBuild(ctx.Localizer)
 
-		actual, err := New(Options{HideFuncs: []HideFunc{}}).all(nil, ctx)
+		actual, err := New(Options{HideFuncs: []HideFunc{}}).Invoke(nil, ctx)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)

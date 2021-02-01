@@ -4,6 +4,8 @@
 package help
 
 import (
+	"fmt"
+
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
@@ -102,5 +104,31 @@ func (h *Help) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) 
 		return h.all(s, ctx)
 	}
 
-	return nil, nil
+	switch p := ctx.Args[0].(type) {
+	case *plugin.RegisteredCommand:
+		// do sth
+		return nil, nil
+	case *plugin.RegisteredModule:
+		return h.module(s, ctx, p)
+	default:
+		panic(fmt.Sprintf("got illegal argument type %T from arg.Plugin, but expected only (interface{})(nil), "+
+			"*plugin.RegisteredCommand, or *plugin.RegisteredModule", ctx.Args[0]))
+	}
+}
+
+func (h *Help) commands(
+	b *cappedBuilder, s *state.State, ctx *plugin.Context, cmds []*plugin.RegisteredCommand,
+) (f discord.EmbedField) {
+	b.reset(1024)
+
+	h.formatCommands(b, cmds, s, ctx, Show)
+	if b.b.Len() == 0 {
+		return
+	}
+
+	f.Name = ctx.MustLocalize(commandsFieldName)
+	b.use(len(f.Name))
+
+	f.Value = b.string()
+	return
 }
