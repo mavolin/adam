@@ -35,12 +35,32 @@ var (
 )
 
 // =============================================================================
-// General
+// Text
 // =====================================================================================
 
 // ================================ Common ================================
 
-var commandsFieldName = i18n.NewFallbackConfig("plugin.help.common.commands", "Commands")
+var (
+	commandsFieldName = i18n.NewFallbackConfig("plugin.help.common.commands", "Commands")
+
+	moduleTitle = i18n.NewFallbackConfig("plugin.help.common.title", "`{{.module}}`-Module")
+
+	// ===== below two are copy of variables in the arg package =====
+
+	pluginNotFoundError = i18n.NewFallbackConfig(
+		"arg.types.plugin.error.not_found",
+		"I don't know any commands or modules with the name `{{.invoke}}`. Make sure you spelled it right.")
+
+	pluginNotFoundErrorProvidersUnavailable = i18n.NewFallbackConfig(
+		"arg.types.plugin.error.not_found.providers_unavailable",
+		"I couldn't find any commands or modules with the name `{{.invoke}}`, "+
+			"however, I'm having trouble accessing some of my commands, so this may be why. "+
+			"Try again later or check your spelling.")
+)
+
+type moduleTitlePlaceholders struct {
+	Module string
+}
 
 // ================================ All ================================
 
@@ -55,10 +75,4 @@ var (
 		"Below is a list of all commands on this server.")
 
 	allPrefixesFieldName = i18n.NewFallbackConfig("plugin.help.all.embed.field.prefix.name", "Prefixes")
-
-	allModuleFieldName = i18n.NewFallbackConfig("plugin.help.all.embed.field.module.name", "`{{.module}}`-Module")
 )
-
-type allModuleFieldNamePlaceholders struct {
-	Module string
-}

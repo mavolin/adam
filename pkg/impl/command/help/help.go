@@ -132,3 +132,37 @@ func (h *Help) commands(
 	f.Value = b.string()
 	return
 }
+
+func (h *Help) modules(
+	b *cappedBuilder, s *state.State, ctx *plugin.Context, mods []*plugin.RegisteredModule, max int,
+) []discord.EmbedField {
+	fields := make([]discord.EmbedField, 0, max)
+
+	for i := 0; i < len(mods) && i < max; i++ {
+		mod := mods[i]
+		b.reset(1024)
+
+		var f discord.EmbedField
+
+		f.Name = ctx.MustLocalize(moduleTitle.
+			WithPlaceholders(moduleTitlePlaceholders{Module: mod.Identifier.AsInvoke()}))
+		b.use(len(f.Name))
+
+		if b.rem() < 10+len(f.Name) {
+			return fields
+		}
+
+		h.formatModule(b, mod, s, ctx, Show)
+
+		if b.b.Len() == 0 { // hidden, skip
+			b.use(-len(f.Name))
+			continue
+		}
+
+		f.Value = b.string()
+
+		fields = append(fields, f)
+	}
+
+	return fields
+}
