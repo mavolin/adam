@@ -5,6 +5,7 @@ package help
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
@@ -66,6 +67,11 @@ type Options struct {
 	// NoPrefix toggles whether in a guild the all embed should list the
 	// available prefixes.
 	NoPrefix bool
+
+	// ArgFormatter is the plugin.ArgFormatter used to generate command usages.
+	//
+	// Defaults to DefaultArgFormatter
+	ArgFormatter plugin.ArgFormatter
 }
 
 // New creates a new help command using the passed Options.
@@ -75,6 +81,10 @@ func New(o Options) *Help {
 			CheckHidden(HideList), CheckChannelTypes(HideList),
 			CheckRestrictions(HideList),
 		}
+	}
+
+	if o.ArgFormatter == nil {
+		o.ArgFormatter = DefaultArgFormatter
 	}
 
 	return &Help{
@@ -109,8 +119,7 @@ func (h *Help) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) 
 	case *plugin.RegisteredModule:
 		return h.module(s, ctx, p)
 	case *plugin.RegisteredCommand:
-		// do sth
-		return nil, nil
+		return h.command(s, ctx, p)
 	default:
 		panic(fmt.Sprintf("got illegal argument type %T from arg.Plugin, but expected only (interface{})(nil), "+
 			"*plugin.RegisteredCommand, or *plugin.RegisteredModule", ctx.Args[0]))
@@ -187,4 +196,56 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.Registere
 	}
 
 	return e, nil
+}
+
+func (h *Help) command(s *state.State, ctx *plugin.Context, cmd *plugin.RegisteredCommand) (discord.Embed, error) {
+	if len(filterCommands([]*plugin.RegisteredCommand{cmd}, s, ctx, Show, h.Options.HideFuncs...)) == 0 {
+		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError)
+	}
+
+	eb := BaseEmbed.Clone().
+		WithSimpleTitlel(commandTitle.
+			WithPlaceholders(commandTitlePlaceholders{
+				Command: cmd.Name,
+			}))
+
+	if desc := cmd.LongDescription(ctx.Localizer); len(desc) > 0 {
+		eb.WithDescription(desc)
+	}
+
+	e, err := eb.Build(ctx.Localizer)
+	if err != nil {
+		return discord.Embed{}, err
+	}
+
+	var b strings.Builder
+	b.Grow(1024)
+
+	if aliases := h.genAliases(&b, cmd, ctx.Localizer); aliases != nil {
+		e.Fields = append(e.Fields, *aliases)
+	}
+
+	e.Fields = append(e.Fields, h.genUsages(&b, ctx, cmd)...)
+
+	if ex := h.genExamples(&b, cmd, ctx.Localizer); ex != nil {
+		e.Fields = append(e.Fields, *ex)
+	}
+
+	return e, nil
+}
+
+func DefaultArgFormatter(i plugin.ArgInfo, optional, variadic bool) string {
+	if optional {
+		if variadic {
+			return "[" + i.Name + "+]"
+		}
+
+		return "[" + i.Name + "]"
+	}
+
+	if variadic {
+		return "<" + i.Name + "+>"
+	}
+
+	return "<" + i.Name + ">"
 }
