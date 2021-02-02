@@ -9,6 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/internal/capbuilder"
 	"github.com/mavolin/adam/pkg/impl/arg"
 	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -105,64 +106,85 @@ func (h *Help) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) 
 	}
 
 	switch p := ctx.Args[0].(type) {
+	case *plugin.RegisteredModule:
+		return h.module(s, ctx, p)
 	case *plugin.RegisteredCommand:
 		// do sth
 		return nil, nil
-	case *plugin.RegisteredModule:
-		return h.module(s, ctx, p)
 	default:
 		panic(fmt.Sprintf("got illegal argument type %T from arg.Plugin, but expected only (interface{})(nil), "+
 			"*plugin.RegisteredCommand, or *plugin.RegisteredModule", ctx.Args[0]))
 	}
 }
 
-func (h *Help) commands(
-	b *cappedBuilder, s *state.State, ctx *plugin.Context, cmds []*plugin.RegisteredCommand,
-) (f discord.EmbedField) {
-	b.reset(1024)
+func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
+	eb := BaseEmbed.Clone().
+		WithSimpleTitlel(allTitle)
 
-	h.formatCommands(b, cmds, s, ctx, Show)
-	if b.b.Len() == 0 {
-		return
+	if ctx.GuildID == 0 {
+		eb.WithDescriptionl(allDescriptionDM)
+	} else {
+		eb.WithDescriptionl(allDescriptionGuild)
 	}
 
-	f.Name = ctx.MustLocalize(commandsFieldName)
-	b.use(len(f.Name))
+	e, err := eb.Build(ctx.Localizer)
+	if err != nil {
+		return discord.Embed{}, err
+	}
 
-	f.Value = b.string()
-	return
+	b := capbuilder.New(embedutil.MaxChars-embedutil.CountChars(e), 1024)
+
+	maxMods := 25 - len(e.Fields)
+
+	if ctx.GuildID > 0 && !h.NoPrefix {
+		prefixes, err := h.genPrefixesField(b, ctx)
+		if err != nil {
+			return discord.Embed{}, err
+		}
+
+		e.Fields = append([]discord.EmbedField{prefixes}, e.Fields...)
+		maxMods--
+	}
+
+	if f := h.genCommandsField(b, s, ctx, ctx.Commands()); len(f.Name) > 0 {
+		e.Fields = append(e.Fields, f)
+		maxMods--
+	}
+
+	e.Fields = append(e.Fields, h.genModuleFields(b, s, ctx, ctx.Modules(), maxMods)...)
+	return e, nil
 }
 
-func (h *Help) modules(
-	b *cappedBuilder, s *state.State, ctx *plugin.Context, mods []*plugin.RegisteredModule, max int,
-) []discord.EmbedField {
-	fields := make([]discord.EmbedField, 0, max)
+func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.RegisteredModule) (discord.Embed, error) {
+	eb := BaseEmbed.Clone().
+		WithSimpleTitlel(moduleTitle.
+			WithPlaceholders(moduleTitlePlaceholders{
+				Module: mod.Identifier.AsInvoke(),
+			}))
 
-	for i := 0; i < len(mods) && i < max; i++ {
-		mod := mods[i]
-		b.reset(1024)
-
-		var f discord.EmbedField
-
-		f.Name = ctx.MustLocalize(moduleTitle.
-			WithPlaceholders(moduleTitlePlaceholders{Module: mod.Identifier.AsInvoke()}))
-		b.use(len(f.Name))
-
-		if b.rem() < 10+len(f.Name) {
-			return fields
-		}
-
-		h.formatModule(b, mod, s, ctx, Show)
-
-		if b.b.Len() == 0 { // hidden, skip
-			b.use(-len(f.Name))
-			continue
-		}
-
-		f.Value = b.string()
-
-		fields = append(fields, f)
+	if desc := mod.LongDescription(ctx.Localizer); len(desc) > 0 {
+		eb.WithDescription(desc)
 	}
 
-	return fields
+	e, err := eb.Build(ctx.Localizer)
+	if err != nil {
+		return discord.Embed{}, nil
+	}
+
+	maxMods := 25 - len(e.Fields)
+
+	b := capbuilder.New(embedutil.MaxChars-embedutil.CountChars(e), 1024)
+
+	if f := h.genCommandsField(b, s, ctx, mod.Commands); len(f.Name) > 0 {
+		e.Fields = append(e.Fields, f)
+		maxMods--
+	}
+
+	e.Fields = append(e.Fields, h.genModuleFields(b, s, ctx, mod.Modules, maxMods)...)
+
+	if len(e.Fields) == 0 {
+		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError)
+	}
+
+	return e, nil
 }

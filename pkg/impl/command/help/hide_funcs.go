@@ -80,3 +80,38 @@ func CheckRestrictions(lvl HiddenLevel) HideFunc {
 		return Show
 	}
 }
+
+// =============================================================================
+// Utilities
+// =====================================================================================
+
+// checkHideFuncs checks the passed HideFuncs and returns the highest
+// HiddenLevel found.
+func checkHideFuncs(cmd *plugin.RegisteredCommand, s *state.State, ctx *plugin.Context, f ...HideFunc) HiddenLevel {
+	var lvl HiddenLevel
+
+	for _, f := range f {
+		lvl2 := f(cmd, s, ctx)
+		if lvl2 >= Hide {
+			return Hide
+		} else if lvl2 > lvl {
+			lvl = lvl2
+		}
+	}
+
+	return lvl
+}
+
+func filterCommands(
+	cmds []*plugin.RegisteredCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel, f ...HideFunc,
+) []*plugin.RegisteredCommand {
+	filtered := make([]*plugin.RegisteredCommand, 0, len(cmds))
+
+	for _, cmd := range cmds {
+		if checkHideFuncs(cmd, s, ctx, f...) <= lvl {
+			filtered = append(filtered, cmd)
+		}
+	}
+
+	return filtered
+}

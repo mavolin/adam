@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -165,6 +166,101 @@ func TestCheckRestrictions(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
 			actual := CheckRestrictions(c.hiddenLvl)(c.cmd, nil, nil)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+// =============================================================================
+// Utilities
+// =====================================================================================
+
+func Test_checkHideFuncs(t *testing.T) {
+	testCases := []struct {
+		name  string
+		funcs []HideFunc
+
+		expect HiddenLevel
+	}{
+		{
+			name:   "success",
+			funcs:  []HideFunc{mockHideFunc(Show), mockHideFunc(HideList), mockHideFunc(Show)},
+			expect: HideList,
+		},
+		{
+			name:   "hide is max",
+			funcs:  []HideFunc{mockHideFunc(Show), mockHideFunc(HideList), mockHideFunc(Hide + 1)},
+			expect: Hide,
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := checkHideFuncs(nil, nil, nil, c.funcs...)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func Test_filterCommands(t *testing.T) {
+	testCases := []struct {
+		name  string
+		cmds  []*plugin.RegisteredCommand
+		lvl   HiddenLevel
+		funcs []HideFunc
+
+		expect []*plugin.RegisteredCommand
+	}{
+		{
+			name: "level",
+			cmds: []*plugin.RegisteredCommand{
+				{Name: "abc", Hidden: true},
+				{Name: "def", Hidden: false},
+				{Name: "ghi", Hidden: false},
+			},
+			lvl: HideList,
+			funcs: []HideFunc{
+				CheckHidden(HideList),
+				func(cmd *plugin.RegisteredCommand, _ *state.State, _ *plugin.Context) HiddenLevel {
+					if cmd.Name == "def" {
+						return Hide
+					}
+
+					return Show
+				},
+			},
+			expect: []*plugin.RegisteredCommand{
+				{Name: "abc", Hidden: true},
+				{Name: "ghi", Hidden: false},
+			},
+		},
+		{
+			name: "level",
+			cmds: []*plugin.RegisteredCommand{
+				{Name: "abc", Hidden: true},
+				{Name: "def", Hidden: false},
+				{Name: "ghi", Hidden: false},
+			},
+			lvl: Show,
+			funcs: []HideFunc{
+				CheckHidden(HideList),
+				func(cmd *plugin.RegisteredCommand, _ *state.State, _ *plugin.Context) HiddenLevel {
+					if cmd.Name == "def" {
+						return Hide
+					}
+
+					return Show
+				},
+			},
+			expect: []*plugin.RegisteredCommand{
+				{Name: "ghi", Hidden: false},
+			},
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := filterCommands(c.cmds, nil, nil, c.lvl, c.funcs...)
 			assert.Equal(t, c.expect, actual)
 		})
 	}
