@@ -193,10 +193,10 @@ func (h *Help) genUsage(
 	b.WriteString("```")
 
 	usage.Value = b.String()
-	return
+	return usage
 }
 
-func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Localizer) *discord.EmbedField {
+func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Localizer) *discord.EmbedField { //nolint:gocognit
 	if len(info.Required) == 0 && len(info.Optional) == 0 {
 		return nil
 	}

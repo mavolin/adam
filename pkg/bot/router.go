@@ -227,7 +227,7 @@ func (b *Bot) invoke(ctx *plugin.Context) error {
 	return rerr
 }
 
-func (b *Bot) sendReply(reply interface{}, ctx *plugin.Context) (err error) {
+func (b *Bot) sendReply(reply interface{}, ctx *plugin.Context) (err error) { //nolint:funlen,gocyclo
 	if reply == nil {
 		return nil
 	}
