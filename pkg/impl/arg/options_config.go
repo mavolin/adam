@@ -72,6 +72,11 @@ func (o Options) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	infos := make([]plugin.ArgsInfo, 0, len(o))
 
 	for _, o := range o {
+		if o.Config == nil { // special case
+			infos = append(infos, plugin.ArgsInfo{Prefix: o.Prefix})
+			continue
+		}
+
 		infoer, ok := o.Config.(plugin.ArgsInfoer)
 		if !ok || infoer == nil {
 			return nil
@@ -83,9 +88,6 @@ func (o Options) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 		}
 
 		info[0].Prefix = o.Prefix
-		info[0].ArgsFormatter = func(f plugin.ArgFormatter) string {
-			return o.Prefix + " " + info[0].ArgsFormatter(f)
-		}
 
 		infos = append(infos, info[0])
 	}
