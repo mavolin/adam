@@ -282,6 +282,9 @@ func (b *Bot) sendReply(reply interface{}, ctx *plugin.Context) (err error) {
 		}
 	case api.SendMessageData:
 		_, err = ctx.ReplyMessage(reply)
+		if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
+			err = nil
+		}
 	case i18n.Term:
 		if len(reply) > 0 {
 			_, err = ctx.Replylt(reply)
