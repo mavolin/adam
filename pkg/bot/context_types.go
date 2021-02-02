@@ -145,6 +145,9 @@ func (p *ctxPluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModul
 	}
 
 	mod := p.modules[i]
+	if mod.Name != name {
+		return nil
+	}
 
 	for _, id := range all[1:] {
 		mod = mod.FindModule(id.Name())
@@ -221,7 +224,7 @@ func (h ctxErrorHandler) HandleError(err error) {
 	}
 }
 
-func (h ctxErrorHandler) HandleErrorSilent(err error) {
+func (h ctxErrorHandler) HandleErrorSilently(err error) {
 	err = errors.Silent(err)
 	if err != nil {
 		h(err)
@@ -237,14 +240,17 @@ type discordDataProvider struct {
 
 	mut sync.Mutex
 
-	guild   *discord.Guild
-	guildWG *sync.WaitGroup
+	guild    *discord.Guild
+	guildErr error
+	guildWG  *sync.WaitGroup
 
-	channel   *discord.Channel
-	channelWG *sync.WaitGroup
+	channel    *discord.Channel
+	channelErr error
+	channelWG  *sync.WaitGroup
 
-	self   *discord.Member
-	selfWG *sync.WaitGroup
+	self    *discord.Member
+	selfErr error
+	selfWG  *sync.WaitGroup
 
 	guildID   discord.GuildID
 	channelID discord.ChannelID
@@ -252,8 +258,8 @@ type discordDataProvider struct {
 }
 
 func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) { //nolint:dupl
-	if d.guild != nil {
-		return func() (*discord.Guild, error) { return d.guild, nil }
+	if d.guild != nil || d.guildErr != nil {
+		return func() (*discord.Guild, error) { return d.guild, d.guildErr }
 	}
 
 	d.mut.Lock()
@@ -268,7 +274,7 @@ func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) { //no
 	if d.guildWG != nil {
 		return func() (*discord.Guild, error) {
 			d.guildWG.Wait()
-			return d.guild, err
+			return d.guild, d.guildErr
 		}
 	}
 
@@ -277,18 +283,20 @@ func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) { //no
 
 	go func() {
 		d.guild, err = d.s.Guild(d.guildID)
+		d.guildErr = errors.WithStack(err)
+
 		d.guildWG.Done()
 	}()
 
 	return func() (*discord.Guild, error) {
 		d.guildWG.Wait()
-		return d.guild, err
+		return d.guild, d.guildErr
 	}
 }
 
 func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) { //nolint:dupl
-	if d.channel != nil {
-		return func() (*discord.Channel, error) { return d.channel, nil }
+	if d.channel != nil || d.channelErr != nil {
+		return func() (*discord.Channel, error) { return d.channel, d.channelErr }
 	}
 
 	d.mut.Lock()
@@ -303,7 +311,7 @@ func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) { 
 	if d.channelWG != nil {
 		return func() (*discord.Channel, error) {
 			d.channelWG.Wait()
-			return d.channel, err
+			return d.channel, d.channelErr
 		}
 	}
 
@@ -312,18 +320,20 @@ func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) { 
 
 	go func() {
 		d.channel, err = d.s.Channel(d.channelID)
+		d.channelErr = errors.WithStack(err)
+
 		d.channelWG.Done()
 	}()
 
 	return func() (*discord.Channel, error) {
 		d.channelWG.Wait()
-		return d.channel, err
+		return d.channel, d.channelErr
 	}
 }
 
 func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) { //nolint:dupl
-	if d.self != nil {
-		return func() (*discord.Member, error) { return d.self, nil }
+	if d.self != nil || d.selfErr != nil {
+		return func() (*discord.Member, error) { return d.self, d.selfErr }
 	}
 
 	d.mut.Lock()
@@ -338,7 +348,7 @@ func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) { //no
 	if d.selfWG != nil {
 		return func() (*discord.Member, error) {
 			d.selfWG.Wait()
-			return d.self, err
+			return d.self, d.selfErr
 		}
 	}
 
@@ -347,11 +357,13 @@ func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) { //no
 
 	go func() {
 		d.self, err = d.s.Member(d.guildID, d.selfID)
+		d.selfErr = errors.WithStack(err)
+
 		d.selfWG.Done()
 	}()
 
 	return func() (*discord.Member, error) {
 		d.selfWG.Wait()
-		return d.self, err
+		return d.self, d.selfErr
 	}
 }

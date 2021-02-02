@@ -53,6 +53,7 @@ func (w *ReactionWaiter) WithUser(id discord.UserID) *ReactionWaiter {
 	return w
 }
 
+// InChannel changes the channel id to the passed discord.ChannelID.
 func (w *ReactionWaiter) InChannel(id discord.ChannelID) *ReactionWaiter {
 	w.channelID = id
 	return w
@@ -140,7 +141,10 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 // the timeout expires.
 //
 // If the timeout is reached, a *TimeoutError will be returned.
-// If the user cancels the wait, errors.Abort will be returned.
+// If the user cancels the wait or deletes the message, errors.Abort will be
+// returned.
+// Furthermore, if the guild, channel or message becomes unavailable while
+// adding reactions, errors.Abort will be returned as well.
 //
 // Besides that, the Wait can also be canceled through a middleware.
 func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) {
@@ -151,7 +155,10 @@ func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) 
 // cancellation, the timeout expires or the context expires.
 //
 // If the timeout is reached, a *TimeoutError will be returned.
-// If the user cancels the wait, errors.Abort will be returned.
+// If the user cancels the wait or deletes the message, errors.Abort will be
+// returned.
+// Furthermore, if the guild, channel or message becomes unavailable while
+// adding reactions, errors.Abort will be returned as well.
 // If the context expires or get canceled, the error returned by ctx.Err() will
 // be returned.
 //
@@ -195,8 +202,8 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 	}
 }
 
-func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) { //nolint:gocognit
-	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
+func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) { //nolint:gocognit,funlen
+	rmReact := w.state.MustAddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
 		if e.UserID != w.userID || e.MessageID != w.messageID {
 			return
 		}
@@ -220,26 +227,44 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 			}
 		}
 	})
-	if err != nil { // this should never happen
-		return nil, errors.WithStack(err)
-	}
+
+	rmMsgDel := w.state.MustAddHandler(func(s *state.State, e *state.MessageDeleteEvent) {
+		if e.ID == w.messageID {
+			sendResult(ctx, result, errors.Abort)
+		}
+	})
 
 	if !w.noAutoReact {
 		for _, r := range w.reactions {
 			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
-				w.ctx.HandleErrorSilent(err)
+				// someone deleted the channel or message
+				if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
+					rmReact()
+					rmMsgDel()
+					return nil, errors.Abort
+				}
+
+				w.ctx.HandleErrorSilently(err)
 			}
 		}
 
 		for _, r := range w.cancelReactions {
 			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
-				w.ctx.HandleErrorSilent(err)
+				// someone deleted the channel or message
+				if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
+					rmReact()
+					rmMsgDel()
+					return nil, errors.Abort
+				}
+
+				w.ctx.HandleErrorSilently(err)
 			}
 		}
 	}
 
 	return func() {
-		rm()
+		rmReact()
+		rmMsgDel()
 
 		if !w.noAutoDelete {
 			go func() {
@@ -247,11 +272,11 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
 						// someone else deleted the resource we are accessing
-						if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
+						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 							return
 						}
 
-						w.ctx.HandleErrorSilent(err)
+						w.ctx.HandleErrorSilently(err)
 					}
 				}
 
@@ -259,11 +284,11 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
 					if err != nil {
 						// someone else deleted the resource we are accessing
-						if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
+						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 							return
 						}
 
-						w.ctx.HandleErrorSilent(err)
+						w.ctx.HandleErrorSilently(err)
 					}
 				}
 			}()

@@ -31,39 +31,6 @@ func (a *asError) Error() string {
 	return "asError"
 }
 
-func TestNewInternalError(t *testing.T) {
-	t.Run("nil", func(t *testing.T) {
-		err := NewInternalError(nil)
-		assert.Nil(t, err)
-	})
-
-	t.Run("silent error", func(t *testing.T) {
-		cause := NewSilent("abc").(*SilentError)
-
-		ierr := NewInternalError(cause).(*InternalError)
-
-		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, cause.stack, ierr.stack)
-	})
-
-	t.Run("internal error", func(t *testing.T) {
-		cause := NewWithStack("abc").(*InternalError)
-
-		ierr := NewInternalError(cause).(*InternalError)
-
-		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, cause.stack, ierr.stack)
-	})
-
-	t.Run("success", func(t *testing.T) {
-		cause := New("abc")
-
-		ierr := NewInternalError(cause).(*InternalError)
-
-		assert.Equal(t, cause, ierr.cause)
-	})
-}
-
 func TestWithStack(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
 		err := WithStack(nil)
@@ -100,6 +67,39 @@ func TestWithStack(t *testing.T) {
 		cause := New("abc")
 
 		ierr := WithStack(cause).(*InternalError)
+
+		assert.Equal(t, cause, ierr.cause)
+	})
+}
+
+func TestMustInternal(t *testing.T) {
+	t.Run("nil", func(t *testing.T) {
+		err := MustInternal(nil)
+		assert.Nil(t, err)
+	})
+
+	t.Run("silent error", func(t *testing.T) {
+		cause := NewSilent("abc").(*SilentError)
+
+		ierr := MustInternal(cause).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("internal error", func(t *testing.T) {
+		cause := NewWithStack("abc").(*InternalError)
+
+		ierr := MustInternal(cause).(*InternalError)
+
+		assert.Equal(t, cause.cause, ierr.cause)
+		assert.Equal(t, cause.stack, ierr.stack)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		cause := New("abc")
+
+		ierr := MustInternal(cause).(*InternalError)
 
 		assert.Equal(t, cause, ierr.cause)
 	})
@@ -405,7 +405,7 @@ func TestInternalError_Description(t *testing.T) {
 
 		err := WithDescription(New(""), expect)
 
-		actual := err.(*InternalError).Description(mock.NoOpLocalizer)
+		actual := err.(*InternalError).Description(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 

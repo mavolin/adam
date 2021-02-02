@@ -38,7 +38,7 @@ var (
 		discord.APIEmoji(emojiutil.Keycap10),
 	}
 
-	// CategoryChooserBuilder is the source embedutil.Builder used to create
+	// CategoryChooserBuilder is the source *embedutil.Builder used to create
 	// category chooser embeds.
 	// When sending a chooser embed, title and description will be
 	// set/overwritten and at most 2 fields will be added.
@@ -68,7 +68,7 @@ var (
 		discord.APIEmoji(emojiutil.Keycap10),
 	}
 
-	// VoiceChannelChooserBuilder is the source embedutil.Builder used to
+	// VoiceChannelChooserBuilder is the source *embedutil.Builder used to
 	// create VoiceChannel chooser embeds.
 	// When sending a chooser embed, title and description will be
 	// set/overwritten and at most 2 fields will be added.
@@ -318,8 +318,8 @@ func (c category) sendChooser( //nolint:dupl
 
 	defer func() {
 		err := s.DeleteMessage(msg.ChannelID, msg.ID)
-		if err != nil && !discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
-			ctx.HandleErrorSilent(err)
+		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
+			ctx.HandleErrorSilently(err)
 		}
 	}()
 
@@ -592,8 +592,8 @@ func (c voiceChannel) sendChooser( //nolint:dupl
 
 	defer func() {
 		err := s.DeleteMessage(msg.ChannelID, msg.ID)
-		if err != nil && !discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
-			ctx.HandleErrorSilent(err)
+		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
+			ctx.HandleErrorSilently(err)
 		}
 	}()
 

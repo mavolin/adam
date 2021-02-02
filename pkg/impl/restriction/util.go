@@ -24,7 +24,7 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRema
 	if remaining == 0 { // no channel types remaining
 		// there is no need to prevent execution, as another restriction
 		// may permit it, still we should capture this
-		ctx.HandleErrorSilent(noRemainingError)
+		ctx.HandleErrorSilently(noRemainingError)
 
 		return plugin.DefaultFatalRestrictionError
 	}

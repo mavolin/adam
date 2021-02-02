@@ -23,8 +23,6 @@ const (
 type EmbeddableError struct {
 	// EmbeddableVersion is the version used when embedded in an any or all
 	// error.
-	// This MUST be of type *errors.RestrictionError or
-	// *errors.FatalRestrictionError.
 	EmbeddableVersion *plugin.RestrictionError
 	// DefaultVersion is the version returned if the error won't get embedded.
 	DefaultVersion error
@@ -36,9 +34,14 @@ func (e *EmbeddableError) Error() string                            { return e.D
 // All asserts that all of the passed plugin.RestrictionFuncs return nil.
 // If not, it will create an error containing a list of all missing
 // requirements using the returned errors.
+//
 // This list can only be created, if the returned errors are of type
-// *errors.RestrictionError or *EmbeddableError, or are error lists returned by
+// *plugin.RestrictionError or *EmbeddableError, or are error lists returned by
 // nested Alls or Anys.
+//
+// If at least one of the passed plugin.RestrictionFuncs returns a fatal
+// plugin.RestrictionError, the error produced by the returned function will be
+// fatal as well.
 func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:gocognit
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
@@ -130,9 +133,14 @@ func Allf(returnError error, funcs ...plugin.RestrictionFunc) plugin.Restriction
 // no error.
 // If not it will return a list of the needed requirements using the returned
 // errors.
+//
 // This list can only be created, if the returned errors are of type
-// *errors.RestrictionError or *EmbeddableError, or are error lists returned by
+// *plugin.RestrictionError or *EmbeddableError, or are error lists returned by
 // nested Alls or Anys.
+//
+// If at least one of the passed plugin.RestrictionFuncs returns a non-fatal
+// plugin.RestrictionError, the error produced by the returned function will
+// not be fatal as well.
 func Any(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {

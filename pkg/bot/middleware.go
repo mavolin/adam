@@ -1,8 +1,6 @@
 package bot
 
 import (
-	"sync"
-
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -36,7 +34,6 @@ type Middlewarer interface {
 // MiddlewareManagers zero value is an empty MiddlewareManager.
 type MiddlewareManager struct {
 	middlewares []MiddlewareFunc
-	mutex       sync.RWMutex
 }
 
 // AddMiddleware adds the passed middleware to the MiddlewareManager.
@@ -44,15 +41,15 @@ type MiddlewareManager struct {
 // ErrMiddleware.
 //
 // Valid middleware types are:
-//		• func(*state.State, interface{})
-//		• func(*state.State, interface{}) error
-//		• func(*state.State, *state.Base)
-//		• func(*state.State, *state.Base) error
-//		• func(*state.State, *state.MessageCreateEvent)
-//		• func(*state.State, *state.MessageCreateEvent) error
-//		• func(*state.State, *state.MessageUpdateEvent)
-//		• func(*state.State, *state.MessageUpdateEvent) error
-//		• func(next CommandFunc) CommandFunc
+//	• func(*state.State, interface{})
+//	• func(*state.State, interface{}) error
+//	• func(*state.State, *state.Base)
+//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *state.MessageCreateEvent)
+//	• func(*state.State, *state.MessageCreateEvent) error
+//	• func(*state.State, *state.MessageUpdateEvent)
+//	• func(*state.State, *state.MessageUpdateEvent) error
+//	• func(next CommandFunc) CommandFunc
 func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen,gocognit
 	var mf MiddlewareFunc
 
@@ -155,10 +152,7 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error { //nolint:funlen
 		return errors.WithStack(ErrMiddleware)
 	}
 
-	m.mutex.Lock()
 	m.middlewares = append(m.middlewares, mf)
-	m.mutex.Unlock()
-
 	return nil
 }
 
@@ -171,27 +165,7 @@ func (m *MiddlewareManager) MustAddMiddleware(f interface{}) {
 	}
 }
 
-// Middlewares returns a copy of the middlewares of the manager.
-func (m *MiddlewareManager) Middlewares() (cp []MiddlewareFunc) {
-	m.mutex.RLock()
-	defer m.mutex.RUnlock()
-
-	if len(m.middlewares) == 0 {
-		return nil
-	}
-
-	cp = make([]MiddlewareFunc, len(m.middlewares))
-	copy(cp, m.middlewares)
-
-	return
-}
-
-// Clone creates a deep copy of the MiddlewareManager.
-func (m *MiddlewareManager) Clone() *MiddlewareManager {
-	cp := new(MiddlewareManager)
-	cp.middlewares = make([]MiddlewareFunc, len(m.middlewares))
-
-	copy(cp.middlewares, m.middlewares)
-
-	return cp
+// Middlewares returns the middlewares of the MiddlewareManager.
+func (m *MiddlewareManager) Middlewares() []MiddlewareFunc {
+	return m.middlewares
 }

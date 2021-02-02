@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/replier"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -23,12 +24,13 @@ func TestWaiter_Await(t *testing.T) {
 		defer m.Eval()
 
 		ctx := &plugin.Context{
+			Base: state.NewBase(),
 			Message: discord.Message{
 				ChannelID: 123,
 				GuildID:   456,
 				Author:    discord.User{ID: 789},
 			},
-			Localizer: mock.NoOpLocalizer,
+			Localizer: i18n.NewFallbackLocalizer(),
 			DiscordDataProvider: mock.DiscordDataProvider{
 				ChannelReturn: &discord.Channel{},
 				ChannelError:  nil,
@@ -68,7 +70,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 	}{
 		{
 			name: "middleware block",
-			waiter: NewReplyWaiter(nil, new(plugin.Context)).
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
 				WithMiddlewares(func(*state.State, *state.MessageCreateEvent) error {
 					return testError
 				}),
@@ -81,6 +83,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		{
 			name: "channel not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
+				Base:    state.NewBase(),
 				Message: discord.Message{ChannelID: 123},
 			}),
 			e: &state.MessageCreateEvent{
@@ -94,6 +97,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		{
 			name: "author not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
+				Base: state.NewBase(),
 				Message: discord.Message{
 					Author: discord.User{ID: 123},
 				},
@@ -108,7 +112,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "canceled - case sensitive",
-			waiter: NewReplyWaiter(nil, new(plugin.Context)).
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
 				WithCancelKeywords("aBc").
 				CaseSensitive(),
 			e: &state.MessageCreateEvent{
@@ -121,7 +125,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "not canceled - case sensitive",
-			waiter: NewReplyWaiter(nil, new(plugin.Context)).
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
 				WithCancelKeywords("aBc").
 				CaseSensitive(),
 			e: &state.MessageCreateEvent{
@@ -134,7 +138,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "canceled - case insensitive",
-			waiter: NewReplyWaiter(nil, new(plugin.Context)).
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
 				WithCancelKeywords("aBc"),
 			e: &state.MessageCreateEvent{
 				Base: state.NewBase(),
@@ -146,7 +150,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name:   "success",
-			waiter: NewReplyWaiter(nil, new(plugin.Context)),
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}),
 			e: &state.MessageCreateEvent{
 				Base: state.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
@@ -171,8 +175,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 				result = make(chan interface{})
 			}
 
-			rm, err := c.waiter.handleMessages(context.TODO(), result)
-			assert.NoError(t, err)
+			rm := c.waiter.handleMessages(context.TODO(), result)
 
 			s.Call(c.e)
 
@@ -204,6 +207,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		{
 			name: "message id not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
+				Base:    state.NewBase(),
 				Message: discord.Message{ChannelID: 456},
 			}),
 			e: &state.MessageReactionAddEvent{
@@ -217,6 +221,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		{
 			name: "emoji not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
+				Base:    state.NewBase(),
 				Message: discord.Message{ChannelID: 456},
 			}),
 			e: &state.MessageReactionAddEvent{
@@ -231,6 +236,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		{
 			name: "user id not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
+				Base: state.NewBase(),
 				Message: discord.Message{
 					ChannelID: 456,
 					Author:    discord.User{ID: 789},
@@ -247,6 +253,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		{
 			name: "success",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
+				Base: state.NewBase(),
 				Message: discord.Message{
 					ChannelID: 456,
 					Author:    discord.User{ID: 789},
@@ -286,9 +293,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 				result = make(chan interface{})
 			}
 
-			_, err := c.waiter.handleCancelReactions(context.TODO(), result)
-			assert.NoError(t, err)
-
+			c.waiter.handleCancelReactions(context.TODO(), result)
 			s.Call(c.e)
 
 			if c.expect != nil {

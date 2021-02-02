@@ -1,6 +1,8 @@
 package errors
 
 import (
+	"fmt"
+
 	"github.com/mavolin/adam/internal/errorutil"
 )
 
@@ -50,3 +52,12 @@ func retrieveCause(err error) (cause error, stack []uintptr, ok bool) { //nolint
 
 	return cause, stack, true
 }
+
+// messageError is a simple error used for wrapped errors.
+type messageError struct {
+	msg   string
+	cause error
+}
+
+func (e *messageError) Error() string { return fmt.Sprintf("%s: %s", e.msg, e.cause.Error()) }
+func (e *messageError) Unwrap() error { return e.cause }

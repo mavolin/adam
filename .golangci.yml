@@ -76,4 +76,5 @@ issues:
         - goconst
         - gocyclo
         - gosec
+        - maligned
         - unparam

@@ -18,8 +18,6 @@ type Meta struct {
 
 	// Hidden specifies whether this module should be hidden from the help
 	// message.
-	//
-	// All subcommands and submodules will be hidden as well.
 	Hidden bool
 
 	// DefaultChannelTypes are the plugin.ChannelTypes the used as default, for

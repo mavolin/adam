@@ -9,5 +9,5 @@ type ReplyTypeError struct {
 }
 
 func (r *ReplyTypeError) Error() string {
-	return fmt.Sprintf("bot: cannot use %T for reply", r.Reply)
+	return fmt.Sprintf("bot: cannot use as type %T for reply", r.Reply)
 }

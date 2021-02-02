@@ -11,8 +11,7 @@ import (
 // Names returns the sorted names of the passed discord.Permissions, as found
 // in the client.
 func Names(perms discord.Permissions) []string {
-	l := i18n.NewManager(nil).Localizer("")
-	return Namesl(perms, l)
+	return Namesl(perms, i18n.NewFallbackLocalizer())
 }
 
 // PermissionNamel returns the sorted and localized names of the passed

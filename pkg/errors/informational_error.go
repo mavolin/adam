@@ -11,9 +11,7 @@ import (
 // logged error nor a message to the calling user.
 //
 // It is intended to be used if the user signals to cancel a command early.
-// It should therefore be seen as an informational error, much like io.EOF,
-// rather than an actual exception.
-var Abort error = &InformationalError{s: "abort"}
+var Abort error = NewInformationalError("abort")
 
 // InformationalError is an error that won't be handled.
 // It is used to communicate information, similar to io.EOF.

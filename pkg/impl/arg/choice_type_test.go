@@ -8,7 +8,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestChoice_Parse(t *testing.T) {
@@ -106,7 +105,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 
 		ctx := &Context{
 			Context: &plugin.Context{
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 			},
 			Raw: "def",
 		}
@@ -125,7 +124,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 		}
 
 		ctx := &Context{
-			Context: &plugin.Context{Localizer: mock.NoOpLocalizer},
+			Context: &plugin.Context{Localizer: i18n.NewFallbackLocalizer()},
 			Raw:     "jkl",
 		}
 

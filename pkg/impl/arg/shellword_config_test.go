@@ -1,6 +1,7 @@
 package arg
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestShellwordConfig_Parse(t *testing.T) {
@@ -407,7 +407,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
 				if aerr, ok := err.(*plugin.ArgumentError); ok && aerr != nil {
-					desc, err := aerr.Description(mock.NoOpLocalizer)
+					desc, err := aerr.Description(i18n.NewFallbackLocalizer())
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}
@@ -659,6 +659,12 @@ func TestShellwordConfig_Info(t *testing.T) {
 	}
 
 	actual := cfg.Info(nil)
+
+	for i := range actual {
+		actual[i].ArgsFormatter = nil
+		actual[i].FlagFormatter = nil
+	}
+
 	assert.Equal(t, expect, actual)
 }
 
@@ -1056,11 +1062,11 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
+				ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
 				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, ctx)
 				if aerr, ok := err.(*plugin.ArgumentError); ok && aerr != nil {
-					desc, err := aerr.Description(mock.NoOpLocalizer)
+					desc, err := aerr.Description(i18n.NewFallbackLocalizer())
 					if err != nil {
 						require.Fail(t, "Received unexpected error:\nargument parsing error")
 					}
@@ -1178,7 +1184,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &plugin.Context{Localizer: mock.NoOpLocalizer}
+				ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
 				_, _, actual := c.config.Parse(c.rawArgs, nil, ctx)
 				assert.Equal(t, c.expect, actual)
@@ -1313,6 +1319,34 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 		},
 	}
 
-	actual := cfg.Info(mock.NoOpLocalizer)
+	actual := cfg.Info(i18n.NewFallbackLocalizer())
+
+	for i := range actual {
+		actual[i].ArgsFormatter = nil
+		actual[i].FlagFormatter = nil
+	}
+
 	assert.Equal(t, expect, actual)
+}
+
+func Test_newShellwordFormatter(t *testing.T) {
+	info := plugin.ArgsInfo{
+		Required: []plugin.ArgInfo{
+			{Name: "abc", Type: typeInfo(i18n.NewFallbackLocalizer(), SimpleInteger)},
+			{Name: "def", Type: typeInfo(i18n.NewFallbackLocalizer(), SimpleText)},
+		},
+		Optional: []plugin.ArgInfo{
+			{Name: "ghi", Type: typeInfo(i18n.NewFallbackLocalizer(), SimpleDuration)},
+			{Name: "jkl", Type: typeInfo(i18n.NewFallbackLocalizer(), SimpleText)},
+		},
+		Variadic: true,
+	}
+
+	info.ArgsFormatter = newShellwordFormatter(info)
+
+	expect := fmt.Sprintf("<%s:%s> <%s:%s> [%s:%s] [%s:%s+]",
+		info.Required[0].Name, info.Required[0].Type.Name, info.Required[1].Name, info.Required[1].Type.Name,
+		info.Optional[0].Name, info.Optional[0].Type.Name, info.Optional[1].Name, info.Optional[1].Type.Name)
+
+	assert.Equal(t, expect, info.ArgsFormatter(testArgFormatter))
 }

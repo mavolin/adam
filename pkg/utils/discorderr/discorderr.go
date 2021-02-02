@@ -19,19 +19,13 @@ func As(err error) (herr *httputil.HTTPError) {
 }
 
 // Is is short for (err != nil && err.Code == code).
-func Is(err *httputil.HTTPError, code httputil.ErrorCode) bool {
-	return err != nil && err.Code == code
-}
-
-// InRange checks if the passed httputil.HTTPError's code is in the passed
-// CodeRange.
-func InRange(err *httputil.HTTPError, r CodeRange) bool {
+func Is(err *httputil.HTTPError, codes ...httputil.ErrorCode) bool {
 	if err == nil {
 		return false
 	}
 
-	for _, r := range r {
-		if err.Code >= r[0] && err.Code <= r[1] {
+	for _, c := range codes {
+		if c == err.Code {
 			return true
 		}
 	}

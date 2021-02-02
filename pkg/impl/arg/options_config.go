@@ -72,18 +72,24 @@ func (o Options) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	infos := make([]plugin.ArgsInfo, 0, len(o))
 
 	for _, o := range o {
-		if infoer, ok := o.Config.(plugin.ArgsInfoer); ok && infoer != nil {
-			info := infoer.Info(l)
-			if len(info) != 1 {
-				return nil
-			}
+		if o.Config == nil { // special case
+			infos = append(infos, plugin.ArgsInfo{Prefix: o.Prefix})
+			continue
+		}
 
-			info[0].Prefix = o.Prefix
-
-			infos = append(infos, info[0])
-		} else {
+		infoer, ok := o.Config.(plugin.ArgsInfoer)
+		if !ok || infoer == nil {
 			return nil
 		}
+
+		info := infoer.Info(l)
+		if len(info) != 1 {
+			return nil
+		}
+
+		info[0].Prefix = o.Prefix
+
+		infos = append(infos, info[0])
 	}
 
 	return infos

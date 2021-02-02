@@ -11,14 +11,15 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
-	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // Bot is the bot executing all commands.
 type Bot struct {
 	State *state.State
-	*MiddlewareManager
+
+	MiddlewareManager
+	postMiddlewares MiddlewareManager
 
 	commands        []plugin.Command
 	modules         []plugin.Module
@@ -29,24 +30,21 @@ type Bot struct {
 
 	// ----- Settings -----
 
-	SettingsProvider    SettingsProvider
-	LocalizationManager *i18n.Manager
-	Owners              []discord.UserID
-	EditAge             time.Duration
+	SettingsProvider SettingsProvider
+	Owners           []discord.UserID
+	EditAge          time.Duration
 
-	AllowBot   bool
-	SendTyping bool
+	AllowBot bool
 
 	autoOpen        bool
 	autoAddHandlers bool
+	manualChecks    bool
 
 	AsyncPluginProviders bool
 
 	PluginDefaults plugin.Defaults
 
 	ThrottlerCancelChecker func(error) bool
-
-	ReplyMiddlewares []interface{}
 
 	ErrorHandler func(error, *state.State, *plugin.Context)
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
@@ -58,7 +56,7 @@ type pluginProvider struct {
 	defaults plugin.Defaults
 }
 
-// Plugin provider is the function used by plugin providers.
+// PluginProvider is the function used by plugin providers.
 // PluginProviders will be called in the order they were added to a Bot, until
 // one of the returns a matching plugin.
 //
@@ -99,14 +97,12 @@ func New(o Options) (*Bot, error) {
 	b.State = state.NewFromSession(session.NewWithGateway(gw), o.Cabinet)
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
-	b.MiddlewareManager = new(MiddlewareManager)
 
 	b.SettingsProvider = o.SettingsProvider
-	b.LocalizationManager = i18n.NewManager(o.LocalizationFunc)
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
 	b.AllowBot = o.AllowBot
-	b.SendTyping = o.SendTyping
+	b.manualChecks = o.ManualChecks
 	b.autoOpen = !o.NoAutoOpen
 	b.autoAddHandlers = o.AutoAddHandlers
 	b.PluginDefaults = plugin.Defaults{
@@ -115,10 +111,18 @@ func New(o Options) (*Bot, error) {
 		Throttler:    o.DefaultThrottler,
 	}
 	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
-	b.ReplyMiddlewares = o.ReplyMiddlewares
 	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
+
+	if !b.manualChecks {
+		b.MustAddMiddleware(CheckChannelTypes)
+		b.MustAddMiddleware(CheckBotPermissions)
+		b.MustAddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+
+		b.MustAddPostMiddleware(CheckRestrictions)
+		b.MustAddPostMiddleware(ParseArgs)
+	}
 
 	return b, nil
 }
@@ -223,9 +227,11 @@ func (b *Bot) callOpen(i interface{}) error {
 	return nil
 }
 
-// Close closes the websocket connection to Discord's gateway.
+// Close closes the websocket connection to Discord's gateway gracefully.
+// Afterwards, if AutoOpen is enabled, it calls Close on all commands.
+// Close may take in an optional *Bot argument, and may return an error.
 func (b *Bot) Close() error {
-	if err := b.State.Close(); err != nil {
+	if err := b.State.CloseGracefully(); err != nil {
 		return err
 	}
 
@@ -323,6 +329,34 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 	for _, mod := range mod.Modules() {
 		b.autoAddModuleHandlers(mod)
 	}
+}
+
+// AddPostMiddleware adds a middleware to the Bot, that is invoked after all
+// command and module middlewares were called.
+// The order of invocation of post middlewares is the same as the order they
+// were added in.
+//
+// If the middleware's type is invalid, AddMiddleware will return
+// ErrMiddleware.
+//
+// Valid middleware types are:
+//	• func(*state.State, interface{})
+//	• func(*state.State, interface{}) error
+//	• func(*state.State, *state.Base)
+//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *state.MessageCreateEvent)
+//	• func(*state.State, *state.MessageCreateEvent) error
+//	• func(*state.State, *state.MessageUpdateEvent)
+//	• func(*state.State, *state.MessageUpdateEvent) error
+//	• func(next CommandFunc) CommandFunc
+func (b *Bot) AddPostMiddleware(f interface{}) error {
+	return b.postMiddlewares.AddMiddleware(f)
+}
+
+// MustAddPostMiddleware is the same as AddPostMiddleware, but panics if
+// AddPostMiddleware returns an error.
+func (b *Bot) MustAddPostMiddleware(f interface{}) {
+	b.postMiddlewares.MustAddMiddleware(f)
 }
 
 // AddPluginProvider adds the passed PluginProvider under the passed name.

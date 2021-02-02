@@ -35,8 +35,8 @@ type Config struct {
 	// If nil, the other message should be used.
 	Plural interface{}
 
-	// Fallback is the fallback used if the LangFunc is nil or the
-	// LangFunc returned an error.
+	// Fallback is the fallback used if the Func is nil or the
+	// Func returned an error.
 	Fallback Fallback
 }
 

@@ -5,11 +5,13 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/httputil"
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
@@ -28,6 +30,8 @@ type Context struct {
 	// Localizer is the localizer set to the guilds language.
 	*i18n.Localizer
 
+	// RawArgs are the trimmed raw arguments stripped of prefix and invoke.
+	RawArgs string
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Args Args
@@ -45,20 +49,8 @@ type Context struct {
 	// BotOwnerIDs contains the ids of the bot owners.
 	BotOwnerIDs []discord.UserID
 
-	// ReplyMiddlewares contains the middlewares that should be used when
-	// awaiting a reply.
-	//
-	// The following types are permitted:
-	//		• func(*state.State, interface{})
-	//		• func(*state.State, interface{}) error
-	//		• func(*state.State, *state.Base)
-	//		• func(*state.State, *state.Base) error
-	//		• func(*state.State, *state.MessageCreateEvent)
-	//		• func(*state.State, *state.MessageCreateEvent) error
-	ReplyMiddlewares []interface{}
-
 	// Replier is the interface used to send replies to a command.
-	// Defaults to replier.WrapState, found in impl/replier
+	// Defaults to replier.WrapState, as found in impl/replier.
 	Replier Replier
 
 	// Provider is an embedded interface that provides access to the Commands
@@ -100,8 +92,8 @@ func (ctx *Context) Replyf(format string, a ...interface{}) (*discord.Message, e
 	return ctx.ReplyMessage(api.SendMessageData{Content: fmt.Sprintf(format, a...)})
 }
 
-// Replyl replies with the message generated from the passed i18n.Config in the
-// channel the command was originally sent in.
+// Replyl replies with the message generated from the passed *i18n.Config in
+// the channel the command was originally sent in.
 func (ctx *Context) Replyl(c *i18n.Config) (*discord.Message, error) {
 	s, err := ctx.Localizer.Localize(c)
 	if err != nil {
@@ -124,8 +116,7 @@ func (ctx *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
 }
 
 // ReplyEmbedBuilder builds the discord.Embed from the passed
-// embedutil.Builder and sends it in the channel the command was sent
-// in.
+// *embedutil.Builder and sends it in the channel the command was sent in.
 func (ctx *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(ctx.Localizer)
 	if err != nil {
@@ -138,8 +129,15 @@ func (ctx *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, e
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (ctx *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	msg, err := ctx.Replier.Reply(ctx, data)
-	return msg, errorutil.WithStack(err)
+	if len(data.Content) > 0 || (data.Embed != nil && !embedEmpty(*data.Embed)) ||
+		len(data.Files) > 0 {
+		return ctx.Replier.Reply(ctx, data)
+	}
+
+	return nil, &httputil.HTTPError{
+		Code:    discorderr.CannotSendEmptyMessage,
+		Message: "cannot send empty message",
+	}
 }
 
 // ReplyDM replies with the passed message in in a direct message to the
@@ -156,7 +154,7 @@ func (ctx *Context) ReplyfDM(format string, a ...interface{}) (*discord.Message,
 	return ctx.ReplyDM(fmt.Sprintf(format, a...))
 }
 
-// ReplylDM replies with the message translated from the passed i18n.Config in
+// ReplylDM replies with the message translated from the passed *i18n.Config in
 // a direct message to the invoking user.
 func (ctx *Context) ReplylDM(c *i18n.Config) (*discord.Message, error) {
 	s, err := ctx.Localizer.Localize(c)
@@ -180,7 +178,7 @@ func (ctx *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
 }
 
 // ReplyEmbedBuilderDM builds the discord.Embed from the passed
-// embedutil.Builder and sends it in a direct message to the invoking user.
+// *embedutil.Builder and sends it in a direct message to the invoking user.
 func (ctx *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, error) {
 	embed, err := e.Build(ctx.Localizer)
 	if err != nil {
@@ -193,8 +191,15 @@ func (ctx *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message,
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
 // the invoking user.
 func (ctx *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message, err error) {
-	msg, err = ctx.Replier.ReplyDM(ctx, data)
-	return msg, errorutil.WithStack(err)
+	if len(data.Content) > 0 || (data.Embed != nil && !embedEmpty(*data.Embed)) ||
+		len(data.Files) > 0 {
+		return ctx.Replier.ReplyDM(ctx, data)
+	}
+
+	return nil, &httputil.HTTPError{
+		Code:    discorderr.CannotSendEmptyMessage,
+		Message: "cannot send empty message",
+	}
 }
 
 // Edit edits the message with the passed id in the invoking channel.
@@ -309,8 +314,7 @@ func (ctx *Context) EditEmbedBuilderDM(messageID discord.MessageID, e *embedutil
 // EditMessageDM sends the passed api.EditMessageData to the direct message
 // channel with the invoking user.
 func (ctx *Context) EditMessageDM(messageID discord.MessageID, data api.EditMessageData) (*discord.Message, error) {
-	msg, err := ctx.Replier.EditDM(ctx, messageID, data)
-	return msg, errorutil.WithStack(err)
+	return ctx.Replier.EditDM(ctx, messageID, data)
 }
 
 // Guild returns the guild the command was invoked in.
@@ -330,7 +334,7 @@ func (ctx *Context) Self() (*discord.Member, error) {
 }
 
 // SelfPermissions checks if the bot has the passed permissions.
-// If this command is executed in a direct message, constant.DMPermissions will
+// If this command is executed in a direct message, permutil.DMPermissions will
 // be returned instead.
 func (ctx *Context) SelfPermissions() (discord.Permissions, error) {
 	if ctx.GuildID == 0 {
@@ -360,7 +364,7 @@ func (ctx *Context) SelfPermissions() (discord.Permissions, error) {
 
 // UserPermissions returns the permissions of the invoking user in the
 // channel.
-// If this command is executed in a direct message, constant.DMPermissions will
+// If this command is executed in a direct message, permutil.DMPermissions will
 // be returned instead.
 func (ctx *Context) UserPermissions() (discord.Permissions, error) {
 	if ctx.GuildID == 0 {
@@ -499,7 +503,7 @@ type (
 	// Repository is the struct returned by Provider.PluginRepositories.
 	// It contains the top-level plugins of a single repository.
 	Repository struct {
-		// ProviderName is the name of the bot.RuntimePluginProvider that provides
+		// ProviderName is the name of the bot.PluginProvider that provides
 		// these plugins.
 		ProviderName string
 		// Commands are the top-level commands of the repository.
@@ -543,6 +547,6 @@ type (
 		HandleError(err error)
 		// HandleErrorSilent wraps the error using errors.Silent and hands it
 		// to the bot's error handler.
-		HandleErrorSilent(err error)
+		HandleErrorSilently(err error)
 	}
 )

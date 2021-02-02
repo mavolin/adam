@@ -19,33 +19,33 @@ type UserError struct {
 
 var _ Error = new(UserError)
 
-// NewCustomUserError creates a new UserError using the ErrorEmbed as a
+// NewCustomUserError creates a new *UserError using the ErrorEmbed as a
 // template.
 func NewCustomUserError() *UserError {
 	return &UserError{Embed: NewErrorEmbed()}
 }
 
-// NewUserErrorFromEmbed creates a new UserError from the passed
-// embedutil.Builder.
+// NewUserErrorFromEmbed creates a new *UserError from the passed
+// *embedutil.Builder.
 func NewUserErrorFromEmbed(e *embedutil.Builder) *UserError {
 	return &UserError{Embed: e}
 }
 
-// NewUserError creates a new UserError with the passed description.
+// NewUserError creates a new *UserError with the passed description.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserError(description string) *UserError {
 	return NewCustomUserError().
 		WithDescription(description)
 }
 
-// NewUserErrorl creates a new UserError using the message generated from the
-// passed i18n.Config as description.
+// NewUserErrorl creates a new *UserError using the message generated from the
+// passed *i18n.Config as description.
 func NewUserErrorl(description *i18n.Config) *UserError {
 	return NewCustomUserError().
 		WithDescriptionl(description)
 }
 
-// NewUserErrorlt creates a new UserError using the message generated from the
+// NewUserErrorlt creates a new *UserError using the message generated from the
 // passed term as description.
 func NewUserErrorlt(description i18n.Term) *UserError {
 	return NewUserErrorl(description.AsConfig())

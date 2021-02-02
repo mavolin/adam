@@ -24,20 +24,20 @@ type ArgumentError struct {
 	desc *i18nutil.Text
 }
 
-// NewArgumentError returns a new ArgumentError with the passed
+// NewArgumentError returns a new *ArgumentError with the passed
 // description.
 // The description mustn't be empty for this error to be handled properly.
 func NewArgumentError(description string) *ArgumentError {
 	return &ArgumentError{desc: i18nutil.NewText(description)}
 }
 
-// NewArgumentErrorl returns a new ArgumentError using the passed i18n.Config
+// NewArgumentErrorl returns a new *ArgumentError using the passed *i18n.Config
 // to generate a description.
 func NewArgumentErrorl(description *i18n.Config) *ArgumentError {
 	return &ArgumentError{desc: i18nutil.NewTextl(description)}
 }
 
-// NewArgumentErrorlt returns a new ArgumentError using the passed term to
+// NewArgumentErrorlt returns a new *ArgumentError using the passed term to
 // generate a description.
 func NewArgumentErrorlt(description i18n.Term) *ArgumentError {
 	return NewArgumentErrorl(description.AsConfig())
@@ -74,7 +74,7 @@ var HandleArgumentError = func(aerr *ArgumentError, _ *state.State, ctx *Context
 }
 
 // =============================================================================
-// PermissionsError
+// BotPermissionsError
 // =====================================================================================
 
 // BotPermissionsError is the error returned if the bot does not have
@@ -84,15 +84,18 @@ type BotPermissionsError struct {
 	Missing discord.Permissions
 }
 
+// DefaultBotPermissionsError is an *BotPermissionsError that displays a
+// generic "missing permissions" error message, instead of listing the missing
+// permissions.
 var DefaultBotPermissionsError = new(BotPermissionsError)
 
 // allPermissions except admin
 var allPerms = discord.PermissionAll ^ discord.PermissionAdministrator
 
-// NewBotPermissionsError creates a new BotPermissionsError with the passed
+// NewBotPermissionsError creates a new *BotPermissionsError with the passed
 // missing permissions.
 //
-// If the missing permissions contain discord.PermissionAdministrator, all
+// If the missing permissions contains discord.PermissionAdministrator, all
 // other permissions will be discarded, as they are included in Administrator.
 //
 // If missing is 0 or invalid, a generic error message will be used.
@@ -206,7 +209,7 @@ type ChannelTypeError struct {
 	Allowed ChannelTypes
 }
 
-// NewChannelTypeError creates a new ChannelTypeError with the passed allowed
+// NewChannelTypeError creates a new *ChannelTypeError with the passed allowed
 // plugin.ChannelTypes.
 func NewChannelTypeError(allowed ChannelTypes) *ChannelTypeError {
 	return &ChannelTypeError{Allowed: allowed}
@@ -222,14 +225,14 @@ func (e *ChannelTypeError) Description(l *i18n.Localizer) (desc string) {
 	case e.Allowed == GuildNewsChannels:
 		desc, _ = l.Localize(channelTypeErrorGuildNews)
 	case e.Allowed == DirectMessages:
-		desc, _ = l.Localize(channelTypeErrorDirectMessage)
+		desc, _ = l.Localize(channelTypeErrorDM)
 	// ----- combos -----
 	case e.Allowed == GuildChannels:
 		desc, _ = l.Localize(channelTypeErrorGuild)
 	case e.Allowed == (DirectMessages | GuildTextChannels):
-		desc, _ = l.Localize(channelTypeErrorDirectMessageAndGuildText)
+		desc, _ = l.Localize(channelTypeErrorDMAndGuildText)
 	case e.Allowed == (DirectMessages | GuildNewsChannels):
-		desc, _ = l.Localize(channelTypeErrorDirectMessageAndGuildNews)
+		desc, _ = l.Localize(channelTypeErrorDMAndGuildNews)
 	default:
 		desc, _ = l.Localize(channelTypeErrorFallback)
 	}
@@ -298,25 +301,25 @@ type RestrictionError struct {
 	Fatal bool
 }
 
-// NewRestrictionError creates a new RestrictionError with the passed
+// NewRestrictionError creates a new *RestrictionError with the passed
 // description.
 func NewRestrictionError(description string) *RestrictionError {
 	return &RestrictionError{desc: i18nutil.NewText(description)}
 }
 
-// NewRestrictionErrorl creates a new RestrictionError using the message
-// generated from the passed i18n.Config as description.
+// NewRestrictionErrorl creates a new *RestrictionError using the message
+// generated from the passed *i18n.Config as description.
 func NewRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{desc: i18nutil.NewTextl(description)}
 }
 
-// NewRestrictionErrorlt creates a new RestrictionError using the message
+// NewRestrictionErrorlt creates a new *RestrictionError using the message
 // generated from the passed term as description.
 func NewRestrictionErrorlt(description i18n.Term) *RestrictionError {
 	return NewRestrictionErrorl(description.AsConfig())
 }
 
-// NewFatalRestrictionError creates a new fatal RestrictionError with the
+// NewFatalRestrictionError creates a new fatal *RestrictionError with the
 // passed description.
 func NewFatalRestrictionError(description string) *RestrictionError {
 	return &RestrictionError{
@@ -325,8 +328,8 @@ func NewFatalRestrictionError(description string) *RestrictionError {
 	}
 }
 
-// NewFatalRestrictionErrorl creates a new fatal RestrictionError using the
-// message generated from the passed i18n.Config as description.
+// NewFatalRestrictionErrorl creates a new fatal *RestrictionError using the
+// message generated from the passed *i18n.Config as description.
 func NewFatalRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{
 		desc:  i18nutil.NewTextl(description),
@@ -334,7 +337,7 @@ func NewFatalRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	}
 }
 
-// NewFatalRestrictionErrorlt creates a new fatal RestrictionError using the
+// NewFatalRestrictionErrorlt creates a new fatal *RestrictionError using the
 // message generated from the passed term as description.
 func NewFatalRestrictionErrorlt(description i18n.Term) *RestrictionError {
 	return NewFatalRestrictionErrorl(description.AsConfig())
@@ -380,19 +383,19 @@ type ThrottlingError struct {
 	desc *i18nutil.Text
 }
 
-// NewThrottlingError creates a new ThrottlingError with the passed
+// NewThrottlingError creates a new *ThrottlingError with the passed
 // description.
 func NewThrottlingError(description string) *ThrottlingError {
 	return &ThrottlingError{desc: i18nutil.NewText(description)}
 }
 
-// NewThrottlingErrorl creates a new ThrottlingError using the message
-// generated from the passed i18n.Config as description.
+// NewThrottlingErrorl creates a new *ThrottlingError using the message
+// generated from the passed *i18n.Config as description.
 func NewThrottlingErrorl(description *i18n.Config) *ThrottlingError {
 	return &ThrottlingError{desc: i18nutil.NewTextl(description)}
 }
 
-// NewThrottlingErrorlt creates a new ThrottlingError using the message
+// NewThrottlingErrorlt creates a new *ThrottlingError using the message
 // generated from the passed term as description.
 func NewThrottlingErrorlt(description i18n.Term) *ThrottlingError {
 	return NewThrottlingErrorl(description.AsConfig())

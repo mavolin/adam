@@ -1,6 +1,8 @@
 package arg //nolint:dupl
 
 import (
+	"strings"
+
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
@@ -52,6 +54,8 @@ func (c CommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	// still use a Localizer, so replacements for the type information will
 	// be used, if there are any
 	info := genArgsInfo(l, c.Required, c.Optional, c.Flags, c.Variadic)
+	info.ArgsFormatter = newCommaFormatter(info)
+
 	return []plugin.ArgsInfo{info}
 }
 
@@ -104,5 +108,36 @@ func (c LocalizedCommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 		return nil
 	}
 
+	info.ArgsFormatter = newCommaFormatter(info)
+
 	return []plugin.ArgsInfo{info}
+}
+
+func newCommaFormatter(info plugin.ArgsInfo) func(f plugin.ArgFormatter) string {
+	return func(f plugin.ArgFormatter) string {
+		var b strings.Builder
+
+		// provision 20 characters per arg
+		b.Grow((len(info.Required) + len(info.Optional)) * 20)
+
+		for i, ai := range info.Required {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+
+			variadic := info.Variadic && i == len(info.Required)-1 && len(info.Optional) == 0
+			b.WriteString(f(ai, false, variadic))
+		}
+
+		for i, ai := range info.Optional {
+			if i > 0 || len(info.Required) > 0 {
+				b.WriteString(", ")
+			}
+
+			variadic := info.Variadic && i == len(info.Optional)-1
+			b.WriteString(f(ai, true, variadic))
+		}
+
+		return b.String()
+	}
 }

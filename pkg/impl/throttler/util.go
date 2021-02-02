@@ -7,8 +7,8 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// genError generates a errors.ThrottlingError using one of the two passed
-// i18n.Configs, based on the value of the passed time.Duration.
+// genError generates a plugin.ThrottlingError using one of the two passed
+// *i18n.Configs, based on the value of the passed time.Duration.
 // Any duration less or equal to 90 seconds will displayed using seconds.
 // Otherwise the minuteConfig will be used.
 func genError(

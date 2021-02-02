@@ -123,13 +123,13 @@ func TestLocalizer_Localize(t *testing.T) {
 	successCases := []struct {
 		name                string
 		defaultPlaceholders map[string]interface{}
-		langFunc            func(*testing.T) LangFunc
+		langFunc            func(*testing.T) Func
 		config              *Config
 		expect              string
 	}{
 		{
 			name: "lang func",
-			langFunc: func(t *testing.T) LangFunc {
+			langFunc: func(t *testing.T) Func {
 				return func(term Term, placeholders map[string]interface{}, plural interface{}) (string, error) {
 					var (
 						expectTerm         Term = "abc"
@@ -178,7 +178,7 @@ func TestLocalizer_Localize(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				if c.langFunc == nil {
-					c.langFunc = func(t *testing.T) LangFunc { return nil }
+					c.langFunc = func(t *testing.T) Func { return nil }
 				}
 
 				l := &Localizer{
@@ -195,7 +195,7 @@ func TestLocalizer_Localize(t *testing.T) {
 
 	failureCases := []struct {
 		name     string
-		langFunc LangFunc
+		langFunc Func
 		config   *Config
 	}{
 		{

@@ -29,39 +29,12 @@ type InternalError struct {
 
 var _ Error = new(InternalError)
 
-// NewInternalError creates a new *InternalError from the passed error.
-//
-// If cause is a *SilentError or an *InternalError, NewInternalError will
-// unwrap it first.
-// In any other case, NewInternalError will use the cause as is.
-func NewInternalError(cause error) error {
-	if cause == nil {
-		return nil
-	}
-
-	var stack []uintptr
-
-	if serr, ok := cause.(*SilentError); ok { //nolint:errorlint
-		cause = serr.Unwrap()
-		stack = serr.stack
-	} else if ierr, ok := cause.(*InternalError); ok { //nolint:errorlint
-		return ierr
-	} else {
-		stack = stackTrace(cause, 1)
-	}
-
-	return &InternalError{
-		cause: cause,
-		stack: stack,
-	}
-}
-
 // WithStack returns a new InternalError using the callers stack trace.
 //
 // If the error is a *SilentError or an *InternalError, WithStack will unwrap
 // it first.
 // If the error isn't a *SilentError or an *InternalError, but fulfills As for
-// Error, WithStack will return the converted error instead.
+// Error, WithStack will return the retrieved error instead.
 //
 // In case the error is nil, WithStack will return the error as is.
 //
@@ -101,14 +74,36 @@ func withStack(err error) error {
 	}
 }
 
-// messageError is a simple error used for wrapped errors.
-type messageError struct {
-	msg   string
-	cause error
-}
+// MustInterna creates a new *InternalError from the passed error.
+//
+// If cause is an *InternalError, it will be returned as is, and if the error
+// is of type *SilentError the cause will be extracted first.
+//
+// In any other case, unlike WithStack, the error is wrapped in an
+// *InternalError.
+// MustInternal is therefore considered more forceful than WithStack, and cases
+// that don't explicitly require this, should use WithStack.
+func MustInternal(err error) error {
+	if err == nil {
+		return nil
+	}
 
-func (e *messageError) Error() string { return fmt.Sprintf("%s: %s", e.msg, e.cause.Error()) }
-func (e *messageError) Unwrap() error { return e.cause }
+	var stack []uintptr
+
+	if serr, ok := err.(*SilentError); ok { //nolint:errorlint
+		err = serr.Unwrap()
+		stack = serr.stack
+	} else if ierr, ok := err.(*InternalError); ok { //nolint:errorlint
+		return ierr
+	} else {
+		stack = stackTrace(err, 1)
+	}
+
+	return &InternalError{
+		cause: err,
+		stack: stack,
+	}
+}
 
 // Wrap wraps the passed error with the passed message and enriches it with a
 // stack trace.
@@ -153,7 +148,7 @@ func Wrap(err error, message string) error {
 //
 // The returned error will print as
 // '$fmt.Sprintf(format, args...): $err.Error()'.
-func Wrapf(err error, format string, args ...interface{}) error {
+func Wrapf(err error, format string, a ...interface{}) error {
 	if err == nil {
 		return nil
 	}
@@ -165,7 +160,7 @@ func Wrapf(err error, format string, args ...interface{}) error {
 
 	return &InternalError{
 		cause: &messageError{
-			msg:   fmt.Sprintf(format, args...),
+			msg:   fmt.Sprintf(format, a...),
 			cause: err,
 		},
 		stack: stack,
@@ -213,7 +208,7 @@ func WithDescription(err error, description string) error {
 // Error, WithDescriptionf will return the converted error instead.
 //
 // In case the error is nil, WithDescriptionf will return the error as is.
-func WithDescriptionf(err error, format string, args ...interface{}) error {
+func WithDescriptionf(err error, format string, a ...interface{}) error {
 	if err == nil {
 		return nil
 	}
@@ -226,7 +221,7 @@ func WithDescriptionf(err error, format string, args ...interface{}) error {
 	return &InternalError{
 		cause: err,
 		stack: stack,
-		desc:  i18nutil.NewText(fmt.Sprintf(format, args...)),
+		desc:  i18nutil.NewText(fmt.Sprintf(format, a...)),
 	}
 }
 

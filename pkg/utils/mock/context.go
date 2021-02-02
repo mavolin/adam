@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"sort"
 	"sync"
+	"testing"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 
@@ -157,6 +158,8 @@ func (p PluginProvider) UnavailablePluginProviders() []plugin.UnavailablePluginP
 }
 
 type ErrorHandler struct {
+	t *testing.T
+
 	mut          sync.Mutex
 	expectErr    []error
 	expectSilent []error
@@ -164,8 +167,8 @@ type ErrorHandler struct {
 
 var _ plugin.ErrorHandler = new(ErrorHandler)
 
-func NewErrorHandler() *ErrorHandler {
-	return new(ErrorHandler)
+func NewErrorHandler(t *testing.T) *ErrorHandler {
+	return &ErrorHandler{t: t}
 }
 
 func (h *ErrorHandler) ExpectError(err error) *ErrorHandler {
@@ -202,10 +205,10 @@ func (h *ErrorHandler) HandleError(err error) {
 		}
 	}
 
-	panic("unexpected call to plugin.ErrorHandler.HandleError")
+	h.t.Errorf("unexpected call to plugin.ErrorHandler.HandleError: %+v", err)
 }
 
-func (h *ErrorHandler) HandleErrorSilent(err error) {
+func (h *ErrorHandler) HandleErrorSilently(err error) {
 	h.mut.Lock()
 	defer h.mut.Unlock()
 
@@ -229,5 +232,15 @@ func (h *ErrorHandler) HandleErrorSilent(err error) {
 		}
 	}
 
-	panic("unexpected call to plugin.ErrorHandler.HandleErrorSilent")
+	h.t.Errorf("unexpected call to plugin.ErrorHandler.HandleErrorSilently: %+v", err)
+}
+
+func (h *ErrorHandler) Eval() {
+	if len(h.expectErr) > 0 {
+		h.t.Errorf("there are unhandled errors: %+v", h.expectErr)
+	}
+
+	if len(h.expectSilent) > 0 {
+		h.t.Errorf("there are unhandled silent errors: %+v", h.expectSilent)
+	}
 }

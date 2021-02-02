@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -33,13 +34,13 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "fail guild channels",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildTextChannels},
 				}),
 			},
 			allowed: plugin.GuildChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, true),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "pass direct messages",
@@ -56,13 +57,13 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "fail direct messages",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			allowed: plugin.DirectMessages,
-			expect:  newInvalidChannelTypeError(plugin.DirectMessages, mock.NoOpLocalizer, true),
+			expect:  newInvalidChannelTypeError(plugin.DirectMessages, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "all channels",
@@ -95,19 +96,19 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "fail guild text - fatal",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, true),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "fail guild text - not fatal",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
@@ -116,7 +117,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				},
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, mock.NoOpLocalizer, false),
+			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), false),
 		},
 	}
 
@@ -130,14 +131,17 @@ func Test_assertChannelTypes(t *testing.T) {
 	t.Run("fail - no remaining", func(t *testing.T) {
 		noRemainingError := errors.New("no remaining error")
 
+		errHandler := mock.NewErrorHandler(t).
+			ExpectSilentError(noRemainingError)
+		defer errHandler.Eval()
+
 		ctx := &plugin.Context{
 			Message:   discord.Message{GuildID: 123},
-			Localizer: mock.NoOpLocalizer,
+			Localizer: i18n.NewFallbackLocalizer(),
 			InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 				CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 			}),
-			ErrorHandler: mock.NewErrorHandler().
-				ExpectSilentError(noRemainingError),
+			ErrorHandler: errHandler,
 		}
 
 		actual := assertChannelTypes(ctx, plugin.DirectMessages, noRemainingError)

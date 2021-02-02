@@ -3,7 +3,7 @@ package shared
 
 import "github.com/mavolin/adam/pkg/utils/embedutil"
 
-// ErrorEmbed is the shared *embedutil.Builder.
+// ErrorEmbed is the shared errors *embedutil.Builder.
 // See errors.SetErrorEmbed and errors.NewErrorEmbed for more information.
 var ErrorEmbed = embedutil.NewBuilder().
 	WithSimpleTitlel(errorTitle).

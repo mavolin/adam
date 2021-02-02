@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"runtime/debug"
+	"syscall"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -11,6 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/diamondburned/arikawa/v2/state/store/defaultstore"
 	"github.com/diamondburned/arikawa/v2/utils/wsutil"
+	"github.com/gorilla/websocket"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -30,12 +32,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: NewStaticSettingsProvider()
 	SettingsProvider SettingsProvider
-	// LocalizationFunc is the function used to retrieve i18n.LangFuncs used
-	// for creating localized data.
-	// Leave this empty, if you don't want to use localization.
-	//
-	// Default: nil
-	LocalizationFunc i18n.Func
 	// Owners are the ids of the bot owners.
 	// These are accessible through plugin.Context.BotOwnerIDs.
 	//
@@ -73,13 +69,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: false
 	AllowBot bool
-	// SendTyping specifies whether to send a typing event if the command has
-	// the SendMessagesPermission.
-	// The event will be sent in 6 second intervals, until the Invoke method
-	// of the command returns.
-	//
-	// Default: false
-	SendTyping bool
 
 	// NoAutoOpen defines whether to call the Open and Close methods of plugins
 	// automatically when bot.Open() and bot.Close() is called.
@@ -124,20 +113,10 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// If the function returns true, the command's throttler will not count the
 	// invoke.
 	//
+	// Settings this field has no effect, if ManualChecks is set to true.
+	//
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerCancelChecker func(error) bool
-
-	// ReplyMiddlewares contains the middlewares that should be used when
-	// awaiting a reply.
-	//
-	// The following types are permitted:
-	//  • func(*state.State, interface{})
-	//  • func(*state.State, interface{}) error
-	//  • func(*state.State, *state.Base)
-	//  • func(*state.State, *state.Base) error
-	//  • func(*state.State, *state.MessageCreateEvent)
-	//  • func(*state.State, *state.MessageCreateEvent) error
-	ReplyMiddlewares []interface{}
 
 	// AsyncPluginProviders specifies whether the plugins providers should be
 	// fetched asynchronously or one by one.
@@ -166,7 +145,7 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	GatewayTimeout time.Duration
 	// GatewayErrorHandler is the error handler of the gateway.
 	//
-	// Default: func(err error) { log.Println(err) }
+	// Default: DefaultGatewayErrorHandler
 	GatewayErrorHandler func(error)
 
 	// StateErrorHandler is the error handler of the *state.State, called if an
@@ -192,6 +171,32 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: DefaultPanicHandler
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
+
+	// ManualChecks specifies whether the checks are performed by the user and
+	// should not be added automatically.
+	//
+	// By default, the following checks are performed in the following order.
+	// Steps enclosed in parentheses are just steps executed in-between checks.
+	//
+	//	(command invoke received and routed) ->
+	//	CheckChannelTypes ->
+	//	CheckBotPermissions ->
+	// 	NewThrottlerChecker(b.ThrottlerCancelChecker) ->
+	//	(run custom middlewares) ->
+	//	CheckRestrictions ->
+	//	ParseArgs ->
+	//	(invoke command)
+	//
+	// If you set this to true, you are responsible for ensuring that all
+	// (desired) checks are performed, by adding them as middlewares.
+	// All default checks can be found in package bot.
+	//
+	// Note that leaving out these checks may lead to unexpected or undesired
+	// behavior, as default and third-party plugins will assume that these
+	// checks are run.
+	// Therefore this is only recommended, to change order or use custom
+	// checks.
+	ManualChecks bool
 }
 
 // SetDefaults fills the defaults for all options, that weren't manually set.
@@ -212,19 +217,6 @@ func (o *Options) SetDefaults() (err error) {
 		o.ThrottlerCancelChecker = DefaultThrottlerErrorCheck
 	}
 
-	for i, m := range o.ReplyMiddlewares {
-		switch m.(type) {
-		case func(*state.State, interface{}):
-		case func(*state.State, interface{}) error:
-		case func(*state.State, *state.Base):
-		case func(*state.State, *state.Base) error:
-		case func(*state.State, *state.MessageCreateEvent):
-		case func(*state.State, *state.MessageCreateEvent) error:
-		default:
-			return errors.NewWithStackf("bot: Options.ReplyMiddlewares[%d] is of unsupported type %T", i, m)
-		}
-	}
-
 	o.setCabinetDefaults()
 
 	if o.Shard[1] == 0 {
@@ -243,7 +235,7 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	if o.GatewayErrorHandler == nil {
-		o.GatewayErrorHandler = func(err error) { log.Println(err) }
+		o.GatewayErrorHandler = DefaultGatewayErrorHandler
 	}
 
 	if o.StateErrorHandler == nil {
@@ -310,14 +302,21 @@ func (o *Options) setCabinetDefaults() {
 // The passed *state.Base is the base of the event triggering settings check.
 // This will either stem from either message create event, or a message update
 // event, if Options.EditAge is greater than 0.
-type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, lang string)
+//
+// If the returned *18n.Localizer is nil, a fallback localizer will be used,
+// that always uses fallback messages.
+//
+// Note that messages sent in a direct message don't require a prefix.
+// However, all prefixes for a direct messages will still be stripped, if the
+// message starts with one.
+type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer)
 
 // NewStaticSettingsProvider creates a new SettingsProvider that returns the
 // same prefixes for all guilds and users.
-// The returned language will always be an empty string.
+// The returned localizer will always be a fallback localizer.
 func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
-	return func(*state.Base, *discord.Message) ([]string, string) {
-		return prefixes, ""
+	return func(*state.Base, *discord.Message) ([]string, *i18n.Localizer) {
+		return prefixes, nil
 	}
 }
 
@@ -326,7 +325,21 @@ func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
 // =====================================================================================
 
 func DefaultThrottlerErrorCheck(err error) bool {
-	return !errors.As(err, new(errors.InformationalError))
+	ierr := new(errors.InformationalError)
+	return !errors.As(err, ierr)
+}
+
+func DefaultGatewayErrorHandler(err error) {
+	// ignore error used on reconnect
+
+	var cerr *websocket.CloseError
+	if errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+		return
+	} else if errors.Is(err, syscall.ECONNRESET) {
+		return
+	}
+
+	log.Println(err)
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {

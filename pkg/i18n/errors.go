@@ -9,7 +9,7 @@ import (
 
 // NoTranslationGeneratedError gets returned if the Localizer is unable
 // to produce a translation with the data available, i.e. if neither the
-// underlying LangFunc, nor the Fallback return a non-error value.
+// underlying Func, nor the Fallback return a non-error value.
 type NoTranslationGeneratedError struct {
 	Term Term
 	s    errorutil.Stack

@@ -7,25 +7,24 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/discorderr"
 )
 
 // Tracker is a plugin.Replier that tracks the messages that were sent.
 type Tracker struct {
 	s *state.State
 
-	guildMessages      []discord.Message
-	guildMessagesMutex sync.Mutex
+	guildMessages       []discord.Message
+	editedGuildMessages []discord.Message
+	guildMessagesMutex  sync.Mutex
 
-	editedGuildMessages      []discord.Message
-	editedGuildMessagesMutex sync.Mutex
+	dmID discord.ChannelID
 
-	dms     []discord.Message
-	dmMutex sync.Mutex
-	dmID    discord.ChannelID
-
-	editedDMs   []discord.Message
-	editDMMutex sync.Mutex
+	dms       []discord.Message
+	editedDMs []discord.Message
+	dmMutex   sync.Mutex
 }
 
 var _ plugin.Replier = new(Tracker)
@@ -108,7 +107,12 @@ func (t *Tracker) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord
 
 	msg, err := t.s.SendMessageComplex(ctx.ChannelID, data)
 	if err != nil {
-		return nil, err
+		// user deleted channel
+		if discorderr.Is(discorderr.As(err), discorderr.UnknownChannel) {
+			return nil, errors.Abort
+		}
+
+		return nil, errors.WithStack(err)
 	}
 
 	t.guildMessagesMutex.Lock()
@@ -136,7 +140,7 @@ func (t *Tracker) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*disco
 
 	msg, err := t.s.SendMessageComplex(t.dmID, data)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	t.dmMutex.Lock()
@@ -161,13 +165,28 @@ func (t *Tracker) Edit(
 
 	msg, err := t.s.EditMessageComplex(ctx.ChannelID, messageID, data)
 	if err != nil {
-		return nil, err
+		// user deleted channel
+		if discorderr.Is(discorderr.As(err), discorderr.UnknownChannel) {
+			return nil, errors.Abort
+		}
+
+		t.guildMessagesMutex.Lock()
+		defer t.guildMessagesMutex.Unlock()
+
+		// we sent that message before, so it was deleted by someone else
+		if t.hasID(messageID) {
+			return nil, errors.Abort
+		}
+
+		return nil, errors.WithStack(err)
 	}
 
-	t.editedGuildMessagesMutex.Lock()
-	defer t.editedGuildMessagesMutex.Unlock()
+	t.guildMessagesMutex.Lock()
+	defer t.guildMessagesMutex.Unlock()
 
-	t.editedGuildMessages = append(t.editedGuildMessages, *msg)
+	if !t.hasID(messageID) {
+		t.editedGuildMessages = append(t.editedGuildMessages, *msg)
+	}
 
 	return msg, nil
 }
@@ -191,13 +210,23 @@ func (t *Tracker) EditDM(
 
 	msg, err := t.s.EditMessageComplex(t.dmID, messageID, data)
 	if err != nil {
-		return nil, err
+		t.dmMutex.Lock()
+		defer t.dmMutex.Unlock()
+
+		// we sent that message before, so it was deleted by someone else
+		if t.hasDMID(messageID) {
+			return nil, errors.Abort
+		}
+
+		return nil, errors.WithStack(err)
 	}
 
-	t.editDMMutex.Lock()
-	defer t.editDMMutex.Unlock()
+	t.dmMutex.Lock()
+	defer t.dmMutex.Unlock()
 
-	t.editedDMs = append(t.editedDMs, *msg)
+	if !t.hasDMID(messageID) {
+		t.editedDMs = append(t.editedDMs, *msg)
+	}
 
 	return msg, nil
 }
@@ -208,11 +237,31 @@ func (t *Tracker) lazyDM(ctx *plugin.Context) error {
 	if !t.dmID.IsValid() {
 		c, err := t.s.CreatePrivateChannel(ctx.Author.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		t.dmID = c.ID
 	}
 
 	return nil
+}
+
+func (t *Tracker) hasID(id discord.MessageID) bool {
+	for _, msg := range t.guildMessages {
+		if msg.ID == id {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (t *Tracker) hasDMID(id discord.MessageID) bool {
+	for _, msg := range t.dms {
+		if msg.ID == id {
+			return true
+		}
+	}
+
+	return false
 }

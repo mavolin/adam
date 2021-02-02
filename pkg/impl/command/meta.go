@@ -34,9 +34,6 @@ type Meta struct {
 	ChannelTypes plugin.ChannelTypes
 	// BotPermissions are the permissions the bot needs to execute this
 	// command.
-	// You can use the helper function plugin.Permissions, to set some.
-	//
-	// If none are set, the bot permissions of the parent will be used.
 	BotPermissions discord.Permissions
 	// Restrictions contains the restrictions of the command.
 	//

@@ -11,10 +11,11 @@ func genArgsInfo(
 	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
 ) (info plugin.ArgsInfo) {
 	info = plugin.ArgsInfo{
-		Required: make([]plugin.ArgInfo, len(rargs)),
-		Optional: make([]plugin.ArgInfo, len(oargs)),
-		Flags:    make([]plugin.FlagInfo, len(flags)),
-		Variadic: variadic,
+		Required:      make([]plugin.ArgInfo, len(rargs)),
+		Optional:      make([]plugin.ArgInfo, len(oargs)),
+		Flags:         make([]plugin.FlagInfo, len(flags)),
+		FlagFormatter: func(name string) string { return "-" + name },
+		Variadic:      variadic,
 	}
 
 	for i, arg := range rargs {
@@ -55,10 +56,11 @@ func genArgsInfol(
 	rargs []LocalizedRequiredArg, oargs []LocalizedOptionalArg, flags []LocalizedFlag, variadic bool,
 ) (plugin.ArgsInfo, error) {
 	info := plugin.ArgsInfo{
-		Required: make([]plugin.ArgInfo, len(rargs)),
-		Optional: make([]plugin.ArgInfo, len(oargs)),
-		Flags:    make([]plugin.FlagInfo, len(flags)),
-		Variadic: variadic,
+		Required:      make([]plugin.ArgInfo, len(rargs)),
+		Optional:      make([]plugin.ArgInfo, len(oargs)),
+		Flags:         make([]plugin.FlagInfo, len(flags)),
+		FlagFormatter: func(name string) string { return "-" + name },
+		Variadic:      variadic,
 	}
 
 	var err error
@@ -133,8 +135,8 @@ func typeInfo(l *i18n.Localizer, t Type) plugin.TypeInfo {
 	}
 }
 
-// newArgumentError2 creates a new errors.ArgumentError using the passed
-// i18n.Config.
+// newArgumentError2 creates a new plugin.ArgumentError using the passed
+// *i18n.Config.
 // It adds the following additional placeholders: name, used_name, raw and
 // position.
 // If raw is longer than a 100 characters, it will be shortened.
@@ -146,8 +148,8 @@ func newArgumentError(
 		WithPlaceholders(placeholders))
 }
 
-// newArgumentError2 creates a new errors.ArgumentError and decides based
-// on the passed Context which of the two i18n.Configs to use.
+// newArgumentError2 creates a new *plugin.ArgumentError and decides based
+// on the passed Context which of the two *i18n.Configs to use.
 // It adds the following additional placeholders: name, used_name, raw and
 // position.
 // If raw is longer than a 100 characters, it will be shortened.

@@ -26,6 +26,11 @@ var (
 	// ReplyMaxTimeout is the default maximum amount of time a ReplyWaiter will
 	// wait, even if a user is still typing.
 	ReplyMaxTimeout = 30 * time.Minute
+
+	// ReplyMiddlewaresKey is the key used to automatically retrieve
+	// middlewares used for ReplyWaiters.
+	// If the ReplyMiddlewaresKey is empty, no middlewares will be added.
+	ReplyMiddlewaresKey = "reply_middlewares"
 )
 
 // typingInterval is the interval in which the client of the user sends the
@@ -72,10 +77,21 @@ type (
 // context.
 // It will wait for a message from the message author in the channel the
 // command was invoked in.
-// Additionally, the ReplyMiddlewares stored in the Context will be added to
-// the waiter.
 // ctx.Author will be assumed as the user allowed to make the reply and
 // ctx.ChannelID will be assumed as the channel the reply will be made in.
+//
+// If the context stores an element with the key ReplyMiddlewaresKey, of type
+// []interface{}, those will be automatically added as middlewares.
+// The respective interfaces may be of the following types:
+//
+//	• func(*state.State, interface{})
+//  • func(*state.State, interface{}) error
+//  • func(*state.State, *state.Base)
+//  • func(*state.State, *state.Base) error
+//  • func(*state.State, *state.MessageCreateEvent)
+//  • func(*state.State, *state.MessageCreateEvent) error
+//
+// All values of other types will be discarded.
 func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 	w = &ReplyWaiter{
 		state:      s,
@@ -85,7 +101,10 @@ func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 		maxTimeout: ReplyMaxTimeout,
 	}
 
-	w.WithMiddlewares(ctx.ReplyMiddlewares...)
+	m := ctx.Get(ReplyMiddlewaresKey)
+	if tm, ok := m.([]interface{}); ok && len(tm) > 0 {
+		w.WithMiddlewares(tm...)
+	}
 
 	return w
 }
@@ -99,7 +118,10 @@ func NewReplyWaiterFromDefault(s *state.State, ctx *plugin.Context) (w *ReplyWai
 	w.userID = ctx.Author.ID
 	w.channelID = ctx.ChannelID
 
-	w.WithMiddlewares(ctx.ReplyMiddlewares...)
+	m := ctx.Get(ReplyMiddlewaresKey)
+	if tm, ok := m.([]interface{}); ok && len(tm) > 0 {
+		w.WithMiddlewares(tm)
+	}
 
 	return
 }
@@ -296,27 +318,15 @@ func (w *ReplyWaiter) AwaitWithContext(
 
 	result := make(chan interface{})
 
-	msgCleanup, err := w.handleMessages(ctx, result)
-	if err != nil {
-		return nil, err
-	}
-
+	msgCleanup := w.handleMessages(ctx, result)
 	defer msgCleanup()
 
 	if len(w.cancelReactions) > 0 {
-		reactCleanup, err := w.handleCancelReactions(ctx, result)
-		if err != nil {
-			return nil, err
-		}
-
+		reactCleanup := w.handleCancelReactions(ctx, result)
 		defer reactCleanup()
 	}
 
-	timeoutCleanup, err := w.watchTimeout(ctx, initialTimeout, typingTimeout, result)
-	if err != nil {
-		return nil, err
-	}
-
+	timeoutCleanup := w.watchTimeout(ctx, initialTimeout, typingTimeout, result)
 	defer timeoutCleanup()
 
 	select {
@@ -334,8 +344,8 @@ func (w *ReplyWaiter) AwaitWithContext(
 	}
 }
 
-func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interface{}) (func(), error) {
-	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageCreateEvent) {
+func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interface{}) func() {
+	rm := w.state.MustAddHandler(func(s *state.State, e *state.MessageCreateEvent) {
 		if e.ChannelID != w.channelID || e.Author.ID != w.userID { // not the message we are waiting for
 			return
 		}
@@ -349,7 +359,7 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 		for _, kt := range w.cancelKeywords {
 			k, err := kt.Get(w.ctx.Localizer)
 			if err != nil {
-				w.ctx.HandleErrorSilent(err)
+				w.ctx.HandleErrorSilently(err)
 				continue
 			}
 
@@ -362,11 +372,11 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 		sendResult(ctx, result, &e.Message)
 	})
 
-	return rm, errors.WithStack(err)
+	return rm
 }
 
-func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
-	rm, err := w.state.AddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
+func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) func() {
+	rm := w.state.MustAddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
 		if e.UserID != w.userID {
 			return
 		}
@@ -378,14 +388,13 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 			}
 		}
 	})
-	if err != nil { // this should never happen
-		return nil, errors.WithStack(err)
-	}
 
 	if !w.noAutoReact {
 		for _, r := range w.cancelReactions {
 			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
-				w.ctx.HandleErrorSilent(err)
+				if !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
+					w.ctx.HandleErrorSilently(err)
+				}
 			}
 		}
 	}
@@ -399,26 +408,26 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 					err := w.state.DeleteReactions(w.channelID, r.messageID, r.reaction)
 					if err != nil {
 						// someone else deleted the resource we are accessing
-						if discorderr.InRange(discorderr.As(err), discorderr.UnknownResource) {
+						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 							return
 						}
 
-						w.ctx.HandleErrorSilent(err)
+						w.ctx.HandleErrorSilently(err)
 					}
 				}
 			}()
 		}
-	}, nil
+	}
 }
 
 func (w *ReplyWaiter) watchTimeout(
 	ctx context.Context, initialTimeout, typingTimeout time.Duration, result chan<- interface{},
-) (rm func(), err error) {
+) (rm func()) {
 	maxTimer := time.NewTimer(w.maxTimeout)
 	t := time.NewTimer(initialTimeout)
 
 	if typingTimeout > 0 {
-		rm, err = w.state.AddHandler(func(s *state.State, e *state.TypingStartEvent) {
+		rm = w.state.MustAddHandler(func(s *state.State, e *state.TypingStartEvent) {
 			if e.ChannelID != w.channelID || e.UserID != w.userID {
 				return
 			}
@@ -429,9 +438,6 @@ func (w *ReplyWaiter) watchTimeout(
 				t.Reset(typingTimeout + typingInterval)
 			}
 		})
-		if err != nil {
-			return nil, err
-		}
 	} else {
 		rm = func() {}
 	}
@@ -458,5 +464,5 @@ func (w *ReplyWaiter) watchTimeout(
 		}
 	}()
 
-	return rm, err
+	return rm
 }

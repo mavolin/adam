@@ -7,6 +7,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -21,12 +22,12 @@ func TestNSFW(t *testing.T) {
 			name: "not a guild",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "nsfw",
@@ -74,12 +75,12 @@ func TestGuildOwner(t *testing.T) {
 			name: "not a guild",
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "is owner",
@@ -88,7 +89,7 @@ func TestGuildOwner(t *testing.T) {
 					GuildID: 123,
 					Author:  discord.User{ID: 456},
 				},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
@@ -105,7 +106,7 @@ func TestGuildOwner(t *testing.T) {
 					GuildID: 123,
 					Author:  discord.User{ID: 456},
 				},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
@@ -214,14 +215,14 @@ func TestAllRoles(t *testing.T) {
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
 						ChannelTypes: plugin.AllChannels,
 					},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -254,14 +255,14 @@ func TestAllRoles(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 789},
 				Member:    &discord.Member{RoleIDs: []discord.RoleID{012}},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{{ID: 456}},
 					},
 				},
 			},
-			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
+			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, i18n.NewFallbackLocalizer()),
 		},
 		{
 			name:    "missing - can manage",
@@ -324,12 +325,12 @@ func TestMustAllRoles(t *testing.T) {
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -362,7 +363,7 @@ func TestMustAllRoles(t *testing.T) {
 					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 456}}},
 				},
 			},
-			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
+			expect: newAllMissingRolesError([]discord.Role{{ID: 456}}, i18n.NewFallbackLocalizer()),
 		},
 	}
 
@@ -393,12 +394,12 @@ func TestAnyRole(t *testing.T) {
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -438,7 +439,7 @@ func TestAnyRole(t *testing.T) {
 					},
 				},
 			},
-			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
+			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, i18n.NewFallbackLocalizer()),
 		},
 		{
 			name:    "missing - can manage",
@@ -501,12 +502,12 @@ func TestMustAnyRole(t *testing.T) {
 			allowed: []discord.RoleID{123},
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -546,7 +547,7 @@ func TestMustAnyRole(t *testing.T) {
 					},
 				},
 			},
-			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, mock.NoOpLocalizer),
+			expect: newAnyMissingRolesError([]discord.Role{{ID: 456}}, i18n.NewFallbackLocalizer()),
 		},
 	}
 
@@ -612,7 +613,7 @@ func TestChannels(t *testing.T) {
 					GuildID:   345,
 				},
 				Member:    &discord.Member{User: discord.User{ID: 678}},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						ID: 345,
@@ -625,7 +626,7 @@ func TestChannels(t *testing.T) {
 					},
 				},
 			},
-			expect: newChannelsError([]discord.ChannelID{456}, mock.NoOpLocalizer),
+			expect: newChannelsError([]discord.ChannelID{456}, i18n.NewFallbackLocalizer()),
 		},
 		{
 			name:           "prohibited - allowed channels not in guild",
@@ -693,12 +694,12 @@ func TestBotPermissions(t *testing.T) {
 			perms: discord.PermissionAdministrator,
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:  "pass guild",
@@ -726,7 +727,7 @@ func TestBotPermissions(t *testing.T) {
 			perms: discord.PermissionStream | discord.PermissionSendTTSMessages | discord.PermissionSendMessages,
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
@@ -745,7 +746,7 @@ func TestBotPermissions(t *testing.T) {
 				},
 			},
 			expect: newBotPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
-				mock.NoOpLocalizer),
+				i18n.NewFallbackLocalizer()),
 		},
 	}
 
@@ -782,12 +783,12 @@ func TestUserPermissions(t *testing.T) {
 			perms: discord.PermissionAdministrator,
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, mock.NoOpLocalizer, true),
+			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:  "pass guild",
@@ -816,7 +817,7 @@ func TestUserPermissions(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
 				Member:    &discord.Member{User: discord.User{ID: 456}},
-				Localizer: mock.NoOpLocalizer,
+				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
@@ -834,7 +835,7 @@ func TestUserPermissions(t *testing.T) {
 				},
 			},
 			expect: newUserPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
-				mock.NoOpLocalizer),
+				i18n.NewFallbackLocalizer()),
 		},
 	}
 

@@ -388,7 +388,7 @@ func (m *RegisteredModule) ShortDescription(l *i18n.Localizer) string {
 	for _, mod := range m.Sources {
 		parent := mod.Modules[len(mod.Modules)-1]
 
-		if desc := parent.GetShortDescription(l); desc != "" {
+		if desc := parent.GetShortDescription(l); len(desc) > 0 {
 			return desc
 		}
 	}
@@ -398,11 +398,21 @@ func (m *RegisteredModule) ShortDescription(l *i18n.Localizer) string {
 
 // LongDescription returns an option thorough description of the
 // module.
+//
+// If the module only provides a short description, that will be
 func (m *RegisteredModule) LongDescription(l *i18n.Localizer) string {
 	for _, mod := range m.Sources {
 		parent := mod.Modules[len(mod.Modules)-1]
 
-		if desc := parent.GetLongDescription(l); desc != "" {
+		if desc := parent.GetLongDescription(l); len(desc) > 0 {
+			return desc
+		}
+	}
+
+	for _, mod := range m.Sources {
+		parent := mod.Modules[len(mod.Modules)-1]
+
+		if desc := parent.GetShortDescription(l); len(desc) > 0 {
 			return desc
 		}
 	}
