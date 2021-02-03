@@ -284,10 +284,6 @@ var (
 // It contains a description stating the conditions that need to be fulfilled
 // for a command to execute.
 //
-// Besides restrictions, this will also be returned, if a user invokes the
-// command in a channel, that is not specified in the plugin.Meta's
-// ChannelTypes.
-//
 // Note that the description might contain mentions, which are intended not
 // to ping anyone, e.g. "You need @role to use this command.".
 // This means you should use allowed mentions if you are custom handling this
@@ -297,7 +293,9 @@ type RestrictionError struct {
 	desc *i18nutil.Text
 
 	// Fatal defines if the RestrictionError is fatal.
-	// Fatal errors won't be shown in the help message.
+	// A RestrictionError is fatal, if the user cannot prevent the error from
+	// occurring again, without the action of another user, e.g. getting a
+	// permission.
 	Fatal bool
 }
 

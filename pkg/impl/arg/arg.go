@@ -30,7 +30,7 @@ type (
 		Description string
 	}
 
-	// RequiredArg is a localized required argument.
+	// LocalizedRequiredArg is a localized required argument.
 	LocalizedRequiredArg struct {
 		// Name is the name of the argument.
 		Name *i18n.Config
@@ -48,14 +48,13 @@ type (
 		Type Type
 		// Default is the default value of the argument.
 		//
-		// If Default is (interface{})(nil), the default of Type will be used,
-		// as returned by Type.Default() will be used.
+		// If Default is (interface{})(nil), Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the argument.
 		Description string
 	}
 
-	// OptionalArg is an localized optional argument.
+	// LocalizedOptionalArg is an localized optional argument.
 	LocalizedOptionalArg struct {
 		// Name is the name of the argument.
 		Name *i18n.Config
@@ -63,8 +62,7 @@ type (
 		Type Type
 		// Default is the default value of the argument.
 		//
-		// If Default is (interface{})(nil), the default of Type will be used,
-		// as returned by Type.Default() will be used.
+		// If Default is (interface{})(nil), Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the argument.
 		Description *i18n.Config
@@ -81,8 +79,7 @@ type (
 		// Default is the default value of the flag, and is used if the flag
 		// doesn't get set.
 		//
-		// If Default is (interface{})(nil), the default of Type will be used,
-		// as returned by Type.Default() will be used.
+		// If Default is (interface{})(nil), Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the flag.
 		Description string
@@ -90,7 +87,7 @@ type (
 		Multi bool
 	}
 
-	// Flag is a localized flag.
+	// LocalizedFlag is a localized flag.
 	LocalizedFlag struct {
 		// Name is the name of the flag.
 		Name string
@@ -101,8 +98,7 @@ type (
 		// Default is the default value of the flag, and is used if the flag
 		// doesn't get set.
 		//
-		// If Default is (interface{})(nil), the default of Type will be used,
-		// as returned by Type.Default() will be used.
+		// If Default is (interface{})(nil), Type.Default() will be used.
 		Default interface{}
 		// Description is an optional short description of the flag.
 		Description *i18n.Config

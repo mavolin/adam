@@ -1,4 +1,3 @@
-// Package core provides core functionality for the bot's router.
 package bot
 
 import (

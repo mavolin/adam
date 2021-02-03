@@ -60,8 +60,7 @@ type pluginProvider struct {
 // PluginProviders will be called in the order they were added to a Bot, until
 // one of the returns a matching plugin.
 //
-// If there are no plugins that match the context of the message, the
-// PluginProvider should return (nil, nil, nil).
+// If there are no plugins to return, all return values should be nil.
 // If there is an error the returned plugins will be discarded, and the error
 // will be noted in the Context of the command, available via
 // Context.UnavailablePluginProviders().

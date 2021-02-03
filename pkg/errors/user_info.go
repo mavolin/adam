@@ -107,7 +107,7 @@ func (i *UserInfo) WithTimestamp(timestamp discord.Timestamp) *UserInfo {
 	return i
 }
 
-// WithTimestamp adds a timestamp of the current time to the UserInfo.
+// WithTimestampNow adds a timestamp of the current time to the UserInfo.
 func (i *UserInfo) WithTimestampNow() *UserInfo {
 	return i.WithTimestamp(discord.NowTimestamp())
 }
@@ -240,18 +240,13 @@ func (i *UserInfo) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *U
 
 // WithField adds the passed field to the UserInfo, and returns a pointer to
 // the UserInfo to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
 func (i *UserInfo) WithField(name, value string) *UserInfo {
 	i.Embed.WithField(name, value)
 	return i
 }
 
 // WithFieldl adds the passed field to the UserInfo, and returns a pointer to
-// the
-// UserInfo to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
+// the UserInfo to allow chaining.
 func (i *UserInfo) WithFieldl(name, value *i18n.Config) *UserInfo {
 	i.Embed.WithFieldl(name, value)
 	return i
@@ -265,28 +260,22 @@ func (i *UserInfo) WithFieldlt(name, value i18n.Term) *UserInfo {
 	return i.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
-// WithField adds the passed inlined field to the UserInfo, and returns a
-// pointer to the UserInfo to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
+// WithInlinedField adds the passed inlined field to the UserInfo, and returns
+// a pointer to the UserInfo to allow chaining.
 func (i *UserInfo) WithInlinedField(name, value string) *UserInfo {
 	i.Embed.WithInlinedField(name, value)
 	return i
 }
 
-// WithFieldl adds the passed inlined field to the UserInfo, and returns a
-// pointer to the UserInfo to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
+// WithInlinedFieldl adds the passed inlined field to the UserInfo, and returns
+// a pointer to the UserInfo to allow chaining.
 func (i *UserInfo) WithInlinedFieldl(name, value *i18n.Config) *UserInfo {
 	i.Embed.WithInlinedFieldl(name, value)
 	return i
 }
 
-// WithFieldlt adds the passed inlined field to the UserInfo, and returns a
-// pointer to the UserInfo to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
+// WithInlinedFieldlt adds the passed inlined field to the UserInfo, and
+// returns a pointer to the UserInfo to allow chaining.
 func (i *UserInfo) WithInlinedFieldlt(name, value i18n.Term) *UserInfo {
 	return i.WithFieldl(name.AsConfig(), value.AsConfig())
 }

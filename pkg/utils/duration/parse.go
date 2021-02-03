@@ -15,7 +15,7 @@ const (
 	// ErrSize indicates that the parsed duration exceeds the maximum size of
 	// a duration.
 	ErrSize ParseErrorCode = "the duration is too large"
-	// ErrMissing units indicates that a number is missing its unit.
+	// ErrMissingUnit indicates that a number is missing its unit.
 	ErrMissingUnit ParseErrorCode = "missing unit in duration"
 	// ErrInvalidUnit indicates an unknown unit.
 	// Val will contain the invalid unit.

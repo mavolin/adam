@@ -27,7 +27,7 @@ func NewLocalizer(t *testing.T) *Localizer {
 	}
 }
 
-// NewLocalizer creates a new Localizer using the passed default.
+// NewLocalizerWithDefault creates a new Localizer using the passed default.
 // If a term is not found, Localizer will return the default value.
 func NewLocalizerWithDefault(def string) *Localizer {
 	return &Localizer{

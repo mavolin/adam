@@ -37,10 +37,8 @@ type (
 		//
 		// Commands can overwrite this, by setting custom ChannelTypes.
 		GetDefaultChannelTypes() ChannelTypes
-		// IsRestricted checks if the user calling the command is restricted
-		// from using this module.
-		// If the bot lacks one ore more permissions command execution will
-		// stop with an plugin.BotPermissionsError.
+		// GetDefaultRestrictionFunc returns the default plugin.RestrictionFunc
+		// of the command.
 		//
 		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
 		// To override a RestrictionFunc defined by a parent without defining a

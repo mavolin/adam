@@ -97,8 +97,8 @@ func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 	}
 }
 
-// MustAllRoles asserts that the user has all of the passed roles or is able
-// to assign themself all of the passed roles.
+// AllRoles asserts that the user has all of the passed roles or is able to
+// assign themself all of the passed roles.
 // You can mix roles from different guilds, roles that aren't available in a
 // guild are ignored.
 // However, the guild the command was invoked in must have at least one of the
@@ -415,7 +415,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 	}
 }
 
-// ChannelType asserts that a command is executed in a channel of an allowed
+// ChannelTypes asserts that a command is executed in a channel of an allowed
 // type.
 //
 // Note that the resulting plugin.RestrictionFunc won't return a

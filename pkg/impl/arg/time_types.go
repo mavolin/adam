@@ -40,7 +40,7 @@ type Duration struct {
 	// Defaults to 0.
 	Min time.Duration
 	// Max is the inclusive maximum of the duration.
-	// If Max is 0, there is no maximum.
+	// If Max is 0, there won't be an upper bound.
 	Max time.Duration
 }
 
@@ -105,7 +105,8 @@ func (d Duration) Default() interface{} {
 // A time can either be specified without a UTC offset following the format of
 // '15:04', or with a UTC offset: '15:04 -0700'.
 // In the first case, DefaultLocation will be assumed as time zone, unless
-// the context has a variable called "location" that is of type *time.Location.
+// the context has an element stored under the key LocationKey that is of type
+// *time.Location.
 // If both are nil, UTC offsets will be required.
 //
 // Go type: time.Time
@@ -368,7 +369,7 @@ func (t DateTime) Default() interface{} {
 }
 
 // =============================================================================
-// Location
+// TimeZone
 // =====================================================================================
 
 // TimeZone is the Type used for time zones.

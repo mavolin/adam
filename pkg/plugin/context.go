@@ -85,7 +85,7 @@ func (ctx *Context) Reply(content ...interface{}) (*discord.Message, error) {
 	return ctx.ReplyMessage(api.SendMessageData{Content: fmt.Sprint(content...)})
 }
 
-// Reply replies with the passed message in the channel the command was
+// Replyf replies with the passed message in the channel the command was
 // originally sent in.
 // The message will be formatted as fmt.Sprintf(format, a...).
 func (ctx *Context) Replyf(format string, a ...interface{}) (*discord.Message, error) {
@@ -393,14 +393,14 @@ type (
 	// the ability to delete answers after a set amount of time, after the bot
 	// responds.
 	Replier interface {
-		// ReplyMessage sends a message in the invoking channel.
+		// Reply sends a message in the invoking channel.
 		Reply(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 		// ReplyDM sends the passed message in a direct message to the user.
 		ReplyDM(ctx *Context, data api.SendMessageData) (*discord.Message, error)
 
 		// Edit edits a message in the invoking channel
 		Edit(ctx *Context, messageID discord.MessageID, data api.EditMessageData) (*discord.Message, error)
-		// Edit edits a message sent in the direct message channel with the
+		// EditDM edits a message sent in the direct message channel with the
 		// invoking user.
 		EditDM(ctx *Context, messageID discord.MessageID, data api.EditMessageData) (*discord.Message, error)
 	}
@@ -408,15 +408,18 @@ type (
 	// DiscordDataProvider is an embeddable interface used to extend a Context
 	// with additional information.
 	DiscordDataProvider interface {
-		// Guild returns a callback returning guild the message was sent in.
-		// If this happened in a private channel, Guild will return nil, nil.
-		GuildAsync() func() (*discord.Guild, error)
-		// Self returns a callback returning the *discord.Member the bot
-		// Channel returns a callback returning channel the message was sent
+		// GuildAsync returns a callback returning guild the message was sent
 		// in.
+		// If the command was invoked in a private channel, Guild will return
+		// (nil, nil).
+		GuildAsync() func() (*discord.Guild, error)
+		// ChannelAsync returns a callback returning the Channel the message
+		// was sent in.
 		ChannelAsync() func() (*discord.Channel, error)
-		// represents in the calling guild.
-		// If this happened in a private channel, Self will return (nil, nil).
+		// SelfAsync returns a callback returning the member object of the bot
+		// in the calling guild.
+		// If this happened in a private channel, SelfAsync will return
+		// (nil, nil).
 		SelfAsync() func() (*discord.Member, error)
 	}
 
@@ -545,7 +548,7 @@ type (
 	ErrorHandler interface {
 		// HandleError hands the error to the bot's error handler.
 		HandleError(err error)
-		// HandleErrorSilent wraps the error using errors.Silent and hands it
+		// HandleErrorSilently wraps the error using errors.Silent and hands it
 		// to the bot's error handler.
 		HandleErrorSilently(err error)
 	}

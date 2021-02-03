@@ -8,10 +8,12 @@ import (
 )
 
 type (
-	// RegisteredModule is the abstraction of a module as returned by a
-	// Provider.
-	// In contrast to the regular module abstraction, RegisteredModule will
-	// return data that takes into account it's parents settings.
+	// RegisteredModule is the resolved module as returned by a Provider.
+	// In contrast to the regular module abstraction, RegisteredModule's fields
+	// take into account it's parents settings, as the router would see them.
+	// It's plugins reflect the plugins provided by all modules with the same
+	// Identifier, i.e. a plugin with the same name provided through different
+	// bot.PluginProviders.
 	RegisteredModule struct {
 		// If the module is top-level Parent will be nil.
 		// Parent is the parent of this module.

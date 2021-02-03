@@ -128,7 +128,7 @@ func (a Args) Float64(i int) float64 { return a[i].(float64) }
 // String returns the argument with the passed index as string.
 func (a Args) String(i int) string { return a[i].(string) }
 
-// Member returns the argument with the passed index as *discord.User.
+// User returns the argument with the passed index as *discord.User.
 func (a Args) User(i int) *discord.User { return a[i].(*discord.User) }
 
 // Member returns the argument with the passed index as *discord.Member.

@@ -75,7 +75,7 @@ type (
 		// IsHidden specifies whether this command will be hidden in the help
 		// page.
 		IsHidden() bool
-		// GetChannelType returns the ChannelTypes this command may be invoked
+		// GetChannelTypes returns the ChannelTypes this command may be invoked
 		// in.
 		//
 		// Setting this overrides ChannelTypes defined by the parent.

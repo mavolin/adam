@@ -11,9 +11,9 @@ import (
 
 var BuiltInProvider = "built_in"
 
-// RegisteredCommand is the abstraction of a command as returned by a Provider.
-// In contrast to the regular command abstraction, RegisteredCommand will
-// return data that takes into account it's parents settings.
+// RegisteredCommand is a resolved command as returned by a Provider.
+// In contrast to the regular command abstraction, RegisteredCommand's fields
+// take into account it's parents settings, as the router would see them.
 type RegisteredCommand struct {
 	// double pointer used to determine if the parent is just nil or not set
 	parent   **RegisteredModule

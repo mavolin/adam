@@ -45,7 +45,7 @@ func Silent(err error) error {
 	}
 }
 
-// Silent creates a new silent error using the passed error as cause.
+// MustSilent creates a new silent error using the passed error as cause.
 //
 // If the error is already a *SilentError, it will be returned as is, and if
 // the error is of type *InternalError, the cause of the error

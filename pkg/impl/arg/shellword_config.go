@@ -61,8 +61,8 @@ func (c ShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	return []plugin.ArgsInfo{info}
 }
 
-// ShellwordConfig is a plugin.ArgConfig that roughly follows the parsing rules
-// of the Bourne shell.
+// LocalizedShellwordConfig is a plugin.ArgConfig that roughly follows the
+// parsing rules of the Bourne shell.
 //
 // Flags
 //

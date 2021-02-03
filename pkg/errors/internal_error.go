@@ -74,7 +74,7 @@ func withStack(err error) error {
 	}
 }
 
-// MustInterna creates a new *InternalError from the passed error.
+// MustInternal creates a new *InternalError from the passed error.
 //
 // If cause is an *InternalError, it will be returned as is, and if the error
 // is of type *SilentError the cause will be extracted first.

@@ -7,7 +7,8 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// Meta is the localized implementation of the plugin.Command interface.
+// LocalizedMeta is the localized implementation of the plugin.CommandMeta
+// interface.
 type LocalizedMeta struct {
 	// Name is the name of the command.
 	// It may not contain whitespace or dots.

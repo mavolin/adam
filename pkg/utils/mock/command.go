@@ -39,8 +39,8 @@ func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.Registe
 	return c
 }
 
-// GenerateRegisteredCommand creates a mocked RegisteredCommand from the passed
-// Command using the passed provider name and defaults.
+// GenerateRegisteredCommandWithDefaults creates a mocked RegisteredCommand
+// from the passed Command using the passed provider name and defaults.
 func GenerateRegisteredCommandWithDefaults(
 	providerName string, cmd Command, defaults plugin.Defaults,
 ) *plugin.RegisteredCommand {

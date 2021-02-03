@@ -34,27 +34,27 @@ var _ plugin.Replier = new(Tracker)
 //
 // Example Usage
 //
-//  b, _ := bot.New(bot.Options{Token: "abc"})
+// 	b, _ := bot.New(bot.Options{Token: "abc"})
 //
-//	// A tracker is typically added to a Context through a middleware.
-//	// Make sure that the middleware replacing the default replier is executed
-//	// before any middlewares that could send replies.
+// 	// A tracker is typically added to a Context through a middleware.
+// 	// Make sure that the middleware replacing the default replier is executed
+// 	// before any middlewares that could send replies.
 //
-//	b.MustAddMiddleware(func(next bot.CommandFunc) bot.CommandFunc {
-//		return func(s *state.State, ctx *plugin.Context) error {
-//			t := NewTracker(s)
-//			ctx.Replier = t // replace the default replier
+// 	b.MustAddMiddleware(func(next bot.CommandFunc) bot.CommandFunc {
+// 		return func(s *state.State, ctx *plugin.Context) error {
+// 			t := NewTracker(s)
+// 			ctx.Replier = t // replace the default replier
 //
-//			err := next(s, ctx)
-//			if err != nil {
-//				return err
-//			}
+// 			err := next(s, ctx)
+// 			if err != nil {
+// 				return err
+// 			}
 //
-//			// do something with t.DMs() and t.GuildMessages()
+// 			// do something with t.DMs() and t.GuildMessages()
 //
-//			return nil
-//		}
-//	})
+// 			return nil
+// 		}
+// 	})
 func NewTracker(s *state.State) *Tracker {
 	return &Tracker{s: s}
 }

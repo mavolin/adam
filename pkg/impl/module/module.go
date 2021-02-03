@@ -26,7 +26,7 @@ func New(meta plugin.ModuleMeta) *Module {
 	}
 }
 
-// AddCommands adds the passed command to the module.
+// AddCommand adds the passed command to the module.
 func (m *Module) AddCommand(cmd plugin.Command) {
 	m.commands = append(m.commands, cmd)
 }

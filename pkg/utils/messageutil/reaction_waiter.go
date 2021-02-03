@@ -80,7 +80,7 @@ func (w *ReactionWaiter) NoAutoReact() *ReactionWaiter {
 	return w
 }
 
-// NoAutoReact disables the automatic deletion of the reactions.
+// NoAutoDelete disables the automatic deletion of the reactions.
 func (w *ReactionWaiter) NoAutoDelete() *ReactionWaiter {
 	w.noAutoDelete = true
 	return w
@@ -96,7 +96,7 @@ func (w *ReactionWaiter) NoAutoDelete() *ReactionWaiter {
 //		• func(*state.State, *state.Base) error
 //		• func(*state.State, *state.MessageReactionAddEvent)
 //		• func(*state.State, *state.MessageReactionAddEvent) error
-func (w *ReactionWaiter) WithMiddleware(middlewares ...interface{}) *ReactionWaiter {
+func (w *ReactionWaiter) WithMiddlewares(middlewares ...interface{}) *ReactionWaiter {
 	if len(w.middlewares) == 0 {
 		w.middlewares = make([]interface{}, 0, len(middlewares))
 	}
@@ -137,8 +137,8 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 	return
 }
 
-// AwaitReply awaits a reaction of the user until they signal cancellation or
-// the timeout expires.
+// Await awaits a reaction of the user until they signal cancellation or the
+// timeout expires.
 //
 // If the timeout is reached, a *TimeoutError will be returned.
 // If the user cancels the wait or deletes the message, errors.Abort will be

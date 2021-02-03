@@ -29,8 +29,8 @@ func GenerateRegisteredModule(providerName string, mod plugin.Module) *plugin.Re
 	return rmod[0]
 }
 
-// GenerateRegisteredModule generates a RegisteredModule from the passed source
-// module using the passed provider name and defaults.
+// GenerateRegisteredModuleWithDefaults generates a RegisteredModule from the
+// passed source module using the passed provider name and defaults.
 func GenerateRegisteredModuleWithDefaults(
 	providerName string, mod plugin.Module, defaults plugin.Defaults,
 ) *plugin.RegisteredModule {

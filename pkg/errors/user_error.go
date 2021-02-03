@@ -108,7 +108,7 @@ func (e *UserError) WithTimestamp(timestamp discord.Timestamp) *UserError {
 	return e
 }
 
-// WithTimestamp adds a timestamp of the current time to the error.
+// WithTimestampNow adds a timestamp of the current time to the error.
 func (e *UserError) WithTimestampNow() *UserError {
 	return e.WithTimestamp(discord.NowTimestamp())
 }
@@ -241,8 +241,6 @@ func (e *UserError) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *
 
 // WithField adds the passed field to the error, and returns a pointer to the
 // UserError to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
 func (e *UserError) WithField(name, value string) *UserError {
 	e.Embed.WithField(name, value)
 	return e
@@ -250,8 +248,6 @@ func (e *UserError) WithField(name, value string) *UserError {
 
 // WithFieldl adds the passed field to the error, and returns a pointer to the
 // UserError to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
 func (e *UserError) WithFieldl(name, value *i18n.Config) *UserError {
 	e.Embed.WithFieldl(name, value)
 	return e
@@ -259,34 +255,26 @@ func (e *UserError) WithFieldl(name, value *i18n.Config) *UserError {
 
 // WithFieldlt adds the passed field to the error, and returns a pointer to the
 // UserError to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
 func (e *UserError) WithFieldlt(name, value i18n.Term) *UserError {
 	return e.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
-// WithField adds the passed inlined field to the error, and returns a pointer
-// to the UserError to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
+// WithInlinedField adds the passed inlined field to the error, and returns a
+// pointer to the UserError to allow chaining.
 func (e *UserError) WithInlinedField(name, value string) *UserError {
 	e.Embed.WithInlinedField(name, value)
 	return e
 }
 
-// WithFieldl adds the passed inlined field to the error, and returns a pointer
-// to the UserError to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
+// WithInlinedFieldl adds the passed inlined field to the error, and returns a
+// pointer to the UserError to allow chaining.
 func (e *UserError) WithInlinedFieldl(name, value *i18n.Config) *UserError {
 	e.Embed.WithInlinedFieldl(name, value)
 	return e
 }
 
-// WithFieldlt adds the passed inlined field to the error, and returns a
+// WithInlinedFieldlt adds the passed inlined field to the error, and returns a
 // pointer to the UserError to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
 func (e *UserError) WithInlinedFieldlt(name, value i18n.Term) *UserError {
 	return e.WithFieldl(name.AsConfig(), value.AsConfig())
 }

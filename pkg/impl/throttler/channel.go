@@ -16,7 +16,7 @@ type channel struct {
 
 var _ plugin.Throttler = new(channel)
 
-// PerUser returns a new plugin.Throttler that works on a per-channel basis.
+// PerChannel returns a new plugin.Throttler that works on a per-channel basis.
 // It allows at maximum the passed number of invokes in the passed duration.
 func PerChannel(maxInvokes uint, duration time.Duration) plugin.Throttler {
 	return &channel{throttler: newSnowflakeThrottler(maxInvokes, duration)}

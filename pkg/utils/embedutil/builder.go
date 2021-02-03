@@ -43,7 +43,7 @@ type (
 	}
 )
 
-// NewLocalizedEmbedBuilder creates a new Builder.
+// NewBuilder creates a new Builder.
 func NewBuilder() *Builder {
 	return new(Builder)
 }
@@ -109,7 +109,7 @@ func (b *Builder) WithTimestamp(timestamp discord.Timestamp) *Builder {
 	return b
 }
 
-// WithTimestamp adds a timestamp of the current time to the embed.
+// WithTimestampNow adds a timestamp of the current time to the embed.
 func (b *Builder) WithTimestampNow() *Builder {
 	return b.WithTimestamp(discord.NowTimestamp())
 }
@@ -287,10 +287,8 @@ func (b *Builder) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *Bu
 	return b.WithAuthorWithURLl(name.AsConfig(), icon, url)
 }
 
-// WithFieldt appends a field (name: max. 256 characters, value: max 1024
+// WithField appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-// providerName or value may be empty, in which case the field won't have a name or
-// value.
 func (b *Builder) WithField(name, value string) *Builder {
 	b.withField(name, value, false)
 	return b
@@ -298,8 +296,6 @@ func (b *Builder) WithField(name, value string) *Builder {
 
 // WithFieldl appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-// providerName or value may be empty, in which case the field won't have a name or
-// value.
 func (b *Builder) WithFieldl(name, value *i18n.Config) *Builder {
 	b.withFieldl(name, value, false)
 	return b
@@ -307,16 +303,12 @@ func (b *Builder) WithFieldl(name, value *i18n.Config) *Builder {
 
 // WithFieldlt appends a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-// providerName or value may be empty, in which case the field won't have a name or
-// value.
 func (b *Builder) WithFieldlt(name, value i18n.Term) *Builder {
 	return b.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
 // WithInlinedField appends an inlined field (name: max. 256 characters, value:
 // max 1024 characters) to the embed.
-// providerName or value may be empty, in which case the field won't have a name or
-// value.
 func (b *Builder) WithInlinedField(name, value string) *Builder {
 	b.withField(name, value, true)
 	return b
@@ -324,8 +316,6 @@ func (b *Builder) WithInlinedField(name, value string) *Builder {
 
 // WithInlinedFieldl appends an inlined field (name: max. 256 characters,
 // value: max 1024 characters) to the embed.
-// providerName or value may be empty, in which case the field won't have a name or
-// value.
 func (b *Builder) WithInlinedFieldl(name, value *i18n.Config) *Builder {
 	b.withFieldl(name, value, true)
 	return b
@@ -333,8 +323,6 @@ func (b *Builder) WithInlinedFieldl(name, value *i18n.Config) *Builder {
 
 // WithInlinedFieldlt appends an inlined field (name: max. 256 characters,
 // value: max 1024 characters) to the embed.
-// providerName or value may be empty, in which case the field won't have a name or
-// value.
 func (b *Builder) WithInlinedFieldlt(name, value i18n.Term) *Builder {
 	return b.WithInlinedFieldl(name.AsConfig(), value.AsConfig())
 }

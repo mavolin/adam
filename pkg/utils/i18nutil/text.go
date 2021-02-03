@@ -23,7 +23,7 @@ func NewTextl(src *i18n.Config) *Text {
 	return &Text{config: src}
 }
 
-// NewTextl returns a new localized Text using the passed i18n.Term.
+// NewTextlt returns a new localized Text using the passed i18n.Term.
 func NewTextlt(src i18n.Term) *Text {
 	return NewTextl(src.AsConfig())
 }

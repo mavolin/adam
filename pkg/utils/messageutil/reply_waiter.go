@@ -264,10 +264,10 @@ func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 	return
 }
 
-// AwaitReply awaits a reply of the user until the user signals cancellation,
-// the initial timeout expires and the user is not typing, or the user stops
-// typing and the typing timeout is reached. Note you need the typing intent to
-// monitor typing.
+// Await awaits a reply of the user until the user signals cancellation, the
+// initial timeout expires and the user is not typing, or the user stops typing
+// and the typing timeout is reached.
+// Note that you need the typing intent to monitor typing.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.
 // If the user cancels the reply, errors.Abort will be returned.
@@ -282,10 +282,10 @@ func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*disco
 	return w.AwaitWithContext(context.Background(), initialTimeout, typingTimeout)
 }
 
-// AwaitReply awaits a reply of the user until the user signals cancellation,
-// the initial timeout expires and the user is not typing or the user stops
-// typing and the typing timeout is reached. Note you need the typing intent to
-// monitor typing.
+// AwaitWithContext awaits a reply of the user until the user signals
+// cancellation, the initial timeout expires and the user is not typing or the
+// user stops typing and the typing timeout is reached.
+// Note that you need the typing intent to monitor typing.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.
 // If the user cancels the reply, errors.Abort will be returned.
