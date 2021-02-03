@@ -23,7 +23,7 @@ type (
 // If a plugin does not implement the interface, it will be assumed that the
 // plugin does not provide any middlewares.
 type Middlewarer interface {
-	// Middlewares returns a copy of the MiddlewareFuncs of the plugin.
+	// Middlewares returns the MiddlewareFuncs of the plugin.
 	Middlewares() []MiddlewareFunc
 }
 
@@ -167,5 +167,9 @@ func (m *MiddlewareManager) MustAddMiddleware(f interface{}) {
 
 // Middlewares returns the middlewares of the MiddlewareManager.
 func (m *MiddlewareManager) Middlewares() []MiddlewareFunc {
+	if m == nil {
+		return nil
+	}
+
 	return m.middlewares
 }

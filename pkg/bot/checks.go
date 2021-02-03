@@ -69,7 +69,7 @@ func CheckChannelTypes(next CommandFunc) CommandFunc {
 func CheckBotPermissions(next CommandFunc) CommandFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if ctx.InvokedCommand.BotPermissions == 0 {
-			return nil
+			return next(s, ctx)
 		}
 
 		if ctx.GuildID == 0 && !permutil.DMPermissions.Has(ctx.InvokedCommand.BotPermissions) {

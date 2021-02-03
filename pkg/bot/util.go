@@ -76,6 +76,7 @@ func findCommand(
 
 		cmds = mod.Commands()
 		mods = mod.Modules()
+		id += "." + plugin.Identifier(mod.GetName())
 	}
 
 	return nil, ""

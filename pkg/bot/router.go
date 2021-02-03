@@ -31,8 +31,8 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		localizer = i18n.NewFallbackLocalizer()
 	}
 
-	invoke := b.hasPrefix(msg.Content, prefixes)
-	if len(invoke) == 0 && msg.GuildID != 0 { // not an invoke or just the prefix; ignoring dms
+	invoke := b.hasPrefix(msg.Content, prefixes, msg.GuildID.IsValid())
+	if len(invoke) == 0 {
 		return
 	}
 
@@ -84,7 +84,7 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 // prefixes or a mention of the bot.
 // If so it the invoke stripped of the prefix.
 // Otherwise it returns an empty string.
-func (b *Bot) hasPrefix(invoke string, prefixes []string) string {
+func (b *Bot) hasPrefix(invoke string, prefixes []string, guild bool) string {
 	indexes := b.selfMentionRegexp.FindStringIndex(invoke)
 	if indexes != nil {
 		return strings.TrimLeft(invoke[indexes[1]:], whitespace)
@@ -96,7 +96,11 @@ func (b *Bot) hasPrefix(invoke string, prefixes []string) string {
 		}
 	}
 
-	return ""
+	if guild {
+		return ""
+	} else { // prefix isn't required in direct messages
+		return invoke
+	}
 }
 
 func (b *Bot) findCommand(
@@ -123,10 +127,11 @@ func (b *Bot) findCommand(
 	for i, p := range b.pluginProviders {
 		cmds, mods, err := p.provider(base, msg)
 		if err != nil {
-			ctxprovider.unavailableProviders = append(ctxprovider.unavailableProviders, plugin.UnavailablePluginProvider{
-				Name:  p.name,
-				Error: err,
-			})
+			ctxprovider.unavailableProviders = append(ctxprovider.unavailableProviders,
+				plugin.UnavailablePluginProvider{
+					Name:  p.name,
+					Error: err,
+				})
 		} else {
 			repo := plugin.Repository{
 				ProviderName: p.name,
@@ -187,12 +192,12 @@ func (b *Bot) applyMiddlewares(ctx *plugin.Context) error {
 	middlewares := b.Middlewares()
 
 	for _, mod := range ctx.InvokedCommand.SourceParents {
-		if m, ok := mod.(Middlewarer); ok {
+		if m, ok := mod.(Middlewarer); ok && m != nil {
 			middlewares = append(middlewares, m.Middlewares()...)
 		}
 	}
 
-	if m, ok := ctx.InvokedCommand.Source.(Middlewarer); ok {
+	if m, ok := ctx.InvokedCommand.Source.(Middlewarer); ok && m != nil {
 		middlewares = append(middlewares, m.Middlewares()...)
 	}
 
