@@ -29,39 +29,39 @@ func MemberPermissionsInChannel(g discord.Guild, c discord.Channel, m discord.Me
 	return discord.CalcOverwrites(g, c, m)
 }
 
-// CanMembersInteract checks if a can take administrative action on b.
+// CanManageMember checks if a can take administrative action on b.
 // Both members must be in the passed guild.
-func CanMembersInteract(g discord.Guild, a, b discord.Member) bool {
+func CanManageMember(g discord.Guild, a, b discord.Member) bool {
 	if g.OwnerID == a.User.ID {
 		return true
 	} else if g.OwnerID == b.User.ID {
 		return false
 	}
 
-	return len(a.RoleIDs) > 0 && (len(b.RoleIDs) == 0 || CanRoleIDsInteract(g, a.RoleIDs[0], b.RoleIDs[0]))
+	return len(a.RoleIDs) > 0 && (len(b.RoleIDs) == 0 || CanManageRoleID(g, a.RoleIDs[0], b.RoleIDs[0]))
 }
 
-// CanMemberInteractWithRole checks if the passed Member can take
-// administrative action on the role with the passed id.
+// CanMemberManageRole checks if the passed Member can take administrative
+// action on the role with the passed id.
 // Both member and role must be in the passed guild.
-func CanMemberInteractWithRole(g discord.Guild, m discord.Member, roleID discord.RoleID) bool {
+func CanMemberManageRole(g discord.Guild, m discord.Member, roleID discord.RoleID) bool {
 	if g.OwnerID == m.User.ID {
 		return true
 	}
 
-	return len(m.RoleIDs) > 0 && CanRoleIDsInteract(g, m.RoleIDs[0], roleID)
+	return len(m.RoleIDs) > 0 && CanManageRoleID(g, m.RoleIDs[0], roleID)
 }
 
-// CanRolesInteract checks if a can take administrative action on b.
+// CanManageRole checks if a can take administrative action on b.
 // Both roles must be in the same guild.
-func CanRolesInteract(a, b discord.Role) bool {
+func CanManageRole(a, b discord.Role) bool {
 	return a.Position >= b.Position
 }
 
-// CanRoleIDsInteract checks if the role with the ID a can take administrative
+// CanManageRoleID checks if the role with the ID a can take administrative
 // action on the role with the ID b.
 // Both roles must be in the passed guild.
-func CanRoleIDsInteract(g discord.Guild, a, b discord.RoleID) bool {
+func CanManageRoleID(g discord.Guild, a, b discord.RoleID) bool {
 	var apos, bpos int
 
 	for _, r := range g.Roles {
