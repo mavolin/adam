@@ -88,24 +88,16 @@ func (c mockCommand) Invoke(s *state.State, ctx *Context) (interface{}, error) {
 }
 
 type mockModule struct {
-	name                string
-	shortDesc           string
-	longDesc            string
-	hidden              bool
-	defaultChannelTypes ChannelTypes
-	defaultRestrictions RestrictionFunc
-	defaultThrottler    Throttler
-	commands            []Command
-	modules             []Module
+	name      string
+	shortDesc string
+	longDesc  string
+	commands  []Command
+	modules   []Module
 }
 
 func (c mockModule) GetName() string                            { return c.name }
 func (c mockModule) GetShortDescription(*i18n.Localizer) string { return c.shortDesc }
 func (c mockModule) GetLongDescription(*i18n.Localizer) string  { return c.longDesc }
-func (c mockModule) IsHidden() bool                             { return c.hidden }
-func (c mockModule) GetDefaultChannelTypes() ChannelTypes       { return c.defaultChannelTypes }
-func (c mockModule) GetDefaultRestrictionFunc() RestrictionFunc { return c.defaultRestrictions }
-func (c mockModule) GetDefaultThrottler() Throttler             { return c.defaultThrottler }
 func (c mockModule) Commands() []Command                        { return c.commands }
 func (c mockModule) Modules() []Module                          { return c.modules }
 

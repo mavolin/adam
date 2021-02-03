@@ -10,64 +10,18 @@ import (
 )
 
 func Test_GenerateRegisteredCommands(t *testing.T) {
-	t.Run("use defaults", func(t *testing.T) {
-		defaults := Defaults{
-			ChannelTypes: 12,
-			Throttler:    mockThrottler{cmp: "abc"},
-			Restrictions: nil,
-		}
-
-		repos := []Repository{
-			{
-				ProviderName: "",
-				Modules:      nil,
-				Commands:     []Command{mockCommand{name: "abc"}},
-				Defaults:     defaults,
-			},
-		}
-
-		var nilRegisteredModule *RegisteredModule = nil
-
-		expect := []*RegisteredCommand{
-			{
-				parent:          &nilRegisteredModule,
-				ProviderName:    "",
-				Source:          mockCommand{name: "abc"},
-				SourceParents:   nil,
-				Identifier:      ".abc",
-				Name:            "abc",
-				ChannelTypes:    defaults.ChannelTypes,
-				BotPermissions:  0,
-				Throttler:       defaults.Throttler,
-				restrictionFunc: defaults.Restrictions,
-			},
-		}
-
-		actual := GenerateRegisteredCommands(repos)
-
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("command overwrite", func(t *testing.T) {
-		defaults := Defaults{
-			ChannelTypes: 12,
-			Throttler:    mockThrottler{cmp: "abc"},
-			Restrictions: nil,
-		}
-
+	t.Run("single", func(t *testing.T) {
 		repos := []Repository{
 			{
 				ProviderName: "",
 				Modules:      nil,
 				Commands: []Command{
 					mockCommand{
-						name:         "abc",
-						hidden:       true,
-						channelTypes: 23,
-						throttler:    mockThrottler{cmp: "bcd"},
+						name:      "abc",
+						hidden:    true,
+						throttler: mockThrottler{cmp: "bcd"},
 					},
 				},
-				Defaults: defaults,
 			},
 		}
 
@@ -78,16 +32,15 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				parent:       &nilRegisteredModule,
 				ProviderName: "",
 				Source: mockCommand{
-					name:         "abc",
-					hidden:       true,
-					channelTypes: 23,
-					throttler:    mockThrottler{cmp: "bcd"},
+					name:      "abc",
+					hidden:    true,
+					throttler: mockThrottler{cmp: "bcd"},
 				},
 				SourceParents:   nil,
 				Identifier:      ".abc",
 				Name:            "abc",
 				Hidden:          true,
-				ChannelTypes:    23,
+				ChannelTypes:    AllChannels,
 				BotPermissions:  0,
 				Throttler:       mockThrottler{cmp: "bcd"},
 				restrictionFunc: nil,
@@ -120,6 +73,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				Source:       mockCommand{name: "def"},
 				Identifier:   ".def",
 				Name:         "def",
+				ChannelTypes: AllChannels,
 			},
 		}
 
@@ -148,6 +102,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				Source:       mockCommand{name: "def"},
 				Identifier:   ".def",
 				Name:         "def",
+				ChannelTypes: AllChannels,
 			},
 			{
 				parent:       &nilRegisteredModule,
@@ -155,6 +110,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				Source:       mockCommand{name: "jkl"},
 				Identifier:   ".jkl",
 				Name:         "jkl",
+				ChannelTypes: AllChannels,
 			},
 		}
 
@@ -183,6 +139,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				Source:       mockCommand{name: "def"},
 				Identifier:   ".def",
 				Name:         "def",
+				ChannelTypes: AllChannels,
 			},
 		}
 
@@ -222,9 +179,10 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 					name:    "def",
 					aliases: []string{"ghi", "jkl"},
 				},
-				Identifier: ".def",
-				Name:       "def",
-				Aliases:    []string{"ghi", "jkl"},
+				Identifier:   ".def",
+				Name:         "def",
+				Aliases:      []string{"ghi", "jkl"},
+				ChannelTypes: AllChannels,
 			},
 			{
 				parent:       &nilRegisteredModule,
@@ -233,9 +191,10 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 					name:    "pqr",
 					aliases: []string{"jkl", "stu"},
 				},
-				Identifier: ".pqr",
-				Name:       "pqr",
-				Aliases:    []string{"stu"},
+				Identifier:   ".pqr",
+				Name:         "pqr",
+				Aliases:      []string{"stu"},
+				ChannelTypes: AllChannels,
 			},
 		}
 

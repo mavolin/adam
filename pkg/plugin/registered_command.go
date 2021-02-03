@@ -48,17 +48,12 @@ type RegisteredCommand struct {
 	Hidden bool
 	// ChannelTypes are the ChannelTypes this command can be run in.
 	//
-	// If the command itself did not define some, ChannelTypes will be set to
-	// the ChannelTypes of the closest parent that has defaults defined.
+	// If the command itself did not define some, ChannelTypes will be
+	// AllChannels.
 	ChannelTypes ChannelTypes
 	// BotPermissions are the permissions this command needs to execute.
-	// If the command itself did not define some, BotPermissions will be set
-	// with the permissions of the closest parent that has a default defined.
 	BotPermissions discord.Permissions
 	// Throttler is the Throttler of this command.
-	//
-	// If the command itself did not define one, Throttler will be set to the
-	// Throttler of the closest parent.
 	Throttler Throttler
 
 	restrictionFunc RestrictionFunc
@@ -117,10 +112,14 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 				Name:            scmd.GetName(),
 				Args:            scmd.GetArgs(),
 				Hidden:          scmd.IsHidden(),
-				ChannelTypes:    repo.Defaults.ChannelTypes,
+				ChannelTypes:    scmd.GetChannelTypes(),
 				BotPermissions:  scmd.GetBotPermissions(),
-				Throttler:       repo.Defaults.Throttler,
-				restrictionFunc: repo.Defaults.Restrictions,
+				Throttler:       scmd.GetThrottler(),
+				restrictionFunc: scmd.GetRestrictionFunc(),
+			}
+
+			if rcmd.ChannelTypes == 0 {
+				rcmd.ChannelTypes = AllChannels
 			}
 
 			if saliases := scmd.GetAliases(); len(saliases) > 0 {

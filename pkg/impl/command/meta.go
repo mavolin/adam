@@ -30,20 +30,14 @@ type Meta struct {
 	Hidden bool
 	// ChannelTypes are the plugin.ChannelTypes the command may be executed in.
 	//
-	// If this is not set, the channel types of the parent will be used.
+	// If this is not set, AllChannels will be used.
 	ChannelTypes plugin.ChannelTypes
 	// BotPermissions are the permissions the bot needs to execute this
 	// command.
 	BotPermissions discord.Permissions
-	// Restrictions contains the restrictions of the command.
-	//
-	// If this is nil, the restrictions of the parent will be used.
-	// Use restriction.None to prevent inheritance.
+	// Restrictions contains the optional restrictions of the command.
 	Restrictions plugin.RestrictionFunc
-	// Throttler is the plugin.Throttler of the command.
-	//
-	// If none is set, the throttler of the parent will be used.
-	// Use throttler.None to prevent inheritance.
+	// Throttler is the optional plugin.Throttler of the command.
 	Throttler plugin.Throttler
 }
 

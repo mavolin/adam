@@ -77,10 +77,7 @@ type (
 		IsHidden() bool
 		// GetChannelTypes returns the ChannelTypes this command may be invoked
 		// in.
-		//
-		// Setting this overrides ChannelTypes defined by the parent.
-		//
-		// If this 0, the parents ChannelTypes will be used.
+		// If this is 0, AllChannels will be used.
 		GetChannelTypes() ChannelTypes
 		// GetBotPermissions gets the permissions the bot needs to execute this
 		// command.
@@ -93,23 +90,13 @@ type (
 		// GetRestrictionFunc checks if the user is restricted from using the
 		// command.
 		//
-		// Setting this will override restrictions defined by the parent.
-		// To remove a RestrictionFunc defined by a parent without defining a
-		// new one use restriction.None.
-		//
 		// If they are restricted, a errors.RestrictionError should be
 		// returned.
 		//
 		// If the RestrictionFunc returns an error that implements
 		// RestrictionErrorWrapper, it will be properly wrapped.
-		//
-		// To override a parents RestrictionFunc, use restriction.None.
 		GetRestrictionFunc() RestrictionFunc
 		// GetThrottler returns the Throttler for the command.
-		//
-		// Setting this will override the Throttler defined by the parent.
-		// To override a Throttler defined by a parent without defining a new
-		// one use throttler.None.
 		GetThrottler() Throttler
 	}
 )

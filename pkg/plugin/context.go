@@ -513,23 +513,6 @@ type (
 		Commands []Command
 		// Modules are the top-level modules of the repository.
 		Modules []Module
-
-		// Defaults are the global defaults for settings, the provider
-		// uses.
-		Defaults Defaults
-	}
-
-	// Defaults are the defaults used as fallback if a command does not define
-	// a setting.
-	Defaults struct {
-		// ChannelTypes specifies the default channel types.
-		ChannelTypes ChannelTypes
-		// Restrictions is the default restriction func.
-		Restrictions RestrictionFunc
-		// Throttler is the default global throttler.
-		// Note that the same Throttler will be shared across all commands that
-		// don't define a custom one.
-		Throttler Throttler
 	}
 
 	// UnavailablePluginProvider contains information about an unavailable

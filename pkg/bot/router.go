@@ -110,7 +110,6 @@ func (b *Bot) findCommand(
 				ProviderName: plugin.BuiltInProvider,
 				Commands:     b.commands,
 				Modules:      b.modules,
-				Defaults:     b.PluginDefaults,
 			},
 		},
 	}
@@ -133,7 +132,6 @@ func (b *Bot) findCommand(
 				ProviderName: p.name,
 				Modules:      mods,
 				Commands:     cmds,
-				Defaults:     p.defaults,
 			}
 
 			ctxprovider.repos = append(ctxprovider.repos, repo)
@@ -160,7 +158,6 @@ func (b *Bot) findCommandAsync(
 				ProviderName: plugin.BuiltInProvider,
 				Commands:     b.commands,
 				Modules:      b.modules,
-				Defaults:     b.PluginDefaults,
 			},
 		},
 		async: true,

@@ -176,7 +176,6 @@ func TestHelp_Invoke(t *testing.T) {
 			ModuleMeta: mock.ModuleMeta{
 				Name:            "abc",
 				LongDescription: "abc desc",
-				Hidden:          true,
 			},
 			CommandsReturn: []plugin.Command{
 				mock.Command{

@@ -21,7 +21,7 @@ func TestBot_AddPluginProvider(t *testing.T) {
 				return nil, nil, nil
 			}
 
-			b.AddPluginProvider(plugin.BuiltInProvider, pfunc, plugin.Defaults{})
+			b.AddPluginProvider(plugin.BuiltInProvider, pfunc)
 		})
 	})
 
@@ -29,7 +29,7 @@ func TestBot_AddPluginProvider(t *testing.T) {
 		b, err := New(Options{Token: "abc"})
 		require.NoError(t, err)
 
-		b.AddPluginProvider("abc", nil, plugin.Defaults{})
+		b.AddPluginProvider("abc", nil)
 		assert.Len(t, b.pluginProviders, 0)
 	})
 
@@ -39,8 +39,8 @@ func TestBot_AddPluginProvider(t *testing.T) {
 
 		p := mockPluginProvider(nil, nil, nil)
 
-		b.AddPluginProvider("abc", p, plugin.Defaults{ChannelTypes: plugin.AllChannels})
-		b.AddPluginProvider("def", p, plugin.Defaults{})
+		b.AddPluginProvider("abc", p)
+		b.AddPluginProvider("def", p)
 
 		assert.Len(t, b.pluginProviders, 2)
 
@@ -50,7 +50,7 @@ func TestBot_AddPluginProvider(t *testing.T) {
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				called = true
 				return nil, nil, nil
-			}, plugin.Defaults{ChannelTypes: plugin.GuildChannels})
+			})
 
 		assert.Len(t, b.pluginProviders, 2)
 		assert.Equal(t, b.pluginProviders[0].name, "def")
@@ -58,8 +58,6 @@ func TestBot_AddPluginProvider(t *testing.T) {
 
 		_, _, _ = b.pluginProviders[1].provider(nil, nil)
 		assert.True(t, called, "Bot.AddPluginProvider did not replace abc")
-		assert.Equal(t, plugin.GuildChannels, b.pluginProviders[1].defaults.ChannelTypes,
-			"Bot.AddPluginProvider did not replace abc")
 	})
 
 	t.Run("success", func(t *testing.T) {
@@ -68,7 +66,7 @@ func TestBot_AddPluginProvider(t *testing.T) {
 
 		p := mockPluginProvider(nil, nil, nil)
 
-		b.AddPluginProvider("abc", p, plugin.Defaults{})
+		b.AddPluginProvider("abc", p)
 		assert.Len(t, b.pluginProviders, 1)
 	})
 }

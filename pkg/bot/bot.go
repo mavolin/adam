@@ -42,8 +42,6 @@ type Bot struct {
 
 	AsyncPluginProviders bool
 
-	PluginDefaults plugin.Defaults
-
 	ThrottlerCancelChecker func(error) bool
 
 	ErrorHandler func(error, *state.State, *plugin.Context)
@@ -53,7 +51,6 @@ type Bot struct {
 type pluginProvider struct {
 	name     string
 	provider PluginProvider
-	defaults plugin.Defaults
 }
 
 // PluginProvider is the function used by plugin providers.
@@ -104,11 +101,6 @@ func New(o Options) (*Bot, error) {
 	b.manualChecks = o.ManualChecks
 	b.autoOpen = !o.NoAutoOpen
 	b.autoAddHandlers = o.AutoAddHandlers
-	b.PluginDefaults = plugin.Defaults{
-		ChannelTypes: o.DefaultChannelTypes,
-		Restrictions: o.DefaultRestrictions,
-		Throttler:    o.DefaultThrottler,
-	}
 	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
 	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
@@ -369,20 +361,14 @@ func (b *Bot) MustAddPostMiddleware(f interface{}) {
 // If there is another plugin provider with the passed name, it will be removed
 // first.
 //
-// If defaults.ChannelTypes is 0, it will be set to plugin.AllChannels.
-//
 // The plugin providers will be used in the order they are added in.
-func (b *Bot) AddPluginProvider(name string, p PluginProvider, defaults plugin.Defaults) {
+func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
 	if p == nil {
 		return
 	}
 
 	if name == plugin.BuiltInProvider {
 		panic("you cannot use " + plugin.BuiltInProvider + " as plugin provider")
-	}
-
-	if defaults.ChannelTypes == 0 {
-		defaults.ChannelTypes = plugin.AllChannels
 	}
 
 	for i, rp := range b.pluginProviders {
@@ -394,6 +380,5 @@ func (b *Bot) AddPluginProvider(name string, p PluginProvider, defaults plugin.D
 	b.pluginProviders = append(b.pluginProviders, &pluginProvider{
 		name:     name,
 		provider: p,
-		defaults: defaults,
 	})
 }
