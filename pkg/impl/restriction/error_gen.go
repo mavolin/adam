@@ -8,9 +8,9 @@ import (
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
-// newInvalidChannelTypeError returns a new *plugin.RestrictionError wrapping
+// newChannelTypesError returns a new *plugin.RestrictionError wrapping
 // a plugin.ChannelTypeError.
-func newInvalidChannelTypeError(allowed plugin.ChannelTypes, l *i18n.Localizer, fatal bool) error {
+func newChannelTypesError(allowed plugin.ChannelTypes, l *i18n.Localizer, fatal bool) error {
 	err := plugin.NewChannelTypeError(allowed)
 	desc := err.Description(l)
 
@@ -119,37 +119,6 @@ func newChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) error {
 	for _, c := range allowed {
 		defaultDesc += "\n" + entryPrefix + c.Mention()
 	}
-
-	return &EmbeddableError{
-		EmbeddableVersion: plugin.NewRestrictionError(embeddableDesc),
-		DefaultVersion:    plugin.NewRestrictionError(defaultDesc),
-	}
-}
-
-// newInsufficientBotPermissions creates a new error containing the missing
-// bot permissions
-func newBotPermissionsError(missing discord.Permissions, l *i18n.Localizer) error {
-	if missing == 0 {
-		return nil
-	}
-
-	err := plugin.NewBotPermissionsError(missing)
-
-	desc := err.Description(l)
-	if err.IsSinglePermission() {
-		return plugin.NewRestrictionError(desc)
-	}
-
-	missingNames := permutil.Namesl(err.Missing, l)
-
-	embeddableDesc := desc
-	indent, _ := genIndent(1)
-
-	for _, p := range missingNames {
-		embeddableDesc += indent + "\n" + entryPrefix + p
-	}
-
-	defaultDesc := desc + "\n\n" + err.PermissionList(l)
 
 	return &EmbeddableError{
 		EmbeddableVersion: plugin.NewRestrictionError(embeddableDesc),
