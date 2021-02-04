@@ -303,7 +303,7 @@ func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
 
 func DefaultThrottlerErrorCheck(err error) bool {
 	ierr := new(errors.InformationalError)
-	return !errors.As(err, ierr)
+	return !errors.As(err, &ierr)
 }
 
 func DefaultGatewayErrorHandler(err error) {
