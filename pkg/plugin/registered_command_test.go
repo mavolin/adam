@@ -247,7 +247,7 @@ func TestRegisteredCommand_LongDescription(t *testing.T) {
 func TestRegisteredCommand_Examples(t *testing.T) {
 	expect := []string{"abc", "def"}
 
-	rcmd := &RegisteredCommand{Source: mockCommand{examples: expect}}
+	rcmd := &RegisteredCommand{Source: mockCommand{exampleArgs: expect}}
 
 	actual := rcmd.Examples(nil)
 	assert.Equal(t, expect, actual)

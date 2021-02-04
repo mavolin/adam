@@ -17,20 +17,44 @@ func TestNewTermConfig(t *testing.T) {
 }
 
 func TestNewFallbackConfig(t *testing.T) {
-	var (
-		term     Term = "abc"
-		fallback      = "def"
-	)
+	testCases := []struct {
+		name     string
+		term     Term
+		fallback string
 
-	expect := &Config{
-		Term: term,
-		Fallback: Fallback{
-			Other: fallback,
+		expect *Config
+	}{
+		{
+			name:     "fallback",
+			term:     "abc",
+			fallback: "def",
+			expect: &Config{
+				Term: "abc",
+				Fallback: Fallback{
+					Other: "def",
+				},
+			},
+		},
+		{
+			name:     "empty fallback",
+			term:     "abc",
+			fallback: "",
+			expect: &Config{
+				Term: "abc",
+				Fallback: Fallback{
+					Other: "",
+					empty: true,
+				},
+			},
 		},
 	}
 
-	actual := NewFallbackConfig(term, fallback)
-	assert.Equal(t, expect, actual)
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := NewFallbackConfig(c.term, c.fallback)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
 }
 
 func TestConfig_WithPlaceholders(t *testing.T) {

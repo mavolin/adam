@@ -64,8 +64,8 @@ type (
 		// GetLongDescription returns an optional long description of the
 		// command.
 		GetLongDescription(l *i18n.Localizer) string
-		// GetExamples returns optional example usages of the command.
-		GetExamples(l *i18n.Localizer) []string
+		// GetExampleArgs returns optional example arguments of the command.
+		GetExampleArgs(l *i18n.Localizer) []string
 
 		// GetArgs returns the ArgConfig of the command.
 		//

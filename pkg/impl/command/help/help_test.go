@@ -333,7 +333,7 @@ func TestHelp_Invoke(t *testing.T) {
 						},
 						Variadic: true,
 					},
-					Examples: []string{"example one", "example two"},
+					ExampleArgs: []string{"example one", "example two"},
 				},
 			}
 
@@ -357,7 +357,7 @@ func TestHelp_Invoke(t *testing.T) {
 						"`decimal (Decimal+)` - decimal description").
 				WithField(ctx.MustLocalize(flagsFieldName),
 					"`-flag (User)` - flag description\n`-multi, -m (ID+)`").
-				WithField(ctx.MustLocalize(examplesFieldName), "```example one``````example two```").
+				WithField(ctx.MustLocalize(examplesFieldName), "```abc example one``````abc example two```").
 				MustBuild(ctx.Localizer)
 
 			actual, err := New(Options{HideFuncs: []HideFunc{}}).Invoke(nil, ctx)

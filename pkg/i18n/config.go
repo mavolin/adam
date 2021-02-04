@@ -13,6 +13,9 @@ import (
 // invalid.
 var ErrPlaceholders = errors.New("i18n: placeholders must be of type map[string]string or struct")
 
+// EmptyConfig is the Config used as a replacement for an empty string.
+var EmptyConfig = &Config{Fallback: Fallback{empty: true}}
+
 // Config is a data struct that contains all information needed to create
 // a localized message.
 type Config struct {
@@ -49,10 +52,16 @@ func NewTermConfig(term Term) *Config {
 // NewFallbackConfig is a utility function that can be used to inline
 // term-only Configs with a fallback.
 func NewFallbackConfig(term Term, fallback string) *Config {
-	return &Config{
+	c := &Config{
 		Term:     term,
 		Fallback: Fallback{Other: fallback},
 	}
+
+	if len(fallback) == 0 {
+		c.Fallback.empty = true
+	}
+
+	return c
 }
 
 // WithPlaceholders returns a copy of the Config with the passed placeholders
@@ -129,6 +138,9 @@ type Fallback struct {
 	// This is also the default form, meaning if no pluralization is needed
 	// this field should be used.
 	Other string
+	// empty signals that there i8s a fallback, even though it is just an
+	// empty string.
+	empty bool
 }
 
 // genTranslation attempts to generate the translation using the passed
@@ -143,6 +155,5 @@ func (f *Fallback) genTranslation(placeholderData map[string]interface{}, plural
 	}
 
 	// no plural information or plural was != 1
-
 	return fillTemplate(f.Other, placeholderData)
 }

@@ -75,7 +75,7 @@ type CommandMeta struct {
 
 	Args plugin.ArgConfig
 
-	Examples       []string
+	ExampleArgs    []string
 	Hidden         bool
 	ChannelTypes   plugin.ChannelTypes
 	BotPermissions discord.Permissions
@@ -90,7 +90,7 @@ func (m CommandMeta) GetAliases() []string                       { return m.Alia
 func (m CommandMeta) GetShortDescription(*i18n.Localizer) string { return m.ShortDescription }
 func (m CommandMeta) GetLongDescription(*i18n.Localizer) string  { return m.LongDescription }
 func (m CommandMeta) GetArgs() plugin.ArgConfig                  { return m.Args }
-func (m CommandMeta) GetExamples(*i18n.Localizer) []string       { return m.Examples }
+func (m CommandMeta) GetExampleArgs(*i18n.Localizer) []string    { return m.ExampleArgs }
 func (m CommandMeta) IsHidden() bool                             { return m.Hidden }
 func (m CommandMeta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
 func (m CommandMeta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }

@@ -172,9 +172,21 @@ func (c *RegisteredCommand) LongDescription(l *i18n.Localizer) string {
 	return c.ShortDescription(l)
 }
 
-// Examples returns optional examples for the command.
+// ExampleArgs returns optional example arguments of the command.
+func (c *RegisteredCommand) ExampleArgs(l *i18n.Localizer) []string {
+	return c.Source.GetExampleArgs(l)
+}
+
+// Examples returns the command's example arguments prefixed with their invoke.
+// Invoke and example arguments are separated by a space.
 func (c *RegisteredCommand) Examples(l *i18n.Localizer) []string {
-	return c.Source.GetExamples(l)
+	args := c.ExampleArgs(l)
+
+	for i, arg := range args {
+		args[i] = c.Identifier.AsInvoke() + " " + arg
+	}
+
+	return args
 }
 
 // IsRestricted returns whether or not this command is restricted.

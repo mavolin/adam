@@ -21,8 +21,8 @@ type LocalizedMeta struct {
 	ShortDescription *i18n.Config
 	// LongDescription is an optional long description of the command.
 	LongDescription *i18n.Config
-	// Examples contains optional example usages of the command.
-	Examples []*i18n.Config
+	// ExampleArgs contains the optional example arguments of the command.
+	ExampleArgs []*i18n.Config
 	// Args is the argument configuration of the command.
 	// If this is left empty, the command won't accept any arguments.
 	Args plugin.ArgConfig
@@ -65,14 +65,14 @@ func (m LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
 	return desc
 }
 
-func (m LocalizedMeta) GetExamples(l *i18n.Localizer) []string {
-	if len(m.Examples) == 0 {
+func (m LocalizedMeta) GetExampleArgs(l *i18n.Localizer) []string {
+	if len(m.ExampleArgs) == 0 {
 		return nil
 	}
 
-	examples := make([]string, 0, len(m.Examples))
+	examples := make([]string, 0, len(m.ExampleArgs))
 
-	for _, lexample := range m.Examples {
+	for _, lexample := range m.ExampleArgs {
 		example, err := l.Localize(lexample)
 		if err == nil {
 			examples = append(examples, example)

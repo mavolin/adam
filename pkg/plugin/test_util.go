@@ -62,7 +62,7 @@ type mockCommand struct {
 	args            ArgConfig
 	shortDesc       string
 	longDesc        string
-	examples        []string
+	exampleArgs     []string
 	hidden          bool
 	channelTypes    ChannelTypes
 	botPermissions  discord.Permissions
@@ -76,7 +76,7 @@ func (c mockCommand) GetAliases() []string                       { return c.alia
 func (c mockCommand) GetArgs() ArgConfig                         { return c.args }
 func (c mockCommand) GetShortDescription(*i18n.Localizer) string { return c.shortDesc }
 func (c mockCommand) GetLongDescription(*i18n.Localizer) string  { return c.longDesc }
-func (c mockCommand) GetExamples(*i18n.Localizer) []string       { return c.examples }
+func (c mockCommand) GetExampleArgs(*i18n.Localizer) []string    { return c.exampleArgs }
 func (c mockCommand) IsHidden() bool                             { return c.hidden }
 func (c mockCommand) GetChannelTypes() ChannelTypes              { return c.channelTypes }
 func (c mockCommand) GetBotPermissions() discord.Permissions     { return c.botPermissions }
