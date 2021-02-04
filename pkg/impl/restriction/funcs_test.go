@@ -27,7 +27,7 @@ func TestNSFW(t *testing.T) {
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
+			expect: plugin.NewFatalRestrictionErrorl(nsfwChannelError),
 		},
 		{
 			name: "nsfw",
@@ -53,7 +53,7 @@ func TestNSFW(t *testing.T) {
 					ChannelReturn: &discord.Channel{NSFW: false},
 				},
 			},
-			expect: ErrNotNSFWChannel,
+			expect: plugin.NewRestrictionErrorl(nsfwChannelError),
 		},
 	}
 
@@ -80,7 +80,7 @@ func TestGuildOwner(t *testing.T) {
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
+			expect: newChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "is owner",
@@ -114,7 +114,7 @@ func TestGuildOwner(t *testing.T) {
 					GuildReturn: &discord.Guild{OwnerID: 789},
 				},
 			},
-			expect: ErrNotGuildOwner,
+			expect: plugin.NewFatalRestrictionErrorl(guildOwnerError),
 		},
 	}
 
@@ -146,7 +146,7 @@ func TestBotOwner(t *testing.T) {
 				Message:     discord.Message{Author: discord.User{ID: 123}},
 				BotOwnerIDs: []discord.UserID{},
 			},
-			expect: ErrNotBotOwner,
+			expect: plugin.NewFatalRestrictionErrorl(botOwnerError),
 		},
 	}
 
@@ -222,7 +222,7 @@ func TestAllRoles(t *testing.T) {
 					},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
+			expect: newChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -258,7 +258,8 @@ func TestAllRoles(t *testing.T) {
 				Localizer: i18n.NewFallbackLocalizer(),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{{ID: 456}},
+						OwnerID: 345,
+						Roles:   []discord.Role{{ID: 012}, {ID: 456}},
 					},
 				},
 			},
@@ -330,7 +331,7 @@ func TestMustAllRoles(t *testing.T) {
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
+			expect: newChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -399,7 +400,7 @@ func TestAnyRole(t *testing.T) {
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
+			expect: newChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -436,6 +437,7 @@ func TestAnyRole(t *testing.T) {
 								Position: 1,
 							},
 						},
+						OwnerID: 345,
 					},
 				},
 			},
@@ -507,7 +509,7 @@ func TestMustAnyRole(t *testing.T) {
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
+			expect: newChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:    "none missing",
@@ -541,6 +543,10 @@ func TestMustAnyRole(t *testing.T) {
 						Roles: []discord.Role{
 							{
 								ID:       456,
+								Position: 2,
+							},
+							{
+								ID:       012,
 								Position: 1,
 							},
 						},
@@ -671,95 +677,6 @@ func TestChannels(t *testing.T) {
 	}
 }
 
-func TestBotPermissions(t *testing.T) {
-	testCases := []struct {
-		name   string
-		perms  discord.Permissions
-		ctx    *plugin.Context
-		expect error
-	}{
-		{
-			name:   "perms are 0",
-			perms:  0,
-			expect: nil,
-		},
-		{
-			name:   "pass direct message",
-			perms:  discord.PermissionSendMessages | discord.PermissionViewChannel,
-			ctx:    &plugin.Context{Message: discord.Message{GuildID: 0}},
-			expect: nil,
-		},
-		{
-			name:  "fail direct message",
-			perms: discord.PermissionAdministrator,
-			ctx: &plugin.Context{
-				Message:   discord.Message{GuildID: 0},
-				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
-				}),
-			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
-		},
-		{
-			name:  "pass guild",
-			perms: discord.PermissionSendMessages,
-			ctx: &plugin.Context{
-				Message: discord.Message{GuildID: 123},
-				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						ID: 123,
-						Roles: []discord.Role{
-							{
-								ID:          123,
-								Permissions: discord.PermissionViewChannel | discord.PermissionSendMessages,
-							},
-						},
-					},
-					ChannelReturn: &discord.Channel{},
-					SelfReturn:    &discord.Member{User: discord.User{ID: 456}},
-				},
-			},
-			expect: nil,
-		},
-		{
-			name:  "fail guild",
-			perms: discord.PermissionStream | discord.PermissionSendTTSMessages | discord.PermissionSendMessages,
-			ctx: &plugin.Context{
-				Message:   discord.Message{GuildID: 123},
-				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
-				}),
-				DiscordDataProvider: mock.DiscordDataProvider{
-					GuildReturn: &discord.Guild{
-						ID: 123,
-						Roles: []discord.Role{
-							{
-								ID:          123,
-								Permissions: discord.PermissionViewChannel | discord.PermissionSendMessages,
-							},
-						},
-					},
-					ChannelReturn: &discord.Channel{},
-					SelfReturn:    &discord.Member{User: discord.User{ID: 456}},
-				},
-			},
-			expect: newBotPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
-				i18n.NewFallbackLocalizer()),
-		},
-	}
-
-	for _, c := range testCases {
-		t.Run(c.name, func(t *testing.T) {
-			f := BotPermissions(c.perms)
-
-			actual := f(nil, c.ctx)
-			assert.Equal(t, c.expect, actual)
-		})
-	}
-}
-
 func TestUserPermissions(t *testing.T) {
 	testCases := []struct {
 		name   string
@@ -788,7 +705,7 @@ func TestUserPermissions(t *testing.T) {
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
-			expect: newInvalidChannelTypeError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
+			expect: newChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name:  "pass guild",

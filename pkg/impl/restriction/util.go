@@ -1,6 +1,7 @@
 package restriction
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -10,9 +11,11 @@ import (
 
 // assertChannelTypes asserts that the command with the passed context
 // is used in the passed channel types.
+// If that is not the case a *plugin.RestrictionError generated through
+// newChannelTypesError is returned.
 //
 // assertChannelTypes will also silently report errors in some cases.
-func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRemainingError error) error {
+func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes) error {
 	ok, err := allowed.Check(ctx)
 	if err != nil {
 		return err
@@ -24,46 +27,16 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes, noRema
 	if remaining == 0 { // no channel types remaining
 		// there is no need to prevent execution, as another restriction
 		// may permit it, still we should capture this
-		ctx.HandleErrorSilently(noRemainingError)
+		ctx.HandleErrorSilently(fmt.Errorf("restriction: need channel types %s, but command only allows %s",
+			allowed, ctx.InvokedCommand.ChannelTypes))
 
 		return plugin.DefaultFatalRestrictionError
 	}
 
-	fatal := false
+	fatal := (ctx.GuildID == 0 && remaining&plugin.DirectMessages == 0) ||
+		(ctx.GuildID != 0 && remaining == plugin.DirectMessages)
 
-	if ctx.GuildID == 0 && remaining&plugin.DirectMessages == 0 {
-		fatal = true
-	} else if ctx.GuildID != 0 && remaining == plugin.DirectMessages {
-		fatal = true
-	}
-
-	return newInvalidChannelTypeError(remaining, ctx.Localizer, fatal)
-}
-
-// canMangeRole checks if the passed member of the passed guild is able to
-// modify the passed role.
-func canManageRole(target discord.Role, g *discord.Guild, m *discord.Member) bool {
-RoleIDs:
-	for _, id := range m.RoleIDs {
-		for _, r := range g.Roles {
-			if r.ID == id {
-				if r.Position > target.Position {
-					goto Found
-				}
-
-				continue RoleIDs
-			}
-		}
-	}
-
-	return false
-
-Found:
-	// manage roles can't be set on a channel level, we can just pass an empty
-	// channel
-	perms := discord.CalcOverwrites(*g, discord.Channel{}, *m)
-
-	return perms.Has(discord.PermissionManageRoles)
+	return newChannelTypesError(remaining, ctx.Localizer, fatal)
 }
 
 // insertRoleSorted inserts the passed discord.Role into the passed slice of

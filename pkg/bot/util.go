@@ -76,18 +76,7 @@ func findCommand(
 
 		cmds = mod.Commands()
 		mods = mod.Modules()
-
-		if ct := mod.GetDefaultChannelTypes(); ct > 0 {
-			repo.Defaults.ChannelTypes = ct
-		}
-
-		if f := mod.GetDefaultRestrictionFunc(); f != nil {
-			repo.Defaults.Restrictions = f
-		}
-
-		if t := mod.GetDefaultThrottler(); t != nil {
-			repo.Defaults.Throttler = t
-		}
+		id += plugin.Identifier(mod.GetName()) + "."
 	}
 
 	return nil, ""
@@ -96,19 +85,7 @@ func findCommand(
 func newRegisteredCommandWithProvider(
 	p plugin.Provider, id plugin.Identifier, cmd plugin.Command, parents []plugin.Module, repo *plugin.Repository,
 ) *plugin.RegisteredCommand {
-	if ct := cmd.GetChannelTypes(); ct > 0 {
-		repo.Defaults.ChannelTypes = ct
-	}
-
-	if t := cmd.GetThrottler(); t != nil {
-		repo.Defaults.Throttler = t
-	}
-
-	if f := cmd.GetRestrictionFunc(); f != nil {
-		repo.Defaults.Restrictions = f
-	}
-
-	rcmd := plugin.NewRegisteredCommandWithProvider(p, repo.Defaults.Restrictions)
+	rcmd := plugin.NewRegisteredCommandWithProvider(p)
 	rcmd.ProviderName = repo.ProviderName
 	rcmd.Source = cmd
 	rcmd.SourceParents = parents
@@ -117,9 +94,14 @@ func newRegisteredCommandWithProvider(
 	rcmd.Aliases = cmd.GetAliases()
 	rcmd.Args = cmd.GetArgs()
 	rcmd.Hidden = cmd.IsHidden()
-	rcmd.ChannelTypes = repo.Defaults.ChannelTypes
+
+	rcmd.ChannelTypes = cmd.GetChannelTypes()
+	if rcmd.ChannelTypes == 0 {
+		rcmd.ChannelTypes = plugin.AllChannels
+	}
+
 	rcmd.BotPermissions = cmd.GetBotPermissions()
-	rcmd.Throttler = repo.Defaults.Throttler
+	rcmd.Throttler = cmd.GetThrottler()
 
 	return rcmd
 }
@@ -162,7 +144,6 @@ func pluginProvidersAsync(
 					ProviderName: p.name,
 					Modules:      mods,
 					Commands:     cmds,
-					Defaults:     p.defaults,
 				}
 			}
 

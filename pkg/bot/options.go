@@ -89,25 +89,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: false
 	AutoAddHandlers bool
 
-	// DefaultChannelTypes are the default plugin.ChannelTypes, used if neither
-	// the parent modules of a command nor the command itself define channel
-	// types.
-	//
-	// Default: plugin.AllChannels
-	DefaultChannelTypes plugin.ChannelTypes
-	// DefaultRestrictions are the default restrictions, used if neither the
-	// parent modules of a command nor the command itself define any.
-	//
-	// Default: nil
-	DefaultRestrictions plugin.RestrictionFunc
-	// DefaultThrottler is the default throttler, used if neither the parent
-	// modules of a command nor the command itself define a throttler.
-	// Note that the throttler will not work on a per-command basis, but
-	// globally for all commands that use it.
-	//
-	// Default: nil
-	DefaultThrottler plugin.Throttler
-
 	// ThrottlerCancelChecker is the function run every time a command returns
 	// with a non-nil error.
 	// If the function returns true, the command's throttler will not count the
@@ -207,10 +188,6 @@ func (o *Options) SetDefaults() (err error) {
 
 	if len(o.Status) == 0 {
 		o.Status = gateway.OnlineStatus
-	}
-
-	if o.DefaultChannelTypes == 0 {
-		o.DefaultChannelTypes = plugin.AllChannels
 	}
 
 	if o.ThrottlerCancelChecker == nil {
@@ -326,16 +303,16 @@ func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
 
 func DefaultThrottlerErrorCheck(err error) bool {
 	ierr := new(errors.InformationalError)
-	return !errors.As(err, ierr)
+	return !errors.As(err, &ierr)
 }
 
 func DefaultGatewayErrorHandler(err error) {
 	// ignore error used on reconnect
-
 	var cerr *websocket.CloseError
-	if errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-		return
-	} else if errors.Is(err, syscall.ECONNRESET) {
+	switch {
+	case errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure):
+		fallthrough
+	case errors.Is(err, syscall.ECONNRESET):
 		return
 	}
 

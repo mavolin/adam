@@ -19,26 +19,26 @@ var (
 			"Optionally, you can use the name of a module, to list all commands in that module, "+
 			"or the name of a command, to display detailed usage information.")
 
-	examples = []*i18n.Config{
-		i18n.NewFallbackConfig("plugin.help.examples.list_all", "help"),
-		i18n.NewFallbackConfig("plugin.help.examples.command", "help some_command"),
-		i18n.NewFallbackConfig("plugin.help.examples.module", "help some_module"),
+	exampleArgs = []*i18n.Config{
+		i18n.EmptyConfig,
+		i18n.NewFallbackConfig("plugin.help.example_args.command", "some_command"),
+		i18n.NewFallbackConfig("plugin.help.example_args.module", "some_module"),
 	}
 )
 
 // =============================================================================
-// Args
+// Arguments
 // =====================================================================================
 
 var (
-	argsPluginName        = i18n.NewFallbackConfig("plugin.help.args.plugin.name", "Command or Module")
-	argsPluginDescription = i18n.NewFallbackConfig(
-		"plugin.help.args.plugin.description",
+	argPluginName        = i18n.NewFallbackConfig("plugin.help.arg.plugin.name", "Command or Module")
+	argPluginDescription = i18n.NewFallbackConfig(
+		"plugin.help.arg.plugin.description",
 		"The name of the command or module you need help with.")
 )
 
 // =============================================================================
-// Text
+// Response
 // =====================================================================================
 
 // ================================ Common ================================
@@ -87,7 +87,7 @@ var (
 
 	argumentsFieldName = i18n.NewFallbackConfig("plugin.help.command.embed.fields.arguments.name", "Arguments")
 	flagsFieldName     = i18n.NewFallbackConfig("plugin.help.command.embed.fields.flags.name", "Flags")
-	examplesFieldName  = i18n.NewFallbackConfig("plugin.help.command.embed.fields.examples.name", "Examples")
+	examplesFieldName  = i18n.NewFallbackConfig("plugin.help.command.embed.fields.exampleArgs.name", "ExampleArgs")
 )
 
 type (

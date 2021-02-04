@@ -28,30 +28,5 @@ type (
 		GetShortDescription(l *i18n.Localizer) string
 		// GetLongDescription returns an option long description of the module.
 		GetLongDescription(l *i18n.Localizer) string
-
-		// IsHidden specifies whether this module will be hidden from the help
-		// page.
-		IsHidden() bool
-		// GetDefaultChannelTypes returns the ChannelTypes required to use this
-		// module.
-		//
-		// Commands can overwrite this, by setting custom ChannelTypes.
-		GetDefaultChannelTypes() ChannelTypes
-		// GetDefaultRestrictionFunc returns the default plugin.RestrictionFunc
-		// of the command.
-		//
-		// Commands can overwrite this, by returning a non-nil RestrictionFunc.
-		// To override a RestrictionFunc defined by a parent without defining a
-		// new one use restriction.None.
-		GetDefaultRestrictionFunc() RestrictionFunc
-		// GetDefaultThrottler returns the Throttler for the module.
-		// The throttler is used for all subcommands and submodules of the
-		// module.
-		// However, a command or module can overwrite this, by setting its own
-		// Throttler.
-		//
-		// To override a Throttler defined by a parent without defining a new
-		// one use throttler.None.
-		GetDefaultThrottler() Throttler
 	}
 )

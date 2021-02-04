@@ -9,25 +9,11 @@ import (
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
-var (
-	// ErrNotNSFWChannel is the error returned by NSFW if the command is not
-	// executed in an NSFW channel.
-	ErrNotNSFWChannel = plugin.NewRestrictionErrorl(notNSFWChannelError)
-	// ErrNotGuildOwner is the error returned by GuildOwner if the command is
-	// not executed by the guild owner.
-	ErrNotGuildOwner = plugin.NewFatalRestrictionErrorl(notOwnerError)
-	// ErrNotBotOwner is the error returned by BotOwner if the command is not
-	// executed by the bot owner.
-	ErrNotBotOwner = plugin.NewFatalRestrictionErrorl(notBotOwnerError)
-)
-
 // NSFW asserts that a command is executed in an NSFW channel.
 // It fails if the command is used in a direct message.
 func NSFW(_ *state.State, ctx *plugin.Context) error {
-	err := assertChannelTypes(ctx, plugin.GuildChannels,
-		errors.NewWithStack("restriction: invalid assertion NSFW for DM-only command"))
-	if err != nil {
-		return err
+	if ctx.GuildID == 0 {
+		return plugin.NewFatalRestrictionErrorl(nsfwChannelError)
 	}
 
 	c, err := ctx.Channel()
@@ -39,7 +25,7 @@ func NSFW(_ *state.State, ctx *plugin.Context) error {
 		return nil
 	}
 
-	return ErrNotNSFWChannel
+	return plugin.NewRestrictionErrorl(nsfwChannelError)
 }
 
 var _ plugin.RestrictionFunc = NSFW
@@ -47,9 +33,7 @@ var _ plugin.RestrictionFunc = NSFW
 // GuildOwner asserts that a command is executed by the guild owner.
 // It fails if the command is used in a direct message.
 func GuildOwner(_ *state.State, ctx *plugin.Context) error {
-	err := assertChannelTypes(ctx, plugin.GuildChannels,
-		errors.NewWithStack("restriction: invalid assertion GuildOwner for DM-only command"))
-	if err != nil {
+	if err := assertChannelTypes(ctx, plugin.GuildChannels); err != nil {
 		return err
 	}
 
@@ -62,7 +46,7 @@ func GuildOwner(_ *state.State, ctx *plugin.Context) error {
 		return nil
 	}
 
-	return ErrNotGuildOwner
+	return plugin.NewFatalRestrictionErrorl(guildOwnerError)
 }
 
 var _ plugin.RestrictionFunc = GuildOwner
@@ -73,7 +57,7 @@ func BotOwner(_ *state.State, ctx *plugin.Context) error {
 		return nil
 	}
 
-	return ErrNotBotOwner
+	return plugin.NewFatalRestrictionErrorl(botOwnerError)
 }
 
 var _ plugin.RestrictionFunc = BotOwner
@@ -113,12 +97,8 @@ func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:gocog
 			return nil
 		}
 
-		if ctx.GuildID == 0 {
-			err := assertChannelTypes(ctx, plugin.GuildChannels,
-				errors.NewWithStack("restriction: invalid assertion AllRoles for DM-only command"))
-			if err != nil {
-				return err
-			}
+		if err := assertChannelTypes(ctx, plugin.GuildChannels); err != nil {
+			return err
 		}
 
 		missingIDs := make([]discord.RoleID, 0, len(allowed))
@@ -170,7 +150,7 @@ func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:gocog
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		if canManageRole(missingRoles[len(missingRoles)-1], g, ctx.Member) {
+		if permutil.CanMemberManageRole(*g, *ctx.Member, missingRoles[len(missingRoles)-1].ID) {
 			return nil
 		}
 
@@ -193,12 +173,8 @@ func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:g
 			return nil
 		}
 
-		if ctx.GuildID == 0 {
-			err := assertChannelTypes(ctx, plugin.GuildChannels,
-				errors.NewWithStack("restriction: invalid assertion MustAllRoles for DM-only command"))
-			if err != nil {
-				return err
-			}
+		if err := assertChannelTypes(ctx, plugin.GuildChannels); err != nil {
+			return err
 		}
 
 		missingIDs := make([]discord.RoleID, 0, len(allowed))
@@ -264,12 +240,8 @@ func AnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return nil
 		}
 
-		if ctx.GuildID == 0 {
-			err := assertChannelTypes(ctx, plugin.GuildChannels,
-				errors.NewWithStack("restriction: invalid assertion MustAllRoles for DM-only command"))
-			if err != nil {
-				return err
-			}
+		if err := assertChannelTypes(ctx, plugin.GuildChannels); err != nil {
+			return err
 		}
 
 		for _, targetID := range allowed {
@@ -301,7 +273,7 @@ func AnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		if canManageRole(missingRoles[0], g, ctx.Member) {
+		if permutil.CanMemberManageRole(*g, *ctx.Member, missingRoles[0].ID) {
 			return nil
 		}
 
@@ -319,12 +291,8 @@ func MustAnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return nil
 		}
 
-		if ctx.GuildID == 0 {
-			err := assertChannelTypes(ctx, plugin.GuildChannels,
-				errors.NewWithStack("restriction: invalid assertion MustAllRoles for DM-only command"))
-			if err != nil {
-				return err
-			}
+		if err := assertChannelTypes(ctx, plugin.GuildChannels); err != nil {
+			return err
 		}
 
 		for _, targetID := range allowed {
@@ -422,46 +390,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 // errors.ChannelTypeError but a *plugin.RestrictionError.
 func ChannelTypes(allowed plugin.ChannelTypes) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
-		return assertChannelTypes(ctx, allowed,
-			errors.NewWithStack("restriction: invalid assertion ChannelTypes for command with opposite channel types"))
-	}
-}
-
-// BotPermissions asserts that the bot has the passed permissions.
-// When using this, the commands bot permissions should be set to 0.
-//
-// Note that direct messages may also pass this, if the passed permissions
-// only require permutil.DMPermissions.
-//
-// Also note that the resulting plugin.RestrictionFunc won't return a
-// *plugin.BotPermissionsError but a *plugin.RestrictionError.
-func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
-	return func(_ *state.State, ctx *plugin.Context) error {
-		if required == 0 {
-			return nil
-		}
-
-		if ctx.GuildID == 0 {
-			if permutil.DMPermissions.Has(required) {
-				return nil
-			}
-
-			return assertChannelTypes(ctx, plugin.GuildChannels,
-				errors.NewWithStack("restriction: invalid assertion BotPermissions with guild only permissions for "+
-					"DM command"))
-		}
-
-		actual, err := ctx.SelfPermissions()
-		if err != nil {
-			return err
-		}
-
-		missing := (actual & required) ^ required
-		if missing == 0 {
-			return nil
-		}
-
-		return newBotPermissionsError(missing, ctx.Localizer)
+		return assertChannelTypes(ctx, allowed)
 	}
 }
 
@@ -469,20 +398,18 @@ func BotPermissions(required discord.Permissions) plugin.RestrictionFunc {
 //
 // Note that direct messages may also pass this, if the passed permissions
 // only require permutil.DMPermissions.
-func UserPermissions(perms discord.Permissions) plugin.RestrictionFunc {
+func UserPermissions(required discord.Permissions) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
-		if perms == 0 {
+		if required == 0 {
 			return nil
 		}
 
-		if ctx.GuildID == 0 {
-			if permutil.DMPermissions.Has(perms) {
-				return nil
-			}
+		if ctx.GuildID == 0 && permutil.DMPermissions.Has(required) {
+			return nil
+		}
 
-			return assertChannelTypes(ctx, plugin.GuildChannels,
-				errors.NewWithStack("restriction: invalid assertion UserPermissions with guild only permissions for "+
-					"DM-only command"))
+		if err := assertChannelTypes(ctx, plugin.GuildChannels); err != nil {
+			return err
 		}
 
 		actual, err := ctx.UserPermissions()
@@ -490,7 +417,7 @@ func UserPermissions(perms discord.Permissions) plugin.RestrictionFunc {
 			return err
 		}
 
-		missing := (actual & perms) ^ perms
+		missing := (actual & required) ^ required
 		if missing == 0 {
 			return nil
 		}

@@ -64,6 +64,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ProviderName: "built_in",
 		Identifier:   ".abc.zyx",
 		Name:         "zyx",
+		ChannelTypes: AllChannels,
 	})
 
 	def := &RegisteredModule{
@@ -103,6 +104,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ProviderName: "custom_commands",
 		Identifier:   ".def.tsr",
 		Name:         "tsr",
+		ChannelTypes: AllChannels,
 	})
 
 	def.Commands = append(def.Commands, &RegisteredCommand{
@@ -117,6 +119,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ProviderName: "built_in",
 		Identifier:   ".def.wvu",
 		Name:         "wvu",
+		ChannelTypes: AllChannels,
 	})
 
 	ghi := &RegisteredModule{
@@ -147,16 +150,12 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ProviderName: "custom_commands",
 		Identifier:   ".ghi.qpo",
 		Name:         "qpo",
+		ChannelTypes: AllChannels,
 	})
 
 	expect := []*RegisteredModule{abc, def, ghi}
 
 	actual := GenerateRegisteredModules(repos)
-
-	for i := range actual {
-		removeRegisteredModuleFuncs(actual[i])
-	}
-
 	assert.Equal(t, expect, actual)
 }
 
@@ -264,11 +263,10 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ProviderName: "built_in",
 			Identifier:   ".abc.def",
 			Name:         "def",
+			ChannelTypes: AllChannels,
 		})
 
 		actual := generateRegisteredModule(nil, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 
@@ -345,81 +343,10 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ProviderName: "built_in",
 			Identifier:   ".abc.def.ghi",
 			Name:         "ghi",
+			ChannelTypes: AllChannels,
 		})
 
 		actual := generateRegisteredModule(parent, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("source hidden", func(t *testing.T) {
-		smods := []SourceModule{
-			{
-				ProviderName: "built_in",
-				Modules: []Module{
-					mockModule{
-						name:     "abc",
-						hidden:   true,
-						commands: []Command{mockCommand{name: "def"}},
-					},
-				},
-			},
-			{
-				ProviderName: "other",
-				Modules: []Module{
-					mockModule{
-						name:     "ghi",
-						hidden:   true,
-						commands: []Command{mockCommand{name: "jkl"}},
-					},
-				},
-			},
-		}
-
-		expect := &RegisteredModule{
-			Parent:     nil,
-			Sources:    smods,
-			Identifier: ".abc",
-			Name:       "abc",
-			Hidden:     true,
-		}
-
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
-			parent:   &expect,
-			provider: nil,
-			Source:   mockCommand{name: "def"},
-			SourceParents: []Module{
-				mockModule{
-					name:     "abc",
-					hidden:   true,
-					commands: []Command{mockCommand{name: "def"}},
-				},
-			},
-			ProviderName: "built_in",
-			Identifier:   ".abc.def",
-			Name:         "def",
-		})
-
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
-			parent:   &expect,
-			provider: nil,
-			Source:   mockCommand{name: "jkl"},
-			SourceParents: []Module{
-				mockModule{
-					name:     "ghi",
-					hidden:   true,
-					commands: []Command{mockCommand{name: "jkl"}},
-				},
-			},
-			ProviderName: "other",
-			Identifier:   ".ghi.jkl",
-			Name:         "jkl",
-		})
-
-		actual := generateRegisteredModule(nil, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 
@@ -430,7 +357,6 @@ func Test_generateRegisteredModule(t *testing.T) {
 				Modules: []Module{
 					mockModule{
 						name:     "abc",
-						hidden:   false,
 						commands: []Command{mockCommand{name: "def", hidden: true}},
 					},
 				},
@@ -439,9 +365,8 @@ func Test_generateRegisteredModule(t *testing.T) {
 				ProviderName: "other",
 				Modules: []Module{
 					mockModule{
-						name:     "ghi",
-						hidden:   true,
-						commands: []Command{mockCommand{name: "jkl", hidden: false}},
+						name:     "abc",
+						commands: []Command{mockCommand{name: "ghi", hidden: true}},
 					},
 				},
 			},
@@ -462,7 +387,6 @@ func Test_generateRegisteredModule(t *testing.T) {
 			SourceParents: []Module{
 				mockModule{
 					name:     "abc",
-					hidden:   false,
 					commands: []Command{mockCommand{name: "def", hidden: true}},
 				},
 			},
@@ -470,27 +394,27 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Identifier:   ".abc.def",
 			Name:         "def",
 			Hidden:       true,
+			ChannelTypes: AllChannels,
 		})
 
 		expect.Commands = append(expect.Commands, &RegisteredCommand{
 			parent:   &expect,
 			provider: nil,
-			Source:   mockCommand{name: "jkl", hidden: false},
+			Source:   mockCommand{name: "ghi", hidden: true},
 			SourceParents: []Module{
 				mockModule{
-					name:     "ghi",
-					hidden:   true,
-					commands: []Command{mockCommand{name: "jkl", hidden: false}},
+					name:     "abc",
+					commands: []Command{mockCommand{name: "ghi", hidden: true}},
 				},
 			},
 			ProviderName: "other",
-			Identifier:   ".ghi.jkl",
-			Name:         "jkl",
+			Identifier:   ".abc.ghi",
+			Name:         "ghi",
+			Hidden:       true,
+			ChannelTypes: AllChannels,
 		})
 
 		actual := generateRegisteredModule(nil, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 
@@ -500,8 +424,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				ProviderName: "built_in",
 				Modules: []Module{
 					mockModule{
-						name:   "abc",
-						hidden: false,
+						name: "abc",
 						commands: []Command{
 							mockCommand{name: "def", hidden: true},
 							mockCommand{name: "ghi", hidden: false},
@@ -513,9 +436,8 @@ func Test_generateRegisteredModule(t *testing.T) {
 				ProviderName: "other",
 				Modules: []Module{
 					mockModule{
-						name:     "jkl",
-						hidden:   true,
-						commands: []Command{mockCommand{name: "mno", hidden: false}},
+						name:     "abc",
+						commands: []Command{mockCommand{name: "jkl", hidden: false}},
 					},
 				},
 			},
@@ -535,8 +457,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Source:   mockCommand{name: "def", hidden: true},
 			SourceParents: []Module{
 				mockModule{
-					name:   "abc",
-					hidden: false,
+					name: "abc",
 					commands: []Command{
 						mockCommand{name: "def", hidden: true},
 						mockCommand{name: "ghi", hidden: false},
@@ -547,6 +468,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Identifier:   ".abc.def",
 			Name:         "def",
 			Hidden:       true,
+			ChannelTypes: AllChannels,
 		})
 
 		expect.Commands = append(expect.Commands, &RegisteredCommand{
@@ -555,8 +477,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Source:   mockCommand{name: "ghi", hidden: false},
 			SourceParents: []Module{
 				mockModule{
-					name:   "abc",
-					hidden: false,
+					name: "abc",
 					commands: []Command{
 						mockCommand{name: "def", hidden: true},
 						mockCommand{name: "ghi", hidden: false},
@@ -567,27 +488,26 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Identifier:   ".abc.ghi",
 			Name:         "ghi",
 			Hidden:       false,
+			ChannelTypes: AllChannels,
 		})
 
 		expect.Commands = append(expect.Commands, &RegisteredCommand{
 			parent:   &expect,
 			provider: nil,
-			Source:   mockCommand{name: "mno", hidden: false},
+			Source:   mockCommand{name: "jkl", hidden: false},
 			SourceParents: []Module{
 				mockModule{
-					name:     "jkl",
-					hidden:   true,
-					commands: []Command{mockCommand{name: "mno", hidden: false}},
+					name:     "abc",
+					commands: []Command{mockCommand{name: "jkl", hidden: false}},
 				},
 			},
 			ProviderName: "other",
-			Identifier:   ".jkl.mno",
-			Name:         "mno",
+			Identifier:   ".abc.jkl",
+			Name:         "jkl",
+			ChannelTypes: AllChannels,
 		})
 
 		actual := generateRegisteredModule(nil, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -780,6 +700,7 @@ func Test_fillSubcommands(t *testing.T) {
 				Name:         "def",
 				Aliases:      []string{"jkl"},
 				Hidden:       true,
+				ChannelTypes: AllChannels,
 			},
 			{
 				parent:   &parent,
@@ -808,188 +729,70 @@ func Test_fillSubcommands(t *testing.T) {
 				Identifier:   ".abc.ghi",
 				Name:         "ghi",
 				Aliases:      []string{"mno", "pqr"},
+				ChannelTypes: AllChannels,
 			},
 		},
 	}
 
-	fillSubcommands(parent, nil)
-	removeRegisteredModuleFuncs(parent)
-
+	fillSubcommands(parent)
 	assert.Equal(t, expect, parent)
 }
 
 func Test_generateRegisteredCommands(t *testing.T) {
-	t.Run("use defaults", func(t *testing.T) {
-		defaults := Defaults{
-			ChannelTypes: 12,
-			Throttler:    mockThrottler{cmp: "abc"},
-			Restrictions: nil,
-		}
+	parent := new(RegisteredModule)
 
-		parent := new(RegisteredModule)
-
-		smod := SourceModule{
-			ProviderName: "",
-			Modules: []Module{
-				mockModule{
-					name:     "abc",
-					commands: []Command{mockCommand{name: "def"}},
-				},
-			},
-		}
-
-		expect := []*RegisteredCommand{
-			{
-				parent:       &parent,
-				provider:     nil,
-				ProviderName: "",
-				Source:       mockCommand{name: "def"},
-				SourceParents: []Module{
-					mockModule{
-						name:     "abc",
-						commands: []Command{mockCommand{name: "def"}},
+	smod := SourceModule{
+		ProviderName: "",
+		Modules: []Module{
+			mockModule{
+				name: "abc",
+				commands: []Command{
+					mockCommand{
+						name:            "def",
+						hidden:          true,
+						restrictionFunc: nil,
+						throttler:       mockThrottler{cmp: "cde"},
 					},
 				},
-				Identifier:      ".abc.def",
-				Name:            "def",
-				ChannelTypes:    defaults.ChannelTypes,
-				Throttler:       defaults.Throttler,
-				restrictionFunc: defaults.Restrictions,
 			},
-		}
+		},
+	}
 
-		actual := generateRegisteredCommands(parent, smod, defaults)
-
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("parent overwrite", func(t *testing.T) {
-		defaults := Defaults{
-			ChannelTypes: 12,
-			Throttler:    mockThrottler{cmp: "abc"},
-			Restrictions: nil,
-		}
-
-		parent := new(RegisteredModule)
-
-		smod := SourceModule{
+	expect := []*RegisteredCommand{
+		{
+			parent:       &parent,
+			provider:     nil,
 			ProviderName: "",
-			Modules: []Module{
-				mockModule{
-					name:                "abc",
-					hidden:              true,
-					defaultChannelTypes: 23,
-					defaultRestrictions: nil,
-					defaultThrottler:    mockThrottler{cmp: "bcd"},
-					commands:            []Command{mockCommand{name: "def"}},
-				},
-			},
-		}
-
-		expect := []*RegisteredCommand{
-			{
-				parent:       &parent,
-				provider:     nil,
-				ProviderName: "",
-				Source:       mockCommand{name: "def"},
-				SourceParents: []Module{
-					mockModule{
-						name:                "abc",
-						hidden:              true,
-						defaultChannelTypes: 23,
-						defaultRestrictions: nil,
-						defaultThrottler:    mockThrottler{cmp: "bcd"},
-						commands:            []Command{mockCommand{name: "def"}},
-					},
-				},
-				Identifier:      ".abc.def",
-				Name:            "def",
-				Hidden:          false,
-				ChannelTypes:    23,
-				Throttler:       mockThrottler{cmp: "bcd"},
+			Source: mockCommand{
+				name:            "def",
+				hidden:          true,
 				restrictionFunc: nil,
+				throttler:       mockThrottler{cmp: "cde"},
 			},
-		}
-
-		actual := generateRegisteredCommands(parent, smod, defaults)
-
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("command overwrite", func(t *testing.T) {
-		defaults := Defaults{
-			ChannelTypes: 12,
-			Throttler:    mockThrottler{cmp: "abc"},
-			Restrictions: nil,
-		}
-
-		parent := new(RegisteredModule)
-
-		smod := SourceModule{
-			ProviderName: "",
-			Modules: []Module{
+			SourceParents: []Module{
 				mockModule{
-					name:                "abc",
-					hidden:              false,
-					defaultChannelTypes: 23,
-					defaultRestrictions: nil,
-					defaultThrottler:    mockThrottler{cmp: "bcd"},
+					name: "abc",
 					commands: []Command{
 						mockCommand{
-							name:         "def",
-							hidden:       true,
-							channelTypes: 34,
-							restrictions: nil,
-							throttler:    mockThrottler{cmp: "cde"},
+							name:            "def",
+							hidden:          true,
+							restrictionFunc: nil,
+							throttler:       mockThrottler{cmp: "cde"},
 						},
 					},
 				},
 			},
-		}
+			Identifier:   ".abc.def",
+			Name:         "def",
+			Hidden:       true,
+			ChannelTypes: AllChannels,
+			Throttler:    mockThrottler{cmp: "cde"},
+		},
+	}
 
-		expect := []*RegisteredCommand{
-			{
-				parent:       &parent,
-				provider:     nil,
-				ProviderName: "",
-				Source: mockCommand{
-					name:         "def",
-					hidden:       true,
-					channelTypes: 34,
-					restrictions: nil,
-					throttler:    mockThrottler{cmp: "cde"},
-				},
-				SourceParents: []Module{
-					mockModule{
-						name:                "abc",
-						hidden:              false,
-						defaultChannelTypes: 23,
-						defaultRestrictions: nil,
-						defaultThrottler:    mockThrottler{cmp: "bcd"},
-						commands: []Command{
-							mockCommand{
-								name:         "def",
-								hidden:       true,
-								channelTypes: 34,
-								restrictions: nil,
-								throttler:    mockThrottler{cmp: "cde"},
-							},
-						},
-					},
-				},
-				Identifier:      ".abc.def",
-				Name:            "def",
-				Hidden:          true,
-				ChannelTypes:    34,
-				Throttler:       mockThrottler{cmp: "cde"},
-				restrictionFunc: nil,
-			},
-		}
+	actual := generateRegisteredCommands(parent, smod)
 
-		actual := generateRegisteredCommands(parent, smod, defaults)
-
-		assert.Equal(t, expect, actual)
-	})
+	assert.Equal(t, expect, actual)
 }
 
 func TestRegisteredModule_ShortDescription(t *testing.T) {

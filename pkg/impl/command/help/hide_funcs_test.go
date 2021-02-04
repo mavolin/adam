@@ -137,28 +137,38 @@ func TestCheckRestrictions(t *testing.T) {
 		{
 			name:      "restricted",
 			hiddenLvl: HideList,
-			cmd: plugin.NewRegisteredCommandWithParent(nil,
-				mock.RestrictionFunc(plugin.DefaultRestrictionError)),
+			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider, mock.Command{
+				CommandMeta: mock.CommandMeta{
+					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
+				},
+			}),
 			expect: HideList,
 		},
 		{
 			name:      "not restricted",
 			hiddenLvl: HideList,
-			cmd:       new(plugin.RegisteredCommand),
-			expect:    Show,
+			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider,
+				mock.Command{CommandMeta: mock.CommandMeta{}}),
+			expect: Show,
 		},
 		{
 			name:      "level",
 			hiddenLvl: HideList,
-			cmd: plugin.NewRegisteredCommandWithParent(nil,
-				mock.RestrictionFunc(plugin.DefaultRestrictionError)),
+			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider, mock.Command{
+				CommandMeta: mock.CommandMeta{
+					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
+				},
+			}),
 			expect: HideList,
 		},
 		{
 			name:      "level",
 			hiddenLvl: Hide,
-			cmd: plugin.NewRegisteredCommandWithParent(nil,
-				mock.RestrictionFunc(plugin.DefaultRestrictionError)),
+			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider, mock.Command{
+				CommandMeta: mock.CommandMeta{
+					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
+				},
+			}),
 			expect: Hide,
 		},
 	}

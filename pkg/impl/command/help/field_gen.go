@@ -215,8 +215,9 @@ func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Lo
 		b.WriteRune('`')
 		b.WriteString(arg.Name)
 
-		if !strings.EqualFold(arg.Name, arg.Type.Name) ||
-			(info.Variadic && len(info.Optional) == 0 && i == len(info.Required)-1) {
+		variadic := info.Variadic && len(info.Optional) == 0 && i == len(info.Required)-1
+
+		if (!strings.EqualFold(arg.Name, arg.Type.Name) || variadic) && len(arg.Type.Name) > 0 {
 			b.WriteString(" (")
 			b.WriteString(arg.Type.Name)
 
@@ -243,8 +244,9 @@ func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Lo
 		b.WriteRune('`')
 		b.WriteString(arg.Name)
 
-		if !strings.EqualFold(arg.Name, arg.Type.Name) ||
-			(info.Variadic && i == len(info.Optional)-1) {
+		variadic := info.Variadic && i == len(info.Optional)-1
+
+		if (!strings.EqualFold(arg.Name, arg.Type.Name) || variadic) && len(arg.Type.Name) > 0 {
 			b.WriteString(" (")
 			b.WriteString(arg.Type.Name)
 
@@ -289,14 +291,16 @@ func (h *Help) genFlags(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Locali
 			b.WriteString(info.FlagFormatter(alias))
 		}
 
-		b.WriteString(" (")
-		b.WriteString(flag.Type.Name)
+		if len(flag.Type.Name) > 0 {
+			b.WriteString(" (")
+			b.WriteString(flag.Type.Name)
 
-		if flag.Multi {
-			b.WriteRune('+')
+			if flag.Multi {
+				b.WriteRune('+')
+			}
+
+			b.WriteString(")`")
 		}
-
-		b.WriteString(")`")
 
 		if len(flag.Description) > 0 {
 			b.WriteString(" - ")

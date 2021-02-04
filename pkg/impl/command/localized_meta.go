@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -20,8 +21,8 @@ type LocalizedMeta struct {
 	ShortDescription *i18n.Config
 	// LongDescription is an optional long description of the command.
 	LongDescription *i18n.Config
-	// Examples contains optional example usages of the command.
-	Examples []*i18n.Config
+	// ExampleArgs contains the optional example arguments of the command.
+	ExampleArgs []*i18n.Config
 	// Args is the argument configuration of the command.
 	// If this is left empty, the command won't accept any arguments.
 	Args plugin.ArgConfig
@@ -30,20 +31,14 @@ type LocalizedMeta struct {
 	Hidden bool
 	// ChannelTypes are the plugin.ChannelTypes the command may be executed in.
 	//
-	// If this is not set, the channel types of the parent will be used.
+	// If this is not set, AllChannels.
 	ChannelTypes plugin.ChannelTypes
 	// BotPermissions are the permissions the bot needs to execute this
 	// command.
 	BotPermissions discord.Permissions
-	// Restrictions contains the restrictions of the command.
-	//
-	// If this is nil, the restrictions of the parent will be used.
-	// Use restriction.None to prevent inheritance.
+	// Restrictions contains the optional restrictions of the command.
 	Restrictions plugin.RestrictionFunc
-	// Throttler is the plugin.Throttler of the command.
-	//
-	// If none is set, the throttler of the parent will be used.
-	// Use throttler.None to prevent inheritance.
+	// Throttler is the optional plugin.Throttler of the command.
 	Throttler plugin.Throttler
 }
 
@@ -70,14 +65,14 @@ func (m LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
 	return desc
 }
 
-func (m LocalizedMeta) GetExamples(l *i18n.Localizer) []string {
-	if len(m.Examples) == 0 {
+func (m LocalizedMeta) GetExampleArgs(l *i18n.Localizer) []string {
+	if len(m.ExampleArgs) == 0 {
 		return nil
 	}
 
-	examples := make([]string, 0, len(m.Examples))
+	examples := make([]string, 0, len(m.ExampleArgs))
 
-	for _, lexample := range m.Examples {
+	for _, lexample := range m.ExampleArgs {
 		example, err := l.Localize(lexample)
 		if err == nil {
 			examples = append(examples, example)
@@ -91,9 +86,17 @@ func (m LocalizedMeta) GetExamples(l *i18n.Localizer) []string {
 	return examples
 }
 
-func (m LocalizedMeta) GetArgs() plugin.ArgConfig                  { return m.Args }
-func (m LocalizedMeta) IsHidden() bool                             { return m.Hidden }
-func (m LocalizedMeta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
-func (m LocalizedMeta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
-func (m LocalizedMeta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
-func (m LocalizedMeta) GetThrottler() plugin.Throttler             { return m.Throttler }
+func (m LocalizedMeta) GetArgs() plugin.ArgConfig              { return m.Args }
+func (m LocalizedMeta) IsHidden() bool                         { return m.Hidden }
+func (m LocalizedMeta) GetChannelTypes() plugin.ChannelTypes   { return m.ChannelTypes }
+func (m LocalizedMeta) GetBotPermissions() discord.Permissions { return m.BotPermissions }
+
+func (m LocalizedMeta) IsRestricted(s *state.State, ctx *plugin.Context) error {
+	if m.Restrictions == nil {
+		return nil
+	}
+
+	return m.Restrictions(s, ctx)
+}
+
+func (m LocalizedMeta) GetThrottler() plugin.Throttler { return m.Throttler }

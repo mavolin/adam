@@ -173,25 +173,23 @@ func (e *BotPermissionsError) Handle(s *state.State, ctx *Context) error {
 	return HandleBotPermissionsError(e, s, ctx)
 }
 
-var HandleBotPermissionsError = func(
-	ierr *BotPermissionsError, _ *state.State, ctx *Context,
-) error {
+var HandleBotPermissionsError = func(perr *BotPermissionsError, _ *state.State, ctx *Context) error {
 	// if this error arose because of a missing send messages permission,
 	// do nothing, as we can't send an error message
-	if ierr.Missing.Has(discord.PermissionSendMessages) {
+	if perr.Missing.Has(discord.PermissionSendMessages) {
 		return nil
 	}
 
 	embed := shared.ErrorEmbed.Clone().
-		WithDescription(ierr.Description(ctx.Localizer))
+		WithDescription(perr.Description(ctx.Localizer))
 
-	if !ierr.IsSinglePermission() {
+	if !perr.IsSinglePermission() {
 		perms, err := ctx.Localize(insufficientPermissionsMissingPermissionsFieldName)
 		if err != nil {
 			return err
 		}
 
-		embed.WithField(perms, ierr.PermissionList(ctx.Localizer))
+		embed.WithField(perms, perr.PermissionList(ctx.Localizer))
 	}
 
 	_, err := ctx.ReplyEmbedBuilder(embed)
@@ -259,9 +257,9 @@ func (e *ChannelTypeError) Handle(s *state.State, ctx *Context) error {
 	return HandleChannelTypeError(e, s, ctx)
 }
 
-var HandleChannelTypeError = func(ierr *ChannelTypeError, s *state.State, ctx *Context) error {
+var HandleChannelTypeError = func(cerr *ChannelTypeError, s *state.State, ctx *Context) error {
 	embed := shared.ErrorEmbed.Clone().
-		WithDescription(ierr.Description(ctx.Localizer))
+		WithDescription(cerr.Description(ctx.Localizer))
 
 	_, err := ctx.ReplyEmbedBuilder(embed)
 	return err

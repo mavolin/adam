@@ -93,13 +93,13 @@ func New(o Options) *Help {
 			Aliases:          []string{"how"},
 			ShortDescription: shortDescription,
 			LongDescription:  longDescription,
-			Examples:         examples,
+			ExampleArgs:      exampleArgs,
 			Args: &arg.LocalizedCommaConfig{
 				Optional: []arg.LocalizedOptionalArg{
 					{
-						Name:        argsPluginName,
+						Name:        argPluginName,
 						Type:        arg.Plugin,
-						Description: argsPluginDescription,
+						Description: argPluginDescription,
 					},
 				},
 			},

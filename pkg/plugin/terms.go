@@ -32,32 +32,32 @@ type insufficientBotPermissionsDescSinglePlaceholders struct {
 
 var (
 	channelTypeErrorGuildText = i18n.NewFallbackConfig(
-		"plugin.error.channel_type.description.guild_text",
+		"plugin.error.channel_type.guild_text",
 		"You can only use this command in a regular text channel.")
 
 	channelTypeErrorGuildNews = i18n.NewFallbackConfig(
-		"plugin.error.channel_types.description.guild_news",
+		"plugin.error.channel_types.guild_news",
 		"You can only use this command in an announcement channel.")
 
 	channelTypeErrorDM = i18n.NewFallbackConfig(
-		"plugin.error.channel_types.description.dm",
+		"plugin.error.channel_types.dm",
 		"You can only use this command in a direct message.")
 
 	channelTypeErrorGuild = i18n.NewFallbackConfig(
-		"plugin.error.channel_types.description.guild",
+		"plugin.error.channel_types.guild",
 		"You can only use this command in a server.")
 
 	channelTypeErrorDMAndGuildText = i18n.NewFallbackConfig(
-		"plugin.error.channel_types.description.dm_and_guild_text",
+		"plugin.error.channel_types.dm_and_guild_text",
 		"You can only use this command in a direct message or a regular text channel.")
 
 	channelTypeErrorDMAndGuildNews = i18n.NewFallbackConfig(
-		"plugin.error.channel_types.description.dm_and_guild_news.",
+		"plugin.error.channel_types.dm_and_guild_news.",
 		"You can only use this command in a direct message or an announcement channel.")
 
 	channelTypeErrorFallback = i18n.NewFallbackConfig(
-		"plugin.error.channel_type.description.fallback",
-		"Ypu can't use this command in this type of channel.")
+		"plugin.error.channel_type.fallback",
+		"You can't use this command in this type of channel.")
 )
 
 // ================================ RestrictionError ================================

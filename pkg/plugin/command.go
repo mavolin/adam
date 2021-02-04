@@ -64,8 +64,8 @@ type (
 		// GetLongDescription returns an optional long description of the
 		// command.
 		GetLongDescription(l *i18n.Localizer) string
-		// GetExamples returns optional example usages of the command.
-		GetExamples(l *i18n.Localizer) []string
+		// GetExampleArgs returns optional example arguments of the command.
+		GetExampleArgs(l *i18n.Localizer) []string
 
 		// GetArgs returns the ArgConfig of the command.
 		//
@@ -77,10 +77,7 @@ type (
 		IsHidden() bool
 		// GetChannelTypes returns the ChannelTypes this command may be invoked
 		// in.
-		//
-		// Setting this overrides ChannelTypes defined by the parent.
-		//
-		// If this 0, the parents ChannelTypes will be used.
+		// If this is 0, AllChannels will be used.
 		GetChannelTypes() ChannelTypes
 		// GetBotPermissions gets the permissions the bot needs to execute this
 		// command.
@@ -90,26 +87,16 @@ type (
 		// Note that that direct messages may also pass this, if the passed
 		// permissions only require permutil.DMPermissions.
 		GetBotPermissions() discord.Permissions
-		// GetRestrictionFunc checks if the user is restricted from using the
+		// IsRestricted checks if the user is restricted from using the
 		// command.
 		//
-		// Setting this will override restrictions defined by the parent.
-		// To remove a RestrictionFunc defined by a parent without defining a
-		// new one use restriction.None.
-		//
-		// If they are restricted, a errors.RestrictionError should be
+		// If they are restricted, a *plugin.RestrictionError should be
 		// returned.
 		//
 		// If the RestrictionFunc returns an error that implements
-		// RestrictionErrorWrapper, it will be properly wrapped.
-		//
-		// To override a parents RestrictionFunc, use restriction.None.
-		GetRestrictionFunc() RestrictionFunc
+		// RestrictionErrorWrapper, it will be wrapped accordingly.
+		IsRestricted(s *state.State, ctx *Context) error
 		// GetThrottler returns the Throttler for the command.
-		//
-		// Setting this will override the Throttler defined by the parent.
-		// To override a Throttler defined by a parent without defining a new
-		// one use throttler.None.
 		GetThrottler() Throttler
 	}
 )

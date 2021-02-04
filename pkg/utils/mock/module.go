@@ -29,39 +29,14 @@ func GenerateRegisteredModule(providerName string, mod plugin.Module) *plugin.Re
 	return rmod[0]
 }
 
-// GenerateRegisteredModuleWithDefaults generates a RegisteredModule from the
-// passed source module using the passed provider name and defaults.
-func GenerateRegisteredModuleWithDefaults(
-	providerName string, mod plugin.Module, defaults plugin.Defaults,
-) *plugin.RegisteredModule {
-	rmod := plugin.GenerateRegisteredModules([]plugin.Repository{
-		{
-			ProviderName: providerName,
-			Modules:      []plugin.Module{mod},
-			Defaults:     defaults,
-		},
-	})
-
-	return rmod[0]
-}
-
 type ModuleMeta struct {
 	Name             string
 	ShortDescription string
 	LongDescription  string
-
-	Hidden              bool
-	DefaultChannelTypes plugin.ChannelTypes
-	DefaultRestrictions plugin.RestrictionFunc
-	DefaultThrottler    plugin.Throttler
 }
 
 var _ plugin.ModuleMeta = ModuleMeta{}
 
-func (m ModuleMeta) GetName() string                                   { return m.Name }
-func (m ModuleMeta) GetShortDescription(*i18n.Localizer) string        { return m.ShortDescription }
-func (m ModuleMeta) GetLongDescription(*i18n.Localizer) string         { return m.LongDescription }
-func (m ModuleMeta) IsHidden() bool                                    { return m.Hidden }
-func (m ModuleMeta) GetDefaultChannelTypes() plugin.ChannelTypes       { return m.DefaultChannelTypes }
-func (m ModuleMeta) GetDefaultRestrictionFunc() plugin.RestrictionFunc { return m.DefaultRestrictions }
-func (m ModuleMeta) GetDefaultThrottler() plugin.Throttler             { return m.DefaultThrottler }
+func (m ModuleMeta) GetName() string                            { return m.Name }
+func (m ModuleMeta) GetShortDescription(*i18n.Localizer) string { return m.ShortDescription }
+func (m ModuleMeta) GetLongDescription(*i18n.Localizer) string  { return m.LongDescription }

@@ -2,6 +2,10 @@ package restriction
 
 import "github.com/mavolin/adam/pkg/i18n"
 
+// =============================================================================
+// Comparators
+// =====================================================================================
+
 // ================================ Any ================================
 
 var (
@@ -24,23 +28,27 @@ var (
 		"You need to fulfill all of these requirements:")
 )
 
+// =============================================================================
+// Funcs
+// =====================================================================================
+
 // ================================ NSFW ================================
 
-var notNSFWChannelError = i18n.NewFallbackConfig(
+var nsfwChannelError = i18n.NewFallbackConfig(
 	"restriction.nsfw.error.not_nsfw.description",
-	"This command must be invoked in an NSFW channel.")
+	"This command must be invoked in a NSFW channel.")
 
 // ================================ Owner ================================
 
-var notOwnerError = i18n.NewFallbackConfig(
-	"restriction.owner.error.not_owner.description",
-	"You must be the owner of the server to invoke this command.")
+var guildOwnerError = i18n.NewFallbackConfig(
+	"restriction.guild_owner.error.not_owner.description",
+	"You need to be owner of the server to use this command.")
 
 // ================================ BotOwner ================================
 
-var notBotOwnerError = i18n.NewFallbackConfig(
+var botOwnerError = i18n.NewFallbackConfig(
 	"restriction.bot_owner.error.not_bot_owner.description",
-	"You must be the owner of the bot to invoke this command.")
+	"You must be the owner of the bot to use this command.")
 
 // ================================ Roles ================================
 

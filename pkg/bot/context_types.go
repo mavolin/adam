@@ -63,7 +63,6 @@ func (p *ctxPluginProvider) lazyRepos() {
 				ProviderName: remp.name,
 				Modules:      mods,
 				Commands:     cmds,
-				Defaults:     remp.defaults,
 			})
 		}
 	}

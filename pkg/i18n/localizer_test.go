@@ -161,6 +161,11 @@ func TestLocalizer_Localize(t *testing.T) {
 			expect: "abc",
 		},
 		{
+			name:   "empty fallback",
+			config: EmptyConfig,
+			expect: "",
+		},
+		{
 			name: "default placeholders",
 			defaultPlaceholders: map[string]interface{}{
 				"def": "ghi",

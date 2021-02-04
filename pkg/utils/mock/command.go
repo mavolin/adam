@@ -22,7 +22,7 @@ func (c Command) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error
 // GenerateRegisteredCommand creates a mocked RegisteredCommand from the passed
 // Command using the passed provider name.
 func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.RegisteredCommand {
-	c := plugin.NewRegisteredCommandWithParent(nil, cmd.GetRestrictionFunc())
+	c := plugin.NewRegisteredCommandWithParent(nil)
 
 	c.Source = cmd
 	// c.SourceParents = nil
@@ -37,23 +37,6 @@ func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.Registe
 	c.Throttler = cmd.GetThrottler()
 
 	return c
-}
-
-// GenerateRegisteredCommandWithDefaults creates a mocked RegisteredCommand
-// from the passed Command using the passed provider name and defaults.
-func GenerateRegisteredCommandWithDefaults(
-	providerName string, cmd Command, defaults plugin.Defaults,
-) *plugin.RegisteredCommand {
-	c := plugin.GenerateRegisteredCommands([]plugin.Repository{
-		{
-			ProviderName: providerName,
-			Commands:     []plugin.Command{cmd},
-			Modules:      nil,
-			Defaults:     defaults,
-		},
-	})
-
-	return c[0]
 }
 
 // GenerateRegisteredCommandWithParents creates a new RegisteredCommand from
@@ -92,7 +75,7 @@ type CommandMeta struct {
 
 	Args plugin.ArgConfig
 
-	Examples       []string
+	ExampleArgs    []string
 	Hidden         bool
 	ChannelTypes   plugin.ChannelTypes
 	BotPermissions discord.Permissions
@@ -107,12 +90,20 @@ func (m CommandMeta) GetAliases() []string                       { return m.Alia
 func (m CommandMeta) GetShortDescription(*i18n.Localizer) string { return m.ShortDescription }
 func (m CommandMeta) GetLongDescription(*i18n.Localizer) string  { return m.LongDescription }
 func (m CommandMeta) GetArgs() plugin.ArgConfig                  { return m.Args }
-func (m CommandMeta) GetExamples(*i18n.Localizer) []string       { return m.Examples }
+func (m CommandMeta) GetExampleArgs(*i18n.Localizer) []string    { return m.ExampleArgs }
 func (m CommandMeta) IsHidden() bool                             { return m.Hidden }
 func (m CommandMeta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
 func (m CommandMeta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
-func (m CommandMeta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
-func (m CommandMeta) GetThrottler() plugin.Throttler             { return m.Throttler }
+
+func (m CommandMeta) IsRestricted(s *state.State, ctx *plugin.Context) error {
+	if m.Restrictions == nil {
+		return nil
+	}
+
+	return m.Restrictions(s, ctx)
+}
+
+func (m CommandMeta) GetThrottler() plugin.Throttler { return m.Throttler }
 
 type ArgConfig struct {
 	Expect string

@@ -89,7 +89,7 @@ func (l *Localizer) Localize(c *Config) (s string, err error) {
 
 	// otherwise use fallback if there is;
 	// checking other suffices as it will always be set if there is a fallback
-	if c.Fallback.Other == "" {
+	if len(c.Fallback.Other) == 0 && !c.Fallback.empty {
 		return string(c.Term), NewNoTranslationGeneratedError(c.Term)
 	}
 

@@ -6,7 +6,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -40,7 +39,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				}),
 			},
 			allowed: plugin.GuildChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
+			expect:  newChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "pass direct messages",
@@ -63,7 +62,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				}),
 			},
 			allowed: plugin.DirectMessages,
-			expect:  newInvalidChannelTypeError(plugin.DirectMessages, i18n.NewFallbackLocalizer(), true),
+			expect:  newChannelTypesError(plugin.DirectMessages, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "all channels",
@@ -102,7 +101,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				}),
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
+			expect:  newChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
 		},
 		{
 			name: "fail guild text - not fatal",
@@ -117,103 +116,13 @@ func Test_assertChannelTypes(t *testing.T) {
 				},
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newInvalidChannelTypeError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), false),
+			expect:  newChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), false),
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := assertChannelTypes(c.ctx, c.allowed, nil)
-			assert.Equal(t, c.expect, actual)
-		})
-	}
-
-	t.Run("fail - no remaining", func(t *testing.T) {
-		noRemainingError := errors.New("no remaining error")
-
-		errHandler := mock.NewErrorHandler(t).
-			ExpectSilentError(noRemainingError)
-		defer errHandler.Eval()
-
-		ctx := &plugin.Context{
-			Message:   discord.Message{GuildID: 123},
-			Localizer: i18n.NewFallbackLocalizer(),
-			InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
-				CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
-			}),
-			ErrorHandler: errHandler,
-		}
-
-		actual := assertChannelTypes(ctx, plugin.DirectMessages, noRemainingError)
-		assert.Equal(t, plugin.DefaultFatalRestrictionError, actual)
-	})
-}
-
-func Test_canManageRole(t *testing.T) {
-	testCases := []struct {
-		name   string
-		target discord.Role
-		guild  *discord.Guild
-		member *discord.Member
-		expect bool
-	}{
-		{
-			name:   "can not manage",
-			target: discord.Role{Position: 2},
-			guild: &discord.Guild{
-				Roles: []discord.Role{
-					{
-						ID:       123,
-						Position: 1,
-					},
-				},
-			},
-			member: &discord.Member{RoleIDs: []discord.RoleID{123}},
-			expect: false,
-		},
-		{
-			name:   "no manage roles permission",
-			target: discord.Role{Position: 1},
-			guild: &discord.Guild{
-				Roles: []discord.Role{
-					{
-						ID:          123,
-						Position:    2,
-						Permissions: 0,
-					},
-				},
-				OwnerID: 456,
-			},
-			member: &discord.Member{
-				User:    discord.User{ID: 789},
-				RoleIDs: []discord.RoleID{123},
-			},
-			expect: false,
-		},
-		{
-			name:   "pass",
-			target: discord.Role{Position: 1},
-			guild: &discord.Guild{
-				Roles: []discord.Role{
-					{
-						ID:          123,
-						Position:    2,
-						Permissions: discord.PermissionManageRoles,
-					},
-				},
-				OwnerID: 456,
-			},
-			member: &discord.Member{
-				User:    discord.User{ID: 789},
-				RoleIDs: []discord.RoleID{123},
-			},
-			expect: true,
-		},
-	}
-
-	for _, c := range testCases {
-		t.Run(c.name, func(t *testing.T) {
-			actual := canManageRole(c.target, c.guild, c.member)
+			actual := assertChannelTypes(c.ctx, c.allowed)
 			assert.Equal(t, c.expect, actual)
 		})
 	}

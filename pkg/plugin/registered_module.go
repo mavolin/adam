@@ -31,9 +31,9 @@ type (
 		// Name is the name of the module.
 		Name string
 
-		// Hidden specifies if either all Sources are hidden.
-		// A source module is considered hidden if it is marked as hidden, or
-		// if all of it's commands and modules are hidden as well.
+		// Hidden specifies if all Sources are hidden.
+		// A source module is considered hidden if all of it's commands and
+		// modules are hidden as well.
 		Hidden bool
 
 		// Commands are the subcommands of the module.
@@ -167,27 +167,25 @@ func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, re
 	}
 
 	fillSubmodules(rmod, repos)
-	fillSubcommands(rmod, repos)
+	fillSubcommands(rmod)
 
 	rmod.Hidden = true
 
+	// mark module as hidden, unless it has one visible child
 	for _, s := range rmod.Sources {
-		if smod := s.Modules[len(s.Modules)-1]; !smod.IsHidden() {
-			// if a source module is hidden, make sure it has at least one
-			// plugin that is visible
+		smod := s.Modules[len(s.Modules)-1]
 
-			for _, cmd := range smod.Commands() {
-				if !cmd.IsHidden() {
-					rmod.Hidden = false
-					break
-				}
+		for _, cmd := range smod.Commands() {
+			if !cmd.IsHidden() {
+				rmod.Hidden = false
+				break
 			}
+		}
 
-			for _, m := range smod.Modules() {
-				if !rmod.FindModule(m.GetName()).Hidden {
-					rmod.Hidden = false
-					break
-				}
+		for _, m := range smod.Modules() {
+			if !rmod.FindModule(m.GetName()).Hidden {
+				rmod.Hidden = false
+				break
 			}
 		}
 	}
@@ -253,7 +251,7 @@ func fillSubmodules(parent *RegisteredModule, repos []Repository) {
 
 // fillSubcommands fills the Commands field of the passed parent module with
 // the commands found in the parents Sources.
-func fillSubcommands(parent *RegisteredModule, repos []Repository) {
+func fillSubcommands(parent *RegisteredModule) {
 	var maxLen int
 
 	for _, smod := range parent.Sources {
@@ -273,18 +271,8 @@ func fillSubcommands(parent *RegisteredModule, repos []Repository) {
 	usedAliases := make(map[string]struct{}, maxLen)
 
 	for _, smod := range parent.Sources {
-		var defaults Defaults
-
-		// find the Defaults for the current provider
-		for _, r := range repos {
-			if r.ProviderName == smod.ProviderName {
-				defaults = r.Defaults
-				break
-			}
-		}
-
 		// generate RegisteredCommands for the current provider
-		insertCmds := generateRegisteredCommands(parent, smod, defaults)
+		insertCmds := generateRegisteredCommands(parent, smod)
 
 		for _, rcmd := range insertCmds {
 			rcmd.parent = &parent
@@ -323,23 +311,11 @@ func fillSubcommands(parent *RegisteredModule, repos []Repository) {
 	}
 }
 
-func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d Defaults) []*RegisteredCommand { //nolint:funlen
+func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*RegisteredCommand { //nolint:funlen
 	var id Identifier
 
 	for _, p := range smod.Modules {
 		id += Identifier("." + p.GetName())
-
-		if t := p.GetDefaultChannelTypes(); t != 0 {
-			d.ChannelTypes = t
-		}
-
-		if t := p.GetDefaultThrottler(); t != nil {
-			d.Throttler = t
-		}
-
-		if f := p.GetDefaultRestrictionFunc(); f != nil {
-			d.Restrictions = f
-		}
 	}
 
 	// get the commands of the innermost parent
@@ -348,34 +324,25 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule, d D
 
 	for i, cmd := range cmds {
 		rcmd := &RegisteredCommand{
-			parent:          &parent,
-			Identifier:      id + Identifier("."+cmd.GetName()),
-			Source:          cmd,
-			SourceParents:   smod.Modules,
-			ProviderName:    smod.ProviderName,
-			Name:            cmd.GetName(),
-			Args:            cmd.GetArgs(),
-			Hidden:          cmd.IsHidden(),
-			ChannelTypes:    d.ChannelTypes,
-			Throttler:       d.Throttler,
-			restrictionFunc: d.Restrictions,
+			parent:        &parent,
+			Identifier:    id + Identifier("."+cmd.GetName()),
+			Source:        cmd,
+			SourceParents: smod.Modules,
+			ProviderName:  smod.ProviderName,
+			Name:          cmd.GetName(),
+			Args:          cmd.GetArgs(),
+			Hidden:        cmd.IsHidden(),
+			ChannelTypes:  cmd.GetChannelTypes(),
+			Throttler:     cmd.GetThrottler(),
+		}
+
+		if rcmd.ChannelTypes == 0 {
+			rcmd.ChannelTypes = AllChannels
 		}
 
 		if aliases := cmd.GetAliases(); aliases != nil {
 			rcmd.Aliases = make([]string, len(aliases))
 			copy(rcmd.Aliases, aliases)
-		}
-
-		if t := cmd.GetChannelTypes(); t != 0 {
-			rcmd.ChannelTypes = t
-		}
-
-		if t := cmd.GetThrottler(); t != nil {
-			rcmd.Throttler = t
-		}
-
-		if f := cmd.GetRestrictionFunc(); f != nil {
-			rcmd.restrictionFunc = f
 		}
 
 		rcmds[i] = rcmd

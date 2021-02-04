@@ -28,7 +28,6 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 					Commands: []plugin.Command{
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 					},
-					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
 			remProviders: []*pluginProvider{
@@ -39,7 +38,6 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 							[]plugin.Module{mock.Module{ModuleMeta: mock.ModuleMeta{Name: "ghi"}}},
 							nil
 					},
-					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
@@ -50,7 +48,6 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 				Commands: []plugin.Command{
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 				},
-				Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 			},
 			{
 				ProviderName: "another",
@@ -60,7 +57,6 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 				Modules: []plugin.Module{
 					mock.Module{ModuleMeta: mock.ModuleMeta{Name: "ghi"}},
 				},
-				Defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 			},
 		}
 
@@ -76,7 +72,6 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 					Commands: []plugin.Command{
 						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
 					},
-					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 				{
 					ProviderName: "another",
@@ -86,7 +81,6 @@ func TestCtxPluginProvider_PluginRepositories(t *testing.T) {
 					Modules: []plugin.Module{
 						mock.Module{ModuleMeta: mock.ModuleMeta{Name: "ghi"}},
 					},
-					Defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 			remProviders: nil,
@@ -106,31 +100,51 @@ func TestCtxPluginProvider_Commands(t *testing.T) {
 				{
 					ProviderName: plugin.BuiltInProvider,
 					Commands: []plugin.Command{
-						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
+						mock.Command{
+							CommandMeta: mock.CommandMeta{
+								Name:         "abc",
+								ChannelTypes: plugin.GuildChannels,
+							},
+						},
 					},
-					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
 			remProviders: []*pluginProvider{
 				{
 					name: "another",
 					provider: func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
-						return []plugin.Command{mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}}}, nil, nil
+						return []plugin.Command{
+							mock.Command{
+								CommandMeta: mock.CommandMeta{
+									Name:         "def",
+									ChannelTypes: plugin.GuildChannels,
+								},
+							},
+						}, nil, nil
 					},
-					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
 
 		expect := []*plugin.RegisteredCommand{
-			mock.GenerateRegisteredCommandWithDefaults(
+			mock.GenerateRegisteredCommand(
 				plugin.BuiltInProvider,
-				mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
-				plugin.Defaults{ChannelTypes: plugin.DirectMessages}),
-			mock.GenerateRegisteredCommandWithDefaults(
+				mock.Command{
+					CommandMeta: mock.CommandMeta{
+						Name:         "abc",
+						ChannelTypes: plugin.GuildChannels,
+					},
+				},
+			),
+			mock.GenerateRegisteredCommand(
 				"another",
-				mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
-				plugin.Defaults{ChannelTypes: plugin.GuildTextChannels}),
+				mock.Command{
+					CommandMeta: mock.CommandMeta{
+						Name:         "def",
+						ChannelTypes: plugin.GuildChannels,
+					},
+				},
+			),
 		}
 
 		actual := p.Commands()
@@ -166,11 +180,15 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 						mock.Module{
 							ModuleMeta: mock.ModuleMeta{Name: "abc"},
 							CommandsReturn: []plugin.Command{
-								mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
+								mock.Command{
+									CommandMeta: mock.CommandMeta{
+										Name:         "def",
+										ChannelTypes: plugin.GuildChannels,
+									},
+								},
 							},
 						},
 					},
-					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
 			remProviders: []*pluginProvider{
@@ -181,35 +199,49 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 							mock.Module{
 								ModuleMeta: mock.ModuleMeta{Name: "ghi"},
 								CommandsReturn: []plugin.Command{
-									mock.Command{CommandMeta: mock.CommandMeta{Name: "jkl"}},
+									mock.Command{
+										CommandMeta: mock.CommandMeta{
+											Name:         "jkl",
+											ChannelTypes: plugin.GuildChannels,
+										},
+									},
 								},
 							},
 						}, nil
 					},
-					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
 
 		expect := []*plugin.RegisteredModule{
-			mock.GenerateRegisteredModuleWithDefaults(
+			mock.GenerateRegisteredModule(
 				plugin.BuiltInProvider,
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "abc"},
 					CommandsReturn: []plugin.Command{
-						mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
+						mock.Command{
+							CommandMeta: mock.CommandMeta{
+								Name:         "def",
+								ChannelTypes: plugin.GuildChannels,
+							},
+						},
 					},
 				},
-				plugin.Defaults{ChannelTypes: plugin.DirectMessages}),
-			mock.GenerateRegisteredModuleWithDefaults(
+			),
+			mock.GenerateRegisteredModule(
 				"another",
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "ghi"},
 					CommandsReturn: []plugin.Command{
-						mock.Command{CommandMeta: mock.CommandMeta{Name: "jkl"}},
+						mock.Command{
+							CommandMeta: mock.CommandMeta{
+								Name:         "jkl",
+								ChannelTypes: plugin.GuildChannels,
+							},
+						},
 					},
 				},
-				plugin.Defaults{ChannelTypes: plugin.GuildTextChannels}),
+			),
 		}
 
 		actual := p.Modules()
@@ -420,9 +452,13 @@ func TestCtxPluginProvider_UnavailablePluginProviders(t *testing.T) {
 				{
 					ProviderName: plugin.BuiltInProvider,
 					Commands: []plugin.Command{
-						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
+						mock.Command{
+							CommandMeta: mock.CommandMeta{
+								Name:         "abc",
+								ChannelTypes: plugin.GuildChannels,
+							},
+						},
 					},
-					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
 			remProviders: []*pluginProvider{
@@ -431,7 +467,6 @@ func TestCtxPluginProvider_UnavailablePluginProviders(t *testing.T) {
 					provider: func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 						return nil, nil, errors.New("abc")
 					},
-					defaults: plugin.Defaults{ChannelTypes: plugin.GuildTextChannels},
 				},
 			},
 		}
@@ -453,9 +488,13 @@ func TestCtxPluginProvider_UnavailablePluginProviders(t *testing.T) {
 				{
 					ProviderName: plugin.BuiltInProvider,
 					Commands: []plugin.Command{
-						mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}},
+						mock.Command{
+							CommandMeta: mock.CommandMeta{
+								Name:         "abc",
+								ChannelTypes: plugin.GuildChannels,
+							},
+						},
 					},
-					Defaults: plugin.Defaults{ChannelTypes: plugin.DirectMessages},
 				},
 			},
 			remProviders: nil,

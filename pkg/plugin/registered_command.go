@@ -48,40 +48,27 @@ type RegisteredCommand struct {
 	Hidden bool
 	// ChannelTypes are the ChannelTypes this command can be run in.
 	//
-	// If the command itself did not define some, ChannelTypes will be set to
-	// the ChannelTypes of the closest parent that has defaults defined.
+	// If the command itself did not define some, ChannelTypes will be
+	// AllChannels.
 	ChannelTypes ChannelTypes
 	// BotPermissions are the permissions this command needs to execute.
-	// If the command itself did not define some, BotPermissions will be set
-	// with the permissions of the closest parent that has a default defined.
 	BotPermissions discord.Permissions
 	// Throttler is the Throttler of this command.
-	//
-	// If the command itself did not define one, Throttler will be set to the
-	// Throttler of the closest parent.
 	Throttler Throttler
-
-	restrictionFunc RestrictionFunc
 }
 
 // NewRegisteredCommandWithParent creates a new RegisteredCommand from the
 // passed parent module using the passed RestrictionFunc.
 // The RestrictionFunc may be nil.
-func NewRegisteredCommandWithParent(p *RegisteredModule, f RestrictionFunc) *RegisteredCommand {
-	return &RegisteredCommand{
-		parent:          &p,
-		restrictionFunc: f,
-	}
+func NewRegisteredCommandWithParent(p *RegisteredModule) *RegisteredCommand {
+	return &RegisteredCommand{parent: &p}
 }
 
 // NewRegisteredCommandWithProvider creates a new RegisteredCommand from the
 // passed Provider using the passed RestrictionFunc.
 // The RestrictionFunc may be nil.
-func NewRegisteredCommandWithProvider(p Provider, f RestrictionFunc) *RegisteredCommand {
-	return &RegisteredCommand{
-		provider:        p,
-		restrictionFunc: f,
-	}
+func NewRegisteredCommandWithProvider(p Provider) *RegisteredCommand {
+	return &RegisteredCommand{provider: p}
 }
 
 // GenerateRegisteredCommands generates top-level RegisteredCommands from the
@@ -110,17 +97,20 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 			var parent *RegisteredModule = nil
 
 			rcmd := &RegisteredCommand{
-				parent:          &parent,
-				ProviderName:    repo.ProviderName,
-				Source:          scmd,
-				Identifier:      Identifier("." + scmd.GetName()),
-				Name:            scmd.GetName(),
-				Args:            scmd.GetArgs(),
-				Hidden:          scmd.IsHidden(),
-				ChannelTypes:    repo.Defaults.ChannelTypes,
-				BotPermissions:  scmd.GetBotPermissions(),
-				Throttler:       repo.Defaults.Throttler,
-				restrictionFunc: repo.Defaults.Restrictions,
+				parent:         &parent,
+				ProviderName:   repo.ProviderName,
+				Source:         scmd,
+				Identifier:     Identifier("." + scmd.GetName()),
+				Name:           scmd.GetName(),
+				Args:           scmd.GetArgs(),
+				Hidden:         scmd.IsHidden(),
+				ChannelTypes:   scmd.GetChannelTypes(),
+				BotPermissions: scmd.GetBotPermissions(),
+				Throttler:      scmd.GetThrottler(),
+			}
+
+			if rcmd.ChannelTypes == 0 {
+				rcmd.ChannelTypes = AllChannels
 			}
 
 			if saliases := scmd.GetAliases(); len(saliases) > 0 {
@@ -132,14 +122,6 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 						rcmd.Aliases = append(rcmd.Aliases, a)
 					}
 				}
-			}
-
-			if t := scmd.GetChannelTypes(); t != 0 {
-				rcmd.ChannelTypes = t
-			}
-
-			if t := scmd.GetThrottler(); t != nil {
-				rcmd.Throttler = t
 			}
 
 			if i == len(rcmds) {
@@ -190,18 +172,26 @@ func (c *RegisteredCommand) LongDescription(l *i18n.Localizer) string {
 	return c.ShortDescription(l)
 }
 
-// Examples returns optional examples for the command.
+// ExampleArgs returns optional example arguments of the command.
+func (c *RegisteredCommand) ExampleArgs(l *i18n.Localizer) []string {
+	return c.Source.GetExampleArgs(l)
+}
+
+// Examples returns the command's example arguments prefixed with their invoke.
+// Invoke and example arguments are separated by a space.
 func (c *RegisteredCommand) Examples(l *i18n.Localizer) []string {
-	return c.Source.GetExamples(l)
+	args := c.ExampleArgs(l)
+
+	for i, arg := range args {
+		args[i] = c.Identifier.AsInvoke() + " " + arg
+	}
+
+	return args
 }
 
 // IsRestricted returns whether or not this command is restricted.
 func (c *RegisteredCommand) IsRestricted(s *state.State, ctx *Context) error {
-	if c.restrictionFunc != nil {
-		return c.restrictionFunc(s, ctx)
-	}
-
-	return nil
+	return c.Source.IsRestricted(s, ctx)
 }
 
 // Invoke invokes the command.
