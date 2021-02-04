@@ -98,9 +98,9 @@ func (b *Bot) hasPrefix(invoke string, prefixes []string, guild bool) string {
 
 	if guild {
 		return ""
-	} else { // prefix isn't required in direct messages
-		return invoke
 	}
+
+	return invoke // prefix isn't required in direct messages, so this is valid
 }
 
 func (b *Bot) findCommand(
