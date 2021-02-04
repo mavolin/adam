@@ -97,9 +97,9 @@ func New(o Options) *Help {
 			Args: &arg.LocalizedCommaConfig{
 				Optional: []arg.LocalizedOptionalArg{
 					{
-						Name:        argsPluginName,
+						Name:        argPluginName,
 						Type:        arg.Plugin,
-						Description: argsPluginDescription,
+						Description: argPluginDescription,
 					},
 				},
 			},

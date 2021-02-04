@@ -27,18 +27,18 @@ var (
 )
 
 // =============================================================================
-// Args
+// Arguments
 // =====================================================================================
 
 var (
-	argsPluginName        = i18n.NewFallbackConfig("plugin.help.args.plugin.name", "Command or Module")
-	argsPluginDescription = i18n.NewFallbackConfig(
-		"plugin.help.args.plugin.description",
+	argPluginName        = i18n.NewFallbackConfig("plugin.help.arg.plugin.name", "Command or Module")
+	argPluginDescription = i18n.NewFallbackConfig(
+		"plugin.help.arg.plugin.description",
 		"The name of the command or module you need help with.")
 )
 
 // =============================================================================
-// Text
+// Response
 // =====================================================================================
 
 // ================================ Common ================================
