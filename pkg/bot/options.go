@@ -308,11 +308,11 @@ func DefaultThrottlerErrorCheck(err error) bool {
 
 func DefaultGatewayErrorHandler(err error) {
 	// ignore error used on reconnect
-
 	var cerr *websocket.CloseError
-	if errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-		return
-	} else if errors.Is(err, syscall.ECONNRESET) {
+	switch {
+	case errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure):
+		fallthrough
+	case errors.Is(err, syscall.ECONNRESET):
 		return
 	}
 
