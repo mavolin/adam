@@ -156,11 +156,6 @@ func TestGenerateRegisteredModules(t *testing.T) {
 	expect := []*RegisteredModule{abc, def, ghi}
 
 	actual := GenerateRegisteredModules(repos)
-
-	for i := range actual {
-		removeRegisteredModuleFuncs(actual[i])
-	}
-
 	assert.Equal(t, expect, actual)
 }
 
@@ -272,8 +267,6 @@ func Test_generateRegisteredModule(t *testing.T) {
 		})
 
 		actual := generateRegisteredModule(nil, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 
@@ -354,8 +347,6 @@ func Test_generateRegisteredModule(t *testing.T) {
 		})
 
 		actual := generateRegisteredModule(parent, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 
@@ -424,8 +415,6 @@ func Test_generateRegisteredModule(t *testing.T) {
 		})
 
 		actual := generateRegisteredModule(nil, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 
@@ -519,8 +508,6 @@ func Test_generateRegisteredModule(t *testing.T) {
 		})
 
 		actual := generateRegisteredModule(nil, smods, nil)
-		removeRegisteredModuleFuncs(actual)
-
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -748,8 +735,6 @@ func Test_fillSubcommands(t *testing.T) {
 	}
 
 	fillSubcommands(parent)
-	removeRegisteredModuleFuncs(parent)
-
 	assert.Equal(t, expect, parent)
 }
 
@@ -763,10 +748,10 @@ func Test_generateRegisteredCommands(t *testing.T) {
 				name: "abc",
 				commands: []Command{
 					mockCommand{
-						name:         "def",
-						hidden:       true,
-						restrictions: nil,
-						throttler:    mockThrottler{cmp: "cde"},
+						name:            "def",
+						hidden:          true,
+						restrictionFunc: nil,
+						throttler:       mockThrottler{cmp: "cde"},
 					},
 				},
 			},
@@ -779,30 +764,29 @@ func Test_generateRegisteredCommands(t *testing.T) {
 			provider:     nil,
 			ProviderName: "",
 			Source: mockCommand{
-				name:         "def",
-				hidden:       true,
-				restrictions: nil,
-				throttler:    mockThrottler{cmp: "cde"},
+				name:            "def",
+				hidden:          true,
+				restrictionFunc: nil,
+				throttler:       mockThrottler{cmp: "cde"},
 			},
 			SourceParents: []Module{
 				mockModule{
 					name: "abc",
 					commands: []Command{
 						mockCommand{
-							name:         "def",
-							hidden:       true,
-							restrictions: nil,
-							throttler:    mockThrottler{cmp: "cde"},
+							name:            "def",
+							hidden:          true,
+							restrictionFunc: nil,
+							throttler:       mockThrottler{cmp: "cde"},
 						},
 					},
 				},
 			},
-			Identifier:      ".abc.def",
-			Name:            "def",
-			Hidden:          true,
-			ChannelTypes:    AllChannels,
-			Throttler:       mockThrottler{cmp: "cde"},
-			restrictionFunc: nil,
+			Identifier:   ".abc.def",
+			Name:         "def",
+			Hidden:       true,
+			ChannelTypes: AllChannels,
+			Throttler:    mockThrottler{cmp: "cde"},
 		},
 	}
 

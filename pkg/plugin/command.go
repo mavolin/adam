@@ -87,15 +87,15 @@ type (
 		// Note that that direct messages may also pass this, if the passed
 		// permissions only require permutil.DMPermissions.
 		GetBotPermissions() discord.Permissions
-		// GetRestrictionFunc checks if the user is restricted from using the
+		// IsRestricted checks if the user is restricted from using the
 		// command.
 		//
-		// If they are restricted, a errors.RestrictionError should be
+		// If they are restricted, a *plugin.RestrictionError should be
 		// returned.
 		//
 		// If the RestrictionFunc returns an error that implements
-		// RestrictionErrorWrapper, it will be properly wrapped.
-		GetRestrictionFunc() RestrictionFunc
+		// RestrictionErrorWrapper, it will be wrapped accordingly.
+		IsRestricted(s *state.State, ctx *Context) error
 		// GetThrottler returns the Throttler for the command.
 		GetThrottler() Throttler
 	}

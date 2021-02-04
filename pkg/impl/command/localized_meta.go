@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -85,9 +86,17 @@ func (m LocalizedMeta) GetExamples(l *i18n.Localizer) []string {
 	return examples
 }
 
-func (m LocalizedMeta) GetArgs() plugin.ArgConfig                  { return m.Args }
-func (m LocalizedMeta) IsHidden() bool                             { return m.Hidden }
-func (m LocalizedMeta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
-func (m LocalizedMeta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
-func (m LocalizedMeta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
-func (m LocalizedMeta) GetThrottler() plugin.Throttler             { return m.Throttler }
+func (m LocalizedMeta) GetArgs() plugin.ArgConfig              { return m.Args }
+func (m LocalizedMeta) IsHidden() bool                         { return m.Hidden }
+func (m LocalizedMeta) GetChannelTypes() plugin.ChannelTypes   { return m.ChannelTypes }
+func (m LocalizedMeta) GetBotPermissions() discord.Permissions { return m.BotPermissions }
+
+func (m LocalizedMeta) IsRestricted(s *state.State, ctx *plugin.Context) error {
+	if m.Restrictions == nil {
+		return nil
+	}
+
+	return m.Restrictions(s, ctx)
+}
+
+func (m LocalizedMeta) GetThrottler() plugin.Throttler { return m.Throttler }

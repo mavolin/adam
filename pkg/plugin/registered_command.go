@@ -55,28 +55,20 @@ type RegisteredCommand struct {
 	BotPermissions discord.Permissions
 	// Throttler is the Throttler of this command.
 	Throttler Throttler
-
-	restrictionFunc RestrictionFunc
 }
 
 // NewRegisteredCommandWithParent creates a new RegisteredCommand from the
 // passed parent module using the passed RestrictionFunc.
 // The RestrictionFunc may be nil.
-func NewRegisteredCommandWithParent(p *RegisteredModule, f RestrictionFunc) *RegisteredCommand {
-	return &RegisteredCommand{
-		parent:          &p,
-		restrictionFunc: f,
-	}
+func NewRegisteredCommandWithParent(p *RegisteredModule) *RegisteredCommand {
+	return &RegisteredCommand{parent: &p}
 }
 
 // NewRegisteredCommandWithProvider creates a new RegisteredCommand from the
 // passed Provider using the passed RestrictionFunc.
 // The RestrictionFunc may be nil.
-func NewRegisteredCommandWithProvider(p Provider, f RestrictionFunc) *RegisteredCommand {
-	return &RegisteredCommand{
-		provider:        p,
-		restrictionFunc: f,
-	}
+func NewRegisteredCommandWithProvider(p Provider) *RegisteredCommand {
+	return &RegisteredCommand{provider: p}
 }
 
 // GenerateRegisteredCommands generates top-level RegisteredCommands from the
@@ -105,17 +97,16 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 			var parent *RegisteredModule = nil
 
 			rcmd := &RegisteredCommand{
-				parent:          &parent,
-				ProviderName:    repo.ProviderName,
-				Source:          scmd,
-				Identifier:      Identifier("." + scmd.GetName()),
-				Name:            scmd.GetName(),
-				Args:            scmd.GetArgs(),
-				Hidden:          scmd.IsHidden(),
-				ChannelTypes:    scmd.GetChannelTypes(),
-				BotPermissions:  scmd.GetBotPermissions(),
-				Throttler:       scmd.GetThrottler(),
-				restrictionFunc: scmd.GetRestrictionFunc(),
+				parent:         &parent,
+				ProviderName:   repo.ProviderName,
+				Source:         scmd,
+				Identifier:     Identifier("." + scmd.GetName()),
+				Name:           scmd.GetName(),
+				Args:           scmd.GetArgs(),
+				Hidden:         scmd.IsHidden(),
+				ChannelTypes:   scmd.GetChannelTypes(),
+				BotPermissions: scmd.GetBotPermissions(),
+				Throttler:      scmd.GetThrottler(),
 			}
 
 			if rcmd.ChannelTypes == 0 {
@@ -131,14 +122,6 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 						rcmd.Aliases = append(rcmd.Aliases, a)
 					}
 				}
-			}
-
-			if t := scmd.GetChannelTypes(); t != 0 {
-				rcmd.ChannelTypes = t
-			}
-
-			if t := scmd.GetThrottler(); t != nil {
-				rcmd.Throttler = t
 			}
 
 			if i == len(rcmds) {
@@ -196,11 +179,7 @@ func (c *RegisteredCommand) Examples(l *i18n.Localizer) []string {
 
 // IsRestricted returns whether or not this command is restricted.
 func (c *RegisteredCommand) IsRestricted(s *state.State, ctx *Context) error {
-	if c.restrictionFunc != nil {
-		return c.restrictionFunc(s, ctx)
-	}
-
-	return nil
+	return c.Source.IsRestricted(s, ctx)
 }
 
 // Invoke invokes the command.

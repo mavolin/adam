@@ -85,7 +85,7 @@ func findCommand(
 func newRegisteredCommandWithProvider(
 	p plugin.Provider, id plugin.Identifier, cmd plugin.Command, parents []plugin.Module, repo *plugin.Repository,
 ) *plugin.RegisteredCommand {
-	rcmd := plugin.NewRegisteredCommandWithProvider(p, cmd.GetRestrictionFunc())
+	rcmd := plugin.NewRegisteredCommandWithProvider(p)
 	rcmd.ProviderName = repo.ProviderName
 	rcmd.Source = cmd
 	rcmd.SourceParents = parents

@@ -36,14 +36,13 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 					hidden:    true,
 					throttler: mockThrottler{cmp: "bcd"},
 				},
-				SourceParents:   nil,
-				Identifier:      ".abc",
-				Name:            "abc",
-				Hidden:          true,
-				ChannelTypes:    AllChannels,
-				BotPermissions:  0,
-				Throttler:       mockThrottler{cmp: "bcd"},
-				restrictionFunc: nil,
+				SourceParents:  nil,
+				Identifier:     ".abc",
+				Name:           "abc",
+				Hidden:         true,
+				ChannelTypes:   AllChannels,
+				BotPermissions: 0,
+				Throttler:      mockThrottler{cmp: "bcd"},
 			},
 		}
 
@@ -255,23 +254,18 @@ func TestRegisteredCommand_Examples(t *testing.T) {
 }
 
 func TestRegisteredCommand_IsRestricted(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		expect := errors.New("abc")
+	expect := errors.New("abc")
 
-		rcmd := &RegisteredCommand{
+	rcmd := &RegisteredCommand{
+		Source: mockCommand{
 			restrictionFunc: func(*state.State, *Context) error {
 				return expect
 			},
-		}
+		},
+	}
 
-		actual := rcmd.IsRestricted(nil, nil)
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("nil restriction func", func(t *testing.T) {
-		actual := new(RegisteredCommand).IsRestricted(nil, nil)
-		assert.Nil(t, actual)
-	})
+	actual := rcmd.IsRestricted(nil, nil)
+	assert.Equal(t, expect, actual)
 }
 
 func TestRegisteredCommand_Invoke(t *testing.T) {

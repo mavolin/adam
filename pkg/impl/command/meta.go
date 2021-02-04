@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -52,5 +53,13 @@ func (m Meta) GetArgs() plugin.ArgConfig                  { return m.Args }
 func (m Meta) IsHidden() bool                             { return m.Hidden }
 func (m Meta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
 func (m Meta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
-func (m Meta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
-func (m Meta) GetThrottler() plugin.Throttler             { return m.Throttler }
+
+func (m Meta) IsRestricted(s *state.State, ctx *plugin.Context) error {
+	if m.Restrictions == nil {
+		return nil
+	}
+
+	return m.Restrictions(s, ctx)
+}
+
+func (m Meta) GetThrottler() plugin.Throttler { return m.Throttler }

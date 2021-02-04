@@ -324,17 +324,16 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*
 
 	for i, cmd := range cmds {
 		rcmd := &RegisteredCommand{
-			parent:          &parent,
-			Identifier:      id + Identifier("."+cmd.GetName()),
-			Source:          cmd,
-			SourceParents:   smod.Modules,
-			ProviderName:    smod.ProviderName,
-			Name:            cmd.GetName(),
-			Args:            cmd.GetArgs(),
-			Hidden:          cmd.IsHidden(),
-			ChannelTypes:    cmd.GetChannelTypes(),
-			Throttler:       cmd.GetThrottler(),
-			restrictionFunc: cmd.GetRestrictionFunc(),
+			parent:        &parent,
+			Identifier:    id + Identifier("."+cmd.GetName()),
+			Source:        cmd,
+			SourceParents: smod.Modules,
+			ProviderName:  smod.ProviderName,
+			Name:          cmd.GetName(),
+			Args:          cmd.GetArgs(),
+			Hidden:        cmd.IsHidden(),
+			ChannelTypes:  cmd.GetChannelTypes(),
+			Throttler:     cmd.GetThrottler(),
 		}
 
 		if rcmd.ChannelTypes == 0 {
@@ -344,18 +343,6 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*
 		if aliases := cmd.GetAliases(); aliases != nil {
 			rcmd.Aliases = make([]string, len(aliases))
 			copy(rcmd.Aliases, aliases)
-		}
-
-		if t := cmd.GetChannelTypes(); t != 0 {
-			rcmd.ChannelTypes = t
-		}
-
-		if t := cmd.GetThrottler(); t != nil {
-			rcmd.Throttler = t
-		}
-
-		if f := cmd.GetRestrictionFunc(); f != nil {
-			rcmd.restrictionFunc = f
 		}
 
 		rcmds[i] = rcmd

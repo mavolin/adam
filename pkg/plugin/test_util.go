@@ -57,18 +57,18 @@ func (l *mockLocalizer) build() *i18n.Localizer {
 }
 
 type mockCommand struct {
-	name           string
-	aliases        []string
-	args           ArgConfig
-	shortDesc      string
-	longDesc       string
-	examples       []string
-	hidden         bool
-	channelTypes   ChannelTypes
-	botPermissions discord.Permissions
-	restrictions   RestrictionFunc
-	throttler      Throttler
-	invokeFunc     func(*state.State, *Context) (interface{}, error)
+	name            string
+	aliases         []string
+	args            ArgConfig
+	shortDesc       string
+	longDesc        string
+	examples        []string
+	hidden          bool
+	channelTypes    ChannelTypes
+	botPermissions  discord.Permissions
+	restrictionFunc RestrictionFunc
+	throttler       Throttler
+	invokeFunc      func(*state.State, *Context) (interface{}, error)
 }
 
 func (c mockCommand) GetName() string                            { return c.name }
@@ -80,8 +80,18 @@ func (c mockCommand) GetExamples(*i18n.Localizer) []string       { return c.exam
 func (c mockCommand) IsHidden() bool                             { return c.hidden }
 func (c mockCommand) GetChannelTypes() ChannelTypes              { return c.channelTypes }
 func (c mockCommand) GetBotPermissions() discord.Permissions     { return c.botPermissions }
-func (c mockCommand) GetRestrictionFunc() RestrictionFunc        { return c.restrictions }
-func (c mockCommand) GetThrottler() Throttler                    { return c.throttler }
+
+func (c mockCommand) IsRestricted(s *state.State, ctx *Context) error {
+	if c.restrictionFunc == nil {
+		return nil
+	}
+
+	return c.restrictionFunc(s, ctx)
+}
+
+func (c mockCommand) GetThrottler() Throttler {
+	return c.throttler
+}
 
 func (c mockCommand) Invoke(s *state.State, ctx *Context) (interface{}, error) {
 	return c.invokeFunc(s, ctx)
@@ -136,26 +146,6 @@ func (d mockDiscordDataProvider) SelfAsync() func() (*discord.Member, error) {
 	return func() (*discord.Member, error) {
 		return d.SelfReturn, d.SelfError
 	}
-}
-
-// removeRegisteredModuleFuncs sets all functions stored in the passed
-// RegisteredModule to nil.
-// Additionally, it does the same for all submodules and subcommands
-// recursively.
-func removeRegisteredModuleFuncs(mod *RegisteredModule) {
-	for i := range mod.Commands {
-		removeRegisteredCommandFuncs(mod.Commands[i])
-	}
-
-	for i := range mod.Modules {
-		removeRegisteredModuleFuncs(mod.Modules[i])
-	}
-}
-
-// removeRegisteredCommandFuncs sets all functions stored in the passed
-// RegisteredCommand to nil.
-func removeRegisteredCommandFuncs(cmd *RegisteredCommand) {
-	cmd.restrictionFunc = nil
 }
 
 // wrappedReplier is a copy of replier.wrappedReplier, used to prevent import

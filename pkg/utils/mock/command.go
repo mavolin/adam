@@ -22,7 +22,7 @@ func (c Command) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error
 // GenerateRegisteredCommand creates a mocked RegisteredCommand from the passed
 // Command using the passed provider name.
 func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.RegisteredCommand {
-	c := plugin.NewRegisteredCommandWithParent(nil, cmd.GetRestrictionFunc())
+	c := plugin.NewRegisteredCommandWithParent(nil)
 
 	c.Source = cmd
 	// c.SourceParents = nil
@@ -94,8 +94,16 @@ func (m CommandMeta) GetExamples(*i18n.Localizer) []string       { return m.Exam
 func (m CommandMeta) IsHidden() bool                             { return m.Hidden }
 func (m CommandMeta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
 func (m CommandMeta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
-func (m CommandMeta) GetRestrictionFunc() plugin.RestrictionFunc { return m.Restrictions }
-func (m CommandMeta) GetThrottler() plugin.Throttler             { return m.Throttler }
+
+func (m CommandMeta) IsRestricted(s *state.State, ctx *plugin.Context) error {
+	if m.Restrictions == nil {
+		return nil
+	}
+
+	return m.Restrictions(s, ctx)
+}
+
+func (m CommandMeta) GetThrottler() plugin.Throttler { return m.Throttler }
 
 type ArgConfig struct {
 	Expect string
