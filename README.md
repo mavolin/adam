@@ -18,11 +18,11 @@ You can do everything from a simple `ping` bot to a localized bot with custom co
 
 ## Main Features
 
-* 🖥️ Typed (variadic) arguments, flags, and out-of-the-box parsing for shellword
+* 🖥️ Typed (variadic) arguments, flags, and out-of-the-box parsing for shellword, and comma-based notations
 * 🌍 (optional) support for localization
 * 🗒️ Utilities for things like permission handling, emojis, and message and reaction collectors
 * ⚡ Error Handling including stack traces
-* 👪 Command grouping through modules and comma-based notations
+* 👪 Command grouping through modules
 * ⏳ Command throttling/cooldowns
 * ✏️ Support for message edits
 * 🔄 Command overloading through options
