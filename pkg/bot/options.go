@@ -3,7 +3,6 @@ package bot
 import (
 	"fmt"
 	"log"
-	"runtime/debug"
 	"syscall"
 	"time"
 
@@ -19,6 +18,11 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
+
+// Logf is the default logger used for logging in all default error and panic
+// handlers.
+// It should follow the style of fmt.Printf.
+var Logf = log.Printf
 
 // Options contains different configurations for a Bot.
 type Options struct { //nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
@@ -132,14 +136,14 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// StateErrorHandler is the error handler of the *state.State, called if an
 	// event handler returns with an error.
 	//
-	// Default: func(err error) { log.Println(err) }
+	// Default: func(err error) { Logf("%s\n", err.String()) }
 	StateErrorHandler func(error)
 	// StatePanicHandler is the panic handler of the *state.State, called if an
 	// event handler panics.
 	//
 	// Default:
 	// 	func(recovered interface{}) {
-	// 		log.Printf("recovered from panic: %+v\n%s", recovered, debug.Stack())
+	// 		Logf("recovered from panic: %+v\n%s\n", recovered, debug.Stack())
 	//	}
 	StatePanicHandler func(recovered interface{})
 
@@ -183,7 +187,7 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 // SetDefaults fills the defaults for all options, that weren't manually set.
 func (o *Options) SetDefaults() (err error) {
 	if o.SettingsProvider == nil {
-		o.SettingsProvider = NewStaticSettingsProvider(",")
+		o.SettingsProvider = NewStaticSettingsProvider()
 	}
 
 	if len(o.Status) == 0 {
@@ -216,12 +220,12 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	if o.StateErrorHandler == nil {
-		o.StateErrorHandler = func(err error) { log.Println(err) }
+		o.StateErrorHandler = func(err error) { Logf("%s\n", err) }
 	}
 
 	if o.StatePanicHandler == nil {
 		o.StatePanicHandler = func(recovered interface{}) {
-			log.Printf("recovered from panic: %+v\n%s", recovered, debug.Stack())
+			Logf("recovered from panic: %+v\n", recovered)
 		}
 	}
 
@@ -316,7 +320,7 @@ func DefaultGatewayErrorHandler(err error) {
 		return
 	}
 
-	log.Println(err)
+	Logf("%s\n", err)
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
@@ -345,8 +349,5 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 		}
 
 		err = Err.Handle(s, ctx)
-		if i == 0 {
-			fmt.Println(string(debug.Stack()))
-		}
 	}
 }
