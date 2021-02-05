@@ -48,9 +48,7 @@ func TestCommand_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgumentError(commandNotFoundError, ctx, map[string]interface{}{
-				"invoke": ctx.Raw,
-			})
+			expect := newArgumentError(commandNotFoundError, ctx, nil)
 
 			_, actual := Command.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -71,9 +69,7 @@ func TestCommand_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgumentError(commandNotFoundErrorProvidersUnavailable, ctx, map[string]interface{}{
-				"invoke": ctx.Raw,
-			})
+			expect := newArgumentError(commandNotFoundErrorProvidersUnavailable, ctx, nil)
 
 			_, actual := Command.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -118,9 +114,7 @@ func TestModule_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgumentError(moduleNotFoundError, ctx, map[string]interface{}{
-				"invoke": ctx.Raw,
-			})
+			expect := newArgumentError(moduleNotFoundError, ctx, nil)
 
 			_, actual := Module.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -141,9 +135,7 @@ func TestModule_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgumentError(moduleNotFoundErrorProvidersUnavailable, ctx, map[string]interface{}{
-				"invoke": ctx.Raw,
-			})
+			expect := newArgumentError(moduleNotFoundErrorProvidersUnavailable, ctx, nil)
 
 			_, actual := Module.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -215,9 +207,7 @@ func TestPlugin_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgumentError(pluginNotFoundError, ctx, map[string]interface{}{
-				"invoke": ctx.Raw,
-			})
+			expect := newArgumentError(pluginNotFoundError, ctx, nil)
 
 			_, actual := Plugin.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
@@ -238,9 +228,7 @@ func TestPlugin_Parse(t *testing.T) {
 				},
 			}
 
-			expect := newArgumentError(pluginNotFoundErrorProvidersUnavailable, ctx, map[string]interface{}{
-				"invoke": ctx.Raw,
-			})
+			expect := newArgumentError(pluginNotFoundErrorProvidersUnavailable, ctx, nil)
 
 			_, actual := Plugin.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)

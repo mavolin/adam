@@ -35,14 +35,10 @@ func (c command) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
-		return nil, newArgumentError(commandNotFoundErrorProvidersUnavailable, ctx, map[string]interface{}{
-			"invoke": ctx.Raw,
-		})
+		return nil, newArgumentError(commandNotFoundErrorProvidersUnavailable, ctx, nil)
 	}
 
-	return nil, newArgumentError(commandNotFoundError, ctx, map[string]interface{}{
-		"invoke": ctx.Raw,
-	})
+	return nil, newArgumentError(commandNotFoundError, ctx, nil)
 }
 
 func (c command) Default() interface{} {
@@ -77,14 +73,10 @@ func (m module) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
-		return nil, newArgumentError(moduleNotFoundErrorProvidersUnavailable, ctx, map[string]interface{}{
-			"invoke": ctx.Raw,
-		})
+		return nil, newArgumentError(moduleNotFoundErrorProvidersUnavailable, ctx, nil)
 	}
 
-	return nil, newArgumentError(moduleNotFoundError, ctx, map[string]interface{}{
-		"invoke": ctx.Raw,
-	})
+	return nil, newArgumentError(moduleNotFoundError, ctx, nil)
 }
 
 func (m module) Default() interface{} {
@@ -122,14 +114,10 @@ func (p pluginType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if len(ctx.UnavailablePluginProviders()) > 0 {
-		return nil, newArgumentError(pluginNotFoundErrorProvidersUnavailable, ctx, map[string]interface{}{
-			"invoke": ctx.Raw,
-		})
+		return nil, newArgumentError(pluginNotFoundErrorProvidersUnavailable, ctx, nil)
 	}
 
-	return nil, newArgumentError(pluginNotFoundError, ctx, map[string]interface{}{
-		"invoke": ctx.Raw,
-	})
+	return nil, newArgumentError(pluginNotFoundError, ctx, nil)
 }
 
 func (p pluginType) Default() interface{} {

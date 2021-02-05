@@ -140,8 +140,8 @@ func TestTextChannel_Parse(t *testing.T) {
 				GuildID: 0,
 				Type:    discord.GuildText,
 			},
-			expectArg:  textChannelGuildNotMatchingError,
-			expectFlag: textChannelGuildNotMatchingError,
+			expectArg:  textChannelInvalidMentionErrorArg,
+			expectFlag: textChannelInvalidMentionErrorFlag,
 		},
 		{
 			name: "mention - invalid channel type",
@@ -151,8 +151,8 @@ func TestTextChannel_Parse(t *testing.T) {
 				GuildID: 456,
 				Type:    discord.DirectMessage,
 			},
-			expectArg:  textChannelInvalidTypeError,
-			expectFlag: textChannelInvalidTypeError,
+			expectArg:  textChannelInvalidMentionErrorArg,
+			expectFlag: textChannelInvalidMentionErrorFlag,
 		},
 		{
 			name:     "id in dm",
@@ -265,7 +265,7 @@ func TestTextChannel_Parse(t *testing.T) {
 				m.Eval()
 
 				ctx.Kind = KindFlag
-				expect = newArgumentError(c.expectArg, ctx, nil)
+				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
 

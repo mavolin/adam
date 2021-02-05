@@ -128,18 +128,19 @@ func (t textChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 		id, err := discord.ParseSnowflake(rawID)
 		if err != nil { // range err
-			return nil, newArgumentError2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
+			return nil,
+				newArgumentError2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		c, err := s.Channel(discord.ChannelID(id))
 		if err != nil {
-			return nil, newArgumentError2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
+			return nil,
+				newArgumentError2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
 		}
 
-		if c.GuildID != ctx.GuildID {
-			return nil, newArgumentError(textChannelGuildNotMatchingError, ctx, nil)
-		} else if c.Type != discord.GuildText && c.Type != discord.GuildNews {
-			return nil, newArgumentError(textChannelInvalidTypeError, ctx, nil)
+		if c.GuildID != ctx.GuildID || (c.Type != discord.GuildText && c.Type != discord.GuildNews) {
+			return nil,
+				newArgumentError2(textChannelInvalidMentionErrorArg, textChannelInvalidMentionErrorFlag, ctx, nil)
 		}
 
 		return c, nil
