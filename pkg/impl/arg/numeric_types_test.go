@@ -323,8 +323,8 @@ func TestNumericID_Parse(t *testing.T) {
 			name:       "not a number",
 			id:         SimpleNumericID,
 			raw:        "abc",
-			expectArg:  idNotANumberErrorArg,
-			expectFlag: idNotANumberErrorFlag,
+			expectArg:  idInvalidErrorArg,
+			expectFlag: idInvalidErrorFlag,
 		},
 	}
 

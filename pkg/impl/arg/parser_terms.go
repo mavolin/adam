@@ -7,7 +7,7 @@ var (
 		"arg.parser.error.not_enough_args", "There are not enough arguments to execute the command.")
 
 	tooManyArgsError = i18n.NewFallbackConfig(
-		"arg.parser.error.too_many_args", "Hold it chief! Those are too many arguments.")
+		"arg.parser.error.too_many_args", "The command you're using doesn't accept that many arguments.")
 
 	noArgsError = i18n.NewFallbackConfig(
 		"arg.parser.error.no_args", "This command has no arguments and flags.")
@@ -28,7 +28,7 @@ var (
 		"arg.parser.error.group_not_closed", "You need to close the {{.quote}}.")
 
 	unknownPrefixError = i18n.NewFallbackConfig(
-		"arg.parser.error.unknown_prefix", "I don't know any prefix with the name `{{.name}}.")
+		"arg.parser.error.unknown_prefix", "I don't know any prefix with the name `{{.name}}`.")
 )
 
 type (

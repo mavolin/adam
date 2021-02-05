@@ -37,7 +37,10 @@ Have a look at the [example bots](./_examples) or use the official [guide](https
 
 ## Contributing
 
-Pull requests and issues are appreciated. Check out the [contributing guidelines](./CONTRIBUTING.md) for more information.
+Pull requests and issues are much appreciated. 
+Check out the [contributing guidelines](./CONTRIBUTING.md) for more information.
+
+You can also add translations using adam's [POEditor page](https://poeditor.com/join/project?hash=yLTbnUFjXW).
 
 ## License
 

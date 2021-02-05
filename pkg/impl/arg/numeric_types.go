@@ -248,7 +248,7 @@ func (id NumericID) Description(l *i18n.Localizer) string {
 func (id NumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	parsed, err := strconv.ParseUint(ctx.Raw, 10, 64)
 	if err != nil {
-		return nil, newArgumentError2(idNotANumberErrorArg, idNotANumberErrorFlag, ctx, nil)
+		return nil, newArgumentError2(idInvalidErrorArg, idInvalidErrorFlag, ctx, nil)
 	}
 
 	if uint(len(ctx.Raw)) < id.MinLength {
