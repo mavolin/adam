@@ -3,16 +3,6 @@
 We would love to see the ideas you want to bring in to improve this project.
 Before you get started, make sure to read the guidelines below.
 
-## Contributing through issues
-
-If have an idea how to improve this project or if you found a bug, let us know by submitting an issue.
-The issue templates will take care of most of the requirements, but there is one thing you should note:
-
-### Titles
-
-We not only use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for commits, but also for issue titles.
-If you propose a feature use `feat`, for bug fixes use `fix`, etc.
-
 
 ## Code Contributions
 ### Opening an Issue
@@ -22,7 +12,6 @@ This gives us the ability to point out important things you should keep in mind,
 
 ### Committing
 
-This is by far the most important guideline.
 Please make small, thoughtful commits, a commit like `feat: add xy` with 20 new files is rarely appropriate.
 
 #### Conventional Commits
@@ -60,7 +49,7 @@ Each function exposed and unexposed should have a single test, which either test
 #### Table-Driven Tests
 
 If there is a single table, it should be called `testCases`, multiple use the name `{{type}}Cases`, e.g. `successCases` and `failureCases`, for tests that test the output for a valid input (a success case), and those that aim to provoke an error (a failure case) and therefore work different from a success case.
-The same goes if there is a table that's only testing a portion of a function, and multiple non-table-driven tests in addition.
+The same applies if there is a table that's only testing a portion of a function, and multiple non-table-driven tests in addition.
 
 The structs used in tables should always anonymous.
 
