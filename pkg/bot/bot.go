@@ -38,7 +38,6 @@ type Bot struct {
 
 	autoOpen        bool
 	autoAddHandlers bool
-	manualChecks    bool
 
 	AsyncPluginProviders bool
 
@@ -98,7 +97,6 @@ func New(o Options) (*Bot, error) {
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
 	b.AllowBot = o.AllowBot
-	b.manualChecks = o.ManualChecks
 	b.autoOpen = !o.NoAutoOpen
 	b.autoAddHandlers = o.AutoAddHandlers
 	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
@@ -106,7 +104,7 @@ func New(o Options) (*Bot, error) {
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
-	if !b.manualChecks {
+	if !o.ManualChecks {
 		b.MustAddMiddleware(CheckChannelTypes)
 		b.MustAddMiddleware(CheckBotPermissions)
 		b.MustAddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
