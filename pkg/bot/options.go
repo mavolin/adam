@@ -19,11 +19,6 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// Logf is the default logger used for logging in all default error and panic
-// handlers.
-// It should follow the style of fmt.Printf.
-var Logf = log.Printf
-
 // Options contains different configurations for a Bot.
 type Options struct { //nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
 	// Token is the bot token without the 'Bot' prefix.
@@ -136,14 +131,14 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// StateErrorHandler is the error handler of the *state.State, called if an
 	// event handler returns with an error.
 	//
-	// Default: func(err error) { Logf("%s\n", err.String()) }
+	// Default: func(err error) { log.Println(err.String()) }
 	StateErrorHandler func(error)
 	// StatePanicHandler is the panic handler of the *state.State, called if an
 	// event handler panics.
 	//
 	// Default:
-	// 	func(recovered interface{}) {
-	// 		Logf("recovered from panic: %+v\n%s\n", recovered, debug.Stack())
+	// 	func(rec interface{}) {
+	// 		log.Printf("recovered from panic: %+v\n%s\n", rec)
 	//	}
 	StatePanicHandler func(recovered interface{})
 
@@ -220,12 +215,12 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	if o.StateErrorHandler == nil {
-		o.StateErrorHandler = func(err error) { Logf("%s\n", err) }
+		o.StateErrorHandler = func(err error) { log.Println(err) }
 	}
 
 	if o.StatePanicHandler == nil {
-		o.StatePanicHandler = func(recovered interface{}) {
-			Logf("recovered from panic: %+v\n", recovered)
+		o.StatePanicHandler = func(rec interface{}) {
+			log.Printf("rec from panic: %+v\n", rec)
 		}
 	}
 
@@ -306,21 +301,26 @@ func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
 // =====================================================================================
 
 func DefaultThrottlerErrorCheck(err error) bool {
-	ierr := new(errors.InformationalError)
+	var ierr *errors.InformationalError
 	return !errors.As(err, &ierr)
 }
 
 func DefaultGatewayErrorHandler(err error) {
-	// ignore error used on reconnect
+	if FilterGatewayError(err) {
+		log.Println(err)
+	}
+}
+
+// FilterGatewayError filters out reconnect informational errors.
+func FilterGatewayError(err error) bool {
 	var cerr *websocket.CloseError
 	switch {
 	case errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure):
 		fallthrough
 	case errors.Is(err, syscall.ECONNRESET):
-		return
+		return false
 	}
-
-	Logf("%s\n", err)
+	return true
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
