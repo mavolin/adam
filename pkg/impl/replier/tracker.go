@@ -14,7 +14,8 @@ import (
 
 // Tracker is a plugin.Replier that tracks the messages that were sent.
 type Tracker struct {
-	s *state.State
+	s           *state.State
+	inlineReply bool
 
 	guildMessages       []discord.Message
 	editedGuildMessages []discord.Message
@@ -32,6 +33,9 @@ var _ plugin.Replier = new(Tracker)
 // NewTracker creates a new tracker using the passed state, with the passed
 // invoking user and the passed guild channel.
 //
+// If inlineReply is set to true, messages will reference the invoke, unless
+// MessageReference is non-nil.
+//
 // Example Usage
 //
 // 	b, _ := bot.New(bot.Options{Token: "abc"})
@@ -42,7 +46,7 @@ var _ plugin.Replier = new(Tracker)
 //
 // 	b.MustAddMiddleware(func(next bot.CommandFunc) bot.CommandFunc {
 // 		return func(s *state.State, ctx *plugin.Context) error {
-// 			t := NewTracker(s)
+// 			t := NewTracker(s, false)
 // 			ctx.Replier = t // replace the default replier
 //
 // 			err := next(s, ctx)
@@ -55,8 +59,8 @@ var _ plugin.Replier = new(Tracker)
 // 			return nil
 // 		}
 // 	})
-func NewTracker(s *state.State) *Tracker {
-	return &Tracker{s: s}
+func NewTracker(s *state.State, inlineReply bool) *Tracker {
+	return &Tracker{s: s, inlineReply: inlineReply}
 }
 
 // GuildMessages returns the guild messages that were sent.
@@ -103,6 +107,10 @@ func (t *Tracker) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord
 
 	if !perms.Has(discord.PermissionSendMessages) {
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
+	}
+
+	if data.Reference == nil && t.inlineReply {
+		data.Reference = &discord.MessageReference{MessageID: ctx.Message.ID}
 	}
 
 	msg, err := t.s.SendMessageComplex(ctx.ChannelID, data)

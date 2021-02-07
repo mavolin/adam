@@ -47,7 +47,7 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		Localizer:   localizer,
 		Prefixes:    prefixes,
 		BotOwnerIDs: b.Owners,
-		Replier:     replier.WrapState(b.State),
+		Replier:     replier.WrapState(b.State, false),
 		DiscordDataProvider: &discordDataProvider{
 			s:         b.State,
 			guildID:   msg.GuildID,

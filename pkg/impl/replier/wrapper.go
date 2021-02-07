@@ -11,7 +11,9 @@ import (
 )
 
 type wrappedReplier struct {
-	s    *state.State
+	s           *state.State
+	inlineReply bool
+
 	dmID discord.ChannelID
 }
 
@@ -19,8 +21,10 @@ var _ plugin.Replier = new(wrappedReplier)
 
 // WrapState wraps the passed state and id of the invoking user into a
 // plugin.Replier.
-func WrapState(s *state.State) plugin.Replier {
-	return &wrappedReplier{s: s}
+// If inlineReply is set to true, messages will reference the invoke, unless
+// MessageReference is non-nil.
+func WrapState(s *state.State, inlineReply bool) plugin.Replier {
+	return &wrappedReplier{s: s, inlineReply: inlineReply}
 }
 
 func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
@@ -31,6 +35,10 @@ func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*
 
 	if !perms.Has(discord.PermissionSendMessages) {
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
+	}
+
+	if data.Reference == nil && r.inlineReply {
+		data.Reference = &discord.MessageReference{MessageID: ctx.Message.ID}
 	}
 
 	msg, err := r.s.SendMessageComplex(ctx.ChannelID, data)
