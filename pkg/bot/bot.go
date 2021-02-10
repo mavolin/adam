@@ -11,6 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -45,6 +46,9 @@ type Bot struct {
 
 	ErrorHandler func(error, *state.State, *plugin.Context)
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
+
+	MessageCreateMiddlewares []interface{}
+	MessageUpdateMiddlewares []interface{}
 }
 
 type pluginProvider struct {
@@ -149,32 +153,36 @@ func (b *Bot) Open() error {
 
 	done := make(chan struct{})
 
-	rm := b.State.MustAddHandler(func(_ *state.State, r *state.ReadyEvent) {
+	b.State.MustAddHandlerOnce(func(_ *state.State, r *state.ReadyEvent) {
 		b.selfID = r.User.ID
 		b.selfMentionRegexp = regexp.MustCompile("^<@!?" + r.User.ID.String() + ">")
 
 		done <- struct{}{}
 	})
 
-	b.State.MustAddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
+	_, err := b.State.AddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
 		b.Route(e.Base, &e.Message, e.Member)
-	})
+	}, b.MessageCreateMiddlewares...)
+	if err != nil {
+		return errors.Wrap(err, "could not add message create handler")
+	}
 
 	if b.EditAge > 0 {
-		b.State.MustAddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+		_, err := b.State.AddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
 			if time.Since(e.Timestamp.Time()) <= b.EditAge {
 				b.Route(e.Base, &e.Message, e.Member)
 			}
-		})
+		}, b.MessageUpdateMiddlewares...)
+		if err != nil {
+			return errors.Wrap(err, "could not add message update handler")
+		}
 	}
 
-	err := b.State.Open()
-	if err != nil {
+	if err = b.State.Open(); err != nil {
 		return err
 	}
 
 	<-done
-	rm()
 
 	return nil
 }

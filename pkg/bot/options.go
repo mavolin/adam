@@ -152,6 +152,19 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: DefaultPanicHandler
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
 
+	// MessageCreateMiddlewares are the middlewares invoked before routing the
+	// command, if the command was received through a message create event.
+	//
+	// The signature of the middleware funcs must satisfy the requirements
+	// of state middlewares.
+	MessageCreateMiddlewares []interface{}
+	// MessageCreateMiddlewares are the middlewares invoked before routing the
+	// command, if the command was received through a message update event.
+	//
+	// The signature of the middleware funcs must satisfy the requirements
+	// of state middlewares.
+	MessageUpdateMiddlewares []interface{}
+
 	// ManualChecks specifies whether the checks are performed by the user and
 	// should not be added automatically.
 	//
