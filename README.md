@@ -18,17 +18,17 @@ You can do everything from a simple `ping` bot to a localized bot with custom co
 
 ## Main Features
 
-* 🖥️ Typed (variadic) arguments, flags, and out-of-the-box parsing for shellword, and comma-based notations
+* 🖥️ Typed (variadic) arguments and flags, as well as out-of-the-box parsing for shellword, and comma-based notations
 * 🌍 (optional) support for localization
-* 🗒️ Utilities for things like permission handling, emojis, and message and reaction collectors
-* ⚡ Error Handling including stack traces
+* 🗒️ Utilities for things like permission handling, emojis, and awaiting responses and reactions
+* ⚡ Error handling including stack traces
 * 👪 Command grouping through modules
 * ⏳ Command throttling/cooldowns
 * ✏️ Support for message edits
 * 🔄 Command overloading through options
 * 🤝 Middlewares
 * 🛑 Powerful access control system
-* 🔌 Custom command sources available at runtime, for things like custom commands
+* 🔌 Custom command sources for commands available at runtime
 * ✨ Abstracted - Don't like something? Swap it out for a custom implementation
 
 ## Getting started
@@ -37,10 +37,10 @@ Have a look at the [example bots](./_examples) or use the official [guide](https
 
 ## Contributing
 
-Pull requests and issues are much appreciated. 
+Both pull requests and issues are much appreciated. 
 Check out the [contributing guidelines](./CONTRIBUTING.md) for more information.
 
-You can also add translations using adam's [POEditor page](https://poeditor.com/join/project?hash=yLTbnUFjXW).
+You can also help to localize adam on our [POEditor page](https://poeditor.com/join/project?hash=yLTbnUFjXW).
 
 ## License
 
