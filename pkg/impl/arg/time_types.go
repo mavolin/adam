@@ -15,14 +15,18 @@ import (
 // The type of the value must be *time.Location.
 // If no LocationKey is specified, no location is available, or the location is
 // nil, DefaultLocation will be used.
-var LocationKey = "location"
+// If LocationKey is empty and DefaultLocation is nil, UTC offsets will be
+// enforced.
+var LocationKey string
 
 // DefaultLocation is the time.Location used if no other timezone information
 // is available.
 // If this is set to nil, timezone information must be provided either
 // through the UTC offset in the argument or through LocationKey's
 // corresponding value.
-var DefaultLocation = time.UTC
+// If LocationKey is empty and DefaultLocation is nil, UTC offsets will be
+// enforced.
+var DefaultLocation *time.Location = nil
 
 // =============================================================================
 // Duration
@@ -125,9 +129,14 @@ func (t Time) Name(l *i18n.Localizer) string {
 	return name
 }
 
-func (t Time) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(timeDescription) // we have a fallback
-	return desc
+func (t Time) Description(l *i18n.Localizer) (desc string) {
+	if len(LocationKey) == 0 && DefaultLocation == nil {
+		desc, _ = l.Localize(timeDescriptionMustUTC) // we have a fallback
+	} else {
+		desc, _ = l.Localize(timeDescriptionOptionalUTC) // we have a fallback
+	}
+
+	return
 }
 
 var (
@@ -142,16 +151,7 @@ func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolin
 	)
 
 	if len(ctx.Raw) == len(timeFormat) {
-		loc := DefaultLocation
-
-		if len(LocationKey) > 0 {
-			if val := ctx.Get(LocationKey); val != nil {
-				if customLoc, ok := val.(*time.Location); ok && customLoc != nil {
-					loc = customLoc
-				}
-			}
-		}
-
+		loc := location(ctx)
 		if loc == nil {
 			return nil, newArgumentError2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
 		}
@@ -162,7 +162,12 @@ func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolin
 	}
 
 	if err != nil || parsed.IsZero() {
-		return nil, newArgumentError2(timeInvalidErrorArg, timeInvalidErrorFlag, ctx, nil)
+		if location(ctx) == nil { // no location provided, must use utc offset
+			return nil, newArgumentError2(timeInvalidErrorMustUTCArg, timeInvalidErrorMustUTCFlag, ctx, nil)
+		}
+
+		// there is location information, just invalid syntax
+		return nil, newArgumentError2(timeInvalidErrorOptionalUTCArg, timeInvalidErrorOptionalUTCFlag, ctx, nil)
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
@@ -222,9 +227,14 @@ func (t Date) Name(l *i18n.Localizer) string {
 	return name
 }
 
-func (t Date) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(dateDescription) // we have a fallback
-	return desc
+func (t Date) Description(l *i18n.Localizer) (desc string) {
+	if len(LocationKey) == 0 && DefaultLocation == nil {
+		desc, _ = l.Localize(dateDescriptionMustUTC) // we have a fallback
+	} else {
+		desc, _ = l.Localize(dateDescriptionOptionalUTC) // we have a fallback
+	}
+
+	return
 }
 
 var (
@@ -239,16 +249,7 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	)
 
 	if len(ctx.Raw) == len(dateFormat) {
-		loc := DefaultLocation
-
-		if len(LocationKey) > 0 {
-			if val := ctx.Get(LocationKey); val != nil {
-				if customLoc, ok := val.(*time.Location); ok && customLoc != nil {
-					loc = customLoc
-				}
-			}
-		}
-
+		loc := location(ctx)
 		if loc == nil {
 			if t.RequireTimezone {
 				return nil, newArgumentError2(dateRequireUTCOffsetErrorArg, dateRequireUTCOffsetErrorFlag, ctx, nil)
@@ -263,7 +264,12 @@ func (t Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	}
 
 	if err != nil || parsed.IsZero() {
-		return nil, newArgumentError2(dateInvalidErrorArg, dateInvalidErrorFlag, ctx, nil)
+		if location(ctx) == nil { // no location provided, must use utc offset
+			return nil, newArgumentError2(dateInvalidErrorMustUTCArg, dateInvalidErrorMustUTCFlag, ctx, nil)
+		}
+
+		// there is location information, just invalid syntax
+		return nil, newArgumentError2(dateInvalidErrorOptionalUTCArg, dateInvalidErrorOptionalUTCFlag, ctx, nil)
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
@@ -311,9 +317,14 @@ func (t DateTime) Name(l *i18n.Localizer) string {
 	return name
 }
 
-func (t DateTime) Description(l *i18n.Localizer) string {
-	desc, _ := l.Localize(dateTimeDescription) // we have a fallback
-	return desc
+func (t DateTime) Description(l *i18n.Localizer) (desc string) {
+	if len(LocationKey) == 0 && DefaultLocation == nil {
+		desc, _ = l.Localize(dateTimeDescriptionMustUTC) // we have a fallback
+	} else {
+		desc, _ = l.Localize(dateTimeDescriptionOptionalUTC) // we have a fallback
+	}
+
+	return
 }
 
 var (
@@ -328,16 +339,7 @@ func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) { //n
 	)
 
 	if len(ctx.Raw) == len(dateTimeFormat) {
-		loc := DefaultLocation
-
-		if len(LocationKey) > 0 {
-			if val := ctx.Get(LocationKey); val != nil {
-				if customLoc, ok := val.(*time.Location); ok && customLoc != nil {
-					loc = customLoc
-				}
-			}
-		}
-
+		loc := location(ctx)
 		if loc == nil {
 			return nil, newArgumentError2(timeRequireUTCOffsetErrorArg, timeRequireUTCOffsetErrorFlag, ctx, nil)
 		}
@@ -348,7 +350,12 @@ func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) { //n
 	}
 
 	if err != nil || parsed.IsZero() {
-		return nil, newArgumentError2(dateTimeInvalidErrorArg, dateTimeInvalidErrorFlag, ctx, nil)
+		if location(ctx) == nil { // no location provided, must use utc offset
+			return nil, newArgumentError2(dateTimeInvalidErrorMustUTCArg, dateTimeInvalidErrorMustUTCFlag, ctx, nil)
+		}
+
+		// there is location information, just invalid syntax
+		return nil, newArgumentError2(dateTimeInvalidErrorOptionalUTCArg, dateTimeInvalidErrorOptionalUTCFlag, ctx, nil)
 	}
 
 	if !t.Min.IsZero() && parsed.Before(t.Min) {
@@ -406,4 +413,22 @@ func (z timeZone) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 
 func (z timeZone) Default() interface{} {
 	return (*time.Location)(nil)
+}
+
+// =============================================================================
+// Helpers
+// =====================================================================================
+
+func location(ctx *Context) *time.Location {
+	l := DefaultLocation
+
+	if len(LocationKey) > 0 {
+		if val := ctx.Get(LocationKey); val != nil {
+			if customLoc, ok := val.(*time.Location); ok && customLoc != nil {
+				l = customLoc
+			}
+		}
+	}
+
+	return l
 }

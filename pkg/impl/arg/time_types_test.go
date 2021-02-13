@@ -140,6 +140,8 @@ func TestTime_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		LocationKey = "location"
+
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				DefaultLocation = c.defaultLocation
@@ -164,10 +166,11 @@ func TestTime_Parse(t *testing.T) {
 	failureCases := []struct {
 		name string
 
-		raw             string
-		min, max        time.Time
-		location        *time.Location
-		defaultLocation *time.Location
+		raw              string
+		min, max         time.Time
+		emptyLocationKey bool
+		location         *time.Location
+		defaultLocation  *time.Location
 
 		expectArg, expectFlag *i18n.Config
 		placeholders          map[string]interface{}
@@ -181,11 +184,18 @@ func TestTime_Parse(t *testing.T) {
 			expectFlag:      timeRequireUTCOffsetErrorFlag,
 		},
 		{
-			name:            "invalid",
+			name:            "invalid optional offset",
 			raw:             "abc",
 			defaultLocation: time.UTC,
-			expectArg:       timeInvalidErrorArg,
-			expectFlag:      timeInvalidErrorFlag,
+			expectArg:       timeInvalidErrorOptionalUTCArg,
+			expectFlag:      timeInvalidErrorOptionalUTCFlag,
+		},
+		{
+			name:             "invalid must offset",
+			raw:              "abc",
+			emptyLocationKey: true,
+			expectArg:        timeInvalidErrorMustUTCArg,
+			expectFlag:       timeInvalidErrorMustUTCFlag,
 		},
 		{
 			name:       "before min",
@@ -229,7 +239,12 @@ func TestTime_Parse(t *testing.T) {
 					Kind:    KindArg,
 				}
 
-				ctx.Set(LocationKey, c.location)
+				if c.emptyLocationKey {
+					LocationKey = ""
+				} else {
+					LocationKey = "location"
+					ctx.Set(LocationKey, c.location)
+				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
@@ -292,6 +307,8 @@ func TestDate_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		LocationKey = "location"
+
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				date := &Date{RequireTimezone: c.requireTimezone}
@@ -318,11 +335,12 @@ func TestDate_Parse(t *testing.T) {
 	failureCases := []struct {
 		name string
 
-		raw             string
-		requireTimezone bool
-		min, max        time.Time
-		location        *time.Location
-		defaultLocation *time.Location
+		raw              string
+		requireTimezone  bool
+		min, max         time.Time
+		emptyLocationKey bool
+		location         *time.Location
+		defaultLocation  *time.Location
 
 		expectArg, expectFlag *i18n.Config
 		placeholders          map[string]interface{}
@@ -337,11 +355,18 @@ func TestDate_Parse(t *testing.T) {
 			expectFlag:      dateRequireUTCOffsetErrorFlag,
 		},
 		{
-			name:            "invalid",
+			name:            "invalid optional offset",
 			raw:             "abc",
 			defaultLocation: time.UTC,
-			expectArg:       dateInvalidErrorArg,
-			expectFlag:      dateInvalidErrorFlag,
+			expectArg:       dateInvalidErrorOptionalUTCArg,
+			expectFlag:      dateInvalidErrorOptionalUTCFlag,
+		},
+		{
+			name:             "invalid must offset",
+			raw:              "abc",
+			emptyLocationKey: true,
+			expectArg:        dateInvalidErrorMustUTCArg,
+			expectFlag:       dateInvalidErrorMustUTCFlag,
 		},
 		{
 			name:       "before min",
@@ -386,7 +411,12 @@ func TestDate_Parse(t *testing.T) {
 					Kind: KindArg,
 				}
 
-				ctx.Set(LocationKey, c.location)
+				if c.emptyLocationKey {
+					LocationKey = ""
+				} else {
+					LocationKey = "location"
+					ctx.Set(LocationKey, c.location)
+				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 
@@ -437,6 +467,8 @@ func TestDateTime_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		LocationKey = "location"
+
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				DefaultLocation = c.defaultLocation
@@ -461,10 +493,11 @@ func TestDateTime_Parse(t *testing.T) {
 	failureCases := []struct {
 		name string
 
-		raw             string
-		min, max        time.Time
-		location        *time.Location
-		defaultLocation *time.Location
+		raw              string
+		min, max         time.Time
+		emptyLocationKey bool
+		location         *time.Location
+		defaultLocation  *time.Location
 
 		expectArg, expectFlag *i18n.Config
 		placeholders          map[string]interface{}
@@ -478,11 +511,18 @@ func TestDateTime_Parse(t *testing.T) {
 			expectFlag:      timeRequireUTCOffsetErrorFlag,
 		},
 		{
-			name:            "invalid",
+			name:            "invalid optional offset",
 			raw:             "abc",
 			defaultLocation: time.UTC,
-			expectArg:       dateTimeInvalidErrorArg,
-			expectFlag:      dateTimeInvalidErrorFlag,
+			expectArg:       dateTimeInvalidErrorOptionalUTCArg,
+			expectFlag:      dateTimeInvalidErrorOptionalUTCFlag,
+		},
+		{
+			name:             "invalid must offset",
+			raw:              "abc",
+			emptyLocationKey: true,
+			expectArg:        dateTimeInvalidErrorMustUTCArg,
+			expectFlag:       dateTimeInvalidErrorMustUTCFlag,
 		},
 		{
 			name:       "before min",
@@ -524,7 +564,12 @@ func TestDateTime_Parse(t *testing.T) {
 					Kind:    KindArg,
 				}
 
-				ctx.Set(LocationKey, c.location)
+				if c.emptyLocationKey {
+					LocationKey = ""
+				} else {
+					LocationKey = "location"
+					ctx.Set(LocationKey, c.location)
+				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
 

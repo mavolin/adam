@@ -171,28 +171,33 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	timeName        = i18n.NewFallbackConfig("arg.type.time.name", "Time")
-	timeDescription = i18n.NewFallbackConfig(
-		"arg.type.time.description",
+	timeName = i18n.NewFallbackConfig("arg.type.time.name", "Time")
+
+	timeDescriptionOptionalUTC = i18n.NewFallbackConfig(
+		"arg.type.time.description.optional_utc",
 		"A 24-hour formatted time, e.g. `13:01`. Optionally, you can add the offset from UTC behind, "+
 			"e.g. `13:01 +0200` to use Germany's daylight time.")
+	timeDescriptionMustUTC = i18n.NewFallbackConfig(
+		"arg.type.time.description.must_utc",
+		"A 24-hour formatted time with UTC offset, e.g. `13:01 +0200 to use Germany's daylight time.")
 )
-
-// SetDefaultTimeDescription allows you to update the default time description.
-// Updating the description is not concurrent safe.
-func SetDefaultTimeDescription(description string) {
-	timeDescription.Fallback.Other = description
-}
 
 // ================================ Errors ================================
 
 var (
-	timeInvalidErrorArg = i18n.NewFallbackConfig(
-		"arg.type.time.error.invalid.arg",
+	timeInvalidErrorOptionalUTCArg = i18n.NewFallbackConfig(
+		"arg.type.time.error.invalid.optional_utc.arg",
 		"The time in argument {{.position}} is invalid. Please use a time like `13:01` or `13:01 -0200`.")
-	timeInvalidErrorFlag = i18n.NewFallbackConfig(
-		"arg.type.time.error.invalid.flag",
+	timeInvalidErrorOptionalUTCFlag = i18n.NewFallbackConfig(
+		"arg.type.time.error.invalid.optional_utc.flag",
 		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01` or `13:01 -0200`.")
+
+	timeInvalidErrorMustUTCArg = i18n.NewFallbackConfig(
+		"arg.type.time.error.invalid.must_utc.arg",
+		"The time in argument {{.position}} is invalid. Please use a time like `13:01 -0200`.")
+	timeInvalidErrorMustUTCFlag = i18n.NewFallbackConfig(
+		"arg.type.time.error.invalid.must_utc.flag",
+		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01 -0200`.")
 
 	timeRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
 		"arg.type.time.error.require_utc_offset.arg",
@@ -223,27 +228,32 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	dateName        = i18n.NewFallbackConfig("arg.type.date.name", "Date")
-	dateDescription = i18n.NewFallbackConfig(
-		"arg.type.date.description",
+	dateName = i18n.NewFallbackConfig("arg.type.date.name", "Date")
+
+	dateDescriptionOptionalUTC = i18n.NewFallbackConfig(
+		"arg.type.date.description.optional_utc",
 		"A date, e.g. `2020-10-31`. Optionally, you can add the offset from UTC behind, "+
-			"e.g. `13:01 +0100` to use Britain's daylight time.")
+			"e.g. `2020-10-31 +0100` to use Britain's daylight time.")
+	dateDescriptionMustUTC = i18n.NewFallbackConfig(
+		"arg.type.date.description.must_utc",
+		"A date with UTC offset, e.g. `2020-10-31 +0100` to use Britain's daylight time.")
 )
 
-// SetDefaultDateDescription allows you to update the default date description.
-// Updating the description is not concurrent safe.
-func SetDefaultDateDescription(description string) {
-	dateDescription.Fallback.Other = description
-}
-
 var (
-	dateInvalidErrorArg = i18n.NewFallbackConfig(
-		"arg.type.date.error.invalid.arg",
-		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31` or `2020-10-31 -0100`.")
-	dateInvalidErrorFlag = i18n.NewFallbackConfig(
-		"arg.type.date.error.invalid.flag",
+	dateInvalidErrorOptionalUTCArg = i18n.NewFallbackConfig(
+		"arg.type.date.error.invalid.optional_utc.arg",
+		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31` or `2020-10-31 +0100`.")
+	dateInvalidErrorOptionalUTCFlag = i18n.NewFallbackConfig(
+		"arg.type.date.error.invalid.optional_utc.flag",
 		"The date you used as `{{.used_name}}`-flag is invalid. "+
 			"Please use a date like `2020-10-31` or `2020-10-31 +0100`.")
+
+	dateInvalidErrorMustUTCArg = i18n.NewFallbackConfig(
+		"arg.type.date.error.invalid.must_utc.arg",
+		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31 +0100`.")
+	dateInvalidErrorMustUTCFlag = i18n.NewFallbackConfig(
+		"arg.type.date.error.invalid.must_utc.flag",
+		"The date you used as `{{.used_name}}`-flag is invalid. Please use a date like `2020-10-31 +0100`.")
 
 	dateRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
 		"arg.type.date.error.require_utc_offset.arg",
@@ -274,22 +284,35 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	dateTimeName        = i18n.NewFallbackConfig("arg.type.date_time.name", "Date and Time")
-	dateTimeDescription = i18n.NewFallbackConfig(
-		"arg.type.date_time.description",
+	dateTimeName = i18n.NewFallbackConfig("arg.type.date_time.name", "Date and Time")
+
+	dateTimeDescriptionOptionalUTC = i18n.NewFallbackConfig(
+		"arg.type.date_time.description.optional_utc",
 		"A date with time, e.g. `2020-10-31 13:01`. Optionally, you can add the offset from UTC behind, "+
 			"e.g. `2020-10-31 13:01 -0700` to use Vancouver's daylight time.")
+	dateTimeDescriptionMustUTC = i18n.NewFallbackConfig(
+		"arg.type.date_time.description.must_utc",
+		"A date with time, e.g. `2020-10-31 13:01 -0700` to use Vancouver's daylight time.")
 )
 
 var (
-	dateTimeInvalidErrorArg = i18n.NewFallbackConfig(
-		"arg.type.date_time.error.invalid.arg",
+	dateTimeInvalidErrorOptionalUTCArg = i18n.NewFallbackConfig(
+		"arg.type.date_time.error.invalid.optional_utc.arg",
 		"The date/time combination in argument {{.position}} is invalid. "+
 			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 -0700`.")
-	dateTimeInvalidErrorFlag = i18n.NewFallbackConfig(
-		"arg.type.date_time.error.invalid.flag",
+	dateTimeInvalidErrorOptionalUTCFlag = i18n.NewFallbackConfig(
+		"arg.type.date_time.error.invalid.optional_utc.flag",
 		"The date/time combination you used as `{{.used_name}}`-flag is invalid. "+
 			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 -0700`.")
+
+	dateTimeInvalidErrorMustUTCArg = i18n.NewFallbackConfig(
+		"arg.type.date_time.error.invalid.must_utc.arg",
+		"The date/time combination in argument {{.position}} is invalid. "+
+			"Please use a date like `2020-10-31 13:01 -0700`.")
+	dateTimeInvalidErrorMustUTCFlag = i18n.NewFallbackConfig(
+		"arg.type.date_time.error.invalid.must_utc.flag",
+		"The date/time combination you used as `{{.used_name}}`-flag is invalid. "+
+			"Please use a date like ``2020-10-31 13:01 -0700`.")
 )
 
 // =============================================================================
