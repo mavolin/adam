@@ -17,16 +17,16 @@ import (
 //
 // Go type: string
 type Text struct {
-	// MinLength is the inclusive minimum length the id may have.
+	// MinLength is the inclusive minimum length the text may have.
 	MinLength uint
-	// MaxLength is the inclusive maximum length the id may have.
+	// MaxLength is the inclusive maximum length the text may have.
 	// If MaxLength is 0, the id won't have a maximum.
 	MaxLength uint
 
-	// Regexp is the regular expression the id must match.
-	// If Regexp is set to nil/zero, the id won't be matched.
+	// Regexp is the regular expression the text must match.
+	// If Regexp is set to nil/zero, any text within the bounds will pass.
 	//
-	// If matching fails, RegexpError will be returned.
+	// If matching fails, the corresponding RegexpErrorX will be returned.
 	Regexp *regexp.Regexp
 	// RegexpErrorArg is the error message used if an argument doesn't match
 	// the regular expression defined.
@@ -225,6 +225,9 @@ type AlphanumericID struct {
 	MaxLength uint
 
 	// Regexp is the regular expression the id needs to match to pass.
+	// If Regexp is set to nil/zero, any id within the bounds will pass.
+	//
+	// If matching fails, the corresponding RegexpErrorX will be returned.
 	Regexp *regexp.Regexp
 	// RegexpErrorArg is the error message used if an argument doesn't match
 	// the regular expression defined.
