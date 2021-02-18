@@ -22,11 +22,16 @@ var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
 func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Member) { //nolint:funlen
 	// Only accept regular text messages.
 	// Also check if a bot wrote the message, if !b.AllowBot.
-	if msg.Type != discord.DefaultMessage || (!b.AllowBot && msg.Author.Bot) {
+	// Lastly, also discard if this bot wrote this message, even if b.AllowBot.
+	if msg.Type != discord.DefaultMessage || (!b.AllowBot && msg.Author.Bot) || msg.Author.ID == b.selfID {
 		return
 	}
 
-	prefixes, localizer := b.SettingsProvider(base, msg)
+	prefixes, localizer, ok := b.SettingsProvider(base, msg)
+	if !ok {
+		return
+	}
+
 	if localizer == nil {
 		localizer = i18n.NewFallbackLocalizer()
 	}

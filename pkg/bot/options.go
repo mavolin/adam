@@ -286,26 +286,75 @@ func (o *Options) setCabinetDefaults() {
 	}
 }
 
-// SettingsProvider is the function used to retrieve the settings in the guild.
+// SettingsProvider is the function used to retrieve the settings for the guild
+// or direct message.
 //
 // The passed *state.Base is the base of the event triggering settings check.
 // This will either stem from either message create event, or a message update
 // event, if Options.EditAge is greater than 0.
 //
-// If the returned *18n.Localizer is nil, a fallback localizer will be used,
-// that always uses fallback messages.
+// First Return Value
 //
-// Note that messages sent in a direct message don't require a prefix.
-// However, all prefixes for a direct messages will still be stripped, if the
-// message starts with one.
-type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer)
+// The first return value contains the prefixes used by the guild or user.
+// In a guild, the message must start with one of the prefixes or with a bot
+// mention.
+// Direct Messages are not subject to this limitation.
+// However, if prefixes are returned for a direct message invoke (msg.GuildID
+// == 0), or the message starts with a mention, the prefix will still be
+// stripped before being routed.
+//
+// All spaces, tabs, and newlines, between a prefix and the rest of the message
+// will be removed before given to the router.
+// If prefixes is empty, the only valid prefix will be a mention of the bot.
+//
+// Prefix matching is lazy, meaning the first matching prefix will be used and
+// the bot will not look for longer prefix matching as well (first come, first
+// served principle).
+// For example if the prefixes are "a", and "ab" message will never match the
+// second prefix, because all message matching "ab" also match "a", and "a"
+// appears before "ab" in the prefix list.
+//
+// Second Return Value
+//
+// The second return value is the *1i8n.Localizer, used to generate
+// translations.
+// New localizers can be created using i18n.NewLocalizer.
+//
+// Third Return Value
+//
+// The last return value is an ok-type bool.
+// If false, the message will be discarded, regardless of whether there is a
+// matching prefix.
+// This intended for use in error scenarios, when no prefix or localizer can be
+// obtained, and fallbacks are undesired.
+//
+// Error Handling
+//
+// SettingsProvider intentionally uses a bool instead of an error return value
+// to signal unsuccessful execution.
+// This has two reasons.
+//
+// Mainly, because it is not ensured if the message we are checking is even a
+// command invoke.
+// Suppose you are unable to retrieve your bots settings.
+// This would lead to the bot responding to every message on every server it is
+// with some sort of error.
+//
+// Secondly, errors in adam are represented through errors.Error.
+// However, to invoke errors.Error.Handle a plugin.Context is required,
+// which at this point is not generated yet, because the message has not been
+// identified as a command.
+//
+// For those reasons, error handling is left implementation-specific, and you
+// are responsible for ensuring that error are properly captured.
+type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer, ok bool)
 
 // NewStaticSettingsProvider creates a new SettingsProvider that returns the
 // same prefixes for all guilds and users.
 // The returned localizer will always be a fallback localizer.
 func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
-	return func(*state.Base, *discord.Message) ([]string, *i18n.Localizer) {
-		return prefixes, nil
+	return func(*state.Base, *discord.Message) ([]string, *i18n.Localizer, bool) {
+		return prefixes, nil, true
 	}
 }
 
