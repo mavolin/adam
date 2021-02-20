@@ -233,7 +233,7 @@ func (o *Options) SetDefaults() (err error) {
 
 	if o.StatePanicHandler == nil {
 		o.StatePanicHandler = func(rec interface{}) {
-			log.Printf("rec from panic: %+v\n", rec)
+			log.Printf("recovered from panic: %+v\n", rec)
 		}
 	}
 
