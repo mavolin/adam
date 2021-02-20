@@ -192,7 +192,10 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.Registere
 	e.Fields = append(e.Fields, h.genModuleFields(b, s, ctx, mod.Modules, maxMods)...)
 
 	if len(e.Fields) == 0 {
-		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError)
+		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
+			WithPlaceholders(pluginNotFoundErrorPlaceholder{
+				Invoke: ctx.RawArgs,
+			}))
 	}
 
 	return e, nil
@@ -200,7 +203,10 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.Registere
 
 func (h *Help) command(s *state.State, ctx *plugin.Context, cmd *plugin.RegisteredCommand) (discord.Embed, error) {
 	if len(filterCommands([]*plugin.RegisteredCommand{cmd}, s, ctx, Show, h.Options.HideFuncs...)) == 0 {
-		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError)
+		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
+			WithPlaceholders(pluginNotFoundErrorPlaceholder{
+				Invoke: ctx.RawArgs,
+			}))
 	}
 
 	eb := BaseEmbed.Clone().

@@ -223,12 +223,8 @@ func TestLocalizer_Localize(t *testing.T) {
 			config: NewTermConfig("term"),
 		},
 		{
-			name: "fallback error",
-			config: &Config{
-				Fallback: Fallback{
-					Other: "{{{.Error}}",
-				},
-			},
+			name:   "fallback error",
+			config: &Config{Fallback: Fallback{Other: "{{{.Error}}"}},
 		},
 	}
 

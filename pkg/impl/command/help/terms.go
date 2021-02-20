@@ -54,9 +54,15 @@ var (
 		"I don't know any commands or modules with the name `{{.invoke}}`. Make sure you spelled it right.")
 )
 
-type moduleTitlePlaceholders struct {
-	Module string
-}
+type (
+	moduleTitlePlaceholders struct {
+		Module string
+	}
+
+	pluginNotFoundErrorPlaceholder struct {
+		Invoke string
+	}
+)
 
 // ================================ All ================================
 
