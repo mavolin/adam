@@ -64,7 +64,7 @@ func (l *Localizer) WithPlaceholders(p map[string]interface{}) {
 func (l *Localizer) Localize(c *Config) (s string, err error) {
 	placeholders, err := c.placeholdersToMap()
 	if err != nil {
-		return string(c.Term), err
+		return "", err
 	}
 
 	if placeholders == nil && len(l.defaultPlaceholders) > 0 {
@@ -83,22 +83,17 @@ func (l *Localizer) Localize(c *Config) (s string, err error) {
 	if l.f != nil { // try the user-defined translator first, if there is one
 		s, err = l.f(c.Term, placeholders, c.Plural)
 		if err == nil {
-			return s, err
+			return s, nil
 		}
 	}
 
 	// otherwise use fallback if there is;
 	// checking other suffices as it will always be set if there is a fallback
 	if len(c.Fallback.Other) == 0 && !c.Fallback.empty {
-		return string(c.Term), NewNoTranslationGeneratedError(c.Term)
+		return "", NewNoTranslationGeneratedError(c.Term)
 	}
 
-	s, err = c.Fallback.genTranslation(placeholders, c.Plural)
-	if err != nil {
-		return string(c.Term), err
-	}
-
-	return s, err
+	return c.Fallback.genTranslation(placeholders, c.Plural)
 }
 
 // LocalizeTerm is a short for

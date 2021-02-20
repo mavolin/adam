@@ -243,7 +243,7 @@ func TestLocalizer_Localize(t *testing.T) {
 				}
 
 				actual, err := l.Localize(c.config)
-				assert.Equal(t, c.config.Term, Term(actual))
+				assert.Empty(t, actual)
 				assert.Error(t, err)
 			})
 		}
@@ -272,14 +272,14 @@ func TestLocalizer_LocalizeTerm(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		var term Term = "abc"
-
 		l := &Localizer{
 			f: nil,
 		}
 
+		var term Term = "unknown_term"
+
 		actual, err := l.LocalizeTerm(term)
-		assert.Equal(t, term, Term(actual))
+		assert.Empty(t, actual)
 		assert.True(t, errors.Is(err, &NoTranslationGeneratedError{
 			Term: term,
 		}), "unexpected error")

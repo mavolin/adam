@@ -31,15 +31,13 @@ func Test_mockLocalizer_build(t *testing.T) {
 	})
 
 	t.Run("unexpected i18n", func(t *testing.T) {
-		var term i18n.Term = "unknown_term"
-
 		tMock := new(testing.T)
 
 		l := newMockedLocalizer(tMock).
 			build()
 
-		actualTerm, err := l.LocalizeTerm(term)
-		assert.Equal(t, string(term), actualTerm)
+		actual, err := l.LocalizeTerm("unknown_term")
+		assert.Empty(tMock, actual)
 		assert.Error(t, err)
 
 		assert.True(t, tMock.Failed())
