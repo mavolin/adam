@@ -1,5 +1,15 @@
 package i18n
 
+import (
+	"errors"
+
+	"github.com/mavolin/adam/internal/errorutil"
+)
+
+// ErrNilConfig is the error returned if a nil config is given to
+// Localizer.Localize.
+var ErrNilConfig = errors.New("i18n: cannot translate nil Config")
+
 // Localizer is a translator for a specific language.
 // It provides multiple utility functions and wraps a Func.
 //
@@ -62,6 +72,10 @@ func (l *Localizer) WithPlaceholders(p map[string]interface{}) {
 // Localize generates a localized message using the passed config.
 // c.NewTermConfig must be set.
 func (l *Localizer) Localize(c *Config) (s string, err error) {
+	if c == nil {
+		return "", errorutil.WithStack(ErrNilConfig)
+	}
+
 	placeholders, err := c.placeholdersToMap()
 	if err != nil {
 		return "", err
@@ -90,7 +104,7 @@ func (l *Localizer) Localize(c *Config) (s string, err error) {
 	// otherwise use fallback if there is;
 	// checking other suffices as it will always be set if there is a fallback
 	if len(c.Fallback.Other) == 0 && !c.Fallback.empty {
-		return "", NewNoTranslationGeneratedError(c.Term)
+		return "", newNoTranslationGeneratedError(c.Term)
 	}
 
 	return c.Fallback.genTranslation(placeholders, c.Plural)

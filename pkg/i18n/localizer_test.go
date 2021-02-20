@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLocalizer_WithDefaultPlaceholder(t *testing.T) {
+func TestLocalizer_WithPlaceholder(t *testing.T) {
 	t.Run("new map", func(t *testing.T) {
 		k, v := "abc", "def"
 
@@ -60,7 +60,7 @@ func TestLocalizer_WithDefaultPlaceholder(t *testing.T) {
 	})
 }
 
-func TestLocalizer_WithDefaultPlaceholders(t *testing.T) {
+func TestLocalizer_WithPlaceholders(t *testing.T) {
 	t.Run("new map", func(t *testing.T) {
 		m := map[string]interface{}{
 			"abc": 123,
@@ -204,25 +204,26 @@ func TestLocalizer_Localize(t *testing.T) {
 		config   *Config
 	}{
 		{
-			name:     "placeholders error",
-			langFunc: nil,
-			config: &Config{
-				Placeholders: []string{},
-			},
+			name:   "nil config",
+			config: nil,
+		},
+		{
+			name:   "placeholders error",
+			config: &Config{Placeholders: []string{}},
 		},
 		{
 			name: "lang func error",
 			langFunc: func(Term, map[string]interface{}, interface{}) (string, error) {
 				return "", errors.New("something went wrong")
 			},
+			config: NewTermConfig("term"),
 		},
 		{
-			name:     "no lang func and fallback",
-			langFunc: nil,
+			name:   "no lang func and fallback",
+			config: NewTermConfig("term"),
 		},
 		{
-			name:     "fallback error",
-			langFunc: nil,
+			name: "fallback error",
 			config: &Config{
 				Fallback: Fallback{
 					Other: "{{{.Error}}",
@@ -234,13 +235,7 @@ func TestLocalizer_Localize(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				l := &Localizer{
-					f: c.langFunc,
-				}
-
-				if c.config == nil {
-					c.config = NewTermConfig("term")
-				}
+				l := &Localizer{f: c.langFunc}
 
 				actual, err := l.Localize(c.config)
 				assert.Empty(t, actual)

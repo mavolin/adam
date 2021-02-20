@@ -85,10 +85,6 @@ func genArgsInfol(
 }
 
 func requiredArgInfol(l *i18n.Localizer, a LocalizedRequiredArg) (info plugin.ArgInfo, ok bool) {
-	if a.Name == nil {
-		return plugin.ArgInfo{}, false
-	}
-
 	var err error
 
 	info.Name, err = l.Localize(a.Name)
@@ -106,10 +102,6 @@ func requiredArgInfol(l *i18n.Localizer, a LocalizedRequiredArg) (info plugin.Ar
 }
 
 func optionalArgInfol(l *i18n.Localizer, a LocalizedOptionalArg) (info plugin.ArgInfo, ok bool) {
-	if a.Name == nil {
-		return plugin.ArgInfo{}, false
-	}
-
 	var err error
 
 	info.Name, err = l.Localize(a.Name)

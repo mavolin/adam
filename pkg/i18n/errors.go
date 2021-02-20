@@ -17,7 +17,7 @@ type NoTranslationGeneratedError struct {
 
 // NewNoTranslationGeneratedError creates a new NoTranslationGeneratedError
 // for the passed term.
-func NewNoTranslationGeneratedError(term Term) *NoTranslationGeneratedError {
+func newNoTranslationGeneratedError(term Term) *NoTranslationGeneratedError {
 	return &NoTranslationGeneratedError{
 		Term: term,
 		s:    errorutil.GenerateStackTrace(1),
