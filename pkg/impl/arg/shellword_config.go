@@ -109,8 +109,8 @@ func (c LocalizedShellwordConfig) Parse(
 }
 
 func (c LocalizedShellwordConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
-	info, err := genArgsInfol(l, c.Required, c.Optional, c.Flags, c.Variadic)
-	if err != nil {
+	info, ok := genArgsInfol(l, c.Required, c.Optional, c.Flags, c.Variadic)
+	if !ok {
 		return nil
 	}
 

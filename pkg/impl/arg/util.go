@@ -54,8 +54,8 @@ func genArgsInfo(
 func genArgsInfol(
 	l *i18n.Localizer,
 	rargs []LocalizedRequiredArg, oargs []LocalizedOptionalArg, flags []LocalizedFlag, variadic bool,
-) (plugin.ArgsInfo, error) {
-	info := plugin.ArgsInfo{
+) (info plugin.ArgsInfo, ok bool) {
+	info = plugin.ArgsInfo{
 		Required:      make([]plugin.ArgInfo, len(rargs)),
 		Optional:      make([]plugin.ArgInfo, len(oargs)),
 		Flags:         make([]plugin.FlagInfo, len(flags)),
@@ -63,57 +63,70 @@ func genArgsInfol(
 		Variadic:      variadic,
 	}
 
-	var err error
-
 	for i, arg := range rargs {
-		info.Required[i], err = requiredArgInfol(l, arg)
-		if err != nil {
-			return plugin.ArgsInfo{}, err
+		info.Required[i], ok = requiredArgInfol(l, arg)
+		if !ok {
+			return plugin.ArgsInfo{}, false
 		}
 	}
 
 	for i, arg := range oargs {
-		info.Optional[i], err = optionalArgInfol(l, arg)
-		if err != nil {
-			return plugin.ArgsInfo{}, err
+		info.Optional[i], ok = optionalArgInfol(l, arg)
+		if !ok {
+			return plugin.ArgsInfo{}, false
 		}
 	}
 
 	for i, flag := range flags {
-		info.Flags[i], err = flagInfol(l, flag)
-		if err != nil {
-			return plugin.ArgsInfo{}, err
-		}
+		info.Flags[i] = flagInfol(l, flag)
 	}
 
-	return info, nil
+	return info, true
 }
 
-func requiredArgInfol(l *i18n.Localizer, a LocalizedRequiredArg) (info plugin.ArgInfo, err error) {
+func requiredArgInfol(l *i18n.Localizer, a LocalizedRequiredArg) (info plugin.ArgInfo, ok bool) {
+	if a.Name == nil {
+		return plugin.ArgInfo{}, false
+	}
+
+	var err error
+
 	info.Name, err = l.Localize(a.Name)
 	if err != nil {
-		return plugin.ArgInfo{}, err
+		return plugin.ArgInfo{}, false
 	}
 
 	info.Type = typeInfo(l, a.Type)
 
-	info.Description, err = l.Localize(a.Description)
-	return
+	if a.Description != nil {
+		info.Description, _ = l.Localize(a.Description)
+	}
+
+	return info, true
 }
 
-func optionalArgInfol(l *i18n.Localizer, a LocalizedOptionalArg) (info plugin.ArgInfo, err error) {
+func optionalArgInfol(l *i18n.Localizer, a LocalizedOptionalArg) (info plugin.ArgInfo, ok bool) {
+	if a.Name == nil {
+		return plugin.ArgInfo{}, false
+	}
+
+	var err error
+
 	info.Name, err = l.Localize(a.Name)
 	if err != nil {
-		return
+		return plugin.ArgInfo{}, false
 	}
 
 	info.Type = typeInfo(l, a.Type)
 
-	info.Description, err = l.Localize(a.Description)
-	return
+	if a.Description != nil {
+		info.Description, _ = l.Localize(a.Description)
+	}
+
+	return info, true
 }
 
-func flagInfol(l *i18n.Localizer, f LocalizedFlag) (info plugin.FlagInfo, err error) {
+func flagInfol(l *i18n.Localizer, f LocalizedFlag) (info plugin.FlagInfo) {
 	info.Name = f.Name
 
 	if len(f.Aliases) > 0 {
@@ -124,8 +137,11 @@ func flagInfol(l *i18n.Localizer, f LocalizedFlag) (info plugin.FlagInfo, err er
 	info.Type = typeInfo(l, f.Type)
 	info.Multi = f.Multi
 
-	info.Description, err = l.Localize(f.Description)
-	return
+	if f.Description != nil {
+		info.Description, _ = l.Localize(f.Description)
+	}
+
+	return info
 }
 
 func typeInfo(l *i18n.Localizer, t Type) plugin.TypeInfo {
