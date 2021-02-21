@@ -27,11 +27,12 @@ var (
 	// wait, even if a user is still typing.
 	ReplyMaxTimeout = 30 * time.Minute
 
-	// ReplyMiddlewaresKey is the key used to automatically retrieve
-	// middlewares used for ReplyWaiters.
-	// If the ReplyMiddlewaresKey is empty, no middlewares will be added.
-	ReplyMiddlewaresKey = "reply_middlewares"
+	// ReplyMiddlewaresKey is the key used to retrieve middlewares used for
+	// ReplyWaiters.
+	ReplyMiddlewaresKey = replyMiddlewaresKeyType{}
 )
+
+type replyMiddlewaresKeyType struct{}
 
 // typingInterval is the interval in which the client of the user sends the
 // typing event, if the user is continuously typing.
