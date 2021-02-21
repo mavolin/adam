@@ -13,18 +13,18 @@ import (
 // LocationKey is the key used to retrieve timezone information through the
 // context.
 // The type of the value must be *time.Location.
-// If no LocationKey is specified, no location is available, or the location is
-// nil, DefaultLocation will be used.
-// If LocationKey is empty and DefaultLocation is nil, UTC offsets will be
+// If LocationKey is nil, no location is available, or the location is nil,
+// DefaultLocation will be used.
+// If both LocationKey and DefaultLocation are nil, UTC offsets will be
 // enforced.
-var LocationKey string
+var LocationKey interface{}
 
 // DefaultLocation is the time.Location used if no other timezone information
 // is available.
 // If this is set to nil, timezone information must be provided either
 // through the UTC offset in the argument or through LocationKey's
 // corresponding value.
-// If LocationKey is empty and DefaultLocation is nil, UTC offsets will be
+// If both LocationKey and DefaultLocation are nil, UTC offsets will be
 // enforced.
 var DefaultLocation *time.Location = nil
 
@@ -130,7 +130,7 @@ func (t Time) Name(l *i18n.Localizer) string {
 }
 
 func (t Time) Description(l *i18n.Localizer) (desc string) {
-	if len(LocationKey) == 0 && DefaultLocation == nil {
+	if LocationKey == nil && DefaultLocation == nil {
 		desc, _ = l.Localize(timeDescriptionMustUTC) // we have a fallback
 	} else {
 		desc, _ = l.Localize(timeDescriptionOptionalUTC) // we have a fallback
@@ -228,7 +228,7 @@ func (t Date) Name(l *i18n.Localizer) string {
 }
 
 func (t Date) Description(l *i18n.Localizer) (desc string) {
-	if len(LocationKey) == 0 && DefaultLocation == nil {
+	if LocationKey == nil && DefaultLocation == nil {
 		desc, _ = l.Localize(dateDescriptionMustUTC) // we have a fallback
 	} else {
 		desc, _ = l.Localize(dateDescriptionOptionalUTC) // we have a fallback
@@ -318,7 +318,7 @@ func (t DateTime) Name(l *i18n.Localizer) string {
 }
 
 func (t DateTime) Description(l *i18n.Localizer) (desc string) {
-	if len(LocationKey) == 0 && DefaultLocation == nil {
+	if LocationKey == nil && DefaultLocation == nil {
 		desc, _ = l.Localize(dateTimeDescriptionMustUTC) // we have a fallback
 	} else {
 		desc, _ = l.Localize(dateTimeDescriptionOptionalUTC) // we have a fallback
@@ -422,7 +422,7 @@ func (z timeZone) Default() interface{} {
 func location(ctx *Context) *time.Location {
 	l := DefaultLocation
 
-	if len(LocationKey) > 0 {
+	if LocationKey != nil {
 		if val := ctx.Get(LocationKey); val != nil {
 			if customLoc, ok := val.(*time.Location); ok && customLoc != nil {
 				l = customLoc
