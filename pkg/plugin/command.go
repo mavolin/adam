@@ -35,13 +35,8 @@ type (
 		//
 		// Error Handling
 		//
-		// If Invoke returns an error it will be handed to the error handler
-		// of the bot.
-		//
-		// As a special case if both return values are non-nil, both the
-		// reply and the error will be handled.
-		// Any errors that occur when sending the reply will be silently
-		// handled.
+		// If Invoke returns an error it will be handed down the middleware
+		// chain until it reaches the bot's ErrorHandler.
 		//
 		// Panic Handling
 		//

@@ -79,8 +79,8 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		}
 	}()
 
-	err := b.applyMiddlewares(ctx)
-	if err != nil {
+	inv := b.applyMiddlewares(ctx)
+	if err := inv(b.State, ctx); err != nil {
 		b.ErrorHandler(err, b.State, ctx)
 	}
 }
@@ -193,7 +193,7 @@ func (b *Bot) findCommandAsync(
 	return nil, nil, ""
 }
 
-func (b *Bot) applyMiddlewares(ctx *plugin.Context) error {
+func (b *Bot) applyMiddlewares(ctx *plugin.Context) CommandFunc {
 	middlewares := b.Middlewares()
 
 	for _, mod := range ctx.InvokedCommand.SourceParents {
@@ -208,30 +208,27 @@ func (b *Bot) applyMiddlewares(ctx *plugin.Context) error {
 
 	middlewares = append(middlewares, b.postMiddlewares.Middlewares()...)
 
-	inv := func(_ *state.State, ctx *plugin.Context) error { return b.invoke(ctx) }
+	inv := b.invoke
 
 	for i := len(middlewares) - 1; i >= 0; i-- {
 		inv = middlewares[i](inv)
 	}
 
-	return inv(b.State, ctx)
+	return inv
 }
 
-func (b *Bot) invoke(ctx *plugin.Context) error {
+func (b *Bot) invoke(_ *state.State, ctx *plugin.Context) error {
 	reply, err := ctx.InvokedCommand.Invoke(b.State, ctx)
-	rerr := b.sendReply(reply, ctx)
+	if err != nil {
+		// special case, prevent this from going through as an *InternalError
+		if discorderr.Is(discorderr.As(err), discorderr.InsufficientPermissions) {
+			err = plugin.DefaultBotPermissionsError
+		}
 
-	// special case, prevent this from going through as an *InternalError
-	if discorderr.Is(discorderr.As(err), discorderr.InsufficientPermissions) {
-		err = plugin.DefaultBotPermissionsError
-	}
-
-	if err != nil { // both response and the command itself failed
-		ctx.HandleErrorSilently(rerr)
 		return err
 	}
 
-	return rerr
+	return b.sendReply(reply, ctx)
 }
 
 func (b *Bot) sendReply(reply interface{}, ctx *plugin.Context) (err error) { //nolint:funlen,gocyclo
