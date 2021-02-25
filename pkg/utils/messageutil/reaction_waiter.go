@@ -137,16 +137,8 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 	return
 }
 
-// Await awaits a reaction of the user until they signal cancellation or the
-// timeout expires.
-//
-// If the timeout is reached, a *TimeoutError will be returned.
-// If the user cancels the wait or deletes the message, errors.Abort will be
-// returned.
-// Furthermore, if the guild, channel or message becomes unavailable while
-// adding reactions, errors.Abort will be returned as well.
-//
-// Besides that, the Wait can also be canceled through a middleware.
+// Await is the same as AwaitWithContext, but uses a context.Background() as
+// context.Context.
 func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) {
 	return w.AwaitWithContext(context.Background(), timeout)
 }
@@ -159,10 +151,11 @@ func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) 
 // returned.
 // Furthermore, if the guild, channel or message becomes unavailable while
 // adding reactions, errors.Abort will be returned as well.
-// If the context expires or get canceled, the error returned by ctx.Err() will
-// be returned.
+// If the context expires, a *TimeoutError with Cause set to ctx.Err() will be
+// returned.
+// This error is also available through .Unwrap(), so errors.Is is safe to use.
 //
-// Besides that, the Wait can also be canceled through a middleware.
+// Besides that, the wait can also be canceled through a middleware.
 func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Duration) (discord.APIEmoji, error) {
 	perms, err := w.ctx.SelfPermissions()
 	if err != nil {
@@ -187,9 +180,9 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 
 	select {
 	case <-ctx.Done():
-		return "", ctx.Err()
+		return "", &TimeoutError{UserID: w.userID, Cause: ctx.Err()}
 	case <-time.After(timeout):
-		return "", &TimeoutError{UserID: w.ctx.Author.ID}
+		return "", &TimeoutError{UserID: w.userID}
 	case r := <-result:
 		switch r := r.(type) {
 		case discord.APIEmoji:
@@ -236,7 +229,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 
 	if !w.noAutoReact {
 		for _, r := range w.reactions {
-			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
+			if err := w.state.React(w.channelID, w.messageID, r); err != nil {
 				// someone deleted the channel or message
 				if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 					rmReact()
@@ -249,7 +242,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 		}
 
 		for _, r := range w.cancelReactions {
-			if err := w.state.React(w.ctx.ChannelID, w.messageID, r); err != nil {
+			if err := w.state.React(w.channelID, w.messageID, r); err != nil {
 				// someone deleted the channel or message
 				if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 					rmReact()
@@ -269,7 +262,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 		if !w.noAutoDelete {
 			go func() {
 				for _, r := range w.reactions {
-					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
+					err := w.state.DeleteReactions(w.channelID, w.messageID, r)
 					if err != nil {
 						// someone else deleted the resource we are accessing
 						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
@@ -281,7 +274,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 				}
 
 				for _, r := range w.cancelReactions {
-					err := w.state.DeleteReactions(w.ctx.ChannelID, w.messageID, r)
+					err := w.state.DeleteReactions(w.channelID, w.messageID, r)
 					if err != nil {
 						// someone else deleted the resource we are accessing
 						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {

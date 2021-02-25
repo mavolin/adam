@@ -284,7 +284,7 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 			c.waiter.
 				WithCancelReactions(reactionMessageID, reaction)
 
-			m.React(c.waiter.ctx.ChannelID, reactionMessageID, reaction)
+			m.React(c.waiter.channelID, reactionMessageID, reaction)
 
 			var result chan interface{}
 			// cause a nil pointer dereference, if something gets sent anyway
