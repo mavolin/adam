@@ -108,7 +108,7 @@ func New(o Options) (*Bot, error) {
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
-	if !o.ManualChecks {
+	if !o.NoDefaultMiddlewares {
 		b.MustAddMiddleware(CheckChannelTypes)
 		b.MustAddMiddleware(CheckBotPermissions)
 		b.MustAddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))

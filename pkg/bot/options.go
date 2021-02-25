@@ -93,7 +93,7 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// If the function returns true, the command's throttler will not count the
 	// invoke.
 	//
-	// Settings this field has no effect, if ManualChecks is set to true.
+	// Settings this field has no effect, if NoDefaultMiddlewares is set to true.
 	//
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerCancelChecker func(error) bool
@@ -165,31 +165,28 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// of state middlewares.
 	MessageUpdateMiddlewares []interface{}
 
-	// ManualChecks specifies whether the checks are performed by the user and
-	// should not be added automatically.
+	// NoDefaultMiddlewares, if true, prevents the default middlewares from
+	// being added on creation.
+	// These middlewares are responsible for validating the user is allowed
+	// to run a command, and the bot is able to.
 	//
-	// By default, the following checks are performed in the following order.
-	// Steps enclosed in parentheses are just steps executed in-between checks.
+	// If you set this to true, you are responsible for adding those checks,
+	// or equivalents of them.
+	// Although possible, it is highly discouraged to disable certain checks,
+	// unless the resulting behavior is explicitly desired.
+	// Default or third-party plugins may rely on these checks, to perform as
+	// intended.
 	//
-	//	(command invoke received and routed) ->
-	//	CheckChannelTypes ->
-	//	CheckBotPermissions ->
-	// 	NewThrottlerChecker(b.ThrottlerCancelChecker) ->
-	//	(run custom middlewares) ->
-	//	CheckRestrictions ->
-	//	ParseArgs ->
-	//	(invoke command)
+	// By default, the following middlewares are added upon creation of the
+	// bot.
 	//
-	// If you set this to true, you are responsible for ensuring that all
-	// (desired) checks are performed, by adding them as middlewares.
-	// All default checks can be found in package bot.
+	//	Bot.AddMiddleware(CheckChannelTypes)
+	//	Bot.AddMiddleware(CheckBotPermissions)
+	//	Bot.AddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
 	//
-	// Note that leaving out these checks may lead to unexpected or undesired
-	// behavior, as default and third-party plugins will assume that these
-	// checks are run.
-	// Therefore this is only recommended, to change order or use custom
-	// checks.
-	ManualChecks bool
+	//	Bot.AddPostMiddleware(CheckRestrictions)
+	//	Bot.AddPostMiddleware(ParseArgs)
+	NoDefaultMiddlewares bool
 }
 
 // SetDefaults fills the defaults for all options, that weren't manually set.

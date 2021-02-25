@@ -133,8 +133,8 @@ type Throttler interface {
 	// This will be the case, if the ThrottlerCancelChecker function in the bot's
 	// Options returns true.
 	//
-	// Note that the Throttler will be called before bot middlewares are
-	// invoked.
+	// Note that the Throttler will be called before non-default bot
+	// middlewares are run.
 	// Therefore, only context data set through event handlers will be
 	// available.
 	Check(*state.State, *Context) (func(), error)
