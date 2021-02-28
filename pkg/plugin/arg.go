@@ -152,6 +152,9 @@ func (a Args) Duration(i int) time.Duration { return a[i].(time.Duration) }
 // Time returns the argument with the passed index as time.Time.
 func (a Args) Time(i int) time.Time { return a[i].(time.Time) }
 
+// Location returns the argument with the passed index as *time.Location.
+func (a Args) Location(i int) *time.Location { return a[i].(*time.Location) }
+
 // Regexp returns the flag with the passed index as *regexp.Regexp.
 func (a Args) Regexp(i int) *regexp.Regexp { return a[i].(*regexp.Regexp) }
 
@@ -205,6 +208,9 @@ func (a Args) Durations(i int) []time.Duration { return a[i].([]time.Duration) }
 
 // Times returns the argument with the passed index as []time.Time.
 func (a Args) Times(i int) []time.Time { return a[i].([]time.Time) }
+
+// Locations returns the argument with the passed index as []*time.Location.
+func (a Args) Locations(i int) []*time.Location { return a[i].([]*time.Location) }
 
 // Regexps returns the argument with the passed index as []*regexp.Regexp.
 func (a Args) Regexps(i int) []*regexp.Regexp { return a[i].([]*regexp.Regexp) }
@@ -266,6 +272,9 @@ func (f Flags) Duration(name string) time.Duration { return f[name].(time.Durati
 // Time returns the flag with the passed name as time.Time.
 func (f Flags) Time(name string) time.Time { return f[name].(time.Time) }
 
+// Location returns the flag with the passed name as *time.Location.
+func (f Flags) Location(name string) *time.Location { return f[name].(*time.Location) }
+
 // Regexp returns the flag with the passed name as *regexp.Regexp.
 func (f Flags) Regexp(name string) *regexp.Regexp { return f[name].(*regexp.Regexp) }
 
@@ -319,6 +328,9 @@ func (f Flags) Durations(name string) []time.Duration { return f[name].([]time.D
 
 // Times returns the flag with the passed name as []time.Time.
 func (f Flags) Times(name string) []time.Time { return f[name].([]time.Time) }
+
+// Locations returns the flag with the passed name as []*time.Location.
+func (f Flags) Locations(name string) []*time.Location { return f[name].([]*time.Location) }
 
 // Regexps returns the flag with the passed name as []*regexp.Regexp.
 func (f Flags) Regexps(name string) []*regexp.Regexp { return f[name].([]*regexp.Regexp) }
