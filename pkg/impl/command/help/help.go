@@ -168,7 +168,7 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.Registere
 	eb := BaseEmbed.Clone().
 		WithSimpleTitlel(moduleTitle.
 			WithPlaceholders(moduleTitlePlaceholders{
-				Module: mod.Identifier.AsInvoke(),
+				Module: mod.ID.AsInvoke(),
 			}))
 
 	if desc := mod.LongDescription(ctx.Localizer); len(desc) > 0 {

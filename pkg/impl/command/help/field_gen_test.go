@@ -22,7 +22,7 @@ func Test_formatCommand(t *testing.T) {
 			Source: mock.Command{
 				CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
 			},
-			Identifier: ".mod.kick",
+			ID: ".mod.kick",
 		}
 
 		b := capbuilder.New(100, 100)
@@ -36,8 +36,8 @@ func Test_formatCommand(t *testing.T) {
 		expect := "`mod kick`"
 
 		cmd := &plugin.RegisteredCommand{
-			Source:     mock.Command{CommandMeta: new(mock.CommandMeta)},
-			Identifier: ".mod.kick",
+			Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
+			ID:     ".mod.kick",
 		}
 
 		b := capbuilder.New(100, 100)
@@ -58,17 +58,17 @@ func Test_formatCommands(t *testing.T) {
 			Source: mock.Command{
 				CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
 			},
-			Identifier: ".mod.kick",
+			ID: ".mod.kick",
 		},
 		{
-			Source:     mock.Command{CommandMeta: new(mock.CommandMeta)},
-			Identifier: ".mod.abc",
+			Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
+			ID:     ".mod.abc",
 		},
 		{
 			Source: mock.Command{
 				CommandMeta: mock.CommandMeta{ShortDescription: "bans someone"},
 			},
-			Identifier: ".mod.ban",
+			ID: ".mod.ban",
 		},
 	}
 
@@ -94,17 +94,17 @@ func Test_formatModule(t *testing.T) {
 				Source: mock.Command{
 					CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
 				},
-				Identifier: ".mod.kick",
+				ID: ".mod.kick",
 			},
 			{
-				Source:     mock.Command{CommandMeta: new(mock.CommandMeta)},
-				Identifier: ".mod.abc",
+				Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
+				ID:     ".mod.abc",
 			},
 			{
 				Source: mock.Command{
 					CommandMeta: mock.CommandMeta{ShortDescription: "bans someone"},
 				},
-				Identifier: ".mod.ban",
+				ID: ".mod.ban",
 			},
 		},
 		Modules: []*plugin.RegisteredModule{
@@ -114,17 +114,17 @@ func Test_formatModule(t *testing.T) {
 						Source: mock.Command{
 							CommandMeta: mock.CommandMeta{ShortDescription: "lists all infractions"},
 						},
-						Identifier: ".mod.infr.list",
+						ID: ".mod.infr.list",
 					},
 					{
 						Source: mock.Command{
 							CommandMeta: mock.CommandMeta{ShortDescription: "edits an infraction"},
 						},
-						Identifier: ".mod.infr.edit",
+						ID: ".mod.infr.edit",
 					},
 					{
-						Source:     mock.Command{CommandMeta: new(mock.CommandMeta)},
-						Identifier: ".mod.infr.rm",
+						Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
+						ID:     ".mod.infr.rm",
 					},
 				},
 			},
@@ -134,7 +134,7 @@ func Test_formatModule(t *testing.T) {
 						Source: mock.Command{
 							CommandMeta: mock.CommandMeta{ShortDescription: "turns the invite module on or off"},
 						},
-						Identifier: ".mod.invite.toggle",
+						ID: ".mod.invite.toggle",
 					},
 				},
 			},

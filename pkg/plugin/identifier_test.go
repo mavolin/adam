@@ -9,32 +9,32 @@ import (
 func TestNewIdentifierFromInvoke(t *testing.T) {
 	invoke := "  abc \tdef\njkl  mno"
 
-	var expect Identifier = ".abc.def.jkl.mno"
+	var expect ID = ".abc.def.jkl.mno"
 
-	actual := NewIdentifierFromInvoke(invoke)
+	actual := NewIDFromInvoke(invoke)
 	assert.Equal(t, expect, actual)
 }
 
 func TestIdentifier_Parent(t *testing.T) {
 	testCases := []struct {
 		name       string
-		identifier Identifier
-		expect     []Identifier
+		identifier ID
+		expect     []ID
 	}{
 		{
 			name:       "root",
 			identifier: ".",
-			expect:     []Identifier{"."},
+			expect:     []ID{"."},
 		},
 		{
 			name:       "single level",
 			identifier: ".mod",
-			expect:     []Identifier{"."},
+			expect:     []ID{"."},
 		},
 		{
 			name:       "multi level",
 			identifier: ".mod.infr.edit",
-			expect:     []Identifier{".mod.infr", ".mod", "."},
+			expect:     []ID{".mod.infr", ".mod", "."},
 		},
 	}
 
@@ -53,23 +53,23 @@ func TestIdentifier_Parent(t *testing.T) {
 func TestIdentifier_All(t *testing.T) {
 	testCases := []struct {
 		name       string
-		identifier Identifier
-		expect     []Identifier
+		identifier ID
+		expect     []ID
 	}{
 		{
 			name:       "root",
 			identifier: ".",
-			expect:     []Identifier{"."},
+			expect:     []ID{"."},
 		},
 		{
 			name:       "single level",
 			identifier: ".mod",
-			expect:     []Identifier{".", ".mod"},
+			expect:     []ID{".", ".mod"},
 		},
 		{
 			name:       "multi level",
 			identifier: ".mod.infr.edit",
-			expect:     []Identifier{".", ".mod", ".mod.infr", ".mod.infr.edit"},
+			expect:     []ID{".", ".mod", ".mod.infr", ".mod.infr.edit"},
 		},
 	}
 
@@ -83,29 +83,29 @@ func TestIdentifier_All(t *testing.T) {
 
 func TestIdentifier_IsRoot(t *testing.T) {
 	t.Run("root", func(t *testing.T) {
-		isRoot := Identifier(".").IsRoot()
+		isRoot := ID(".").IsRoot()
 		assert.True(t, isRoot)
 	})
 
 	t.Run("not root", func(t *testing.T) {
-		isRoot := Identifier(".mod").IsRoot()
+		isRoot := ID(".mod").IsRoot()
 		assert.False(t, isRoot)
 	})
 }
 
 func TestIdentifier_NumParents(t *testing.T) {
 	t.Run("root", func(t *testing.T) {
-		actual := Identifier(".").NumParents()
+		actual := ID(".").NumParents()
 		assert.Equal(t, 0, actual)
 	})
 
 	t.Run("no parents", func(t *testing.T) {
-		actual := Identifier(".mod").NumParents()
+		actual := ID(".mod").NumParents()
 		assert.Equal(t, 0, actual)
 	})
 
 	t.Run("parents", func(t *testing.T) {
-		actual := Identifier(".mod.ban").NumParents()
+		actual := ID(".mod.ban").NumParents()
 		assert.Equal(t, 1, actual)
 	})
 }
@@ -113,8 +113,8 @@ func TestIdentifier_NumParents(t *testing.T) {
 func TestIdentifier_IsParent(t *testing.T) {
 	testCases := []struct {
 		name       string
-		identifier Identifier
-		target     Identifier
+		identifier ID
+		target     ID
 		expect     bool
 	}{
 		{
@@ -148,8 +148,8 @@ func TestIdentifier_IsParent(t *testing.T) {
 func TestIdentifier_IsChild(t *testing.T) {
 	testCases := []struct {
 		name       string
-		identifier Identifier
-		target     Identifier
+		identifier ID
+		target     ID
 		expect     bool
 	}{
 		{
@@ -183,7 +183,7 @@ func TestIdentifier_IsChild(t *testing.T) {
 func TestIdentifier_AsCommandInvoke(t *testing.T) {
 	testCases := []struct {
 		name   string
-		id     Identifier
+		id     ID
 		expect string
 	}{
 		{
@@ -214,7 +214,7 @@ func TestIdentifier_AsCommandInvoke(t *testing.T) {
 func TestIdentifier_Name(t *testing.T) {
 	testCases := []struct {
 		name       string
-		identifier Identifier
+		identifier ID
 		expect     string
 	}{
 		{

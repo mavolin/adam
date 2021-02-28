@@ -33,13 +33,13 @@ func newCommaParserl(args string, cfg LocalizedCommaConfig, s *state.State, ctx 
 	}
 }
 
-func (p *commaParser) parse() (plugin.Args, plugin.Flags, error) {
+func (p *commaParser) parse() error {
 	err := p.startParse()
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	return p.helper.get()
+	return p.helper.putContext()
 }
 
 func (p *commaParser) startParse() error {

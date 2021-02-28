@@ -74,7 +74,7 @@ func (h *Help) genModuleFields(
 		var f discord.EmbedField
 
 		f.Name = ctx.MustLocalize(moduleTitle.
-			WithPlaceholders(moduleTitlePlaceholders{Module: mod.Identifier.AsInvoke()}))
+			WithPlaceholders(moduleTitlePlaceholders{Module: mod.ID.AsInvoke()}))
 		b.Use(len(f.Name))
 
 		if b.Rem() < 10+len(f.Name) {
@@ -124,7 +124,7 @@ func (h *Help) genUsages(b *strings.Builder, ctx *plugin.Context, cmd *plugin.Re
 		return []discord.EmbedField{
 			{
 				Name:  ctx.MustLocalize(usageFieldNameSingle),
-				Value: "```" + cmd.Identifier.AsInvoke() + "```",
+				Value: "```" + cmd.ID.AsInvoke() + "```",
 			},
 		}
 	}
@@ -176,7 +176,7 @@ func (h *Help) genUsage(
 	b.Reset()
 
 	b.WriteString("```")
-	b.WriteString(cmd.Identifier.AsInvoke())
+	b.WriteString(cmd.ID.AsInvoke())
 
 	if len(info.Prefix) > 0 {
 		b.WriteRune(' ')
@@ -361,7 +361,7 @@ func (h *Help) formatCommands(
 
 func (h *Help) formatCommand(b *capbuilder.CappedBuilder, cmd *plugin.RegisteredCommand, l *i18n.Localizer) {
 	b.WriteRune('`')
-	b.WriteString(cmd.Identifier.AsInvoke())
+	b.WriteString(cmd.ID.AsInvoke())
 	b.WriteRune('`')
 
 	if desc := cmd.ShortDescription(l); len(desc) > 0 {

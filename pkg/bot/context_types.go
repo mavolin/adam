@@ -94,7 +94,7 @@ func (p *ctxPluginProvider) lazyModules() {
 	}
 }
 
-func (p *ctxPluginProvider) Command(id plugin.Identifier) *plugin.RegisteredCommand {
+func (p *ctxPluginProvider) Command(id plugin.ID) *plugin.RegisteredCommand {
 	if id.IsRoot() {
 		return nil
 	}
@@ -123,7 +123,7 @@ func (p *ctxPluginProvider) Command(id plugin.Identifier) *plugin.RegisteredComm
 	return mod.FindCommand(id.Name())
 }
 
-func (p *ctxPluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModule {
+func (p *ctxPluginProvider) Module(id plugin.ID) *plugin.RegisteredModule {
 	p.lazyModules()
 
 	all := id.All()
@@ -159,7 +159,7 @@ func (p *ctxPluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModul
 }
 
 func (p *ctxPluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
-	id := plugin.NewIdentifierFromInvoke(invoke)
+	id := plugin.NewIDFromInvoke(invoke)
 
 	name := id.Name()
 
@@ -196,7 +196,7 @@ func (p *ctxPluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand
 }
 
 func (p *ctxPluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
-	id := plugin.NewIdentifierFromInvoke(invoke)
+	id := plugin.NewIDFromInvoke(invoke)
 	return p.Module(id)
 }
 

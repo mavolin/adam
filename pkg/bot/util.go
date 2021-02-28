@@ -45,7 +45,7 @@ func findCommand(
 
 	var parents []plugin.Module
 
-	var id plugin.Identifier = "."
+	var id plugin.ID = "."
 
 	for len(invoke) > 0 {
 		name := firstWord(invoke)
@@ -55,13 +55,13 @@ func findCommand(
 
 		for _, cmd := range cmds {
 			if cmd.GetName() == name {
-				id += plugin.Identifier(cmd.GetName())
+				id += plugin.ID(cmd.GetName())
 				return newRegisteredCommandWithProvider(p, id, cmd, parents, &repo), invoke
 			}
 
 			for _, alias := range cmd.GetAliases() {
 				if alias == name {
-					id += plugin.Identifier(cmd.GetName())
+					id += plugin.ID(cmd.GetName())
 					return newRegisteredCommandWithProvider(p, id, cmd, parents, &repo), invoke
 				}
 			}
@@ -76,20 +76,20 @@ func findCommand(
 
 		cmds = mod.Commands()
 		mods = mod.Modules()
-		id += plugin.Identifier(mod.GetName()) + "."
+		id += plugin.ID(mod.GetName()) + "."
 	}
 
 	return nil, ""
 }
 
 func newRegisteredCommandWithProvider(
-	p plugin.Provider, id plugin.Identifier, cmd plugin.Command, parents []plugin.Module, repo *plugin.Repository,
+	p plugin.Provider, id plugin.ID, cmd plugin.Command, parents []plugin.Module, repo *plugin.Repository,
 ) *plugin.RegisteredCommand {
 	rcmd := plugin.NewRegisteredCommandWithProvider(p)
 	rcmd.ProviderName = repo.ProviderName
 	rcmd.Source = cmd
 	rcmd.SourceParents = parents
-	rcmd.Identifier = id
+	rcmd.ID = id
 	rcmd.Name = cmd.GetName()
 	rcmd.Aliases = cmd.GetAliases()
 	rcmd.Args = cmd.GetArgs()

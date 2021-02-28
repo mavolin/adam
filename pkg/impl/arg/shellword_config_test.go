@@ -405,7 +405,9 @@ func TestShellwordConfig_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
+				ctx := new(plugin.Context)
+
+				err := c.config.Parse(c.rawArgs, nil, ctx)
 				if aerr, ok := err.(*plugin.ArgumentError); ok && aerr != nil {
 					desc, err := aerr.Description(i18n.NewFallbackLocalizer())
 					if err != nil {
@@ -417,15 +419,15 @@ func TestShellwordConfig_Parse(t *testing.T) {
 				require.NoError(t, err)
 
 				if len(c.expectArgs) == 0 {
-					assert.Len(t, actualArgs, 0)
+					assert.Len(t, ctx.Args, 0)
 				} else {
-					assert.Equal(t, c.expectArgs, actualArgs)
+					assert.Equal(t, c.expectArgs, ctx.Args)
 				}
 
 				if len(c.expectFlags) == 0 {
-					assert.Len(t, actualFlags, 0)
+					assert.Len(t, ctx.Flags, 0)
 				} else {
-					assert.Equal(t, c.expectFlags, actualFlags)
+					assert.Equal(t, c.expectFlags, ctx.Flags)
 				}
 			})
 		}
@@ -525,7 +527,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				_, _, actual := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
+				actual := c.config.Parse(c.rawArgs, nil, new(plugin.Context))
 				assert.Equal(t, c.expect, actual)
 			})
 		}
@@ -1064,7 +1066,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
-				actualArgs, actualFlags, err := c.config.Parse(c.rawArgs, nil, ctx)
+				err := c.config.Parse(c.rawArgs, nil, ctx)
 				if aerr, ok := err.(*plugin.ArgumentError); ok && aerr != nil {
 					desc, err := aerr.Description(i18n.NewFallbackLocalizer())
 					if err != nil {
@@ -1076,15 +1078,15 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 				require.NoError(t, err)
 
 				if len(c.expectArgs) == 0 {
-					assert.Len(t, actualArgs, 0)
+					assert.Len(t, ctx.Args, 0)
 				} else {
-					assert.Equal(t, c.expectArgs, actualArgs)
+					assert.Equal(t, c.expectArgs, ctx.Args)
 				}
 
 				if len(c.expectFlags) == 0 {
-					assert.Len(t, actualFlags, 0)
+					assert.Len(t, ctx.Flags, 0)
 				} else {
-					assert.Equal(t, c.expectFlags, actualFlags)
+					assert.Equal(t, c.expectFlags, ctx.Flags)
 				}
 			})
 		}
@@ -1186,7 +1188,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
-				_, _, actual := c.config.Parse(c.rawArgs, nil, ctx)
+				actual := c.config.Parse(c.rawArgs, nil, ctx)
 				assert.Equal(t, c.expect, actual)
 			})
 		}

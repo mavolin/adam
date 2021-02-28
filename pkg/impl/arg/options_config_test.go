@@ -21,14 +21,14 @@ func TestOptions_Parse(t *testing.T) {
 			},
 		}
 
-		expect := plugin.Args{"abc"}
+		expectArgs := plugin.Args{"abc"}
 
 		ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
-		actual, flags, err := options.Parse("1 abc", nil, ctx)
+		err := options.Parse("1 abc", nil, ctx)
 		require.NoError(t, err)
-		assert.Empty(t, flags)
-		assert.Equal(t, expect, actual)
+		assert.Empty(t, ctx.Flags)
+		assert.Equal(t, expectArgs, ctx.Args)
 	})
 
 	failureCases := []struct {
@@ -72,7 +72,7 @@ func TestOptions_Parse(t *testing.T) {
 					Localizer: i18n.NewFallbackLocalizer(),
 				}
 
-				_, _, actual := c.options.Parse(c.args, nil, ctx)
+				actual := c.options.Parse(c.args, nil, ctx)
 				assert.Equal(t, c.expect, actual)
 			})
 		}

@@ -48,8 +48,8 @@ func TestGenerateRegisteredModules(t *testing.T) {
 				},
 			},
 		},
-		Identifier: ".abc",
-		Name:       "abc",
+		ID:   ".abc",
+		Name: "abc",
 	}
 
 	abc.Commands = append(abc.Commands, &RegisteredCommand{
@@ -62,7 +62,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 			},
 		},
 		ProviderName: "built_in",
-		Identifier:   ".abc.zyx",
+		ID:           ".abc.zyx",
 		Name:         "zyx",
 		ChannelTypes: AllChannels,
 	})
@@ -89,7 +89,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 				},
 			},
 		},
-		Identifier: ".def",
+		ID: ".def",
 	}
 
 	def.Commands = append(def.Commands, &RegisteredCommand{
@@ -102,7 +102,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 			},
 		},
 		ProviderName: "custom_commands",
-		Identifier:   ".def.tsr",
+		ID:           ".def.tsr",
 		Name:         "tsr",
 		ChannelTypes: AllChannels,
 	})
@@ -117,7 +117,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 			},
 		},
 		ProviderName: "built_in",
-		Identifier:   ".def.wvu",
+		ID:           ".def.wvu",
 		Name:         "wvu",
 		ChannelTypes: AllChannels,
 	})
@@ -135,7 +135,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 				},
 			},
 		},
-		Identifier: ".ghi",
+		ID: ".ghi",
 	}
 
 	ghi.Commands = append(ghi.Commands, &RegisteredCommand{
@@ -148,7 +148,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 			},
 		},
 		ProviderName: "custom_commands",
-		Identifier:   ".ghi.qpo",
+		ID:           ".ghi.qpo",
 		Name:         "qpo",
 		ChannelTypes: AllChannels,
 	})
@@ -244,10 +244,10 @@ func Test_generateRegisteredModule(t *testing.T) {
 		}
 
 		expect := &RegisteredModule{
-			Parent:     nil,
-			Sources:    smods,
-			Identifier: ".abc",
-			Name:       "abc",
+			Parent:  nil,
+			Sources: smods,
+			ID:      ".abc",
+			Name:    "abc",
 		}
 
 		expect.Commands = append(expect.Commands, &RegisteredCommand{
@@ -261,7 +261,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				},
 			},
 			ProviderName: "built_in",
-			Identifier:   ".abc.def",
+			ID:           ".abc.def",
 			Name:         "def",
 			ChannelTypes: AllChannels,
 		})
@@ -289,8 +289,8 @@ func Test_generateRegisteredModule(t *testing.T) {
 					},
 				},
 			},
-			Identifier: ".abc",
-			Name:       "abc",
+			ID:   ".abc",
+			Name: "abc",
 		}
 
 		smods := []SourceModule{
@@ -315,10 +315,10 @@ func Test_generateRegisteredModule(t *testing.T) {
 		}
 
 		expect := &RegisteredModule{
-			Parent:     parent,
-			Sources:    smods,
-			Identifier: ".abc.def",
-			Name:       "def",
+			Parent:  parent,
+			Sources: smods,
+			ID:      ".abc.def",
+			Name:    "def",
 		}
 
 		expect.Commands = append(expect.Commands, &RegisteredCommand{
@@ -341,7 +341,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				},
 			},
 			ProviderName: "built_in",
-			Identifier:   ".abc.def.ghi",
+			ID:           ".abc.def.ghi",
 			Name:         "ghi",
 			ChannelTypes: AllChannels,
 		})
@@ -373,11 +373,11 @@ func Test_generateRegisteredModule(t *testing.T) {
 		}
 
 		expect := &RegisteredModule{
-			Parent:     nil,
-			Sources:    smods,
-			Identifier: ".abc",
-			Name:       "abc",
-			Hidden:     true,
+			Parent:  nil,
+			Sources: smods,
+			ID:      ".abc",
+			Name:    "abc",
+			Hidden:  true,
 		}
 
 		expect.Commands = append(expect.Commands, &RegisteredCommand{
@@ -391,7 +391,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				},
 			},
 			ProviderName: "built_in",
-			Identifier:   ".abc.def",
+			ID:           ".abc.def",
 			Name:         "def",
 			Hidden:       true,
 			ChannelTypes: AllChannels,
@@ -408,7 +408,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				},
 			},
 			ProviderName: "other",
-			Identifier:   ".abc.ghi",
+			ID:           ".abc.ghi",
 			Name:         "ghi",
 			Hidden:       true,
 			ChannelTypes: AllChannels,
@@ -444,11 +444,11 @@ func Test_generateRegisteredModule(t *testing.T) {
 		}
 
 		expect := &RegisteredModule{
-			Parent:     nil,
-			Sources:    smods,
-			Identifier: ".abc",
-			Name:       "abc",
-			Hidden:     false,
+			Parent:  nil,
+			Sources: smods,
+			ID:      ".abc",
+			Name:    "abc",
+			Hidden:  false,
 		}
 
 		expect.Commands = append(expect.Commands, &RegisteredCommand{
@@ -465,7 +465,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				},
 			},
 			ProviderName: "built_in",
-			Identifier:   ".abc.def",
+			ID:           ".abc.def",
 			Name:         "def",
 			Hidden:       true,
 			ChannelTypes: AllChannels,
@@ -485,7 +485,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				},
 			},
 			ProviderName: "built_in",
-			Identifier:   ".abc.ghi",
+			ID:           ".abc.ghi",
 			Name:         "ghi",
 			Hidden:       false,
 			ChannelTypes: AllChannels,
@@ -502,7 +502,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 				},
 			},
 			ProviderName: "other",
-			Identifier:   ".abc.jkl",
+			ID:           ".abc.jkl",
 			Name:         "jkl",
 			ChannelTypes: AllChannels,
 		})
@@ -514,8 +514,8 @@ func Test_generateRegisteredModule(t *testing.T) {
 
 func Test_fillSubmodules(t *testing.T) {
 	parent := &RegisteredModule{
-		Identifier: ".abc",
-		Name:       "abc",
+		ID:   ".abc",
+		Name: "abc",
 		Sources: []SourceModule{
 			{
 				ProviderName: "built_in",
@@ -533,8 +533,8 @@ func Test_fillSubmodules(t *testing.T) {
 	}
 
 	expect := &RegisteredModule{
-		Identifier: ".abc",
-		Name:       "abc",
+		ID:   ".abc",
+		Name: "abc",
 		Sources: []SourceModule{
 			{
 				ProviderName: "built_in",
@@ -567,9 +567,9 @@ func Test_fillSubmodules(t *testing.T) {
 						},
 					},
 				},
-				Identifier: ".abc.def",
-				Name:       "def",
-				Hidden:     true,
+				ID:     ".abc.def",
+				Name:   "def",
+				Hidden: true,
 			},
 			{
 				Parent: parent,
@@ -588,9 +588,9 @@ func Test_fillSubmodules(t *testing.T) {
 						},
 					},
 				},
-				Identifier: ".abc.ghi",
-				Name:       "ghi",
-				Hidden:     true,
+				ID:     ".abc.ghi",
+				Name:   "ghi",
+				Hidden: true,
 			},
 		},
 	}
@@ -601,8 +601,8 @@ func Test_fillSubmodules(t *testing.T) {
 
 func Test_fillSubcommands(t *testing.T) {
 	parent := &RegisteredModule{
-		Identifier: ".abc",
-		Name:       "abc",
+		ID:   ".abc",
+		Name: "abc",
 		Sources: []SourceModule{
 			{
 				ProviderName: "built_in",
@@ -668,8 +668,8 @@ func Test_fillSubcommands(t *testing.T) {
 				},
 			},
 		},
-		Identifier: ".abc",
-		Name:       "abc",
+		ID:   ".abc",
+		Name: "abc",
 		Commands: []*RegisteredCommand{
 			{
 				parent:   &parent,
@@ -696,7 +696,7 @@ func Test_fillSubcommands(t *testing.T) {
 					},
 				},
 				ProviderName: "built_in",
-				Identifier:   ".abc.def",
+				ID:           ".abc.def",
 				Name:         "def",
 				Aliases:      []string{"jkl"},
 				Hidden:       true,
@@ -726,7 +726,7 @@ func Test_fillSubcommands(t *testing.T) {
 					},
 				},
 				ProviderName: "built_in",
-				Identifier:   ".abc.ghi",
+				ID:           ".abc.ghi",
 				Name:         "ghi",
 				Aliases:      []string{"mno", "pqr"},
 				ChannelTypes: AllChannels,
@@ -782,7 +782,7 @@ func Test_generateRegisteredCommands(t *testing.T) {
 					},
 				},
 			},
-			Identifier:   ".abc.def",
+			ID:           ".abc.def",
 			Name:         "def",
 			Hidden:       true,
 			ChannelTypes: AllChannels,

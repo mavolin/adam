@@ -45,7 +45,7 @@ var (
 	_ plugin.ArgsInfoer = CommaConfig{}
 )
 
-func (c CommaConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
+func (c CommaConfig) Parse(args string, s *state.State, ctx *plugin.Context) error {
 	parser := newCommaParser(args, c, s, ctx)
 	return parser.parse()
 }
@@ -95,9 +95,7 @@ var (
 	_ plugin.ArgsInfoer = LocalizedCommaConfig{}
 )
 
-func (c LocalizedCommaConfig) Parse(
-	args string, s *state.State, ctx *plugin.Context,
-) (plugin.Args, plugin.Flags, error) {
+func (c LocalizedCommaConfig) Parse(args string, s *state.State, ctx *plugin.Context) error {
 	parser := newCommaParserl(args, c, s, ctx)
 	return parser.parse()
 }

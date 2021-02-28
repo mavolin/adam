@@ -4,15 +4,15 @@ import (
 	"strings"
 )
 
-// Identifier is the unique identifier of a plugin.
+// ID is the unique identifier of a plugin.
 // The root/base is '.'.
 // All plugins are dot-separated, e.g. '.mod.ban'.
-type Identifier string
+type ID string
 
 const whitespace = " \t\n"
 
-// NewIdentifierFromInvoke creates a new Identifier from the passed invoke.
-func NewIdentifierFromInvoke(invoke string) Identifier {
+// NewIDFromInvoke creates a new ID from the passed invoke.
+func NewIDFromInvoke(invoke string) ID {
 	invoke = strings.Trim(invoke, whitespace)
 
 	var b strings.Builder
@@ -33,14 +33,14 @@ func NewIdentifierFromInvoke(invoke string) Identifier {
 		}
 	}
 
-	return Identifier(b.String())
+	return ID(b.String())
 }
 
-// Parent returns the parent module of the plugin, or '.' if this Identifier
+// Parent returns the parent module of the plugin, or '.' if this ID
 // already represents root.
 //
-// If the Identifier is invalid, Parent returns an empty string.
-func (id Identifier) Parent() Identifier {
+// If the ID is invalid, Parent returns an empty string.
+func (id ID) Parent() ID {
 	if id == "." {
 		return id
 	}
@@ -58,10 +58,10 @@ func (id Identifier) Parent() Identifier {
 // All returns a slice of all parents including root and the identifier itself
 // starting with root.
 //
-// If the Identifier is invalid, All returns nil.
-func (id Identifier) All() []Identifier {
+// If the ID is invalid, All returns nil.
+func (id ID) All() []ID {
 	if id.IsRoot() {
-		return []Identifier{"."}
+		return []ID{"."}
 	}
 
 	pluginCount := strings.Count(string(id), ".")
@@ -69,7 +69,7 @@ func (id Identifier) All() []Identifier {
 		return nil
 	}
 
-	parents := make([]Identifier, pluginCount+1)
+	parents := make([]ID, pluginCount+1)
 
 	parent := id
 
@@ -83,34 +83,34 @@ func (id Identifier) All() []Identifier {
 }
 
 // IsRoot checks if the identifier is the root identifier.
-func (id Identifier) IsRoot() bool {
+func (id ID) IsRoot() bool {
 	return id == "."
 }
 
 // NumParents returns the number of parents the plugin has.
 //
-// Returns a negative number, if the Identifier is invalid.
-func (id Identifier) NumParents() int {
+// Returns a negative number, if the ID is invalid.
+func (id ID) NumParents() int {
 	return strings.Count(string(id), ".") - 1
 }
 
-// IsParent checks if the passed Identifier is a parent of this identifier.
-func (id Identifier) IsParent(target Identifier) bool {
+// IsParent checks if the passed ID is a parent of this identifier.
+func (id ID) IsParent(target ID) bool {
 	return len(id) > len(target) && strings.HasPrefix(string(id), string(target))
 }
 
-// IsChild checks if the passed Identifier is a child of this identifier.
-func (id Identifier) IsChild(target Identifier) bool {
+// IsChild checks if the passed ID is a child of this identifier.
+func (id ID) IsChild(target ID) bool {
 	return len(id) < len(target) && strings.HasPrefix(string(target), string(id))
 }
 
 // AsInvoke returns the identifier as a prefixless command invoke.
 //
-// Returns "" if the Identifier is root or invalid.
+// Returns "" if the ID is root or invalid.
 //
 // Example:
 // 	.mod.ban -> mod ban
-func (id Identifier) AsInvoke() string {
+func (id ID) AsInvoke() string {
 	if len(id) == 0 {
 		return ""
 	}
@@ -118,9 +118,9 @@ func (id Identifier) AsInvoke() string {
 	return strings.ReplaceAll(string(id[1:]), ".", " ")
 }
 
-// Name returns the name of the plugin or "" if the Identifier is root or
+// Name returns the name of the plugin or "" if the ID is root or
 // invalid.
-func (id Identifier) Name() string {
+func (id ID) Name() string {
 	if len(id) <= 1 {
 		return ""
 	}

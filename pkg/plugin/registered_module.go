@@ -12,7 +12,7 @@ type (
 	// In contrast to the regular module abstraction, RegisteredModule's fields
 	// take into account it's parents settings, as the router would see them.
 	// It's plugins reflect the plugins provided by all modules with the same
-	// Identifier, i.e. a plugin with the same name provided through different
+	// ID, i.e. a plugin with the same name provided through different
 	// bot.PluginProviders.
 	RegisteredModule struct {
 		// If the module is top-level Parent will be nil.
@@ -26,8 +26,8 @@ type (
 		// If the module is top-level, this will be empty.
 		Sources []SourceModule
 
-		// Identifier is the identifier of the module.
-		Identifier Identifier
+		// ID is the identifier of the module.
+		ID ID
 		// Name is the name of the module.
 		Name string
 
@@ -161,9 +161,9 @@ func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, re
 
 	if parent == nil {
 		//goland:noinspection GoRedundantConversion // GoLand is buggy, we need that conversion
-		rmod.Identifier += "." + Identifier(referenceModule.GetName())
+		rmod.ID += "." + ID(referenceModule.GetName())
 	} else {
-		rmod.Identifier = parent.Identifier + Identifier("."+referenceModule.GetName())
+		rmod.ID = parent.ID + ID("."+referenceModule.GetName())
 	}
 
 	fillSubmodules(rmod, repos)
@@ -312,10 +312,10 @@ func fillSubcommands(parent *RegisteredModule) {
 }
 
 func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*RegisteredCommand { //nolint:funlen
-	var id Identifier
+	var id ID
 
 	for _, p := range smod.Modules {
-		id += Identifier("." + p.GetName())
+		id += ID("." + p.GetName())
 	}
 
 	// get the commands of the innermost parent
@@ -325,7 +325,7 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*
 	for i, cmd := range cmds {
 		rcmd := &RegisteredCommand{
 			parent:        &parent,
-			Identifier:    id + Identifier("."+cmd.GetName()),
+			ID:            id + ID("."+cmd.GetName()),
 			Source:        cmd,
 			SourceParents: smod.Modules,
 			ProviderName:  smod.ProviderName,

@@ -32,6 +32,11 @@ type Context struct {
 
 	// RawArgs are the trimmed raw arguments stripped of prefix and invoke.
 	RawArgs string
+	// ArgCombinationID is the id of the argument combination that was used.
+	//
+	// This can be used to deduce the type of the arguments, if the command was
+	// overloaded, for example using arg.Options.
+	ArgCombinationID string
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Args Args
@@ -452,7 +457,7 @@ type (
 		// If that is the case, the data returned might be incomplete.
 		Modules() []*RegisteredModule
 
-		// Command returns the RegisteredCommand with the passed Identifier.
+		// Command returns the RegisteredCommand with the passed ID.
 		//
 		// Note that Identifiers may only consist of the command's name, not
 		// their alias.
@@ -461,8 +466,8 @@ type (
 		//
 		// To check if any of the runtime plugin providers returned an error,
 		// call UnavailablePluginProviders.
-		Command(Identifier) *RegisteredCommand
-		// Module returns the RegisteredModule with the passed Identifier.
+		Command(ID) *RegisteredCommand
+		// Module returns the RegisteredModule with the passed ID.
 		//
 		// It will return nil if no module matching the identifier was found.
 		//
@@ -471,7 +476,7 @@ type (
 		// If that is the case, the module's description might not be available
 		// or differ from the description that is used if all plugin providers
 		// function properly.
-		Module(Identifier) *RegisteredModule
+		Module(ID) *RegisteredModule
 
 		// FindCommand returns the RegisteredCommand with the passed invoke.
 		//

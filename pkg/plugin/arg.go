@@ -16,10 +16,13 @@ type (
 	//
 	// Default implementations can be found in impl/arg.
 	ArgConfig interface {
-		// Parse parses the passed arguments and returns the retrieved Args
-		// and Flags.
+		// Parse parses the passed arguments and stores them in the passed
+		// *plugin.Context.
 		// args is the trimmed message, with prefix and command stripped.
-		Parse(args string, s *state.State, ctx *Context) (Args, Flags, error)
+		//
+		// If there are nested argument overloads, their combination ids should
+		// be dot-separated.
+		Parse(args string, s *state.State, ctx *Context) error
 	}
 
 	// ArgsInfoer is an interface that can be optionally implemented by an
@@ -28,16 +31,16 @@ type (
 	ArgsInfoer interface {
 		// Info returns localized information about the arguments and flags of
 		// a command.
-		// If the returned slice is nil, it will be assumed, that no
+		// If the returned slice is nil, it can be assumed, that no
 		// information is available.
 		Info(l *i18n.Localizer) []ArgsInfo
 	}
 
-	// ArgsInfo contains localized information about a command's arguments.
+	// ArgsInfo contains localized information about a single argument
+	// combination.
 	ArgsInfo struct {
-		// Prefix contains the prefix, if there are multiple argument
-		// combinations.
-		// Otherwise it will be ignored.
+		// Prefix contains the optional prefix of the argument combination.
+		// If there is none, it will be ignored.
 		Prefix string
 		// Required contains information about required arguments.
 		Required []ArgInfo

@@ -68,27 +68,24 @@ func newShellwordParserl(
 	return p
 }
 
-func (p *shellwordParser) parse() (plugin.Args, plugin.Flags, error) {
+func (p *shellwordParser) parse() error {
 	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && len(p.raw) != 0 {
-		return nil, nil, plugin.NewArgumentErrorl(noArgsError)
+		return plugin.NewArgumentErrorl(noArgsError)
 	}
 
-	err := p.parseFlags()
-	if err != nil {
-		return nil, nil, err
+	if err := p.parseFlags(); err != nil {
+		return err
 	}
 
-	err = p.parseArgs()
-	if err != nil {
-		return nil, nil, err
+	if err := p.parseArgs(); err != nil {
+		return err
 	}
 
-	err = p.parseFlags()
-	if err != nil {
-		return nil, nil, err
+	if err := p.parseFlags(); err != nil {
+		return err
 	}
 
-	return p.helper.get()
+	return p.helper.putContext()
 }
 
 // has checks if there are at least min runes remaining.

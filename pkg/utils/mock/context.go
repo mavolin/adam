@@ -83,7 +83,7 @@ func (p PluginProvider) Modules() []*plugin.RegisteredModule {
 	return p.modules
 }
 
-func (p PluginProvider) Command(id plugin.Identifier) *plugin.RegisteredCommand {
+func (p PluginProvider) Command(id plugin.ID) *plugin.RegisteredCommand {
 	all := id.All()
 	if len(all) <= 1 { // invalid or just root
 		return nil
@@ -113,7 +113,7 @@ func (p PluginProvider) Command(id plugin.Identifier) *plugin.RegisteredCommand 
 	return mod.FindCommand(id.Name())
 }
 
-func (p PluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModule {
+func (p PluginProvider) Module(id plugin.ID) *plugin.RegisteredModule {
 	all := id.All()
 	if len(all) <= 1 { // invalid or just root
 		return nil
@@ -144,12 +144,12 @@ func (p PluginProvider) Module(id plugin.Identifier) *plugin.RegisteredModule {
 }
 
 func (p PluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
-	id := plugin.NewIdentifierFromInvoke(invoke)
+	id := plugin.NewIDFromInvoke(invoke)
 	return p.Command(id)
 }
 
 func (p PluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
-	id := plugin.NewIdentifierFromInvoke(invoke)
+	id := plugin.NewIDFromInvoke(invoke)
 	return p.Module(id)
 }
 

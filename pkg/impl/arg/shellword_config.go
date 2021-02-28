@@ -49,7 +49,7 @@ var (
 	_ plugin.ArgsInfoer = ShellwordConfig{}
 )
 
-func (c ShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
+func (c ShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context) error {
 	parser := newShellwordParser(args, c, s, ctx)
 	return parser.parse()
 }
@@ -101,9 +101,7 @@ var (
 	_ plugin.ArgsInfoer = LocalizedShellwordConfig{}
 )
 
-func (c LocalizedShellwordConfig) Parse(
-	args string, s *state.State, ctx *plugin.Context,
-) (plugin.Args, plugin.Flags, error) {
+func (c LocalizedShellwordConfig) Parse(args string, s *state.State, ctx *plugin.Context) error {
 	parser := newShellwordParserl(args, c, s, ctx)
 	return parser.parse()
 }

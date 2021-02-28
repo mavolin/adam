@@ -32,8 +32,8 @@ type RegisteredCommand struct {
 	// If the command is top-level, SourceParents will be nil.
 	SourceParents []Module
 
-	// Identifier is the identifier of the command.
-	Identifier Identifier
+	// ID is the identifier of the command.
+	ID ID
 	// Name is the name of the command.
 	Name string
 	// Aliases contains the optional aliases of the command.
@@ -100,7 +100,7 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 				parent:         &parent,
 				ProviderName:   repo.ProviderName,
 				Source:         scmd,
-				Identifier:     Identifier("." + scmd.GetName()),
+				ID:             ID("." + scmd.GetName()),
 				Name:           scmd.GetName(),
 				Args:           scmd.GetArgs(),
 				Hidden:         scmd.IsHidden(),
@@ -150,7 +150,7 @@ func (c *RegisteredCommand) Parent() *RegisteredModule {
 		return *c.parent
 	}
 
-	parent := c.provider.Module(c.Identifier.Parent())
+	parent := c.provider.Module(c.ID.Parent())
 	c.parent = &parent
 
 	return parent
@@ -183,7 +183,7 @@ func (c *RegisteredCommand) Examples(l *i18n.Localizer) []string {
 	args := c.ExampleArgs(l)
 
 	for i, arg := range args {
-		args[i] = c.Identifier.AsInvoke() + " " + arg
+		args[i] = c.ID.AsInvoke() + " " + arg
 	}
 
 	return args

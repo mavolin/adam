@@ -18,15 +18,18 @@ const (
 	Year        = 365 * Day
 )
 
-// units are units used during parsing.
+// units are the units used during parsing.
 var units = map[string]int64{
 	"ms":  int64(Millisecond),
 	"s":   int64(Second),
+	"sec": int64(Second),
 	"min": int64(Minute),
 	"h":   int64(Hour),
+	"hr":  int64(Hour),
 	"d":   int64(Day),
 	"w":   int64(Week),
 	"m":   int64(Month),
+	"mon": int64(Month),
 	"y":   int64(Year),
 	"yr":  int64(Year),
 }

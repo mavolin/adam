@@ -143,7 +143,7 @@ func CheckRestrictions(next CommandFunc) CommandFunc {
 func ParseArgs(next CommandFunc) CommandFunc {
 	return func(s *state.State, ctx *plugin.Context) (err error) {
 		if ctx.InvokedCommand.Args != nil {
-			ctx.Args, ctx.Flags, err = ctx.InvokedCommand.Args.Parse(ctx.RawArgs, s, ctx)
+			err = ctx.InvokedCommand.Args.Parse(ctx.RawArgs, s, ctx)
 			if err != nil {
 				return err
 			}

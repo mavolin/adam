@@ -27,7 +27,7 @@ func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.Registe
 	c.Source = cmd
 	// c.SourceParents = nil
 	c.ProviderName = providerName
-	c.Identifier = plugin.Identifier("." + cmd.GetName())
+	c.ID = plugin.ID("." + cmd.GetName())
 	c.Name = cmd.GetName()
 	c.Aliases = cmd.GetAliases()
 	c.Args = cmd.GetArgs()
@@ -45,7 +45,7 @@ func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.Registe
 //
 // The passed module must be the root module.
 func GenerateRegisteredCommandWithParents(
-	providerName string, smod plugin.Module, cmdID plugin.Identifier,
+	providerName string, smod plugin.Module, cmdID plugin.ID,
 ) *plugin.RegisteredCommand {
 	rmod := GenerateRegisteredModule(providerName, smod)
 	if rmod == nil {
@@ -108,13 +108,18 @@ func (m CommandMeta) GetThrottler() plugin.Throttler { return m.Throttler }
 type ArgConfig struct {
 	Expect string
 
-	ArgsReturn  plugin.Args
-	FlagsReturn plugin.Flags
-	ErrorReturn error
+	ArgCombinationID string
+	Args             plugin.Args
+	Flags            plugin.Flags
+	ErrorReturn      error
 }
 
 var _ plugin.ArgConfig = ArgConfig{}
 
-func (a ArgConfig) Parse(_ string, _ *state.State, _ *plugin.Context) (plugin.Args, plugin.Flags, error) {
-	return a.ArgsReturn, a.FlagsReturn, a.ErrorReturn
+func (a ArgConfig) Parse(_ string, _ *state.State, ctx *plugin.Context) error {
+	ctx.ArgCombinationID = a.ArgCombinationID
+	ctx.Args = a.Args
+	ctx.Flags = a.Flags
+
+	return a.ErrorReturn
 }

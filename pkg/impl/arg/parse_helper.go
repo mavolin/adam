@@ -178,20 +178,23 @@ func newParseHelperl( //nolint:dupl
 	return p
 }
 
-func (h *parseHelper) get() (plugin.Args, plugin.Flags, error) {
+func (h *parseHelper) putContext() error {
 	if h.variadicSlice.IsValid() {
 		h.args = append(h.args, h.variadicSlice.Interface())
 	}
 
 	if len(h.args) < len(h.rargData) {
-		return nil, nil, plugin.NewArgumentErrorl(notEnoughArgsError)
+		return plugin.NewArgumentErrorl(notEnoughArgsError)
 	}
 
 	h.mergeFlags()
 	h.fillFlagDefaults()
 	h.fillArgDefaults()
 
-	return h.args, h.flags, nil
+	h.ctx.Args = h.args
+	h.ctx.Flags = h.flags
+
+	return nil
 }
 
 func (h *parseHelper) mergeFlags() {

@@ -16,6 +16,7 @@ type (
 	// Option is a single option.
 	Option struct {
 		// Prefix is the prefix the arguments must start with.
+		// It will also be used as plugin.Context.ArgCombinationID.
 		Prefix string
 		// Config is the underlying plugin.ArgConfig.
 		Config plugin.ArgConfig
@@ -27,30 +28,36 @@ var (
 	_ plugin.ArgsInfoer = Options{}
 )
 
-func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) (plugin.Args, plugin.Flags, error) {
+func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) error {
 	if len(args) == 0 {
-		return nil, nil, plugin.NewArgumentErrorl(notEnoughArgsError)
+		return plugin.NewArgumentErrorl(notEnoughArgsError)
 	}
 
 	prefix := firstWord(args)
 
 	for _, o := range o {
 		if o.Prefix == prefix {
+			if len(ctx.ArgCombinationID) > 0 {
+				ctx.ArgCombinationID += "." + o.Prefix
+			} else {
+				ctx.ArgCombinationID = o.Prefix
+			}
+
 			args := strings.TrimLeft(args[len(prefix):], whitespace)
 
 			if o.Config == nil {
 				if len(args) != 0 {
-					return nil, nil, plugin.NewArgumentErrorl(tooManyArgsError)
+					return plugin.NewArgumentErrorl(tooManyArgsError)
 				}
 
-				return nil, nil, nil
+				return nil
 			}
 
 			return o.Config.Parse(args, s, ctx)
 		}
 	}
 
-	return nil, nil, plugin.NewArgumentErrorl(unknownPrefixError.
+	return plugin.NewArgumentErrorl(unknownPrefixError.
 		WithPlaceholders(unknownPrefixErrorPlaceholders{
 			Name: prefix,
 		}))
@@ -82,14 +89,20 @@ func (o Options) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 			return nil
 		}
 
-		info := infoer.Info(l)
-		if len(info) != 1 {
+		subInfos := infoer.Info(l)
+		if len(subInfos) == 0 {
 			return nil
 		}
 
-		info[0].Prefix = o.Prefix
+		for i, info := range subInfos {
+			if len(info.Prefix) > 0 {
+				subInfos[i].Prefix += " " + o.Prefix
+			} else {
+				subInfos[i].Prefix = o.Prefix
+			}
+		}
 
-		infos = append(infos, info[0])
+		infos = append(infos, subInfos...)
 	}
 
 	return infos
