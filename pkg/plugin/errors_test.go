@@ -124,8 +124,10 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		}
 
 		embed := shared.ErrorEmbed.Clone().
-			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me" +
-				` the "Video" permission and try again.`).
+			WithDescriptionl(insufficientPermissionsDescSingle.
+				WithPlaceholders(insufficientBotPermissionsDescSinglePlaceholders{
+					MissingPermission: "Video",
+				})).
 			MustBuild(ctx.Localizer)
 
 		m.SendEmbed(discord.Message{
@@ -150,8 +152,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		}
 
 		embed := shared.ErrorEmbed.Clone().
-			WithDescription("It seems as if I don't have sufficient permissions to run this command. Please give me the "+
-				"following permissions and try again:").
+			WithDescriptionl(insufficientPermissionsDescMulti).
 			WithField("Missing Permissions", "• Video\n• View Audit Log").
 			MustBuild(ctx.Localizer)
 

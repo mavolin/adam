@@ -646,15 +646,29 @@ func (c voiceChannel) genChooserEmbed( //nolint:dupl,funlen
 				b.WriteRune('\n')
 			}
 
-			match, err := ctx.Localize(voiceChannelChooserMatch.
-				WithPlaceholders(voiceChannelChooserMatchPlaceholders{
-					Emoji:        VoiceChannelOptionEmojis[numMatches],
-					CategoryName: m.categoryName,
-					ChannelName:  m.channel.Name,
-					Position:     m.pos + 1,
-				}))
-			if err != nil {
-				return nil, 0, err
+			var match string
+
+			if len(m.categoryName) == 0 {
+				match, err = ctx.Localize(voiceChannelChooserRootMatch.
+					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+						Emoji:       VoiceChannelOptionEmojis[numMatches],
+						ChannelName: m.channel.Name,
+						Position:    m.pos + 1,
+					}))
+				if err != nil {
+					return nil, 0, err
+				}
+			} else {
+				match, err = ctx.Localize(voiceChannelChooserNestedMatch.
+					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+						Emoji:        VoiceChannelOptionEmojis[numMatches],
+						CategoryName: m.categoryName,
+						ChannelName:  m.channel.Name,
+						Position:     m.pos + 1,
+					}))
+				if err != nil {
+					return nil, 0, err
+				}
 			}
 
 			b.WriteString(match)
@@ -685,15 +699,29 @@ func (c voiceChannel) genChooserEmbed( //nolint:dupl,funlen
 				b.WriteRune('\n')
 			}
 
-			match, err := ctx.Localize(voiceChannelChooserMatch.
-				WithPlaceholders(voiceChannelChooserMatchPlaceholders{
-					Emoji:        VoiceChannelOptionEmojis[numMatches],
-					CategoryName: m.categoryName,
-					ChannelName:  m.channel.Name,
-					Position:     m.pos + 1,
-				}))
-			if err != nil {
-				return nil, 0, err
+			var match string
+
+			if len(m.categoryName) == 0 {
+				match, err = ctx.Localize(voiceChannelChooserRootMatch.
+					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+						Emoji:       VoiceChannelOptionEmojis[numMatches],
+						ChannelName: m.channel.Name,
+						Position:    m.pos + 1,
+					}))
+				if err != nil {
+					return nil, 0, err
+				}
+			} else {
+				match, err = ctx.Localize(voiceChannelChooserNestedMatch.
+					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+						Emoji:        VoiceChannelOptionEmojis[numMatches],
+						CategoryName: m.categoryName,
+						ChannelName:  m.channel.Name,
+						Position:     m.pos + 1,
+					}))
+				if err != nil {
+					return nil, 0, err
+				}
 			}
 
 			b.WriteString(match)

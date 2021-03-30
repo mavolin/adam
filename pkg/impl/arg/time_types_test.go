@@ -311,7 +311,7 @@ func TestDate_Parse(t *testing.T) {
 
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				date := &Date{RequireTimezone: c.requireTimezone}
+				date := &Date{NoIgnoreTimeZone: c.requireTimezone}
 
 				DefaultLocation = c.defaultLocation
 
@@ -355,8 +355,16 @@ func TestDate_Parse(t *testing.T) {
 			expectFlag:      dateRequireUTCOffsetErrorFlag,
 		},
 		{
+			name:             "invalid no offset",
+			raw:              "abc",
+			emptyLocationKey: true,
+			expectArg:        dateInvalidErrorNoUTCArg,
+			expectFlag:       dateInvalidErrorNoUTCFlag,
+		},
+		{
 			name:            "invalid optional offset",
 			raw:             "abc",
+			requireTimezone: true,
 			defaultLocation: time.UTC,
 			expectArg:       dateInvalidErrorOptionalUTCArg,
 			expectFlag:      dateInvalidErrorOptionalUTCFlag,
@@ -364,6 +372,7 @@ func TestDate_Parse(t *testing.T) {
 		{
 			name:             "invalid must offset",
 			raw:              "abc",
+			requireTimezone:  true,
 			emptyLocationKey: true,
 			expectArg:        dateInvalidErrorMustUTCArg,
 			expectFlag:       dateInvalidErrorMustUTCFlag,
@@ -398,9 +407,9 @@ func TestDate_Parse(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
 				ti := &Date{
-					RequireTimezone: c.requireTimezone,
-					Min:             c.min,
-					Max:             c.max,
+					NoIgnoreTimeZone: c.requireTimezone,
+					Min:              c.min,
+					Max:              c.max,
 				}
 
 				ctx := &Context{

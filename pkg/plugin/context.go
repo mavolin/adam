@@ -428,7 +428,7 @@ type (
 		SelfAsync() func() (*discord.Member, error)
 	}
 
-	// Provider provides copies if the plugins of the bot in the Context.
+	// Provider provides copies of the plugins of the bot.
 	// The returned slices can therefore be freely modified.
 	//
 	// Copies are only created on call of one of the methods.

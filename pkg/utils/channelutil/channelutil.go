@@ -31,8 +31,8 @@ func ResolvePositions(c []discord.Channel) []discord.Channel {
 // If there are no such channels, ResolveCategories(c)[0] will be nil.
 // For all remaining values the following applies:
 //
-// ResolveCategories(c)[n][0] will be the n-th category category.
-// ResolveCategories(c)[n][1:] will contain the channels in n-th category.
+// ResolveCategories(c)[n][0] will be the n-th category.
+// ResolveCategories(c)[n][1:] will contain the channels in the n-th category.
 func ResolveCategories(c []discord.Channel) [][]discord.Channel {
 	if len(c) == 0 {
 		return nil

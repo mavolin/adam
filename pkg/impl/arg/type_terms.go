@@ -123,9 +123,9 @@ var (
 var (
 	durationName        = i18n.NewFallbackConfig("arg.type.duration.name", "Duration")
 	durationDescription = i18n.NewFallbackConfig(
-		"arg.type.duration.description", "A timespan. For example: 1h 3 min 4s.\n"+
+		"arg.type.duration.description", "A timespan. For example: `1h 3 min 4s`.\n"+
 			"Available units are `ms` for milliseconds, `s` for seconds, `min` for minutes, `h` for hours, "+
-			"`d` for days, `w` for weeks, and `m` for months (30 days).")
+			"`d` for days, `w` for weeks, `m` for months (30 days), and `y` for years.")
 )
 
 // ================================ Error ================================
@@ -147,21 +147,23 @@ var (
 
 	durationInvalidUnitError = i18n.NewFallbackConfig(
 		"arg.type.duration.error.invalid_unit",
-		"`{{.unit}}` is not a valid unit of time. Valid units are `ms`, `s`, `min`, `h`, `d`, `w`, `m` and `y`.")
+		"`{{.unit}}` is not a valid unit of time. "+
+			"Valid units are `ms` for milliseconds, `s` for seconds, `min` for minutes, `h` for hours, `d` for days, "+
+			"`w` for weeks, `m` for months (30 days), and `y` for years.")
 
 	durationBelowMinErrorArg = i18n.NewFallbackConfig(
 		"arg.type.duration.error.below_min.arg",
-		"The duration in argument {{.position}} may not be smaller than {{.min}}.")
+		"Argument {{.position}} may not be smaller than `{{.min}}`.")
 	durationBelowMinErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.duration.error.below_min.flag",
-		"The duration in the `{{.used_name}}`-flag may not be smaller than {{.min}}.")
+		"The `{{.used_name}}`-flag may not be smaller than `{{.min}}`.")
 
 	durationAboveMaxErrorArg = i18n.NewFallbackConfig(
 		"arg.type.duration.error.above_max.arg",
-		"The duration in argument {{.position}} may not be larger than {{.max}}.")
+		"Argument {{.position}} may not be larger than `{{.max}}`.")
 	durationAboveMaxErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.duration.error.above_max.flag",
-		"The duration in the `{{.used_name}}`-flag may not be larger than {{.max}}.")
+		"The `{{.used_name}}`-flag may not be larger than `{{.max}}`.")
 )
 
 // =============================================================================
@@ -176,10 +178,10 @@ var (
 	timeDescriptionOptionalUTC = i18n.NewFallbackConfig(
 		"arg.type.time.description.optional_utc",
 		"A 24-hour formatted time, e.g. `13:01`. Optionally, you can add the offset from UTC behind, "+
-			"e.g. `13:01 +0200` to use Germany's daylight time.")
+			"e.g. `13:01 -0500` to use Panama's time zone.")
 	timeDescriptionMustUTC = i18n.NewFallbackConfig(
 		"arg.type.time.description.must_utc",
-		"A 24-hour formatted time with UTC offset, e.g. `13:01 +0200 to use Germany's daylight time.")
+		"A 24-hour formatted time with UTC offset, e.g. `13:01 -0500` to use Panama's time zone.")
 )
 
 // ================================ Errors ================================
@@ -187,26 +189,26 @@ var (
 var (
 	timeInvalidErrorOptionalUTCArg = i18n.NewFallbackConfig(
 		"arg.type.time.error.invalid.optional_utc.arg",
-		"The time in argument {{.position}} is invalid. Please use a time like `13:01` or `13:01 -0200`.")
+		"The time in argument {{.position}} is invalid. Please use a time like `13:01` or `13:01 -0500`.")
 	timeInvalidErrorOptionalUTCFlag = i18n.NewFallbackConfig(
 		"arg.type.time.error.invalid.optional_utc.flag",
-		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01` or `13:01 -0200`.")
+		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01` or `13:01 -0500`.")
 
 	timeInvalidErrorMustUTCArg = i18n.NewFallbackConfig(
 		"arg.type.time.error.invalid.must_utc.arg",
-		"The time in argument {{.position}} is invalid. Please use a time like `13:01 -0200`.")
+		"The time in argument {{.position}} is invalid. Please use a time like `13:01 -0500`.")
 	timeInvalidErrorMustUTCFlag = i18n.NewFallbackConfig(
 		"arg.type.time.error.invalid.must_utc.flag",
-		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01 -0200`.")
+		"The time you used as `{{.used_name}}`-flag is invalid. Please use a time like `13:01 -0500`.")
 
 	timeRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
 		"arg.type.time.error.require_utc_offset.arg",
-		"You need to add an UTC offset to the time in argument {{.position}}, "+
-			"e.g. `13:01 +0200` to use the Germany's daylight time.")
+		"You need to add a UTC offset to the time in argument {{.position}}, "+
+			"e.g. `13:01 -0500` to use Panama's time zone.")
 	timeRequireUTCOffsetErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.time.error.require_utc_offset.flag",
-		"You need to add an UTC offset to the time used as `{{.used_name}}`-flag, "+
-			"e.g. `13:01 +0200` to use the Germany's daylight time.")
+		"You need to add a UTC offset to the time used as `{{.used_name}}`-flag, "+
+			"e.g. `13:01 -0500` to use Panama's time zone.")
 
 	timeBeforeMinErrorArg = i18n.NewFallbackConfig(
 		"arg.type.time.error.before_min.arg", "The time in argument {{.position}} may not be before {{.min}}.")
@@ -233,36 +235,43 @@ var (
 	dateDescriptionOptionalUTC = i18n.NewFallbackConfig(
 		"arg.type.date.description.optional_utc",
 		"A date, e.g. `2020-10-31`. Optionally, you can add the offset from UTC behind, "+
-			"e.g. `2020-10-31 +0100` to use Britain's daylight time.")
+			"e.g. `2020-10-31 -0600` to use Costa Rica's time zone.")
 	dateDescriptionMustUTC = i18n.NewFallbackConfig(
 		"arg.type.date.description.must_utc",
-		"A date with UTC offset, e.g. `2020-10-31 +0100` to use Britain's daylight time.")
+		"A date with UTC offset, e.g. `2020-10-31 -0600` to use Costa Rica's time zone.")
 )
 
 var (
+	dateInvalidErrorNoUTCArg = i18n.NewFallbackConfig(
+		"arg.type.date.error.invalid.no_utc.arg",
+		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31`.")
+	dateInvalidErrorNoUTCFlag = i18n.NewFallbackConfig(
+		"arg.type.date.error.invalid.no_utc.flag",
+		"The date you used as `{{.used_name}}`-flag is invalid. Please use a date like `2020-10-31`.")
+
 	dateInvalidErrorOptionalUTCArg = i18n.NewFallbackConfig(
 		"arg.type.date.error.invalid.optional_utc.arg",
-		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31` or `2020-10-31 +0100`.")
+		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31` or `2020-10-31 -0600`.")
 	dateInvalidErrorOptionalUTCFlag = i18n.NewFallbackConfig(
 		"arg.type.date.error.invalid.optional_utc.flag",
 		"The date you used as `{{.used_name}}`-flag is invalid. "+
-			"Please use a date like `2020-10-31` or `2020-10-31 +0100`.")
+			"Please use a date like `2020-10-31` or `2020-10-31 -0600`.")
 
 	dateInvalidErrorMustUTCArg = i18n.NewFallbackConfig(
 		"arg.type.date.error.invalid.must_utc.arg",
-		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31 +0100`.")
+		"The date in argument {{.position}} is invalid. Please use a date like `2020-10-31 -0600`.")
 	dateInvalidErrorMustUTCFlag = i18n.NewFallbackConfig(
 		"arg.type.date.error.invalid.must_utc.flag",
-		"The date you used as `{{.used_name}}`-flag is invalid. Please use a date like `2020-10-31 +0100`.")
+		"The date you used as `{{.used_name}}`-flag is invalid. Please use a date like `2020-10-31 -0600`.")
 
 	dateRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
 		"arg.type.date.error.require_utc_offset.arg",
-		"You need to add an UTC offset to the date in argument {{.position}}, "+
-			"e.g. `13:01 -0600` to use Costa Ricas time.")
+		"You need to add a UTC offset to the date in argument {{.position}}, "+
+			"e.g. `2020-10-31 -0600` to use Costa Rica's time.")
 	dateRequireUTCOffsetErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.date.error.require_utc_offset.flag",
-		"You need to add an UTC offset to the date used as `{{.used_name}}`-flag, "+
-			"e.g. `13:01 -0600` to use Costa Ricas time.")
+		"You need to add a UTC offset to the date used as `{{.used_name}}`-flag, "+
+			"e.g. `2020-10-31 -0600` to use Costa Rica's time.")
 
 	dateBeforeMinErrorArg = i18n.NewFallbackConfig(
 		"arg.type.date.error.before_min.arg", "The date in argument {{.position}} may not be before {{.min}}.")
@@ -289,30 +298,30 @@ var (
 	dateTimeDescriptionOptionalUTC = i18n.NewFallbackConfig(
 		"arg.type.date_time.description.optional_utc",
 		"A date with time, e.g. `2020-10-31 13:01`. Optionally, you can add the offset from UTC behind, "+
-			"e.g. `2020-10-31 13:01 -0700` to use Vancouver's daylight time.")
+			"e.g. `2020-10-31 13:01 +0200` to use South Africa's time zone.")
 	dateTimeDescriptionMustUTC = i18n.NewFallbackConfig(
 		"arg.type.date_time.description.must_utc",
-		"A date with time, e.g. `2020-10-31 13:01 -0700` to use Vancouver's daylight time.")
+		"A date with time, e.g. `2020-10-31 13:01 +0200` to use South Africa's time zone.")
 )
 
 var (
 	dateTimeInvalidErrorOptionalUTCArg = i18n.NewFallbackConfig(
 		"arg.type.date_time.error.invalid.optional_utc.arg",
 		"The date/time combination in argument {{.position}} is invalid. "+
-			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 -0700`.")
+			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 +0200`.")
 	dateTimeInvalidErrorOptionalUTCFlag = i18n.NewFallbackConfig(
 		"arg.type.date_time.error.invalid.optional_utc.flag",
 		"The date/time combination you used as `{{.used_name}}`-flag is invalid. "+
-			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 -0700`.")
+			"Please use a date like `2020-10-31 13:01` or `2020-10-31 13:01 +0200`.")
 
 	dateTimeInvalidErrorMustUTCArg = i18n.NewFallbackConfig(
 		"arg.type.date_time.error.invalid.must_utc.arg",
 		"The date/time combination in argument {{.position}} is invalid. "+
-			"Please use a date like `2020-10-31 13:01 -0700`.")
+			"Please use a date like `2020-10-31 13:01 +0200`.")
 	dateTimeInvalidErrorMustUTCFlag = i18n.NewFallbackConfig(
 		"arg.type.date_time.error.invalid.must_utc.flag",
 		"The date/time combination you used as `{{.used_name}}`-flag is invalid. "+
-			"Please use a date like ``2020-10-31 13:01 -0700`.")
+			"Please use a date like `2020-10-31 13:01 +0200`.")
 )
 
 // =============================================================================
@@ -322,7 +331,7 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	timeZoneName        = i18n.NewFallbackConfig("arg.type.time_zone.name", "arg.type.time_zone.name")
+	timeZoneName        = i18n.NewFallbackConfig("arg.type.time_zone.name", "Time Zone")
 	timeZoneDescription = i18n.NewFallbackConfig(
 		"arg.type.time_zone.description",
 		"The name of an IANA time zone, e.g. `America/New_York`.")
@@ -597,7 +606,7 @@ var (
 
 	textChannelInvalidMentionWithRawError = i18n.NewFallbackConfig(
 		"arg.type.text_channel.error.invalid_mention_with_raw",
-		"`{{.raw}}` is not a valid mention of a id channel.")
+		"`{{.raw}}` is not a valid mention or id of a channel.")
 
 	textChannelInvalidMentionErrorArg = i18n.NewFallbackConfig(
 		"arg.type.text_channel.error.invalid_mention.arg",
@@ -628,7 +637,7 @@ var (
 		"The name of a category or its id.")
 )
 
-// ================================ Chooser Data ================================
+// ================================ Chooser ================================
 
 var (
 	categoryChooserTitle = i18n.NewFallbackConfig("arg.type.category.chooser.title", "Multiple Matches")
@@ -716,7 +725,7 @@ var (
 		"The name of a voice channel or its id.")
 )
 
-// ================================ Chooser Data ================================
+// ================================ Chooser ================================
 
 var (
 	voiceChannelChooserTitle = i18n.NewFallbackConfig("arg.type.voice_channel.chooser.title", "Multiple Matches")
@@ -727,8 +736,12 @@ var (
 			"Please choose the correct one by reacting with the corresponding emoji, "+
 			"or react with {{.cancel_emoji}} to cancel.")
 
-	voiceChannelChooserMatch = i18n.NewFallbackConfig(
-		"arg.type.voice_channel.chooser.match",
+	voiceChannelChooserRootMatch = i18n.NewFallbackConfig(
+		"arg.type.category.chooser.match.root",
+		"{{.emoji}} **{{.channel_name}}** (position: {{.position}})")
+
+	voiceChannelChooserNestedMatch = i18n.NewFallbackConfig(
+		"arg.type.voice_channel.chooser.match.nested",
 		"{{.emoji}} **{{.channel_name}}** ({{.category_name}}, position: {{.position}})")
 
 	voiceChannelChooserFullMatchesName = i18n.NewFallbackConfig(
@@ -750,6 +763,8 @@ type (
 		CancelEmoji discord.APIEmoji
 	}
 
+	// voiceChannelChooserMatchPlaceholders is the placeholder struct used for
+	// both voiceChannelChooserRootMatch and voiceChannelChooserNestedMatch.
 	voiceChannelChooserMatchPlaceholders struct {
 		Emoji        discord.APIEmoji
 		CategoryName string
@@ -802,7 +817,7 @@ var (
 var (
 	commandName        = i18n.NewFallbackConfig("arg.type.command.name", "Command")
 	commandDescription = i18n.NewFallbackConfig(
-		"arg.type.command.description", "The name of a command without it's prefix.")
+		"arg.type.command.description", "The name of a command without the command's prefix.")
 )
 
 // ================================ Errors ================================
@@ -836,12 +851,12 @@ var (
 var (
 	moduleNotFoundError = i18n.NewFallbackConfig(
 		"arg.type.module.error.not_found",
-		"I don't know any commands by the name of `{{.raw}}`. Make sure you spelled it right.")
+		"I don't know any modules by the name of `{{.raw}}`. Make sure you spelled it right.")
 
 	moduleNotFoundErrorProvidersUnavailable = i18n.NewFallbackConfig(
 		"arg.type.module.error.not_found.providers_unavailable",
-		"I couldn't find any commands by the name of `{{.raw}}`, "+
-			"but I don't have access to some commands right now. Try again later or check your spelling.")
+		"I couldn't find any modules by the name of `{{.raw}}`, "+
+			"but I don't have access to some modules right now. Try again later or check your spelling.")
 )
 
 // =============================================================================
@@ -881,7 +896,7 @@ var (
 	regexpName        = i18n.NewFallbackConfig("arg.type.regular_expression.name", "Regular Expression")
 	regexpDescription = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.description",
-		"A regular expression is a regular expression following the RE2/Go-flavor.")
+		"A regular expression following the RE2/Go-flavor.")
 )
 
 // ================================ Errors ================================
@@ -896,45 +911,45 @@ var (
 
 	regexpInvalidCharClassErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_character_class.arg",
-		"The regular expression in argument {{.position}} uses an invalid character class:\n```{{.expression}}```")
+		"The regular expression in argument {{.position}} uses an invalid character class:\n```\n{{.expression}}```")
 	regexpInvalidCharClassErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_character_class.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid character class:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 
 	regexpInvalidCharRangeErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_character_range.arg",
 		"The regular expression in argument {{.position}} uses an invalid character class range:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 	regexpInvalidCharRangeErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_character_range.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid character class range:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 
 	regexpInvalidEscapeErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_escape.arg",
-		"The regular expression in argument {{.position}} uses an invalid escape sequence:\n```{{.expression}}```")
+		"The regular expression in argument {{.position}} uses an invalid escape sequence:\n```\n{{.expression}}```")
 	regexpInvalidEscapeErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_escape.flag",
-		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid escape sequence\n"+
-			"```{{.expression}}```")
+		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid escape sequence:\n"+
+			"```\n{{.expression}}```")
 
 	regexpInvalidNamedCaptureErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_named_capture.arg",
-		"The regular expression in argument {{.position}} uses an invalid named capture:\n```{{.expression}}```")
+		"The regular expression in argument {{.position}} uses an invalid named capture:\n```\n{{.expression}}```")
 	regexpInvalidNamedCaptureErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_named_capture.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid named capture:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 
 	regexpInvalidPerlOpErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_perl_operation.arg",
 		"The regular expression in argument {{.position}} uses invalid or unsupported Perl syntax:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 	regexpInvalidPerlOpErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_perl_operation.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag uses invalid or unsupported Perl syntax:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 
 	regexpInvalidRepeatOpErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_repeat_operation.arg",
@@ -946,43 +961,43 @@ var (
 	regexpInvalidRepeatSizeErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_repeat_size.arg",
 		"The regular expression in argument {{.position}} uses an invalid invalid repeat count:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 	regexpInvalidRepeatSizeErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_repeat_size.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag uses an invalid invalid repeat count:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 
 	regexpInvalidUTF8ErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_utf8.arg",
-		"The regular expression in argument {{.position}} uses invalid UTF-8:\n```{{.expression}}```")
+		"The regular expression in argument {{.position}} uses invalid UTF-8:\n```\n{{.expression}}```")
 	regexpInvalidUTF8ErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.invalid_utf8.flag",
-		"The regular expression you used in the `{{.used_name}}`-flag uses invalid UTF-8:\n```{{.expression}}```")
+		"The regular expression you used in the `{{.used_name}}`-flag uses invalid UTF-8:\n```\n{{.expression}}```")
 
 	regexpMissingBracketErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.missing_bracket.arg",
-		"The regular expression in argument {{.position}} is missing a closing `]`:\n```{{.expression}}```")
+		"The regular expression in argument {{.position}} is missing a closing `]`:\n```\n{{.expression}}```")
 	regexpMissingBracketErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.missing_bracket.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag is missing a closing `]`:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 
 	regexpMissingParenErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.missing_parentheses.arg",
-		"The regular expression in argument {{.position}} is missing a closing `)`:\n```{{.expression}}```")
+		"The regular expression in argument {{.position}} is missing a closing `)`:\n```\n{{.expression}}```")
 	regexpMissingParenErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.missing_parentheses.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag is missing a closing `)`:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 
 	regexpMissingRepeatArgErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.missing_repeat_argument.arg",
 		"The regular expression in argument {{.position}} is missing an argument to the repetition operator:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 	regexpMissingRepeatArgErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.missing_repeat_argument.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag is missing an argument to the repetition "+
-			"operator:\n```{{.expression}}```")
+			"operator:\n```\n{{.expression}}```")
 
 	regexpTrailingBackslashErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.trailing_backslash.arg",
@@ -994,9 +1009,9 @@ var (
 
 	regexpUnexpectedParenErrorArg = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.unexpected_parentheses.arg",
-		"The regular expression in argument {{.position}} has an unexpected `)`:\n```{{.expression}}```")
+		"The regular expression in argument {{.position}} has an unexpected `)`:\n```\n{{.expression}}```")
 	regexpUnexpectedParenErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.regular_expression.error.unexpected_parentheses.flag",
 		"The regular expression you used in the `{{.used_name}}`-flag has an unexpected `)`:\n"+
-			"```{{.expression}}```")
+			"```\n{{.expression}}```")
 )

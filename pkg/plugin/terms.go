@@ -11,13 +11,13 @@ var (
 
 	insufficientPermissionsDescSingle = i18n.NewFallbackConfig(
 		"plugin.error.insufficient_permissions.description.single",
-		"It seems as if I don't have sufficient permissions to run this command. Please give me the "+
+		"I don't have sufficient permissions to run this command. Please give me the "+
 			`"{{.missing_permission}}" permission and try again.`)
 
 	insufficientPermissionsDescMulti = i18n.NewFallbackConfig(
 		"plugin.error.insufficient_permissions.description.multi",
-		"It seems as if I don't have sufficient permissions to run this command. Please give me the following "+
-			"permissions and try again:")
+		"I don't have sufficient permissions to run this command. Please give me the "+
+			"following permissions and try again:")
 
 	insufficientPermissionsMissingPermissionsFieldName = i18n.NewFallbackConfig(
 		"plugin.error.insufficient_permissions.fields.missing_permissions.name",
@@ -64,4 +64,4 @@ var (
 
 var defaultRestrictionDesc = i18n.NewFallbackConfig(
 	"plugin.error.restriction.description.default",
-	"👮 You are not allowed to use this command.")
+	"You are not allowed to use this command.")
