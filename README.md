@@ -19,7 +19,7 @@ You can do everything from a simple `ping` bot to a localized bot with custom co
 ## Main Features
 
 * 🖥️ Typed (variadic) arguments and flags, as well as out-of-the-box parsing for shellword, and comma-based notations
-* 🌍 (optional) support for localization
+* 🌍 support for localization
 * 🗒️ Utilities for things like permission handling, emojis, and awaiting responses and reactions
 * ⚡ Error handling including stack traces
 * 👪 Command grouping through modules
@@ -31,13 +31,13 @@ You can do everything from a simple `ping` bot to a localized bot with custom co
 * 🔌 Custom command sources for commands available at runtime
 * ✨ Abstracted - Don't like something? Swap it out for a custom implementation
 
-## Getting started
+## Getting Started
 
 Have a look at the [example bots](./_examples) or use the official [guide](https://go-adam.gitbook.io/adam/) and get your first bot up and running!
 
 ## Contributing
 
-Both pull requests and issues are much appreciated. 
+Contributions through both pull requests and issues are much appreciated. 
 Check out the [contributing guidelines](./CONTRIBUTING.md) for more information.
 
 You can also help to localize adam on our [POEditor page](https://poeditor.com/join/project?hash=yLTbnUFjXW).
