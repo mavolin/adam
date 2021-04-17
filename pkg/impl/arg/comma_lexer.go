@@ -77,9 +77,7 @@ func (l *commaLexer) nextItem() (commaItem, error) {
 			return emit, nil
 		default:
 			if l.state == nil {
-				return commaItem{
-					typ: itemEOF,
-				}, nil
+				return commaItem{typ: itemEOF}, nil
 			}
 
 			var err error
@@ -109,7 +107,6 @@ func (l *commaLexer) next() rune {
 	}
 
 	l.pos++
-
 	return l.raw[l.pos-1]
 }
 
@@ -134,8 +131,8 @@ func (l *commaLexer) skip() {
 	}
 }
 
-// ignore ignores all flagContent up to this point.
-// It starts at the upcoming character
+// ignore ignores all content up to this point.
+// It starts at the upcoming character.
 func (l *commaLexer) ignore() {
 	l.start = l.pos
 }
@@ -261,7 +258,6 @@ func (l *commaLexer) end() (commaStateFunc, error) {
 	}
 
 	l.skip()
-
 	l.emit(itemComma)
 
 	for l.has(1) { // skip whitespace
