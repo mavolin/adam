@@ -1,6 +1,7 @@
 package arg
 
 import (
+	"net/url"
 	"regexp"
 
 	"github.com/mavolin/disstate/v3/pkg/state"
@@ -131,28 +132,17 @@ func (t Text) Default() interface{} {
 // Link
 // =====================================================================================
 
-// DefaultLinkRegexp is the regular expression used to match links by default.
-//
-// This is an adapted version of the regular expression found at:
-// http://urlregex.com/.
-var DefaultLinkRegexp = regexp.MustCompile(
-	`^https?://` + // protocol
-		`(?:\d{1,3}(?:\.\d{1,3}){3}|` + // ip address
-		`(?:[a-z\d\x{00a1}-\x{ffff}]+-)*[a-z\d\x{00a1}-\x{ffff}]+` + // second- and third-level domain
-		`(?:\.(?:[a-z\d\x{00a1}-\x{ffff}]+-?)*[a-z\d\x{00a1}-\x{ffff}]+)*` + // first part of top-level domain
-		`\.[a-z\x{00a1}-\x{ffff}]{2,6})` + // last part of the top-level domain
-		`(?::\d+)?` + // port
-		`(?:[^\s]*)?$`, // path
-)
-
 // Link is the Type used for URLs.
+//
+// Go type: string
 type Link struct {
-	// Regexp is the regular expression the link needs to match to pass.
+	// Validator checks if the passed *url.URL is valid.
 	//
-	// Defaults to: DefaultLinkRegexp
-	Regexp *regexp.Regexp
-	// RegexpErrorArg is the error message used if an argument doesn't match
-	// the regular expression defined.
+	// By default, Validator will check if the scheme is either 'http' or
+	// 'https'.
+	Validator func(u *url.URL) bool
+	// ErrorArg is the error message used if an argument doesn't match
+	// the regular expression defined, or does not pass url.ParseRequestURI.
 	// If you want an unlocalized error, just fill Fallback.Other field of the
 	// config.
 	//
@@ -163,10 +153,10 @@ type Link struct {
 	// 		• position - the position of the id (1-indexed)
 	// 		• regexp - the regular expression that needs to be matched
 	//
-	// Defaults to: regexpNotMatchingErrorArg
-	RegexpErrorArg *i18n.Config
-	// RegexpErrorFlag is the error message used if a flag doesn't match the
-	// regular expression defined.
+	// Defaults to: linkInvalidErrorArg
+	ErrorArg *i18n.Config
+	// ErrorFlag is the error message used if a flag doesn't match the
+	// regular expression defined, or does not pass url.ParseRequestURI.
 	// If you want an unlocalized error, just fill Fallback.Other field of the
 	// config.
 	//
@@ -177,8 +167,8 @@ type Link struct {
 	// 		• raw - the raw flag without the flags name
 	// 		• regexp - the regular expression that needs to be matched
 	//
-	// Defaults to: regexpNotMatchingErrorFlag
-	RegexpErrorFlag *i18n.Config
+	// Defaults to: linkInvalidErrorFlag
+	ErrorFlag *i18n.Config
 }
 
 var (
@@ -198,18 +188,17 @@ func (l Link) Description(loc *i18n.Localizer) string {
 }
 
 func (l Link) Parse(_ *state.State, ctx *Context) (interface{}, error) {
-	if l.Regexp == nil {
-		l.Regexp = DefaultLinkRegexp
+	if l.Validator == nil {
+		l.Validator = defaultLinkValidator
 	}
 
-	if !l.Regexp.MatchString(ctx.Raw) {
-		if ctx.Kind == KindArg && l.RegexpErrorArg == nil {
-			l.RegexpErrorArg = linkInvalidErrorArg
-		} else if ctx.Kind == KindFlag && l.RegexpErrorFlag == nil {
-			l.RegexpErrorFlag = linkInvalidErrorFlag
+	u, err := url.ParseRequestURI(ctx.Raw)
+	if err != nil || !l.Validator(u) {
+		if (ctx.Kind == KindArg && l.ErrorArg == nil) || (ctx.Kind == KindFlag && l.ErrorFlag == nil) {
+			return nil, newArgumentError2(linkInvalidErrorArg, linkInvalidErrorFlag, ctx, nil)
 		}
 
-		return nil, newArgumentError2(l.RegexpErrorArg, l.RegexpErrorFlag, ctx, nil)
+		return nil, newArgumentError2(l.ErrorArg, l.ErrorFlag, ctx, nil)
 	}
 
 	return ctx.Raw, nil
@@ -217,6 +206,10 @@ func (l Link) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 
 func (l Link) Default() interface{} {
 	return ""
+}
+
+func defaultLinkValidator(u *url.URL) bool {
+	return u.Scheme == "http" || u.Scheme == "https"
 }
 
 // =============================================================================

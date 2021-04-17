@@ -408,7 +408,7 @@ var (
 	linkInvalidErrorArg = i18n.NewFallbackConfig(
 		"arg.type.link.error.invalid.arg", "The link in argument {{.position}} is not valid.")
 	linkInvalidErrorFlag = i18n.NewFallbackConfig(
-		"arg.type.link.error.invalid.flag", "The link used as `{{.used_name}}`-flag is not valid.")
+		"arg.type.link.error.invalid.flag", "The link you used as `{{.used_name}}`-flag is not valid.")
 )
 
 // =============================================================================

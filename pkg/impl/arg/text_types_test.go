@@ -1,6 +1,7 @@
 package arg
 
 import (
+	"net/url"
 	"regexp"
 	"testing"
 
@@ -172,7 +173,10 @@ func TestLink_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := "https://github.com/mavolin/adam"
 
-		ctx := &Context{Raw: expect}
+		ctx := &Context{
+			Kind: KindArg,
+			Raw:  expect,
+		}
 
 		actual, err := SimpleLink.Parse(nil, ctx)
 		require.NoError(t, err)
@@ -188,26 +192,28 @@ func TestLink_Parse(t *testing.T) {
 		expectArg, expectFlag *i18n.Config
 	}{
 		{
-			name:       "default regexp not matching",
+			name:       "default validator not matching",
 			link:       SimpleLink,
-			raw:        "abc",
+			raw:        "ftps://abc.de",
 			expectArg:  linkInvalidErrorArg,
 			expectFlag: linkInvalidErrorFlag,
 		},
 		{
-			name: "custom regexp not matching",
+			name: "custom validator failure",
 			link: &Link{
-				Regexp: regexp.MustCompile("abc"),
+				Validator: func(u *url.URL) bool {
+					return u.Host == "google"
+				},
 			},
-			raw:        "def",
+			raw:        "https://bing.com",
 			expectArg:  linkInvalidErrorArg,
 			expectFlag: linkInvalidErrorFlag,
 		},
 		{
-			name: "regexp not matching - custom error",
+			name: "validator failure - custom error",
 			link: &Link{
-				RegexpErrorArg:  i18n.NewFallbackConfig("abc", "abc"),
-				RegexpErrorFlag: i18n.NewFallbackConfig("def", "def"),
+				ErrorArg:  i18n.NewFallbackConfig("abc", "abc"),
+				ErrorFlag: i18n.NewFallbackConfig("def", "def"),
 			},
 			raw:        "ghi",
 			expectArg:  i18n.NewFallbackConfig("abc", "abc"),
