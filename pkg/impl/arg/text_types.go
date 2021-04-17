@@ -17,6 +17,13 @@ import (
 //
 // Go type: string
 type Text struct {
+	// CustomName allows you to set a custom name for the id.
+	// If not set, the default name will be used.
+	CustomName *i18nutil.Text
+	// CustomDescription allows you to set a custom description for the id.
+	// If not set, the default description will be used.
+	CustomDescription *i18nutil.Text
+
 	// MinLength is the inclusive minimum length the text may have.
 	MinLength uint
 	// MaxLength is the inclusive maximum length the text may have.
@@ -65,11 +72,25 @@ var (
 )
 
 func (t Text) Name(l *i18n.Localizer) string {
+	if t.CustomName != nil {
+		name, err := t.CustomName.Get(l)
+		if err == nil {
+			return name
+		}
+	}
+
 	name, _ := l.Localize(textName) // we have a fallback
 	return name
 }
 
 func (t Text) Description(l *i18n.Localizer) string {
+	if t.CustomDescription != nil {
+		desc, err := t.CustomDescription.Get(l)
+		if err == nil {
+			return desc
+		}
+	}
+
 	desc, _ := l.Localize(textDescription) // we have a fallback
 	return desc
 }
@@ -119,7 +140,7 @@ var DefaultLinkRegexp = regexp.MustCompile(
 		`(?:\d{1,3}(?:\.\d{1,3}){3}|` + // ip address
 		`(?:[a-z\d\x{00a1}-\x{ffff}]+-)*[a-z\d\x{00a1}-\x{ffff}]+` + // second- and third-level domain
 		`(?:\.(?:[a-z\d\x{00a1}-\x{ffff}]+-?)*[a-z\d\x{00a1}-\x{ffff}]+)*` + // first part of top-level domain
-		`(?:\.[a-z\x{00a1}-\x{ffff}]{2,6}))` + // last part of the top-level domain
+		`\.[a-z\x{00a1}-\x{ffff}]{2,6})` + // last part of the top-level domain
 		`(?::\d+)?` + // port
 		`(?:[^\s]*)?$`, // path
 )
@@ -272,7 +293,7 @@ func (id AlphanumericID) Name(l *i18n.Localizer) string {
 		}
 	}
 
-	name, _ := l.Localize(idName) // we have id fallback
+	name, _ := l.Localize(idName) // we have a fallback
 	return name
 }
 
@@ -284,7 +305,7 @@ func (id AlphanumericID) Description(l *i18n.Localizer) string {
 		}
 	}
 
-	desc, _ := l.Localize(idDescription) // we have id fallback
+	desc, _ := l.Localize(idDescription) // we have a fallback
 	return desc
 }
 

@@ -11,6 +11,46 @@ import (
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
+func TestText_Name(t *testing.T) {
+	t.Run("default name", func(t *testing.T) {
+		expect := i18n.NewFallbackLocalizer().MustLocalize(textName)
+
+		txt := SimpleText
+
+		actual := txt.Name(i18n.NewFallbackLocalizer())
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("custom name", func(t *testing.T) {
+		expect := "abc"
+
+		txt := Text{CustomName: i18nutil.NewText(expect)}
+
+		actual := txt.Name(i18n.NewFallbackLocalizer())
+		assert.Equal(t, expect, actual)
+	})
+}
+
+func TestText_Description(t *testing.T) {
+	t.Run("default description", func(t *testing.T) {
+		expect := i18n.NewFallbackLocalizer().MustLocalize(textDescription)
+
+		txt := SimpleText
+
+		actual := txt.Description(i18n.NewFallbackLocalizer())
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("custom description", func(t *testing.T) {
+		expect := "abc"
+
+		txt := Text{CustomDescription: i18nutil.NewText(expect)}
+
+		actual := txt.Description(i18n.NewFallbackLocalizer())
+		assert.Equal(t, expect, actual)
+	})
+}
+
 func TestText_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string

@@ -21,7 +21,7 @@ var BaseEmbed = embedutil.NewBuilder().
 	WithColor(0x6eb7b1)
 
 // Help is the default help command.
-// It should fully suffice for most bots, however, it is restricted to the same
+// It should fully suffice for most bots, however, it is limited to the same
 // restrictions any embed has.
 // Particularly, the following rules apply:
 //

@@ -357,18 +357,18 @@ var (
 
 var (
 	textBelowMinLengthErrorArg = i18n.NewFallbackConfig(
-		"arg.type.id.error.below_min_length.arg",
-		"The id in argument {{.position}} must be at least {{.min}} characters long.")
+		"arg.type.text.error.below_min_length.arg",
+		"The text in argument {{.position}} must be at least {{.min}} characters long.")
 	textBelowMinLengthErrorFlag = i18n.NewFallbackConfig(
-		"arg.type.id.error.below_min_length.flag",
-		"The id used as the `{{.used_name}}`-flag must be at least {{.min}} characters long.")
+		"arg.type.text.error.below_min_length.flag",
+		"The text used as the `{{.used_name}}`-flag must be at least {{.min}} characters long.")
 
 	textAboveMaxLengthErrorArg = i18n.NewFallbackConfig(
-		"arg.type.id.error.above_max_length.arg",
-		"The id in argument {{.position}} may not be longer than {{.max}} characters.")
+		"arg.type.text.error.above_max_length.arg",
+		"The text in argument {{.position}} may not be longer than {{.max}} characters.")
 	textAboveMaxLengthErrorFlag = i18n.NewFallbackConfig(
-		"arg.type.id.error.above_max_length.flag",
-		"The id used as the `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
+		"arg.type.text.error.above_max_length.flag",
+		"The text used as the `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
 )
 
 // =============================================================================

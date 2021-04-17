@@ -229,7 +229,7 @@ func (id NumericID) Name(l *i18n.Localizer) string {
 		}
 	}
 
-	name, _ := l.Localize(idName) // we have id fallback
+	name, _ := l.Localize(idName) // we have a fallback
 	return name
 }
 
@@ -241,7 +241,7 @@ func (id NumericID) Description(l *i18n.Localizer) string {
 		}
 	}
 
-	desc, _ := l.Localize(idDescription) // we have id fallback
+	desc, _ := l.Localize(idDescription) // we have a fallback
 	return desc
 }
 
