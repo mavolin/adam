@@ -21,7 +21,8 @@ type (
 	//
 	// Default implementations can be found in impl/module.
 	ModuleMeta interface {
-		// GetName returns the name of the module
+		// GetName returns the name of the module.
+		// It may not contain whitespace or dots.
 		GetName() string
 		// GetShortDescription returns an optional one-sentence description of
 		// the module.

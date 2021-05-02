@@ -50,8 +50,10 @@ type (
 	// Default implementations can be found in impl/command.
 	CommandMeta interface {
 		// GetName gets the name of the command.
+		// It may not contain whitespace or dots.
 		GetName() string
-		// GetAliases returns the optional aliases of the command.
+		// GetAliases returns the optional aliases of the command.\
+		// They may not contain whitespace or dots.
 		GetAliases() []string
 		// GetShortDescription returns an optional short description
 		// of the command.
