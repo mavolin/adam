@@ -13,20 +13,15 @@ import (
 // separate flags and arguments.
 // Literal commas can be escaped using a double comma (',,').
 //
-// Flags can be placed both at the beginning and the end of the arguments.
-// Their names mustn't contain double minuses, commas or whitespace.
+// Flags may be placed in front of the arguments.
 //
-// Additionally, in order to distinguish flags from arguments argument that
-// start with a minus must be escaped using a double minus.
-// To ease usability for users unaware of this escapes are not needed if one
-// of the following conditions is fulfilled:
+// If the first argument starts with a minus, the minus must be escaped
+// through a double minus to avoid confusion with a flag.
 //
-// 1. The minus is used in any of the required arguments except the first.
+// Examples
 //
-// 2. There are no flags.
-//
-// Even if one of those exceptions applies, double minuses will still be parsed
-// as a single minus to preserve predictability.
+// cmd -flag1 abc, -flag2, first arg, second arg,, with a comma in it
+// cmd --first arg using a minus escape
 type CommaConfig struct {
 	// Required contains the required arguments.
 	Required []RequiredArg
@@ -63,20 +58,15 @@ func (c CommaConfig) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 // separate flags and arguments.
 // Literal commas can be escaped using a double comma (',,').
 //
-// Flags can be placed both at the beginning and the end of the arguments.
-// Their names mustn't contain double minuses, commas or whitespace.
+// Flags may be placed in front of the arguments.
 //
-// Additionally, in order to distinguish flags from arguments argument that
-// start with a minus must be escaped using a double minus.
-// To ease usability for users unaware of this escapes are not needed if one
-// of the following conditions is fulfilled:
+// If the first argument starts with a minus, the minus must be escaped
+// through a double minus to avoid confusion with a flag.
 //
-// 1. The minus is used in any of the required arguments except the first.
+// Examples
 //
-// 2. There are no flags.
-//
-// Even if one of those exceptions applies, double minuses will still be parsed
-// as a single minus to preserve predictability.
+// cmd -flag1 abc, -flag2, first arg, second arg,, with a comma in it
+// cmd --first arg using a minus escape
 type LocalizedCommaConfig struct {
 	// Required contains the required arguments.
 	Required []LocalizedRequiredArg

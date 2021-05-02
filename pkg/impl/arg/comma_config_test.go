@@ -328,7 +328,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 					},
 				},
 			},
-			rawArgs:    "-test2 abc, 123, def, 456, -test 789",
+			rawArgs:    "-test2 abc, -test 789, 123, def, 456",
 			expectArgs: plugin.Args{123, "def", 456, "ghi"},
 			expectFlags: plugin.Flags{
 				"test":  789,
@@ -386,7 +386,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 			},
 		},
 		{
-			name: "no minus escape required arg",
+			name: "no minus escape in second arg",
 			config: CommaConfig{
 				Required: []RequiredArg{
 					{
@@ -394,7 +394,7 @@ func TestCommaConfig_Parse(t *testing.T) {
 						Type: mockTypeString,
 					},
 					{
-						Name: "arg1",
+						Name: "arg2",
 						Type: mockTypeString,
 					},
 				},
@@ -410,19 +410,6 @@ func TestCommaConfig_Parse(t *testing.T) {
 			expectFlags: plugin.Flags{
 				"test": 0,
 			},
-		},
-		{
-			name: "no minus escape if no flag",
-			config: CommaConfig{
-				Required: []RequiredArg{
-					{
-						Name: "arg1",
-						Type: mockTypeString,
-					},
-				},
-			},
-			rawArgs:    "-abc",
-			expectArgs: plugin.Args{"-abc"},
 		},
 	}
 
@@ -1053,7 +1040,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 					},
 				},
 			},
-			rawArgs:    "-test2 abc, 123, def, 456, -test 789",
+			rawArgs:    "-test2 abc, -test 789, 123, def, 456",
 			expectArgs: plugin.Args{123, "def", 456, "ghi"},
 			expectFlags: plugin.Flags{
 				"test":  789,
@@ -1111,7 +1098,7 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 			},
 		},
 		{
-			name: "no minus escape required arg",
+			name: "no minus in second arg",
 			config: LocalizedCommaConfig{
 				Required: []LocalizedRequiredArg{
 					{
@@ -1135,19 +1122,6 @@ func TestLocalizedCommaConfig_Parse(t *testing.T) {
 			expectFlags: plugin.Flags{
 				"test": 0,
 			},
-		},
-		{
-			name: "no minus escape if no flag",
-			config: LocalizedCommaConfig{
-				Required: []LocalizedRequiredArg{
-					{
-						Name: i18n.NewFallbackConfig("", "arg1"),
-						Type: mockTypeString,
-					},
-				},
-			},
-			rawArgs:    "-abc",
-			expectArgs: plugin.Args{"-abc"},
 		},
 	}
 

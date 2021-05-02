@@ -77,7 +77,7 @@ type (
 		// Type is the type of the flag.
 		Type Type
 		// Default is the default value of the flag, and is used if the flag
-		// doesn't putContext set.
+		// isn't set.
 		//
 		// If Default is (interface{})(nil), Type.Default() will be used.
 		Default interface{}
@@ -96,7 +96,7 @@ type (
 		// Type is the type of the flag.
 		Type Type
 		// Default is the default value of the flag, and is used if the flag
-		// doesn't putContext set.
+		// isn't set.
 		//
 		// If Default is (interface{})(nil), Type.Default() will be used.
 		Default interface{}

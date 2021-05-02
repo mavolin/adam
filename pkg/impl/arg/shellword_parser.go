@@ -85,7 +85,7 @@ func (p *shellwordParser) parse() error {
 		return err
 	}
 
-	return p.helper.putContext()
+	return p.helper.store()
 }
 
 // has checks if there are at least min runes remaining.
