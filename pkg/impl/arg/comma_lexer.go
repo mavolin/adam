@@ -16,10 +16,8 @@ type (
 		emitChan chan commaItem
 		state    commaStateFunc
 
-		// used to keep track of the necessities of minus escapes
-		numRequiredArgs int
-		nextArg         int
-		hasFlags        bool
+		nextArg      int
+		parsingFlags bool
 	}
 
 	commaStateFunc func() (commaStateFunc, error)
@@ -57,16 +55,14 @@ func (i commaItemType) String() string {
 	}
 }
 
-func newCommaLexer(args string, numRequiredArgs int, hasFlags bool) *commaLexer {
+func newCommaLexer(args string) *commaLexer {
 	l := &commaLexer{
-		raw:             []rune(args),
-		emitChan:        make(chan commaItem, 2), // pseudo ring buffer, see nextItem
-		numRequiredArgs: numRequiredArgs,
-		hasFlags:        hasFlags,
+		raw:          []rune(args),
+		emitChan:     make(chan commaItem, 2), // pseudo ring buffer, see nextItem
+		parsingFlags: true,
 	}
 
 	l.state = l.item
-
 	return l
 }
 
@@ -146,6 +142,30 @@ func (l *commaLexer) emit(typ commaItemType) {
 	l.start = l.pos
 }
 
+func (l *commaLexer) ignoreWhitespace() {
+	for l.has(1) { // skip whitespace
+		if !strings.ContainsRune(whitespace, l.next()) {
+			l.backup()
+			break
+		}
+	}
+
+	l.ignore()
+}
+
+func (l *commaLexer) consumeContent() {
+	for l.has(1) {
+		if l.next() == ',' {
+			if l.peek(1) == ',' { // escaped comma
+				l.skip()
+			} else {
+				l.backup()
+				break
+			}
+		}
+	}
+}
+
 // ================================ State functions ================================
 
 func (l *commaLexer) item() (commaStateFunc, error) {
@@ -153,24 +173,22 @@ func (l *commaLexer) item() (commaStateFunc, error) {
 		return nil, nil
 	}
 
-	// as long as the first required argument hasn't been collected, there are
-	// no required args, or all required arg are collected, flags can be placed
-	// and minus escapes aren't needed.
-	if (l.nextArg == 0 || l.nextArg >= l.numRequiredArgs) && l.hasFlags {
-		if l.peek(1) == '-' && l.peek(2) != '-' {
+	if l.parsingFlags && l.peek(1) == '-' {
+		l.skip()
+		l.ignore()
+
+		if l.peek(1) != '-' { // mind the l.skip() above
 			return l.flag, nil
 		}
+		// else: this is the first argument, using minus escapes
 	}
 
+	l.parsingFlags = false
 	return l.arg, nil
 }
 
 // flag parses a flag.
-// The introducing minus is still present.
 func (l *commaLexer) flag() (commaStateFunc, error) {
-	l.skip()
-	l.ignore()
-
 	for l.has(1) {
 		next := l.next()
 
@@ -183,30 +201,12 @@ func (l *commaLexer) flag() (commaStateFunc, error) {
 	}
 
 	l.emit(itemFlagName)
-
 	return nil, nil
 }
 
 func (l *commaLexer) flagContent() (commaStateFunc, error) {
-	for l.has(1) { // skip whitespace
-		if !strings.ContainsRune(whitespace, l.next()) {
-			l.backup()
-			break
-		}
-	}
-
-	l.ignore()
-
-	for l.has(1) {
-		if l.next() == ',' {
-			if l.peek(1) == ',' { // escaped comma
-				l.skip()
-			} else {
-				l.backup()
-				break
-			}
-		}
-	}
+	l.ignoreWhitespace()
+	l.consumeContent()
 
 	if l.pos > l.start { // make sure we actually collected some content
 		l.emit(itemFlagContent)
@@ -216,25 +216,7 @@ func (l *commaLexer) flagContent() (commaStateFunc, error) {
 }
 
 func (l *commaLexer) arg() (commaStateFunc, error) {
-	for l.has(1) { // skip whitespace
-		if !strings.ContainsRune(whitespace, l.next()) {
-			l.backup()
-			break
-		}
-	}
-
-	l.ignore()
-
-	for l.has(1) {
-		if l.next() == ',' {
-			if l.peek(1) == ',' { // escaped comma
-				l.skip()
-			} else {
-				l.backup()
-				break
-			}
-		}
-	}
+	l.consumeContent()
 
 	if l.pos == l.start { // make sure we actually collected some flagContent
 		return nil, plugin.NewArgumentErrorl(emptyArgError.
@@ -244,7 +226,6 @@ func (l *commaLexer) arg() (commaStateFunc, error) {
 	}
 
 	l.emit(itemArgContent)
-
 	l.nextArg++
 
 	return l.end, nil
@@ -260,15 +241,6 @@ func (l *commaLexer) end() (commaStateFunc, error) {
 	l.skip()
 	l.emit(itemComma)
 
-	for l.has(1) { // skip whitespace
-		if !strings.ContainsRune(whitespace, l.next()) {
-			l.backup()
-			l.ignore()
-
-			return l.item, nil
-		}
-	}
-
-	// allow a terminating comma for invokes with at least one arg or flag
-	return nil, nil
+	l.ignoreWhitespace()
+	return l.item, nil
 }

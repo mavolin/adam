@@ -22,14 +22,14 @@ type commaParser struct {
 func newCommaParser(args string, cfg CommaConfig, s *state.State, ctx *plugin.Context) *commaParser {
 	return &commaParser{
 		helper: newParseHelper(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
-		lexer:  newCommaLexer(args, len(cfg.Required), len(cfg.Flags) > 0),
+		lexer:  newCommaLexer(args),
 	}
 }
 
 func newCommaParserl(args string, cfg LocalizedCommaConfig, s *state.State, ctx *plugin.Context) *commaParser {
 	return &commaParser{
 		helper: newParseHelperl(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
-		lexer:  newCommaLexer(args, len(cfg.Required), len(cfg.Flags) > 0),
+		lexer:  newCommaLexer(args),
 	}
 }
 
@@ -39,7 +39,7 @@ func (p *commaParser) parse() error {
 		return err
 	}
 
-	return p.helper.putContext()
+	return p.helper.store()
 }
 
 func (p *commaParser) startParse() error {

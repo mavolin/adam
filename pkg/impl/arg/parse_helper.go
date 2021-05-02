@@ -178,7 +178,8 @@ func newParseHelperl( //nolint:dupl
 	return p
 }
 
-func (h *parseHelper) putContext() error {
+// store stores the parsed arguments in the context.
+func (h *parseHelper) store() error {
 	if h.variadicSlice.IsValid() {
 		h.args = append(h.args, h.variadicSlice.Interface())
 	}
