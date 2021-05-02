@@ -9,6 +9,7 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
+// BuiltInProvider is the name of the built-in plugin provider.
 var BuiltInProvider = "built_in"
 
 // RegisteredCommand is a resolved command as returned by a Provider.

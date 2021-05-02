@@ -250,8 +250,8 @@ func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 	return
 }
 
-// Await is the same as AwaitWithContext, but the context will always be
-// context.WithTimeout(context.Background(), ReplyMaxTimeout).
+// Await is the same as AwaitWithContext, but uses a
+// context.WithTimeout(context.Background(), ReplyMaxTimeout) as context.
 func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ReplyMaxTimeout)
 	defer cancel()
@@ -270,7 +270,7 @@ func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*disco
 // returned.
 // This error is also available through .Unwrap(), so errors.Is is safe to use.
 //
-// The typing timeout will start after the user stops typing.
+// The typing timeout will start after the user first starts typing.
 // Because Discord sends the typing event in an interval of about 10 seconds,
 // the user might have stopped typing before the waiter notices that the typing
 // status was not updated.
@@ -386,7 +386,8 @@ func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- i
 				for _, r := range w.cancelReactions {
 					err := w.state.DeleteReactions(w.channelID, r.messageID, r.reaction)
 					if err != nil {
-						// someone else deleted the resource we are accessing
+						// someone else deleted the resource we are accessing,
+						// no need to capture this
 						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 							return
 						}

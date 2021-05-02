@@ -267,11 +267,11 @@ var (
 	dateRequireUTCOffsetErrorArg = i18n.NewFallbackConfig(
 		"arg.type.date.error.require_utc_offset.arg",
 		"You need to add a UTC offset to the date in argument {{.position}}, "+
-			"e.g. `2020-10-31 -0600` to use Costa Rica's time.")
+			"e.g. `2020-10-31 -0600` to use Costa Rica's time zone.")
 	dateRequireUTCOffsetErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.date.error.require_utc_offset.flag",
 		"You need to add a UTC offset to the date used as `{{.used_name}}`-flag, "+
-			"e.g. `2020-10-31 -0600` to use Costa Rica's time.")
+			"e.g. `2020-10-31 -0600` to use Costa Rica's time zone.")
 
 	dateBeforeMinErrorArg = i18n.NewFallbackConfig(
 		"arg.type.date.error.before_min.arg", "The date in argument {{.position}} may not be before {{.min}}.")
@@ -358,17 +358,17 @@ var (
 var (
 	textBelowMinLengthErrorArg = i18n.NewFallbackConfig(
 		"arg.type.text.error.below_min_length.arg",
-		"The text in argument {{.position}} must be at least {{.min}} characters long.")
+		"Argument {{.position}} must be at least {{.min}} characters long.")
 	textBelowMinLengthErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.text.error.below_min_length.flag",
-		"The text used as the `{{.used_name}}`-flag must be at least {{.min}} characters long.")
+		"The `{{.used_name}}`-flag must be at least {{.min}} characters long.")
 
 	textAboveMaxLengthErrorArg = i18n.NewFallbackConfig(
 		"arg.type.text.error.above_max_length.arg",
-		"The text in argument {{.position}} may not be longer than {{.max}} characters.")
+		"Argument {{.position}} may not be longer than {{.max}} characters.")
 	textAboveMaxLengthErrorFlag = i18n.NewFallbackConfig(
 		"arg.type.text.error.above_max_length.flag",
-		"The text used as the `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
+		"The `{{.used_name}}`-flag may not be longer than {{.max}} characters.")
 )
 
 // =============================================================================

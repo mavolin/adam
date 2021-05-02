@@ -49,8 +49,7 @@ var _ plugin.Replier = new(Tracker)
 // 			t := NewTracker(s, false)
 // 			ctx.Replier = t // replace the default replier
 //
-// 			err := next(s, ctx)
-// 			if err != nil {
+// 			if err := next(s, ctx); err != nil {
 // 				return err
 // 			}
 //

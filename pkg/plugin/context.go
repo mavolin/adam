@@ -338,8 +338,9 @@ func (ctx *Context) Self() (*discord.Member, error) {
 	return ctx.SelfAsync()()
 }
 
-// SelfPermissions checks if the bot has the passed permissions.
-// If this command is executed in a direct message, permutil.DMPermissions will
+// SelfPermissions returns the discord.Permissions the bot has in the invoking
+// channel.
+// If the command is executed in a direct message, permutil.DMPermissions will
 // be returned instead.
 func (ctx *Context) SelfPermissions() (discord.Permissions, error) {
 	if ctx.GuildID == 0 {

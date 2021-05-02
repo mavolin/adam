@@ -47,7 +47,8 @@ func (p ParseError) Error() string {
 // A duration string is a sequence of decimal numbers and units.
 // Both numbers and units may be followed by spaces or tabs.
 //
-// Valid units are "ms", "s" or "sec", "min", "h" or "hr", "d", "w", "m" or "mon", and "y" or "yr".
+// Valid units are "ms", "s" or "sec", "min", "h" or "hr", "d", "w", "m" or
+// "mon", and "y" or "yr".
 //
 // If the passed string does not represent a valid duration, Parse will return
 // a *ParseError.
