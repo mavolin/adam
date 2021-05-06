@@ -16,10 +16,10 @@ var _ plugin.Module = Module{}
 func (m Module) Commands() []plugin.Command { return m.CommandsReturn }
 func (m Module) Modules() []plugin.Module   { return m.ModulesReturn }
 
-// GenerateRegisteredModule generates a RegisteredModule from the passed source
-// module using the passed provider name.
-func GenerateRegisteredModule(providerName string, mod plugin.Module) *plugin.RegisteredModule {
-	rmod := plugin.GenerateRegisteredModules([]plugin.Repository{
+// GenerateResolvedModule generates a plugin.ResolvedModule from the passed
+// source plugin.Module using the passed provider name.
+func GenerateResolvedModule(providerName string, mod plugin.Module) *plugin.ResolvedModule {
+	rmod := plugin.GenerateResolvedModules([]plugin.Repository{
 		{
 			ProviderName: providerName,
 			Modules:      []plugin.Module{mod},

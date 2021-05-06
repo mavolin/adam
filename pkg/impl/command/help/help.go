@@ -116,13 +116,13 @@ func (h *Help) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) 
 	}
 
 	switch p := ctx.Args[0].(type) {
-	case *plugin.RegisteredModule:
+	case *plugin.ResolvedModule:
 		return h.module(s, ctx, p)
-	case *plugin.RegisteredCommand:
+	case *plugin.ResolvedCommand:
 		return h.command(s, ctx, p)
 	default:
 		panic(fmt.Sprintf("got illegal argument type %T from arg.Plugin, but expected only (interface{})(nil), "+
-			"*plugin.RegisteredCommand, or *plugin.RegisteredModule", ctx.Args[0]))
+			"*plugin.ResolvedCommand, or *plugin.ResolvedModule", ctx.Args[0]))
 	}
 }
 
@@ -164,7 +164,7 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 	return e, nil
 }
 
-func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.RegisteredModule) (discord.Embed, error) {
+func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.ResolvedModule) (discord.Embed, error) {
 	eb := BaseEmbed.Clone().
 		WithSimpleTitlel(moduleTitle.
 			WithPlaceholders(moduleTitlePlaceholders{
@@ -201,8 +201,8 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.Registere
 	return e, nil
 }
 
-func (h *Help) command(s *state.State, ctx *plugin.Context, cmd *plugin.RegisteredCommand) (discord.Embed, error) {
-	if len(filterCommands([]*plugin.RegisteredCommand{cmd}, s, ctx, Show, h.Options.HideFuncs...)) == 0 {
+func (h *Help) command(s *state.State, ctx *plugin.Context, cmd *plugin.ResolvedCommand) (discord.Embed, error) {
+	if len(filterCommands([]*plugin.ResolvedCommand{cmd}, s, ctx, Show, h.Options.HideFuncs...)) == 0 {
 		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
 			WithPlaceholders(pluginNotFoundErrorPlaceholder{
 				Invoke: ctx.RawArgs,

@@ -12,12 +12,10 @@ import (
 // BuiltInProvider is the name of the built-in plugin provider.
 var BuiltInProvider = "built_in"
 
-// RegisteredCommand is a resolved command as returned by a Provider.
-// In contrast to the regular command abstraction, RegisteredCommand's fields
-// take into account it's parents settings, as the router would see them.
-type RegisteredCommand struct {
+// ResolvedCommand is a resolved command as returned by a Provider.
+type ResolvedCommand struct {
 	// double pointer used to determine if the parent is just nil or not set
-	parent   **RegisteredModule
+	parent   **ResolvedModule
 	provider Provider
 
 	// ProviderName is the name of the plugin provider that provides the
@@ -58,30 +56,30 @@ type RegisteredCommand struct {
 	Throttler Throttler
 }
 
-// NewRegisteredCommandWithParent creates a new RegisteredCommand from the
+// NewResolvedCommandWithParent creates a new ResolvedCommand from the
 // passed parent module using the passed RestrictionFunc.
 // The RestrictionFunc may be nil.
-func NewRegisteredCommandWithParent(p *RegisteredModule) *RegisteredCommand {
-	return &RegisteredCommand{parent: &p}
+func NewResolvedCommandWithParent(p *ResolvedModule) *ResolvedCommand {
+	return &ResolvedCommand{parent: &p}
 }
 
-// NewRegisteredCommandWithProvider creates a new RegisteredCommand from the
+// NewResolvedCommandWithProvider creates a new ResolvedCommand from the
 // passed Provider using the passed RestrictionFunc.
 // The RestrictionFunc may be nil.
-func NewRegisteredCommandWithProvider(p Provider) *RegisteredCommand {
-	return &RegisteredCommand{provider: p}
+func NewResolvedCommandWithProvider(p Provider) *ResolvedCommand {
+	return &ResolvedCommand{provider: p}
 }
 
-// GenerateRegisteredCommands generates top-level RegisteredCommands from the
+// GenerateResolvedCommands generates top-level RegisteredCommands from the
 // passed Repositories.
-func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nolint:gocognit
+func GenerateResolvedCommands(repos []Repository) []*ResolvedCommand { //nolint:gocognit
 	var maxLen int
 
 	for _, repo := range repos {
 		maxLen += len(repo.Commands)
 	}
 
-	rcmds := make([]*RegisteredCommand, 0, maxLen)
+	rcmds := make([]*ResolvedCommand, 0, maxLen)
 
 	usedAliases := make(map[string]struct{})
 
@@ -95,9 +93,9 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 				continue // skip on duplicate name
 			}
 
-			var parent *RegisteredModule = nil
+			var parent *ResolvedModule = nil
 
-			rcmd := &RegisteredCommand{
+			rcmd := &ResolvedCommand{
 				parent:         &parent,
 				ProviderName:   repo.ProviderName,
 				Source:         scmd,
@@ -140,13 +138,13 @@ func GenerateRegisteredCommands(repos []Repository) []*RegisteredCommand { //nol
 }
 
 // Parent returns the parent of this command.
-// The returned RegisteredModule may not consists of all modules that share the
+// The returned ResolvedModule may not consists of all modules that share the
 // same namespace, if some plugin providers are unavailable.
 // Check PluginProvider.UnavailableProviders() to check if that is the case.
 //
 // In any case the module will contain the built-in module and the module that
 // provides the command.
-func (c *RegisteredCommand) Parent() *RegisteredModule {
+func (c *ResolvedCommand) Parent() *ResolvedModule {
 	if c.parent != nil {
 		return *c.parent
 	}
@@ -158,14 +156,15 @@ func (c *RegisteredCommand) Parent() *RegisteredModule {
 }
 
 // ShortDescription returns an optional brief description of the command.
-func (c *RegisteredCommand) ShortDescription(l *i18n.Localizer) string {
+func (c *ResolvedCommand) ShortDescription(l *i18n.Localizer) string {
 	return c.Source.GetShortDescription(l)
 }
 
 // LongDescription returns an optional long description of the command.
 //
-// If the command only provides a short description, that will be used instead.
-func (c *RegisteredCommand) LongDescription(l *i18n.Localizer) string {
+// If the command only provides a short description, it will be returned
+// instead.
+func (c *ResolvedCommand) LongDescription(l *i18n.Localizer) string {
 	if desc := c.Source.GetLongDescription(l); len(desc) > 0 {
 		return desc
 	}
@@ -174,13 +173,13 @@ func (c *RegisteredCommand) LongDescription(l *i18n.Localizer) string {
 }
 
 // ExampleArgs returns optional example arguments of the command.
-func (c *RegisteredCommand) ExampleArgs(l *i18n.Localizer) []string {
+func (c *ResolvedCommand) ExampleArgs(l *i18n.Localizer) []string {
 	return c.Source.GetExampleArgs(l)
 }
 
 // Examples returns the command's example arguments prefixed with their invoke.
 // Invoke and example arguments are separated by a space.
-func (c *RegisteredCommand) Examples(l *i18n.Localizer) []string {
+func (c *ResolvedCommand) Examples(l *i18n.Localizer) []string {
 	args := c.ExampleArgs(l)
 
 	for i, arg := range args {
@@ -190,13 +189,13 @@ func (c *RegisteredCommand) Examples(l *i18n.Localizer) []string {
 	return args
 }
 
-// IsRestricted returns whether or not this command is restricted.
-func (c *RegisteredCommand) IsRestricted(s *state.State, ctx *Context) error {
+// IsRestricted checks whether or not this command is restricted.
+func (c *ResolvedCommand) IsRestricted(s *state.State, ctx *Context) error {
 	return c.Source.IsRestricted(s, ctx)
 }
 
 // Invoke invokes the command.
 // See Command.Invoke for more details.
-func (c *RegisteredCommand) Invoke(s *state.State, ctx *Context) (interface{}, error) {
+func (c *ResolvedCommand) Invoke(s *state.State, ctx *Context) (interface{}, error) {
 	return c.Source.Invoke(s, ctx)
 }

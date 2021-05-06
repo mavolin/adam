@@ -437,7 +437,7 @@ func TestInternalError_Handle(t *testing.T) {
 		Localizer: mock.NewLocalizer(t).
 			On(internalErrorTitle.Term, "abc").
 			Build(),
-		InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+		InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 			CommandMeta: mock.CommandMeta{Name: "abc"},
 		}),
 		Replier: replierFromState(s, 123, 0),

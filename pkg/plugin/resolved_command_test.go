@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_GenerateRegisteredCommands(t *testing.T) {
+func Test_GenerateResolvedCommands(t *testing.T) {
 	t.Run("single", func(t *testing.T) {
 		repos := []Repository{
 			{
@@ -25,11 +25,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		var nilRegisteredModule *RegisteredModule = nil
+		var nilResolvedModule *ResolvedModule = nil
 
-		expect := []*RegisteredCommand{
+		expect := []*ResolvedCommand{
 			{
-				parent:       &nilRegisteredModule,
+				parent:       &nilResolvedModule,
 				ProviderName: "",
 				Source: mockCommand{
 					name:      "abc",
@@ -46,7 +46,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		actual := GenerateRegisteredCommands(repos)
+		actual := GenerateResolvedCommands(repos)
 
 		assert.Equal(t, expect, actual)
 	})
@@ -63,11 +63,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		var nilRegisteredModule *RegisteredModule = nil
+		var nilResolvedModule *ResolvedModule = nil
 
-		expect := []*RegisteredCommand{
+		expect := []*ResolvedCommand{
 			{
-				parent:       &nilRegisteredModule,
+				parent:       &nilResolvedModule,
 				ProviderName: "abc",
 				Source:       mockCommand{name: "def"},
 				ID:           ".def",
@@ -76,7 +76,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		actual := GenerateRegisteredCommands(repos)
+		actual := GenerateResolvedCommands(repos)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -92,11 +92,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		var nilRegisteredModule *RegisteredModule = nil
+		var nilResolvedModule *ResolvedModule = nil
 
-		expect := []*RegisteredCommand{
+		expect := []*ResolvedCommand{
 			{
-				parent:       &nilRegisteredModule,
+				parent:       &nilResolvedModule,
 				ProviderName: "abc",
 				Source:       mockCommand{name: "def"},
 				ID:           ".def",
@@ -104,7 +104,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				ChannelTypes: AllChannels,
 			},
 			{
-				parent:       &nilRegisteredModule,
+				parent:       &nilResolvedModule,
 				ProviderName: "ghi",
 				Source:       mockCommand{name: "jkl"},
 				ID:           ".jkl",
@@ -113,7 +113,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		actual := GenerateRegisteredCommands(repos)
+		actual := GenerateResolvedCommands(repos)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -129,11 +129,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		var nilRegisteredModule *RegisteredModule = nil
+		var nilResolvedModule *ResolvedModule = nil
 
-		expect := []*RegisteredCommand{
+		expect := []*ResolvedCommand{
 			{
-				parent:       &nilRegisteredModule,
+				parent:       &nilResolvedModule,
 				ProviderName: "abc",
 				Source:       mockCommand{name: "def"},
 				ID:           ".def",
@@ -142,7 +142,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		actual := GenerateRegisteredCommands(repos)
+		actual := GenerateResolvedCommands(repos)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -168,11 +168,11 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		var nilRegisteredModule *RegisteredModule = nil
+		var nilResolvedModule *ResolvedModule = nil
 
-		expect := []*RegisteredCommand{
+		expect := []*ResolvedCommand{
 			{
-				parent:       &nilRegisteredModule,
+				parent:       &nilResolvedModule,
 				ProviderName: "abc",
 				Source: mockCommand{
 					name:    "def",
@@ -184,7 +184,7 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 				ChannelTypes: AllChannels,
 			},
 			{
-				parent:       &nilRegisteredModule,
+				parent:       &nilResolvedModule,
 				ProviderName: "mno",
 				Source: mockCommand{
 					name:    "pqr",
@@ -197,15 +197,15 @@ func Test_GenerateRegisteredCommands(t *testing.T) {
 			},
 		}
 
-		actual := GenerateRegisteredCommands(repos)
+		actual := GenerateResolvedCommands(repos)
 		assert.Equal(t, expect, actual)
 	})
 }
 
-func TestRegisteredCommand_ShortDescription(t *testing.T) {
+func TestResolvedCommand_ShortDescription(t *testing.T) {
 	expect := "abc"
 
-	rcmd := &RegisteredCommand{
+	rcmd := &ResolvedCommand{
 		Source: mockCommand{
 			shortDesc: expect,
 		},
@@ -215,11 +215,11 @@ func TestRegisteredCommand_ShortDescription(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func TestRegisteredCommand_LongDescription(t *testing.T) {
+func TestResolvedCommand_LongDescription(t *testing.T) {
 	t.Run("long description", func(t *testing.T) {
 		expect := "abc"
 
-		rcmd := &RegisteredCommand{
+		rcmd := &ResolvedCommand{
 			Source: mockCommand{
 				longDesc: expect,
 			},
@@ -232,7 +232,7 @@ func TestRegisteredCommand_LongDescription(t *testing.T) {
 	t.Run("short description", func(t *testing.T) {
 		expect := "abc"
 
-		rcmd := &RegisteredCommand{
+		rcmd := &ResolvedCommand{
 			Source: mockCommand{
 				shortDesc: expect,
 				// no long description defined
@@ -244,19 +244,19 @@ func TestRegisteredCommand_LongDescription(t *testing.T) {
 	})
 }
 
-func TestRegisteredCommand_Examples(t *testing.T) {
+func TestResolvedCommand_Examples(t *testing.T) {
 	expect := []string{"abc", "def"}
 
-	rcmd := &RegisteredCommand{Source: mockCommand{exampleArgs: expect}}
+	rcmd := &ResolvedCommand{Source: mockCommand{exampleArgs: expect}}
 
 	actual := rcmd.Examples(nil)
 	assert.Equal(t, expect, actual)
 }
 
-func TestRegisteredCommand_IsRestricted(t *testing.T) {
+func TestResolvedCommand_IsRestricted(t *testing.T) {
 	expect := errors.New("abc")
 
-	rcmd := &RegisteredCommand{
+	rcmd := &ResolvedCommand{
 		Source: mockCommand{
 			restrictionFunc: func(*state.State, *Context) error {
 				return expect
@@ -268,10 +268,10 @@ func TestRegisteredCommand_IsRestricted(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func TestRegisteredCommand_Invoke(t *testing.T) {
+func TestResolvedCommand_Invoke(t *testing.T) {
 	expect := "abc"
 
-	rcmd := &RegisteredCommand{
+	rcmd := &ResolvedCommand{
 		Source: mockCommand{
 			invokeFunc: func(*state.State, *Context) (interface{}, error) {
 				return expect, nil

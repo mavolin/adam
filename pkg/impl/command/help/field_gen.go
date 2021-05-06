@@ -46,7 +46,7 @@ func (h *Help) genPrefixesField(b *capbuilder.CappedBuilder, ctx *plugin.Context
 }
 
 func (h *Help) genCommandsField(
-	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, cmds []*plugin.RegisteredCommand,
+	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, cmds []*plugin.ResolvedCommand,
 ) (f discord.EmbedField) {
 	b.Reset(1024)
 
@@ -63,7 +63,7 @@ func (h *Help) genCommandsField(
 }
 
 func (h *Help) genModuleFields(
-	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, mods []*plugin.RegisteredModule, max int,
+	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, mods []*plugin.ResolvedModule, max int,
 ) []discord.EmbedField {
 	fields := make([]discord.EmbedField, 0, max)
 
@@ -96,7 +96,7 @@ func (h *Help) genModuleFields(
 	return fields
 }
 
-func (h *Help) genAliases(b *strings.Builder, cmd *plugin.RegisteredCommand, l *i18n.Localizer) *discord.EmbedField {
+func (h *Help) genAliases(b *strings.Builder, cmd *plugin.ResolvedCommand, l *i18n.Localizer) *discord.EmbedField {
 	if len(cmd.Aliases) == 0 {
 		return nil
 	}
@@ -119,7 +119,7 @@ func (h *Help) genAliases(b *strings.Builder, cmd *plugin.RegisteredCommand, l *
 	}
 }
 
-func (h *Help) genUsages(b *strings.Builder, ctx *plugin.Context, cmd *plugin.RegisteredCommand) []discord.EmbedField {
+func (h *Help) genUsages(b *strings.Builder, ctx *plugin.Context, cmd *plugin.ResolvedCommand) []discord.EmbedField {
 	if cmd.Args == nil { // special case, command accepts no arguments
 		return []discord.EmbedField{
 			{
@@ -162,7 +162,7 @@ func (h *Help) genUsages(b *strings.Builder, ctx *plugin.Context, cmd *plugin.Re
 }
 
 func (h *Help) genUsage(
-	b *strings.Builder, cmd *plugin.RegisteredCommand, info plugin.ArgsInfo, n int, l *i18n.Localizer,
+	b *strings.Builder, cmd *plugin.ResolvedCommand, info plugin.ArgsInfo, n int, l *i18n.Localizer,
 ) (usage discord.EmbedField) {
 	if n == 0 {
 		usage.Name = l.MustLocalize(usageFieldNameSingle)
@@ -314,7 +314,7 @@ func (h *Help) genFlags(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Locali
 	}
 }
 
-func (h *Help) genExamples(b *strings.Builder, cmd *plugin.RegisteredCommand, l *i18n.Localizer) *discord.EmbedField {
+func (h *Help) genExamples(b *strings.Builder, cmd *plugin.ResolvedCommand, l *i18n.Localizer) *discord.EmbedField {
 	examples := cmd.Examples(l)
 	if len(examples) == 0 {
 		return nil
@@ -342,7 +342,7 @@ func (h *Help) genExamples(b *strings.Builder, cmd *plugin.RegisteredCommand, l 
 // HiddenLevel to the passed *capbuilder.CappedBuilder, until there are no more
 // commands, or the capbuilder.CappedBuilder's chunk size is reached.
 func (h *Help) formatCommands(
-	b *capbuilder.CappedBuilder, cmds []*plugin.RegisteredCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
+	b *capbuilder.CappedBuilder, cmds []*plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
 ) {
 	cmds = filterCommands(cmds, s, ctx, lvl, h.HideFuncs...)
 
@@ -359,7 +359,7 @@ func (h *Help) formatCommands(
 	}
 }
 
-func (h *Help) formatCommand(b *capbuilder.CappedBuilder, cmd *plugin.RegisteredCommand, l *i18n.Localizer) {
+func (h *Help) formatCommand(b *capbuilder.CappedBuilder, cmd *plugin.ResolvedCommand, l *i18n.Localizer) {
 	b.WriteRune('`')
 	b.WriteString(cmd.ID.AsInvoke())
 	b.WriteRune('`')
@@ -371,7 +371,7 @@ func (h *Help) formatCommand(b *capbuilder.CappedBuilder, cmd *plugin.Registered
 }
 
 func (h *Help) formatModule(
-	b *capbuilder.CappedBuilder, mod *plugin.RegisteredModule, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
+	b *capbuilder.CappedBuilder, mod *plugin.ResolvedModule, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
 ) {
 	if b.ChunkLen() > 0 {
 		b.WriteRune('\n')

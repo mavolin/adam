@@ -19,10 +19,10 @@ func (c Command) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error
 	return c.InvokeFunc(s, ctx)
 }
 
-// GenerateRegisteredCommand creates a mocked RegisteredCommand from the passed
-// Command using the passed provider name.
-func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.RegisteredCommand {
-	c := plugin.NewRegisteredCommandWithParent(nil)
+// GenerateResolvedCommand creates a mocked plugin.ResolvedCommand from the
+// passed plugin.Command using the passed provider name.
+func GenerateResolvedCommand(providerName string, cmd plugin.Command) *plugin.ResolvedCommand {
+	c := plugin.NewResolvedCommandWithParent(nil)
 
 	c.Source = cmd
 	// c.SourceParents = nil
@@ -39,15 +39,15 @@ func GenerateRegisteredCommand(providerName string, cmd Command) *plugin.Registe
 	return c
 }
 
-// GenerateRegisteredCommandWithParents creates a new RegisteredCommand from
-// the passed module.
-// It then returns the command with the given identifier found in the module.
+// GenerateResolvedCommandWithParents creates a new plugin.ResolvedCommand from
+// the passed plugin.Module.
+// It then returns the command with the given plugin.ID as found in the module.
 //
 // The passed module must be the root module.
-func GenerateRegisteredCommandWithParents(
+func GenerateResolvedCommandWithParents(
 	providerName string, smod plugin.Module, cmdID plugin.ID,
-) *plugin.RegisteredCommand {
-	rmod := GenerateRegisteredModule(providerName, smod)
+) *plugin.ResolvedCommand {
+	rmod := GenerateResolvedModule(providerName, smod)
 	if rmod == nil {
 		return nil
 	}

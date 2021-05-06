@@ -13,7 +13,7 @@ import (
 
 // Command is the type used for commands.
 //
-// Go type: *plugin.RegisteredCommand
+// Go type: *plugin.ResolvedCommand
 var Command Type = new(command)
 
 type command struct{}
@@ -42,7 +42,7 @@ func (c command) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 }
 
 func (c command) Default() interface{} {
-	return (*plugin.RegisteredCommand)(nil)
+	return (*plugin.ResolvedCommand)(nil)
 }
 
 // =============================================================================
@@ -51,7 +51,7 @@ func (c command) Default() interface{} {
 
 // Module is the type used for modules.
 //
-// Go type: *plugin.RegisteredModule
+// Go type: *plugin.ResolvedModule
 var Module Type = new(module)
 
 type module struct{}
@@ -80,7 +80,7 @@ func (m module) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 }
 
 func (m module) Default() interface{} {
-	return (*plugin.RegisteredModule)(nil)
+	return (*plugin.ResolvedModule)(nil)
 }
 
 // =============================================================================
@@ -91,7 +91,7 @@ func (m module) Default() interface{} {
 // The generated data is guaranteed to be of one of the two go types.
 // Fallback for default will be interface{} nil.
 //
-// Go types: *plugin.RegisteredCommand or *plugin.RegisteredModule
+// Go types: *plugin.ResolvedCommand or *plugin.ResolvedModule
 var Plugin Type = new(pluginType)
 
 type pluginType struct{}

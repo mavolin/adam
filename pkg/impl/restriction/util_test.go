@@ -22,7 +22,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "pass guild channels",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
@@ -34,7 +34,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildTextChannels},
 				}),
 			},
@@ -45,7 +45,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "pass direct messages",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 0},
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 			},
@@ -57,7 +57,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
@@ -68,7 +68,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "all channels",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 0},
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 			},
@@ -79,7 +79,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "pass guild text",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
 						ChannelTypes: plugin.AllChannels,
 					},
@@ -96,7 +96,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
@@ -108,7 +108,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{

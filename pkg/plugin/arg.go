@@ -161,11 +161,11 @@ func (a Args) Location(i int) *time.Location { return a[i].(*time.Location) }
 // Regexp returns the flag with the passed index as *regexp.Regexp.
 func (a Args) Regexp(i int) *regexp.Regexp { return a[i].(*regexp.Regexp) }
 
-// Command returns the argument with the passed index as *RegisteredCommand.
-func (a Args) Command(i int) *RegisteredCommand { return a[i].(*RegisteredCommand) }
+// Command returns the argument with the passed index as *ResolvedCommand.
+func (a Args) Command(i int) *ResolvedCommand { return a[i].(*ResolvedCommand) }
 
 // Module returns the argument with the passed index as *RegisteredRegexp.
-func (a Args) Module(i int) *RegisteredModule { return a[i].(*RegisteredModule) }
+func (a Args) Module(i int) *ResolvedModule { return a[i].(*ResolvedModule) }
 
 // Ints returns the argument with the passed index as []int.
 func (a Args) Ints(i int) []int { return a[i].([]int) }
@@ -218,11 +218,11 @@ func (a Args) Locations(i int) []*time.Location { return a[i].([]*time.Location)
 // Regexps returns the argument with the passed index as []*regexp.Regexp.
 func (a Args) Regexps(i int) []*regexp.Regexp { return a[i].([]*regexp.Regexp) }
 
-// Commands returns the argument with the passed index as []*RegisteredCommand.
-func (a Args) Commands(i int) []*RegisteredCommand { return a[i].([]*RegisteredCommand) }
+// Commands returns the argument with the passed index as []*ResolvedCommand.
+func (a Args) Commands(i int) []*ResolvedCommand { return a[i].([]*ResolvedCommand) }
 
-// Modules returns the argument with the passed index as []*RegisteredModule.
-func (a Args) Modules(i int) []*RegisteredModule { return a[i].([]*RegisteredModule) }
+// Modules returns the argument with the passed index as []*ResolvedModule.
+func (a Args) Modules(i int) []*ResolvedModule { return a[i].([]*ResolvedModule) }
 
 // Flags are the parsed flags of a command.
 type Flags map[string]interface{}
@@ -281,11 +281,11 @@ func (f Flags) Location(name string) *time.Location { return f[name].(*time.Loca
 // Regexp returns the flag with the passed name as *regexp.Regexp.
 func (f Flags) Regexp(name string) *regexp.Regexp { return f[name].(*regexp.Regexp) }
 
-// Command returns the flag with the passed name as *RegisteredCommand.
-func (f Flags) Command(name string) *RegisteredCommand { return f[name].(*RegisteredCommand) }
+// Command returns the flag with the passed name as *ResolvedCommand.
+func (f Flags) Command(name string) *ResolvedCommand { return f[name].(*ResolvedCommand) }
 
-// Module returns the flag with the passed name as *RegisteredModule.
-func (f Flags) Module(name string) *RegisteredModule { return f[name].(*RegisteredModule) }
+// Module returns the flag with the passed name as *ResolvedModule.
+func (f Flags) Module(name string) *ResolvedModule { return f[name].(*ResolvedModule) }
 
 // Ints returns the flag with the passed name as []int.
 func (f Flags) Ints(name string) []int { return f[name].([]int) }
@@ -338,8 +338,8 @@ func (f Flags) Locations(name string) []*time.Location { return f[name].([]*time
 // Regexps returns the flag with the passed name as []*regexp.Regexp.
 func (f Flags) Regexps(name string) []*regexp.Regexp { return f[name].([]*regexp.Regexp) }
 
-// Commands returns the flag with the passed name as []*RegisteredCommand.
-func (f Flags) Commands(name string) []*RegisteredCommand { return f[name].([]*RegisteredCommand) }
+// Commands returns the flag with the passed name as []*ResolvedCommand.
+func (f Flags) Commands(name string) []*ResolvedCommand { return f[name].([]*ResolvedCommand) }
 
-// Modules returns the flag with the passed name as []*RegisteredModule.
-func (f Flags) Modules(name string) []*RegisteredModule { return f[name].([]*RegisteredModule) }
+// Modules returns the flag with the passed name as []*ResolvedModule.
+func (f Flags) Modules(name string) []*ResolvedModule { return f[name].([]*ResolvedModule) }

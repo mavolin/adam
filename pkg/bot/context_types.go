@@ -26,8 +26,8 @@ type ctxPluginProvider struct {
 
 	async bool
 
-	commands []*plugin.RegisteredCommand
-	modules  []*plugin.RegisteredModule
+	commands []*plugin.ResolvedCommand
+	modules  []*plugin.ResolvedModule
 
 	unavailableProviders []plugin.UnavailablePluginProvider
 }
@@ -70,7 +70,7 @@ func (p *ctxPluginProvider) lazyRepos() {
 	p.remProviders = nil
 }
 
-func (p *ctxPluginProvider) Commands() []*plugin.RegisteredCommand {
+func (p *ctxPluginProvider) Commands() []*plugin.ResolvedCommand {
 	p.lazyCommands()
 	return p.commands
 }
@@ -78,11 +78,11 @@ func (p *ctxPluginProvider) Commands() []*plugin.RegisteredCommand {
 func (p *ctxPluginProvider) lazyCommands() {
 	if p.commands == nil {
 		p.lazyRepos()
-		p.commands = plugin.GenerateRegisteredCommands(p.repos)
+		p.commands = plugin.GenerateResolvedCommands(p.repos)
 	}
 }
 
-func (p *ctxPluginProvider) Modules() []*plugin.RegisteredModule {
+func (p *ctxPluginProvider) Modules() []*plugin.ResolvedModule {
 	p.lazyModules()
 	return p.modules
 }
@@ -90,11 +90,11 @@ func (p *ctxPluginProvider) Modules() []*plugin.RegisteredModule {
 func (p *ctxPluginProvider) lazyModules() {
 	if p.modules == nil {
 		p.lazyRepos()
-		p.modules = plugin.GenerateRegisteredModules(p.repos)
+		p.modules = plugin.GenerateResolvedModules(p.repos)
 	}
 }
 
-func (p *ctxPluginProvider) Command(id plugin.ID) *plugin.RegisteredCommand {
+func (p *ctxPluginProvider) Command(id plugin.ID) *plugin.ResolvedCommand {
 	if id.IsRoot() {
 		return nil
 	}
@@ -123,7 +123,7 @@ func (p *ctxPluginProvider) Command(id plugin.ID) *plugin.RegisteredCommand {
 	return mod.FindCommand(id.Name())
 }
 
-func (p *ctxPluginProvider) Module(id plugin.ID) *plugin.RegisteredModule {
+func (p *ctxPluginProvider) Module(id plugin.ID) *plugin.ResolvedModule {
 	p.lazyModules()
 
 	all := id.All()
@@ -158,7 +158,7 @@ func (p *ctxPluginProvider) Module(id plugin.ID) *plugin.RegisteredModule {
 	return mod
 }
 
-func (p *ctxPluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
+func (p *ctxPluginProvider) FindCommand(invoke string) *plugin.ResolvedCommand {
 	id := plugin.NewIDFromInvoke(invoke)
 
 	name := id.Name()
@@ -195,7 +195,7 @@ func (p *ctxPluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand
 	return nil
 }
 
-func (p *ctxPluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
+func (p *ctxPluginProvider) FindModule(invoke string) *plugin.ResolvedModule {
 	id := plugin.NewIDFromInvoke(invoke)
 	return p.Module(id)
 }

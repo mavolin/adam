@@ -8,16 +8,14 @@ import (
 )
 
 type (
-	// RegisteredModule is the resolved module as returned by a Provider.
-	// In contrast to the regular module abstraction, RegisteredModule's fields
-	// take into account it's parents settings, as the router would see them.
-	// It's plugins reflect the plugins provided by all modules with the same
-	// ID, i.e. a plugin with the same name provided through different
-	// bot.PluginProviders.
-	RegisteredModule struct {
-		// If the module is top-level Parent will be nil.
+	// ResolvedModule is a resolved module as returned by a Provider.
+	// In contrast to the regular Module abstraction, ResolvedModule's plugins
+	// reflect the plugins provided by all modules with the same ID, i.e. a
+	// plugin with the same name provided through different bot.PluginProvider.
+	ResolvedModule struct {
 		// Parent is the parent of this module.
-		Parent *RegisteredModule
+		// If the module is top-level Parent will be nil.
+		Parent *ResolvedModule
 
 		// Sources contains the Modules this module is based upon.
 		// Sources[0] will contain the built in module.
@@ -38,32 +36,32 @@ type (
 
 		// Commands are the subcommands of the module.
 		// They are sorted in ascending order by name.
-		Commands []*RegisteredCommand
+		Commands []*ResolvedCommand
 		// Modules are the submodules of the module.
 		// They are sorted in ascending order by name.
-		Modules []*RegisteredModule
+		Modules []*ResolvedModule
 	}
 
-	// SourceModule contains the parent Modules of a RegisteredModule.
+	// SourceModule contains the parent Modules of a ResolvedModule.
 	SourceModule struct {
 		// ProviderName is the name of the plugin provider that
 		// provided the module.
 		ProviderName string
-		// Modules contains the parents of the RegisteredModule.
+		// Modules contains the parents of the ResolvedModule.
 		// They are sorted in ascending order from the most distant to the
 		// closest parent.
 		Modules []Module
 	}
 )
 
-// GenerateRegisteredModules generates RegisteredModules from the passed
+// GenerateResolvedModules generates ResolvedModules from the passed
 // Repositories.
-func GenerateRegisteredModules(repos []Repository) []*RegisteredModule {
+func GenerateResolvedModules(repos []Repository) []*ResolvedModule {
 	if len(repos) == 0 {
 		return nil
 	}
 
-	rmod := make([]*RegisteredModule, 0, len(repos[0].Modules))
+	rmod := make([]*ResolvedModule, 0, len(repos[0].Modules))
 
 	var mergeLen int
 
@@ -87,8 +85,8 @@ func GenerateRegisteredModules(repos []Repository) []*RegisteredModule {
 	}
 
 	for _, sm := range sortSourceModules(smods) {
-		// create a RegisteredModule for every SourceModule we merged.
-		rmod = append(rmod, generateRegisteredModule(nil, sm, repos))
+		// create a ResolvedModule for every SourceModule we merged.
+		rmod = append(rmod, generateResolvedModule(nil, sm, repos))
 	}
 
 	return rmod
@@ -138,14 +136,14 @@ func sortSourceModules(smods []SourceModule) [][]SourceModule {
 	return sorted
 }
 
-// generateRegisteredModule generates a RegisteredModule from the passed
+// generateResolvedModule generates a ResolvedModule from the passed
 // SourceModules with the passed parent.
 // The passed SourceModules represent a group of Modules with the same name in
 // the passed parent.
 //
 // The passed Repositories will be used to determine the Defaults of the
 // subcommands.
-func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, repos []Repository) *RegisteredModule {
+func generateResolvedModule(parent *ResolvedModule, smods []SourceModule, repos []Repository) *ResolvedModule {
 	if len(smods) == 0 {
 		return nil
 	}
@@ -153,7 +151,7 @@ func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, re
 	// used for meta info
 	referenceModule := smods[0].Modules[len(smods[0].Modules)-1]
 
-	rmod := &RegisteredModule{
+	rmod := &ResolvedModule{
 		Parent:  parent,
 		Sources: smods,
 		Name:    referenceModule.GetName(),
@@ -195,7 +193,7 @@ func generateRegisteredModule(parent *RegisteredModule, smods []SourceModule, re
 
 // fillSubmodules fills the Modules field of the passed parent module.
 // It generates the RegisteredModules from the parents Sources.
-func fillSubmodules(parent *RegisteredModule, repos []Repository) {
+func fillSubmodules(parent *ResolvedModule, repos []Repository) {
 	var maxLen int
 
 	for _, smod := range parent.Sources {
@@ -231,10 +229,10 @@ func fillSubmodules(parent *RegisteredModule, repos []Repository) {
 
 	sortedSmods := sortSourceModules(subSMods)
 
-	parent.Modules = make([]*RegisteredModule, len(sortedSmods))
+	parent.Modules = make([]*ResolvedModule, len(sortedSmods))
 
 	for fillLen, smod := range sortedSmods {
-		rmod := generateRegisteredModule(parent, smod, repos)
+		rmod := generateResolvedModule(parent, smod, repos)
 
 		i := sort.Search(fillLen, func(i int) bool {
 			return parent.Modules[i].Name >= rmod.Name
@@ -251,7 +249,7 @@ func fillSubmodules(parent *RegisteredModule, repos []Repository) {
 
 // fillSubcommands fills the Commands field of the passed parent module with
 // the commands found in the parents Sources.
-func fillSubcommands(parent *RegisteredModule) {
+func fillSubcommands(parent *ResolvedModule) {
 	var maxLen int
 
 	for _, smod := range parent.Sources {
@@ -265,14 +263,14 @@ func fillSubcommands(parent *RegisteredModule) {
 	}
 
 	// preallocate the maximum possible amount of commands
-	parent.Commands = make([]*RegisteredCommand, 0, maxLen)
+	parent.Commands = make([]*ResolvedCommand, 0, maxLen)
 
 	// set of aliases already used
 	usedAliases := make(map[string]struct{}, maxLen)
 
 	for _, smod := range parent.Sources {
 		// generate RegisteredCommands for the current provider
-		insertCmds := generateRegisteredCommands(parent, smod)
+		insertCmds := generateResolvedCommands(parent, smod)
 
 		for _, rcmd := range insertCmds {
 			rcmd.parent = &parent
@@ -311,7 +309,7 @@ func fillSubcommands(parent *RegisteredModule) {
 	}
 }
 
-func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*RegisteredCommand { //nolint:funlen
+func generateResolvedCommands(parent *ResolvedModule, smod SourceModule) []*ResolvedCommand { //nolint:funlen
 	var id ID
 
 	for _, p := range smod.Modules {
@@ -320,10 +318,10 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*
 
 	// get the commands of the innermost parent
 	cmds := smod.Modules[len(smod.Modules)-1].Commands()
-	rcmds := make([]*RegisteredCommand, len(cmds))
+	rcmds := make([]*ResolvedCommand, len(cmds))
 
 	for i, cmd := range cmds {
-		rcmd := &RegisteredCommand{
+		rcmd := &ResolvedCommand{
 			parent:        &parent,
 			ID:            id + ID("."+cmd.GetName()),
 			Source:        cmd,
@@ -353,7 +351,7 @@ func generateRegisteredCommands(parent *RegisteredModule, smod SourceModule) []*
 
 // ShortDescription returns an optional one-sentence description of the
 // module.
-func (m *RegisteredModule) ShortDescription(l *i18n.Localizer) string {
+func (m *ResolvedModule) ShortDescription(l *i18n.Localizer) string {
 	for _, mod := range m.Sources {
 		parent := mod.Modules[len(mod.Modules)-1]
 
@@ -369,7 +367,7 @@ func (m *RegisteredModule) ShortDescription(l *i18n.Localizer) string {
 // module.
 //
 // If the module only provides a short description, that will be
-func (m *RegisteredModule) LongDescription(l *i18n.Localizer) string {
+func (m *ResolvedModule) LongDescription(l *i18n.Localizer) string {
 	for _, mod := range m.Sources {
 		parent := mod.Modules[len(mod.Modules)-1]
 
@@ -391,7 +389,7 @@ func (m *RegisteredModule) LongDescription(l *i18n.Localizer) string {
 
 // FindCommand finds the command with the given name inside this module.
 // A name can either be the actual name of a command, or an alias.
-func (m *RegisteredModule) FindCommand(name string) *RegisteredCommand {
+func (m *ResolvedModule) FindCommand(name string) *ResolvedCommand {
 	name = strings.TrimSpace(name)
 
 	// fast path, if not searching for alias
@@ -416,7 +414,7 @@ func (m *RegisteredModule) FindCommand(name string) *RegisteredCommand {
 }
 
 // FindModule finds the module with the given name inside the module.
-func (m *RegisteredModule) FindModule(name string) *RegisteredModule {
+func (m *ResolvedModule) FindModule(name string) *ResolvedModule {
 	name = strings.TrimSpace(name)
 
 	i := sort.Search(len(m.Modules), func(i int) bool {

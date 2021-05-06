@@ -39,7 +39,7 @@ func newMessageUpdateEvent(ctx *plugin.Context) *state.MessageUpdateEvent {
 
 func findCommand(
 	invoke string, p plugin.Provider, repo plugin.Repository,
-) (rcmd *plugin.RegisteredCommand, args string) {
+) (rcmd *plugin.ResolvedCommand, args string) {
 	cmds := repo.Commands
 	mods := repo.Modules
 
@@ -84,8 +84,8 @@ func findCommand(
 
 func newRegisteredCommandWithProvider(
 	p plugin.Provider, id plugin.ID, cmd plugin.Command, parents []plugin.Module, repo *plugin.Repository,
-) *plugin.RegisteredCommand {
-	rcmd := plugin.NewRegisteredCommandWithProvider(p)
+) *plugin.ResolvedCommand {
+	rcmd := plugin.NewResolvedCommandWithProvider(p)
 	rcmd.ProviderName = repo.ProviderName
 	rcmd.Source = cmd
 	rcmd.SourceParents = parents

@@ -16,32 +16,32 @@ func TestCheckHidden(t *testing.T) {
 	testCases := []struct {
 		name      string
 		hiddenLvl HiddenLevel
-		cmd       *plugin.RegisteredCommand
+		cmd       *plugin.ResolvedCommand
 
 		expect HiddenLevel
 	}{
 		{
 			name:      "hidden",
 			hiddenLvl: HideList,
-			cmd:       &plugin.RegisteredCommand{Hidden: true},
+			cmd:       &plugin.ResolvedCommand{Hidden: true},
 			expect:    HideList,
 		},
 		{
 			name:      "not hidden",
 			hiddenLvl: HideList,
-			cmd:       &plugin.RegisteredCommand{Hidden: false},
+			cmd:       &plugin.ResolvedCommand{Hidden: false},
 			expect:    Show,
 		},
 		{
 			name:      "level",
 			hiddenLvl: HideList,
-			cmd:       &plugin.RegisteredCommand{Hidden: true},
+			cmd:       &plugin.ResolvedCommand{Hidden: true},
 			expect:    HideList,
 		},
 		{
 			name:      "level",
 			hiddenLvl: Hide,
-			cmd:       &plugin.RegisteredCommand{Hidden: true},
+			cmd:       &plugin.ResolvedCommand{Hidden: true},
 			expect:    Hide,
 		},
 	}
@@ -58,7 +58,7 @@ func TestCheckChannelTypes(t *testing.T) {
 	successCases := []struct {
 		name      string
 		hiddenLvl HiddenLevel
-		cmd       *plugin.RegisteredCommand
+		cmd       *plugin.ResolvedCommand
 		ctx       *plugin.Context
 
 		expect HiddenLevel
@@ -66,28 +66,28 @@ func TestCheckChannelTypes(t *testing.T) {
 		{
 			name:      "matching",
 			hiddenLvl: HideList,
-			cmd:       &plugin.RegisteredCommand{ChannelTypes: plugin.DirectMessages},
+			cmd:       &plugin.ResolvedCommand{ChannelTypes: plugin.DirectMessages},
 			ctx:       &plugin.Context{Message: discord.Message{GuildID: 0}},
 			expect:    Show,
 		},
 		{
 			name:      "not matching",
 			hiddenLvl: HideList,
-			cmd:       &plugin.RegisteredCommand{ChannelTypes: plugin.DirectMessages},
+			cmd:       &plugin.ResolvedCommand{ChannelTypes: plugin.DirectMessages},
 			ctx:       &plugin.Context{Message: discord.Message{GuildID: 123}},
 			expect:    HideList,
 		},
 		{
 			name:      "level",
 			hiddenLvl: HideList,
-			cmd:       &plugin.RegisteredCommand{ChannelTypes: plugin.DirectMessages},
+			cmd:       &plugin.ResolvedCommand{ChannelTypes: plugin.DirectMessages},
 			ctx:       &plugin.Context{Message: discord.Message{GuildID: 123}},
 			expect:    HideList,
 		},
 		{
 			name:      "level",
 			hiddenLvl: Hide,
-			cmd:       &plugin.RegisteredCommand{ChannelTypes: plugin.DirectMessages},
+			cmd:       &plugin.ResolvedCommand{ChannelTypes: plugin.DirectMessages},
 			ctx:       &plugin.Context{Message: discord.Message{GuildID: 123}},
 			expect:    Hide,
 		},
@@ -105,7 +105,7 @@ func TestCheckChannelTypes(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		expect := Show
 
-		cmd := &plugin.RegisteredCommand{ChannelTypes: plugin.GuildTextChannels}
+		cmd := &plugin.ResolvedCommand{ChannelTypes: plugin.GuildTextChannels}
 
 		channelError := errors.New("abc")
 
@@ -130,14 +130,14 @@ func TestCheckRestrictions(t *testing.T) {
 	testCases := []struct {
 		name      string
 		hiddenLvl HiddenLevel
-		cmd       *plugin.RegisteredCommand
+		cmd       *plugin.ResolvedCommand
 
 		expect HiddenLevel
 	}{
 		{
 			name:      "restricted",
 			hiddenLvl: HideList,
-			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider, mock.Command{
+			cmd: mock.GenerateResolvedCommand(plugin.BuiltInProvider, mock.Command{
 				CommandMeta: mock.CommandMeta{
 					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
 				},
@@ -147,14 +147,14 @@ func TestCheckRestrictions(t *testing.T) {
 		{
 			name:      "not restricted",
 			hiddenLvl: HideList,
-			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider,
+			cmd: mock.GenerateResolvedCommand(plugin.BuiltInProvider,
 				mock.Command{CommandMeta: mock.CommandMeta{}}),
 			expect: Show,
 		},
 		{
 			name:      "level",
 			hiddenLvl: HideList,
-			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider, mock.Command{
+			cmd: mock.GenerateResolvedCommand(plugin.BuiltInProvider, mock.Command{
 				CommandMeta: mock.CommandMeta{
 					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
 				},
@@ -164,7 +164,7 @@ func TestCheckRestrictions(t *testing.T) {
 		{
 			name:      "level",
 			hiddenLvl: Hide,
-			cmd: mock.GenerateRegisteredCommand(plugin.BuiltInProvider, mock.Command{
+			cmd: mock.GenerateResolvedCommand(plugin.BuiltInProvider, mock.Command{
 				CommandMeta: mock.CommandMeta{
 					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
 				},
@@ -215,15 +215,15 @@ func Test_checkHideFuncs(t *testing.T) {
 func Test_filterCommands(t *testing.T) {
 	testCases := []struct {
 		name  string
-		cmds  []*plugin.RegisteredCommand
+		cmds  []*plugin.ResolvedCommand
 		lvl   HiddenLevel
 		funcs []HideFunc
 
-		expect []*plugin.RegisteredCommand
+		expect []*plugin.ResolvedCommand
 	}{
 		{
 			name: "level",
-			cmds: []*plugin.RegisteredCommand{
+			cmds: []*plugin.ResolvedCommand{
 				{Name: "abc", Hidden: true},
 				{Name: "def", Hidden: false},
 				{Name: "ghi", Hidden: false},
@@ -231,7 +231,7 @@ func Test_filterCommands(t *testing.T) {
 			lvl: HideList,
 			funcs: []HideFunc{
 				CheckHidden(HideList),
-				func(cmd *plugin.RegisteredCommand, _ *state.State, _ *plugin.Context) HiddenLevel {
+				func(cmd *plugin.ResolvedCommand, _ *state.State, _ *plugin.Context) HiddenLevel {
 					if cmd.Name == "def" {
 						return Hide
 					}
@@ -239,14 +239,14 @@ func Test_filterCommands(t *testing.T) {
 					return Show
 				},
 			},
-			expect: []*plugin.RegisteredCommand{
+			expect: []*plugin.ResolvedCommand{
 				{Name: "abc", Hidden: true},
 				{Name: "ghi", Hidden: false},
 			},
 		},
 		{
 			name: "level",
-			cmds: []*plugin.RegisteredCommand{
+			cmds: []*plugin.ResolvedCommand{
 				{Name: "abc", Hidden: true},
 				{Name: "def", Hidden: false},
 				{Name: "ghi", Hidden: false},
@@ -254,7 +254,7 @@ func Test_filterCommands(t *testing.T) {
 			lvl: Show,
 			funcs: []HideFunc{
 				CheckHidden(HideList),
-				func(cmd *plugin.RegisteredCommand, _ *state.State, _ *plugin.Context) HiddenLevel {
+				func(cmd *plugin.ResolvedCommand, _ *state.State, _ *plugin.Context) HiddenLevel {
 					if cmd.Name == "def" {
 						return Hide
 					}
@@ -262,7 +262,7 @@ func Test_filterCommands(t *testing.T) {
 					return Show
 				},
 			},
-			expect: []*plugin.RegisteredCommand{
+			expect: []*plugin.ResolvedCommand{
 				{Name: "ghi", Hidden: false},
 			},
 		},
