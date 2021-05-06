@@ -18,7 +18,7 @@ func Test_formatCommand(t *testing.T) {
 	t.Run("with short description", func(t *testing.T) {
 		expect := "`mod kick` - kicks someone"
 
-		cmd := &plugin.RegisteredCommand{
+		cmd := &plugin.ResolvedCommand{
 			Source: mock.Command{
 				CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
 			},
@@ -35,7 +35,7 @@ func Test_formatCommand(t *testing.T) {
 	t.Run("no short description", func(t *testing.T) {
 		expect := "`mod kick`"
 
-		cmd := &plugin.RegisteredCommand{
+		cmd := &plugin.ResolvedCommand{
 			Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
 			ID:     ".mod.kick",
 		}
@@ -53,7 +53,7 @@ func Test_formatCommands(t *testing.T) {
 		"`mod abc`\n" +
 		"`mod ban` - bans someone"
 
-	cmds := []*plugin.RegisteredCommand{
+	cmds := []*plugin.ResolvedCommand{
 		{
 			Source: mock.Command{
 				CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
@@ -88,8 +88,8 @@ func Test_formatModule(t *testing.T) {
 		"`mod infr rm`\n" +
 		"`mod invite toggle` - turns the invite module on or off"
 
-	mod := &plugin.RegisteredModule{
-		Commands: []*plugin.RegisteredCommand{
+	mod := &plugin.ResolvedModule{
+		Commands: []*plugin.ResolvedCommand{
 			{
 				Source: mock.Command{
 					CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
@@ -107,9 +107,9 @@ func Test_formatModule(t *testing.T) {
 				ID: ".mod.ban",
 			},
 		},
-		Modules: []*plugin.RegisteredModule{
+		Modules: []*plugin.ResolvedModule{
 			{
-				Commands: []*plugin.RegisteredCommand{
+				Commands: []*plugin.ResolvedCommand{
 					{
 						Source: mock.Command{
 							CommandMeta: mock.CommandMeta{ShortDescription: "lists all infractions"},
@@ -129,7 +129,7 @@ func Test_formatModule(t *testing.T) {
 				},
 			},
 			{
-				Commands: []*plugin.RegisteredCommand{
+				Commands: []*plugin.ResolvedCommand{
 					{
 						Source: mock.Command{
 							CommandMeta: mock.CommandMeta{ShortDescription: "turns the invite module on or off"},

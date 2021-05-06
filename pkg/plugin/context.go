@@ -44,8 +44,8 @@ type Context struct {
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Flags Flags
 
-	// InvokedCommand is the RegisteredCommand that is being invoked.
-	InvokedCommand *RegisteredCommand
+	// InvokedCommand is the ResolvedCommand that is being invoked.
+	InvokedCommand *ResolvedCommand
 
 	// Prefixes contains the prefixes of the bot in the guild.
 	// Length may be 0, if the guild allows the use of mentions only.
@@ -449,16 +449,16 @@ type (
 		// To check if any of the plugin providers returned an error, call
 		// UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
-		Commands() []*RegisteredCommand
+		Commands() []*ResolvedCommand
 		// Modules returns all top-level modules sorted in ascending order by
 		// name.
 		//
 		// To check if any of the plugin providers returned an error, call
 		// UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
-		Modules() []*RegisteredModule
+		Modules() []*ResolvedModule
 
-		// Command returns the RegisteredCommand with the passed ID.
+		// Command returns the ResolvedCommand with the passed ID.
 		//
 		// Note that Identifiers may only consist of the command's name, not
 		// their alias.
@@ -467,8 +467,8 @@ type (
 		//
 		// To check if any of the runtime plugin providers returned an error,
 		// call UnavailablePluginProviders.
-		Command(ID) *RegisteredCommand
-		// Module returns the RegisteredModule with the passed ID.
+		Command(ID) *ResolvedCommand
+		// Module returns the ResolvedModule with the passed ID.
 		//
 		// It will return nil if no module matching the identifier was found.
 		//
@@ -477,17 +477,17 @@ type (
 		// If that is the case, the module's description might not be available
 		// or differ from the description that is used if all plugin providers
 		// function properly.
-		Module(ID) *RegisteredModule
+		Module(ID) *ResolvedModule
 
-		// FindCommand returns the RegisteredCommand with the passed invoke.
+		// FindCommand returns the ResolvedCommand with the passed invoke.
 		//
 		// It will return nil if no command matching the passed invoke was
 		// found.
 		//
 		// To check if any of the plugin providers returned an error, call
 		// UnavailablePluginProviders.
-		FindCommand(invoke string) *RegisteredCommand
-		// FindModule returns the RegisteredModule with the passed invoke.
+		FindCommand(invoke string) *ResolvedCommand
+		// FindModule returns the ResolvedModule with the passed invoke.
 		//
 		// It will return nil if no module matching the passed invoke was
 		// found.
@@ -497,7 +497,7 @@ type (
 		// If that is the case, the module's description might not be available
 		// or differ from the description that is used if all plugin providers
 		// function properly.
-		FindModule(invoke string) *RegisteredModule
+		FindModule(invoke string) *ResolvedModule
 
 		// UnavailablePluginProviders returns a list of all unavailable runtime
 		// plugin providers.

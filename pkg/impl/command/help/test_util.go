@@ -7,7 +7,7 @@ import (
 )
 
 func mockHideFunc(ret HiddenLevel) HideFunc {
-	return func(*plugin.RegisteredCommand, *state.State, *plugin.Context) HiddenLevel {
+	return func(*plugin.ResolvedCommand, *state.State, *plugin.Context) HiddenLevel {
 		return ret
 	}
 }

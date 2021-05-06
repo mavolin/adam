@@ -126,8 +126,8 @@ func TestCtxPluginProvider_Commands(t *testing.T) {
 			},
 		}
 
-		expect := []*plugin.RegisteredCommand{
-			mock.GenerateRegisteredCommand(
+		expect := []*plugin.ResolvedCommand{
+			mock.GenerateResolvedCommand(
 				plugin.BuiltInProvider,
 				mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -136,7 +136,7 @@ func TestCtxPluginProvider_Commands(t *testing.T) {
 					},
 				},
 			),
-			mock.GenerateRegisteredCommand(
+			mock.GenerateResolvedCommand(
 				"another",
 				mock.Command{
 					CommandMeta: mock.CommandMeta{
@@ -153,11 +153,11 @@ func TestCtxPluginProvider_Commands(t *testing.T) {
 
 	t.Run("loaded", func(t *testing.T) {
 		p := &ctxPluginProvider{
-			commands: []*plugin.RegisteredCommand{
-				mock.GenerateRegisteredCommand(
+			commands: []*plugin.ResolvedCommand{
+				mock.GenerateResolvedCommand(
 					plugin.BuiltInProvider,
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}}),
-				mock.GenerateRegisteredCommand(
+				mock.GenerateResolvedCommand(
 					"another",
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}}),
 			},
@@ -213,8 +213,8 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 			},
 		}
 
-		expect := []*plugin.RegisteredModule{
-			mock.GenerateRegisteredModule(
+		expect := []*plugin.ResolvedModule{
+			mock.GenerateResolvedModule(
 				plugin.BuiltInProvider,
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "abc"},
@@ -228,7 +228,7 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 					},
 				},
 			),
-			mock.GenerateRegisteredModule(
+			mock.GenerateResolvedModule(
 				"another",
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "ghi"},
@@ -250,8 +250,8 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 
 	t.Run("loaded", func(t *testing.T) {
 		p := &ctxPluginProvider{
-			modules: []*plugin.RegisteredModule{
-				mock.GenerateRegisteredModule(
+			modules: []*plugin.ResolvedModule{
+				mock.GenerateResolvedModule(
 					plugin.BuiltInProvider,
 					mock.Module{
 						ModuleMeta: mock.ModuleMeta{Name: "abc"},
@@ -259,7 +259,7 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 							mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
 						},
 					}),
-				mock.GenerateRegisteredModule(
+				mock.GenerateResolvedModule(
 					"another",
 					mock.Module{
 						ModuleMeta: mock.ModuleMeta{Name: "ghi"},
@@ -280,11 +280,11 @@ func TestCtxPluginProvider_Modules(t *testing.T) {
 func TestCtxPluginProvider_Command(t *testing.T) {
 	t.Run("top-level", func(t *testing.T) {
 		p := &ctxPluginProvider{
-			commands: []*plugin.RegisteredCommand{
-				mock.GenerateRegisteredCommand(
+			commands: []*plugin.ResolvedCommand{
+				mock.GenerateResolvedCommand(
 					plugin.BuiltInProvider,
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}}),
-				mock.GenerateRegisteredCommand(
+				mock.GenerateResolvedCommand(
 					"another",
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}}),
 			},
@@ -297,8 +297,8 @@ func TestCtxPluginProvider_Command(t *testing.T) {
 
 	t.Run("nested", func(t *testing.T) {
 		p := &ctxPluginProvider{
-			modules: []*plugin.RegisteredModule{
-				mock.GenerateRegisteredModule(
+			modules: []*plugin.ResolvedModule{
+				mock.GenerateResolvedModule(
 					plugin.BuiltInProvider,
 					mock.Module{
 						ModuleMeta: mock.ModuleMeta{Name: "abc"},
@@ -306,7 +306,7 @@ func TestCtxPluginProvider_Command(t *testing.T) {
 							mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
 						},
 					}),
-				mock.GenerateRegisteredModule(
+				mock.GenerateResolvedModule(
 					"another",
 					mock.Module{
 						ModuleMeta: mock.ModuleMeta{Name: "ghi"},
@@ -326,8 +326,8 @@ func TestCtxPluginProvider_Command(t *testing.T) {
 
 func TestCtxPluginProvider_Module(t *testing.T) {
 	p := &ctxPluginProvider{
-		modules: []*plugin.RegisteredModule{
-			mock.GenerateRegisteredModule(
+		modules: []*plugin.ResolvedModule{
+			mock.GenerateResolvedModule(
 				plugin.BuiltInProvider,
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "abc"},
@@ -340,7 +340,7 @@ func TestCtxPluginProvider_Module(t *testing.T) {
 						},
 					},
 				}),
-			mock.GenerateRegisteredModule(
+			mock.GenerateResolvedModule(
 				"another",
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "jkl"},
@@ -364,11 +364,11 @@ func TestCtxPluginProvider_Module(t *testing.T) {
 func TestCtxPluginProvider_FindCommand(t *testing.T) {
 	t.Run("top-level", func(t *testing.T) {
 		p := &ctxPluginProvider{
-			commands: []*plugin.RegisteredCommand{
-				mock.GenerateRegisteredCommand(
+			commands: []*plugin.ResolvedCommand{
+				mock.GenerateResolvedCommand(
 					plugin.BuiltInProvider,
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "abc"}}),
-				mock.GenerateRegisteredCommand(
+				mock.GenerateResolvedCommand(
 					"another",
 					mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}}),
 			},
@@ -381,8 +381,8 @@ func TestCtxPluginProvider_FindCommand(t *testing.T) {
 
 	t.Run("nested", func(t *testing.T) {
 		p := &ctxPluginProvider{
-			modules: []*plugin.RegisteredModule{
-				mock.GenerateRegisteredModule(
+			modules: []*plugin.ResolvedModule{
+				mock.GenerateResolvedModule(
 					plugin.BuiltInProvider,
 					mock.Module{
 						ModuleMeta: mock.ModuleMeta{Name: "abc"},
@@ -390,7 +390,7 @@ func TestCtxPluginProvider_FindCommand(t *testing.T) {
 							mock.Command{CommandMeta: mock.CommandMeta{Name: "def"}},
 						},
 					}),
-				mock.GenerateRegisteredModule(
+				mock.GenerateResolvedModule(
 					"another",
 					mock.Module{
 						ModuleMeta: mock.ModuleMeta{Name: "ghi"},
@@ -410,8 +410,8 @@ func TestCtxPluginProvider_FindCommand(t *testing.T) {
 
 func TestCtxPluginProvider_FindModule(t *testing.T) {
 	p := &ctxPluginProvider{
-		modules: []*plugin.RegisteredModule{
-			mock.GenerateRegisteredModule(
+		modules: []*plugin.ResolvedModule{
+			mock.GenerateResolvedModule(
 				plugin.BuiltInProvider,
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "abc"},
@@ -424,7 +424,7 @@ func TestCtxPluginProvider_FindModule(t *testing.T) {
 						},
 					},
 				}),
-			mock.GenerateRegisteredModule(
+			mock.GenerateResolvedModule(
 				"another",
 				mock.Module{
 					ModuleMeta: mock.ModuleMeta{Name: "jkl"},

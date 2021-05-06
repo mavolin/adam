@@ -110,7 +110,7 @@ func (b *Bot) hasPrefix(invoke string, prefixes []string, guild bool) string {
 
 func (b *Bot) findCommand(
 	invoke string, base *state.Base, msg *discord.Message,
-) (*plugin.RegisteredCommand, plugin.Provider, string) {
+) (*plugin.ResolvedCommand, plugin.Provider, string) {
 	ctxprovider := &ctxPluginProvider{
 		base: base,
 		msg:  msg,
@@ -159,7 +159,7 @@ func (b *Bot) findCommand(
 
 func (b *Bot) findCommandAsync(
 	invoke string, base *state.Base, msg *discord.Message,
-) (*plugin.RegisteredCommand, plugin.Provider, string) {
+) (*plugin.ResolvedCommand, plugin.Provider, string) {
 	ctxprovider := &ctxPluginProvider{
 		base: base,
 		msg:  msg,

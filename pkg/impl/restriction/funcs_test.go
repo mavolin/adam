@@ -23,7 +23,7 @@ func TestNSFW(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
@@ -33,7 +33,7 @@ func TestNSFW(t *testing.T) {
 			name: "nsfw",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
@@ -46,7 +46,7 @@ func TestNSFW(t *testing.T) {
 			name: "not nsfw",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
@@ -76,7 +76,7 @@ func TestGuildOwner(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
@@ -90,7 +90,7 @@ func TestGuildOwner(t *testing.T) {
 					Author:  discord.User{ID: 456},
 				},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
@@ -107,7 +107,7 @@ func TestGuildOwner(t *testing.T) {
 					Author:  discord.User{ID: 456},
 				},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
@@ -216,7 +216,7 @@ func TestAllRoles(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{
 						ChannelTypes: plugin.AllChannels,
 					},
@@ -327,7 +327,7 @@ func TestMustAllRoles(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
@@ -396,7 +396,7 @@ func TestAnyRole(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
@@ -505,7 +505,7 @@ func TestMustAnyRole(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
@@ -701,7 +701,7 @@ func TestUserPermissions(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
@@ -735,7 +735,7 @@ func TestUserPermissions(t *testing.T) {
 				Message:   discord.Message{GuildID: 123},
 				Member:    &discord.Member{User: discord.User{ID: 456}},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateRegisteredCommand("built_in", mock.Command{
+				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
 					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{

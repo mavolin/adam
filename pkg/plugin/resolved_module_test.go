@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateRegisteredModules(t *testing.T) {
+func TestGenerateResolvedModules(t *testing.T) {
 	repos := []Repository{
 		{
 			ProviderName: "built_in",
@@ -36,7 +36,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		},
 	}
 
-	abc := &RegisteredModule{
+	abc := &ResolvedModule{
 		Sources: []SourceModule{
 			{
 				ProviderName: "built_in",
@@ -52,7 +52,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		Name: "abc",
 	}
 
-	abc.Commands = append(abc.Commands, &RegisteredCommand{
+	abc.Commands = append(abc.Commands, &ResolvedCommand{
 		parent: &abc,
 		Source: mockCommand{name: "zyx"},
 		SourceParents: []Module{
@@ -67,7 +67,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ChannelTypes: AllChannels,
 	})
 
-	def := &RegisteredModule{
+	def := &ResolvedModule{
 		Name: "def",
 		Sources: []SourceModule{
 			{
@@ -92,7 +92,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ID: ".def",
 	}
 
-	def.Commands = append(def.Commands, &RegisteredCommand{
+	def.Commands = append(def.Commands, &ResolvedCommand{
 		parent: &def,
 		Source: mockCommand{name: "tsr"},
 		SourceParents: []Module{
@@ -107,7 +107,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ChannelTypes: AllChannels,
 	})
 
-	def.Commands = append(def.Commands, &RegisteredCommand{
+	def.Commands = append(def.Commands, &ResolvedCommand{
 		parent: &def,
 		Source: mockCommand{name: "wvu"},
 		SourceParents: []Module{
@@ -122,7 +122,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ChannelTypes: AllChannels,
 	})
 
-	ghi := &RegisteredModule{
+	ghi := &ResolvedModule{
 		Name: "ghi",
 		Sources: []SourceModule{
 			{
@@ -138,7 +138,7 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ID: ".ghi",
 	}
 
-	ghi.Commands = append(ghi.Commands, &RegisteredCommand{
+	ghi.Commands = append(ghi.Commands, &ResolvedCommand{
 		parent: &ghi,
 		Source: mockCommand{name: "qpo"},
 		SourceParents: []Module{
@@ -153,9 +153,9 @@ func TestGenerateRegisteredModules(t *testing.T) {
 		ChannelTypes: AllChannels,
 	})
 
-	expect := []*RegisteredModule{abc, def, ghi}
+	expect := []*ResolvedModule{abc, def, ghi}
 
-	actual := GenerateRegisteredModules(repos)
+	actual := GenerateResolvedModules(repos)
 	assert.Equal(t, expect, actual)
 }
 
@@ -229,7 +229,7 @@ func Test_mergeSourceModules(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func Test_generateRegisteredModule(t *testing.T) {
+func Test_generateResolvedModule(t *testing.T) {
 	t.Run("no parent", func(t *testing.T) {
 		smods := []SourceModule{
 			{
@@ -243,14 +243,14 @@ func Test_generateRegisteredModule(t *testing.T) {
 			},
 		}
 
-		expect := &RegisteredModule{
+		expect := &ResolvedModule{
 			Parent:  nil,
 			Sources: smods,
 			ID:      ".abc",
 			Name:    "abc",
 		}
 
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
+		expect.Commands = append(expect.Commands, &ResolvedCommand{
 			parent:   &expect,
 			provider: nil,
 			Source:   mockCommand{name: "def"},
@@ -266,12 +266,12 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ChannelTypes: AllChannels,
 		})
 
-		actual := generateRegisteredModule(nil, smods, nil)
+		actual := generateResolvedModule(nil, smods, nil)
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("parent", func(t *testing.T) {
-		parent := &RegisteredModule{
+		parent := &ResolvedModule{
 			Parent: nil,
 			Sources: []SourceModule{
 				{
@@ -314,14 +314,14 @@ func Test_generateRegisteredModule(t *testing.T) {
 			},
 		}
 
-		expect := &RegisteredModule{
+		expect := &ResolvedModule{
 			Parent:  parent,
 			Sources: smods,
 			ID:      ".abc.def",
 			Name:    "def",
 		}
 
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
+		expect.Commands = append(expect.Commands, &ResolvedCommand{
 			parent:   &expect,
 			provider: nil,
 			Source:   mockCommand{name: "ghi"},
@@ -346,7 +346,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ChannelTypes: AllChannels,
 		})
 
-		actual := generateRegisteredModule(parent, smods, nil)
+		actual := generateResolvedModule(parent, smods, nil)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -372,7 +372,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			},
 		}
 
-		expect := &RegisteredModule{
+		expect := &ResolvedModule{
 			Parent:  nil,
 			Sources: smods,
 			ID:      ".abc",
@@ -380,7 +380,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Hidden:  true,
 		}
 
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
+		expect.Commands = append(expect.Commands, &ResolvedCommand{
 			parent:   &expect,
 			provider: nil,
 			Source:   mockCommand{name: "def", hidden: true},
@@ -397,7 +397,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ChannelTypes: AllChannels,
 		})
 
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
+		expect.Commands = append(expect.Commands, &ResolvedCommand{
 			parent:   &expect,
 			provider: nil,
 			Source:   mockCommand{name: "ghi", hidden: true},
@@ -414,7 +414,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ChannelTypes: AllChannels,
 		})
 
-		actual := generateRegisteredModule(nil, smods, nil)
+		actual := generateResolvedModule(nil, smods, nil)
 		assert.Equal(t, expect, actual)
 	})
 
@@ -443,7 +443,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			},
 		}
 
-		expect := &RegisteredModule{
+		expect := &ResolvedModule{
 			Parent:  nil,
 			Sources: smods,
 			ID:      ".abc",
@@ -451,7 +451,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			Hidden:  false,
 		}
 
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
+		expect.Commands = append(expect.Commands, &ResolvedCommand{
 			parent:   &expect,
 			provider: nil,
 			Source:   mockCommand{name: "def", hidden: true},
@@ -471,7 +471,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ChannelTypes: AllChannels,
 		})
 
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
+		expect.Commands = append(expect.Commands, &ResolvedCommand{
 			parent:   &expect,
 			provider: nil,
 			Source:   mockCommand{name: "ghi", hidden: false},
@@ -491,7 +491,7 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ChannelTypes: AllChannels,
 		})
 
-		expect.Commands = append(expect.Commands, &RegisteredCommand{
+		expect.Commands = append(expect.Commands, &ResolvedCommand{
 			parent:   &expect,
 			provider: nil,
 			Source:   mockCommand{name: "jkl", hidden: false},
@@ -507,13 +507,13 @@ func Test_generateRegisteredModule(t *testing.T) {
 			ChannelTypes: AllChannels,
 		})
 
-		actual := generateRegisteredModule(nil, smods, nil)
+		actual := generateResolvedModule(nil, smods, nil)
 		assert.Equal(t, expect, actual)
 	})
 }
 
 func Test_fillSubmodules(t *testing.T) {
-	parent := &RegisteredModule{
+	parent := &ResolvedModule{
 		ID:   ".abc",
 		Name: "abc",
 		Sources: []SourceModule{
@@ -532,7 +532,7 @@ func Test_fillSubmodules(t *testing.T) {
 		},
 	}
 
-	expect := &RegisteredModule{
+	expect := &ResolvedModule{
 		ID:   ".abc",
 		Name: "abc",
 		Sources: []SourceModule{
@@ -549,7 +549,7 @@ func Test_fillSubmodules(t *testing.T) {
 				},
 			},
 		},
-		Modules: []*RegisteredModule{
+		Modules: []*ResolvedModule{
 			{
 				Parent: parent,
 				Sources: []SourceModule{
@@ -600,7 +600,7 @@ func Test_fillSubmodules(t *testing.T) {
 }
 
 func Test_fillSubcommands(t *testing.T) {
-	parent := &RegisteredModule{
+	parent := &ResolvedModule{
 		ID:   ".abc",
 		Name: "abc",
 		Sources: []SourceModule{
@@ -637,7 +637,7 @@ func Test_fillSubcommands(t *testing.T) {
 		},
 	}
 
-	expect := &RegisteredModule{
+	expect := &ResolvedModule{
 		Sources: []SourceModule{
 			{
 				ProviderName: "built_in",
@@ -670,7 +670,7 @@ func Test_fillSubcommands(t *testing.T) {
 		},
 		ID:   ".abc",
 		Name: "abc",
-		Commands: []*RegisteredCommand{
+		Commands: []*ResolvedCommand{
 			{
 				parent:   &parent,
 				provider: nil,
@@ -738,8 +738,8 @@ func Test_fillSubcommands(t *testing.T) {
 	assert.Equal(t, expect, parent)
 }
 
-func Test_generateRegisteredCommands(t *testing.T) {
-	parent := new(RegisteredModule)
+func Test_generateResolvedCommands(t *testing.T) {
+	parent := new(ResolvedModule)
 
 	smod := SourceModule{
 		ProviderName: "",
@@ -758,7 +758,7 @@ func Test_generateRegisteredCommands(t *testing.T) {
 		},
 	}
 
-	expect := []*RegisteredCommand{
+	expect := []*ResolvedCommand{
 		{
 			parent:       &parent,
 			provider:     nil,
@@ -790,16 +790,16 @@ func Test_generateRegisteredCommands(t *testing.T) {
 		},
 	}
 
-	actual := generateRegisteredCommands(parent, smod)
+	actual := generateResolvedCommands(parent, smod)
 
 	assert.Equal(t, expect, actual)
 }
 
-func TestRegisteredModule_ShortDescription(t *testing.T) {
+func TestResolvedModule_ShortDescription(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := "abc"
 
-		rmod := &RegisteredModule{
+		rmod := &ResolvedModule{
 			Sources: []SourceModule{
 				{Modules: []Module{mockModule{shortDesc: expect}}},
 			},
@@ -812,7 +812,7 @@ func TestRegisteredModule_ShortDescription(t *testing.T) {
 	t.Run("fallback", func(t *testing.T) {
 		expect := "def"
 
-		rmod := &RegisteredModule{
+		rmod := &ResolvedModule{
 			Sources: []SourceModule{
 				{Modules: []Module{mockModule{shortDesc: ""}}},
 				{Modules: []Module{mockModule{shortDesc: expect}}},
@@ -824,7 +824,7 @@ func TestRegisteredModule_ShortDescription(t *testing.T) {
 	})
 
 	t.Run("none", func(t *testing.T) {
-		rmod := &RegisteredModule{
+		rmod := &ResolvedModule{
 			Sources: []SourceModule{
 				{Modules: []Module{mockModule{shortDesc: ""}}},
 				{Modules: []Module{mockModule{shortDesc: ""}}},
@@ -836,11 +836,11 @@ func TestRegisteredModule_ShortDescription(t *testing.T) {
 	})
 }
 
-func TestRegisteredModule_LongDescription(t *testing.T) {
+func TestResolvedModule_LongDescription(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := "abc"
 
-		rmod := &RegisteredModule{
+		rmod := &ResolvedModule{
 			Sources: []SourceModule{
 				{Modules: []Module{mockModule{longDesc: expect}}},
 			},
@@ -853,7 +853,7 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 	t.Run("fallback", func(t *testing.T) {
 		expect := "def"
 
-		rmod := &RegisteredModule{
+		rmod := &ResolvedModule{
 			Sources: []SourceModule{
 				{Modules: []Module{mockModule{}}},
 				{Modules: []Module{mockModule{longDesc: expect}}},
@@ -867,7 +867,7 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 	t.Run("short description", func(t *testing.T) {
 		expect := "abc"
 
-		rmod := &RegisteredModule{
+		rmod := &ResolvedModule{
 			Sources: []SourceModule{
 				{Modules: []Module{mockModule{}}},
 				{Modules: []Module{mockModule{shortDesc: expect}}},
@@ -879,7 +879,7 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 	})
 
 	t.Run("none", func(t *testing.T) {
-		rmod := &RegisteredModule{
+		rmod := &ResolvedModule{
 			Sources: []SourceModule{
 				{Modules: []Module{mockModule{}}},
 				{Modules: []Module{mockModule{longDesc: ""}}},
@@ -891,14 +891,14 @@ func TestRegisteredModule_LongDescription(t *testing.T) {
 	})
 }
 
-func TestRegisteredModule_FindCommand(t *testing.T) {
+func TestResolvedModule_FindCommand(t *testing.T) {
 	t.Run("name", func(t *testing.T) {
-		expect := &RegisteredCommand{
+		expect := &ResolvedCommand{
 			Name: "def",
 		}
 
-		rmod := &RegisteredModule{
-			Commands: []*RegisteredCommand{{Name: "abc"}, expect, {Name: "ghi"}},
+		rmod := &ResolvedModule{
+			Commands: []*ResolvedCommand{{Name: "abc"}, expect, {Name: "ghi"}},
 		}
 
 		actual := rmod.FindCommand(expect.Name)
@@ -906,13 +906,13 @@ func TestRegisteredModule_FindCommand(t *testing.T) {
 	})
 
 	t.Run("alias", func(t *testing.T) {
-		expect := &RegisteredCommand{
+		expect := &ResolvedCommand{
 			Name:    "def",
 			Aliases: []string{"mno"},
 		}
 
-		rmod := &RegisteredModule{
-			Commands: []*RegisteredCommand{
+		rmod := &ResolvedModule{
+			Commands: []*ResolvedCommand{
 				{Name: "abc", Aliases: []string{"jkl"}},
 				expect,
 				{Name: "ghi"},
@@ -924,19 +924,19 @@ func TestRegisteredModule_FindCommand(t *testing.T) {
 	})
 
 	t.Run("not found", func(t *testing.T) {
-		actual := new(RegisteredModule).FindCommand("abc")
+		actual := new(ResolvedModule).FindCommand("abc")
 		assert.Nil(t, actual)
 	})
 }
 
-func TestRegisteredModule_FindModule(t *testing.T) {
+func TestResolvedModule_FindModule(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		expect := &RegisteredModule{
+		expect := &ResolvedModule{
 			Name: "def",
 		}
 
-		rmod := &RegisteredModule{
-			Modules: []*RegisteredModule{{Name: "abc"}, expect, {Name: "ghi"}},
+		rmod := &ResolvedModule{
+			Modules: []*ResolvedModule{{Name: "abc"}, expect, {Name: "ghi"}},
 		}
 
 		actual := rmod.FindModule(expect.Name)
@@ -944,7 +944,7 @@ func TestRegisteredModule_FindModule(t *testing.T) {
 	})
 
 	t.Run("not found", func(t *testing.T) {
-		actual := new(RegisteredModule).FindModule("abc")
+		actual := new(ResolvedModule).FindModule("abc")
 		assert.Nil(t, actual)
 	})
 }

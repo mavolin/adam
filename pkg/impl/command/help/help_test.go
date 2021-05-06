@@ -258,7 +258,7 @@ func TestHelp_Invoke(t *testing.T) {
 		ctx := &plugin.Context{
 			Localizer: i18n.NewFallbackLocalizer(),
 			Args: plugin.Args{
-				mock.GenerateRegisteredModule(plugin.BuiltInProvider, mod),
+				mock.GenerateResolvedModule(plugin.BuiltInProvider, mod),
 			},
 		}
 
@@ -340,7 +340,7 @@ func TestHelp_Invoke(t *testing.T) {
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args: plugin.Args{
-					mock.GenerateRegisteredCommand(plugin.BuiltInProvider, cmd),
+					mock.GenerateResolvedCommand(plugin.BuiltInProvider, cmd),
 				},
 			}
 
@@ -406,7 +406,7 @@ func TestHelp_Invoke(t *testing.T) {
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args: plugin.Args{
-					mock.GenerateRegisteredCommand(plugin.BuiltInProvider, cmd),
+					mock.GenerateResolvedCommand(plugin.BuiltInProvider, cmd),
 				},
 			}
 
@@ -456,7 +456,7 @@ func TestHelp_Invoke(t *testing.T) {
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args: plugin.Args{
-					mock.GenerateRegisteredCommand(plugin.BuiltInProvider, cmd),
+					mock.GenerateResolvedCommand(plugin.BuiltInProvider, cmd),
 				},
 			}
 

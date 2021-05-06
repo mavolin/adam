@@ -51,8 +51,8 @@ type PluginProvider struct {
 	// The first element's ProviderName must be 'built_in'.
 	PluginRepositoriesReturn []plugin.Repository
 
-	commands []*plugin.RegisteredCommand
-	modules  []*plugin.RegisteredModule
+	commands []*plugin.ResolvedCommand
+	modules  []*plugin.ResolvedModule
 
 	UnavailablePluginProvidersReturn []plugin.UnavailablePluginProvider
 }
@@ -63,27 +63,27 @@ func (p PluginProvider) PluginRepositories() []plugin.Repository {
 	return p.PluginRepositoriesReturn
 }
 
-func (p PluginProvider) Commands() []*plugin.RegisteredCommand {
+func (p PluginProvider) Commands() []*plugin.ResolvedCommand {
 	if p.PluginRepositoriesReturn == nil {
 		return nil
 	} else if p.commands == nil {
-		p.commands = plugin.GenerateRegisteredCommands(p.PluginRepositoriesReturn)
+		p.commands = plugin.GenerateResolvedCommands(p.PluginRepositoriesReturn)
 	}
 
 	return p.commands
 }
 
-func (p PluginProvider) Modules() []*plugin.RegisteredModule {
+func (p PluginProvider) Modules() []*plugin.ResolvedModule {
 	if p.PluginRepositoriesReturn == nil {
 		return nil
 	} else if p.modules == nil {
-		p.modules = plugin.GenerateRegisteredModules(p.PluginRepositoriesReturn)
+		p.modules = plugin.GenerateResolvedModules(p.PluginRepositoriesReturn)
 	}
 
 	return p.modules
 }
 
-func (p PluginProvider) Command(id plugin.ID) *plugin.RegisteredCommand {
+func (p PluginProvider) Command(id plugin.ID) *plugin.ResolvedCommand {
 	all := id.All()
 	if len(all) <= 1 { // invalid or just root
 		return nil
@@ -113,7 +113,7 @@ func (p PluginProvider) Command(id plugin.ID) *plugin.RegisteredCommand {
 	return mod.FindCommand(id.Name())
 }
 
-func (p PluginProvider) Module(id plugin.ID) *plugin.RegisteredModule {
+func (p PluginProvider) Module(id plugin.ID) *plugin.ResolvedModule {
 	all := id.All()
 	if len(all) <= 1 { // invalid or just root
 		return nil
@@ -143,12 +143,12 @@ func (p PluginProvider) Module(id plugin.ID) *plugin.RegisteredModule {
 	return mod
 }
 
-func (p PluginProvider) FindCommand(invoke string) *plugin.RegisteredCommand {
+func (p PluginProvider) FindCommand(invoke string) *plugin.ResolvedCommand {
 	id := plugin.NewIDFromInvoke(invoke)
 	return p.Command(id)
 }
 
-func (p PluginProvider) FindModule(invoke string) *plugin.RegisteredModule {
+func (p PluginProvider) FindModule(invoke string) *plugin.ResolvedModule {
 	id := plugin.NewIDFromInvoke(invoke)
 	return p.Module(id)
 }
