@@ -5,6 +5,7 @@ package help
 
 import (
 	"fmt"
+	"github.com/mavolin/adam/pkg/bot"
 	"strings"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -40,6 +41,7 @@ var BaseEmbed = embedutil.NewBuilder().
 // character limit.
 type Help struct {
 	command.LocalizedMeta
+	bot.MiddlewareManager
 	Options
 }
 
