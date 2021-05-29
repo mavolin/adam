@@ -111,7 +111,6 @@ func TestCheckChannelTypes(t *testing.T) {
 
 		errHandler := mock.NewErrorHandler(t).
 			ExpectSilentError(channelError)
-		defer errHandler.Eval()
 
 		ctx := &plugin.Context{
 			Message: discord.Message{GuildID: 123},

@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+	"github.com/mavolin/adam/pkg/errors"
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -392,6 +393,12 @@ func (ctx *Context) UserPermissions() (discord.Permissions, error) {
 	return discord.CalcOverwrites(*g, *ch, *ctx.Member), nil
 }
 
+// HandleErrorSilently wraps the error using errors.Silent and hands it
+// to the bot's error handler.
+func (ctx *Context) HandleErrorSilently(err error) {
+	ctx.HandleError(errors.Silent(err))
+}
+
 type (
 	// Replier is the interface used to send replies to a command.
 	//
@@ -537,8 +544,5 @@ type (
 	ErrorHandler interface {
 		// HandleError hands the error to the bot's error handler.
 		HandleError(err error)
-		// HandleErrorSilently wraps the error using errors.Silent and hands it
-		// to the bot's error handler.
-		HandleErrorSilently(err error)
 	}
 )
