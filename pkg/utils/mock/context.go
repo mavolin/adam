@@ -168,7 +168,10 @@ type ErrorHandler struct {
 var _ plugin.ErrorHandler = new(ErrorHandler)
 
 func NewErrorHandler(t *testing.T) *ErrorHandler {
-	return &ErrorHandler{t: t}
+	h := &ErrorHandler{t: t}
+	t.Cleanup(h.eval)
+
+	return h
 }
 
 func (h *ErrorHandler) ExpectError(err error) *ErrorHandler {
@@ -235,7 +238,7 @@ func (h *ErrorHandler) HandleErrorSilently(err error) {
 	h.t.Errorf("unexpected call to plugin.ErrorHandler.HandleErrorSilently: %+v", err)
 }
 
-func (h *ErrorHandler) Eval() {
+func (h *ErrorHandler) eval() {
 	if len(h.expectErr) > 0 {
 		h.t.Errorf("there are unhandled errors: %+v", h.expectErr)
 	}
