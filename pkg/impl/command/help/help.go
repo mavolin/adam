@@ -5,8 +5,9 @@ package help
 
 import (
 	"fmt"
-	"github.com/mavolin/adam/pkg/bot"
 	"strings"
+
+	"github.com/mavolin/adam/pkg/bot"
 
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
@@ -70,6 +71,12 @@ type Options struct {
 	// available prefixes.
 	NoPrefix bool
 
+	// Aliases are the aliases of the help command.
+	//
+	// Defaults to []string{"h", "how"}.
+	// Use an empty slice to use no aliases.
+	Aliases []string
+
 	// ArgFormatter is the plugin.ArgFormatter used to generate command usages.
 	//
 	// Defaults to DefaultArgFormatter
@@ -85,6 +92,10 @@ func New(o Options) *Help {
 		}
 	}
 
+	if o.Aliases == nil {
+		o.Aliases = []string{"h", "how"}
+	}
+
 	if o.ArgFormatter == nil {
 		o.ArgFormatter = DefaultArgFormatter
 	}
@@ -92,7 +103,7 @@ func New(o Options) *Help {
 	return &Help{
 		LocalizedMeta: command.LocalizedMeta{
 			Name:             "help",
-			Aliases:          []string{"how"},
+			Aliases:          o.Aliases,
 			ShortDescription: shortDescription,
 			LongDescription:  longDescription,
 			ExampleArgs:      exampleArgs,

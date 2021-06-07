@@ -14,10 +14,10 @@ var (
 	longDescription = i18n.NewFallbackConfig(
 		"plugin.help.long_description",
 		"Lists all commands and shows you how to use them.\n"+
-			"If you don't use any parameters, "+
+			"If you don't provide any parameters, "+
 			"the help command will show you a list of all commands available to you. "+
-			"Optionally, you can use the name of a module, to list all commands in that module, "+
-			"or the name of a command, to display detailed usage information.")
+			"Optionally, you can use the name of a module to list all commands in that module, "+
+			"or the name of a command to display detailed usage information.")
 
 	exampleArgs = []*i18n.Config{
 		i18n.EmptyConfig,
@@ -93,7 +93,9 @@ var (
 
 	argumentsFieldName = i18n.NewFallbackConfig("plugin.help.command.embed.fields.arguments.name", "Arguments")
 	flagsFieldName     = i18n.NewFallbackConfig("plugin.help.command.embed.fields.flags.name", "Flags")
-	examplesFieldName  = i18n.NewFallbackConfig("plugin.help.command.embed.fields.exampleArgs.name", "ExampleArgs")
+	examplesFieldName  = i18n.NewFallbackConfig(
+		"plugin.help.command.embed.fields.example_args.name",
+		"Example Arguments")
 )
 
 type (
