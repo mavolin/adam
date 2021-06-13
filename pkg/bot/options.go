@@ -1,7 +1,6 @@
 package bot
 
 import (
-	"fmt"
 	"log"
 	"syscall"
 	"time"
@@ -365,32 +364,21 @@ func DefaultThrottlerErrorCheck(err error) bool {
 }
 
 func DefaultGatewayErrorHandler(err error) {
-	if FilterGatewayError(err) {
+	if !FilterGatewayError(err) {
 		log.Println(err)
 	}
 }
 
-// FilterGatewayError filters out reconnect informational errors.
+// FilterGatewayError filters out informational reconnect errors.
 func FilterGatewayError(err error) bool {
 	var cerr *websocket.CloseError
-	switch {
-	case errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure):
-		fallthrough
-	case errors.Is(err, syscall.ECONNRESET):
-		return false
-	}
-	return true
+	return (errors.As(err, &cerr) &&
+		(cerr.Code == websocket.CloseGoingAway || cerr.Code == websocket.CloseAbnormalClosure)) ||
+		errors.Is(err, syscall.ECONNRESET)
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
-	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
-		var Err errors.Error
-		if !errors.As(err, &Err) {
-			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
-		}
-
-		err = Err.Handle(s, ctx)
-	}
+	errors.Handle(err, s, ctx, 4)
 }
 
 func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Context) {
@@ -398,15 +386,8 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 	if ok {
 		err = errors.Wrap(err, "panic")
 	} else {
-		err = fmt.Errorf("panic: %+v", recovered)
+		err = errors.NewWithStackf("panic: %+v", recovered)
 	}
 
-	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
-		var Err errors.Error
-		if !errors.As(err, &Err) {
-			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
-		}
-
-		err = Err.Handle(s, ctx)
-	}
+	errors.Handle(err, s, ctx, 4)
 }

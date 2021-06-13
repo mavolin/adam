@@ -19,6 +19,7 @@ func SendTyping(next CommandFunc) CommandFunc {
 		}
 
 		stop := make(chan struct{})
+		defer close(stop)
 
 		go func() {
 			t := time.NewTicker(6 * time.Second)
@@ -42,10 +43,7 @@ func SendTyping(next CommandFunc) CommandFunc {
 			}
 		}()
 
-		err := next(s, ctx)
-		close(stop)
-
-		return err
+		return next(s, ctx)
 	}
 }
 

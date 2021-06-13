@@ -224,7 +224,7 @@ func (e *ChannelTypeError) Description(l *i18n.Localizer) (desc string) {
 		desc, _ = l.Localize(channelTypeErrorGuildNews)
 	case e.Allowed == DirectMessages:
 		desc, _ = l.Localize(channelTypeErrorDM)
-	// ----- combos -----
+	// ----- combinations -----
 	case e.Allowed == GuildChannels:
 		desc, _ = l.Localize(channelTypeErrorGuild)
 	case e.Allowed == (DirectMessages | GuildTextChannels):

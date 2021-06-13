@@ -38,9 +38,8 @@ type replyMiddlewaresKeyType struct{}
 // typing event, if the user is continuously typing.
 //
 // It has been observed that the first follow-up event is received after about
-// 9.5 seconds, all successive events are received in an intervall of approx.
-// 8.25 seconds.
-// Additionally, there is a 1.5 second margin for network delays.
+// 9.5 seconds, all successive events are received in an interval of
+// approximately 8.25 seconds. Additionally, we add a 1.5 second margin for network delays.
 var typingInterval = 11 * time.Second
 
 type (

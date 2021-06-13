@@ -10,6 +10,7 @@ import (
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -33,4 +34,25 @@ type Error interface {
 // Log is the logger used to log InternalErrors and SilentErrors.
 var Log = func(err error, ctx *plugin.Context) {
 	log.Printf("internal error in command %s: %s\n", ctx.InvokedCommand.ID, err.Error())
+}
+
+// Handle handles the passed error.
+// If the error does not implement interface Error, it will be wrapped using
+// WithStack.
+//
+// Up to maxHandles errors returned by Error.Handle and subsequent calls will
+// be handled.
+// If maxHandles is negative, subsequent handles won't be limited.
+func Handle(err error, s *state.State, ctx *plugin.Context, maxHandles int) {
+	for maxHandles != 0 && err != nil {
+		var Err Error
+		if !errors.As(err, &Err) {
+			Err = withStack(err).(Error) //nolint:errorlint
+		}
+
+		err = Err.Handle(s, ctx)
+		if maxHandles > 0 {
+			maxHandles--
+		}
+	}
 }

@@ -6,8 +6,7 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-// Abort is similar to a break in a for-loop.
-// It stops the execution of a command silently, while producing neither a
+// Abort stops the execution of a command silently, while producing neither a
 // logged error nor a message to the calling user.
 //
 // It is intended to be used if the user signals to cancel a command early.

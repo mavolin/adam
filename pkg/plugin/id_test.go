@@ -3,6 +3,7 @@ package plugin
 import (
 	"testing"
 
+	"fmt"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -240,4 +241,11 @@ func TestIdentifier_Name(t *testing.T) {
 			assert.Equal(t, c.expect, actual)
 		})
 	}
+}
+
+func ExampleID_AsInvoke() {
+	var id ID = ".mod.ban"
+
+	fmt.Println(id.AsInvoke())
+	// Output: mod ban
 }

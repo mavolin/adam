@@ -107,9 +107,6 @@ func (id ID) IsChild(target ID) bool {
 // AsInvoke returns the identifier as a prefixless command invoke.
 //
 // Returns "" if the ID is root or invalid.
-//
-// Example:
-// 	.mod.ban -> mod ban
 func (id ID) AsInvoke() string {
 	if len(id) == 0 {
 		return ""
