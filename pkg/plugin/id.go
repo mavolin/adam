@@ -2,6 +2,8 @@ package plugin
 
 import (
 	"strings"
+
+	"github.com/mavolin/adam/internal/shared"
 )
 
 // ID is the unique identifier of a plugin.
@@ -9,31 +11,14 @@ import (
 // All plugins are dot-separated, e.g. '.mod.ban'.
 type ID string
 
-const whitespace = " \t\n"
-
 // NewIDFromInvoke creates a new ID from the passed invoke.
 func NewIDFromInvoke(invoke string) ID {
-	invoke = strings.Trim(invoke, whitespace)
+	invoke = strings.Trim(invoke, shared.Whitespace)
+	plugins := strings.FieldsFunc(invoke, func(r rune) bool {
+		return strings.ContainsRune(shared.Whitespace, r)
+	})
 
-	var b strings.Builder
-	b.Grow(len(invoke) + 1)
-	b.WriteRune('.')
-
-	var prevWhitespace bool
-
-	for _, r := range invoke {
-		if strings.ContainsRune(whitespace, r) {
-			if !prevWhitespace {
-				b.WriteRune('.')
-				prevWhitespace = true
-			}
-		} else {
-			prevWhitespace = false
-			b.WriteRune(r)
-		}
-	}
-
-	return ID(b.String())
+	return ID("." + strings.Join(plugins, "."))
 }
 
 // Parent returns the parent module of the plugin, or '.' if this ID

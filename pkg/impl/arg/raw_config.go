@@ -34,7 +34,7 @@ func (r Raw) Info(*i18n.Localizer) []plugin.ArgsInfo {
 	ai := []plugin.ArgInfo{
 		{
 			Name:        r.Name,
-			Type:        plugin.TypeInfo{Name: r.TypeName},
+			Type:        plugin.ArgType{Name: r.TypeName},
 			Description: r.Description,
 		},
 	}
@@ -94,7 +94,7 @@ func (r LocalizedRaw) Info(l *i18n.Localizer) []plugin.ArgsInfo {
 	ai := []plugin.ArgInfo{{Name: name, Description: desc}}
 
 	if len(typeName) > 0 {
-		ai[0].Type = plugin.TypeInfo{Name: typeName}
+		ai[0].Type = plugin.ArgType{Name: typeName}
 	}
 
 	if r.Optional {

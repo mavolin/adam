@@ -1,7 +1,6 @@
 package bot
 
 import (
-	"sort"
 	"sync"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -10,200 +9,6 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
-
-// =============================================================================
-// plugin.Provider
-// =====================================================================================
-
-type ctxPluginProvider struct {
-	base *state.Base
-	msg  *discord.Message
-
-	// repos contains the already collected repositories
-	repos []plugin.Repository
-	// remProviders are the remaining, i.e. uncalled, plugin providers.
-	remProviders []*pluginProvider
-
-	async bool
-
-	commands []*plugin.ResolvedCommand
-	modules  []*plugin.ResolvedModule
-
-	unavailableProviders []plugin.UnavailablePluginProvider
-}
-
-func (p *ctxPluginProvider) PluginRepositories() []plugin.Repository {
-	p.lazyRepos()
-	return p.repos
-}
-
-func (p *ctxPluginProvider) lazyRepos() {
-	if len(p.remProviders) == 0 {
-		return
-	}
-
-	if p.async {
-		r, up := pluginProvidersAsync(p.base, p.msg, p.remProviders)
-		p.repos = append(p.repos, r...)
-		p.unavailableProviders = append(p.unavailableProviders, up...)
-
-		p.remProviders = nil
-		return
-	}
-
-	for _, remp := range p.remProviders {
-		cmds, mods, err := remp.provider(p.base, p.msg)
-		if err != nil {
-			p.unavailableProviders = append(p.unavailableProviders, plugin.UnavailablePluginProvider{
-				Name:  remp.name,
-				Error: err,
-			})
-		} else {
-			p.repos = append(p.repos, plugin.Repository{
-				ProviderName: remp.name,
-				Modules:      mods,
-				Commands:     cmds,
-			})
-		}
-	}
-
-	p.remProviders = nil
-}
-
-func (p *ctxPluginProvider) Commands() []*plugin.ResolvedCommand {
-	p.lazyCommands()
-	return p.commands
-}
-
-func (p *ctxPluginProvider) lazyCommands() {
-	if p.commands == nil {
-		p.lazyRepos()
-		p.commands = plugin.GenerateResolvedCommands(p.repos)
-	}
-}
-
-func (p *ctxPluginProvider) Modules() []*plugin.ResolvedModule {
-	p.lazyModules()
-	return p.modules
-}
-
-func (p *ctxPluginProvider) lazyModules() {
-	if p.modules == nil {
-		p.lazyRepos()
-		p.modules = plugin.GenerateResolvedModules(p.repos)
-	}
-}
-
-func (p *ctxPluginProvider) Command(id plugin.ID) *plugin.ResolvedCommand {
-	if id.IsRoot() {
-		return nil
-	}
-
-	if id.Parent().IsRoot() { // top-lvl command
-		p.lazyCommands()
-
-		name := id.Name()
-
-		i := sort.Search(len(p.commands), func(i int) bool {
-			return p.commands[i].Name >= name
-		})
-
-		if i == len(p.commands) || p.commands[i].Name != name { // nothing found
-			return nil
-		}
-
-		return p.commands[i]
-	}
-
-	mod := p.Module(id.Parent())
-	if mod == nil {
-		return nil
-	}
-
-	return mod.FindCommand(id.Name())
-}
-
-func (p *ctxPluginProvider) Module(id plugin.ID) *plugin.ResolvedModule {
-	p.lazyModules()
-
-	all := id.All()
-	if len(all) <= 1 { // invalid or just root
-		return nil
-	}
-
-	all = all[1:]
-
-	name := all[0].Name()
-
-	i := sort.Search(len(p.modules), func(i int) bool {
-		return p.modules[i].Name >= name
-	})
-
-	if i == len(p.modules) { // nothing found
-		return nil
-	}
-
-	mod := p.modules[i]
-	if mod.Name != name {
-		return nil
-	}
-
-	for _, id := range all[1:] {
-		mod = mod.FindModule(id.Name())
-		if mod == nil {
-			return nil
-		}
-	}
-
-	return mod
-}
-
-func (p *ctxPluginProvider) FindCommand(invoke string) *plugin.ResolvedCommand {
-	id := plugin.NewIDFromInvoke(invoke)
-
-	name := id.Name()
-
-	if id.Parent().IsRoot() {
-		for _, cmd := range p.Commands() {
-			if cmd.Name == name {
-				return cmd
-			}
-
-			for _, alias := range cmd.Aliases {
-				if alias == name {
-					return cmd
-				}
-			}
-		}
-
-		return nil
-	}
-
-	mod := p.Module(id.Parent())
-	for _, cmd := range mod.Commands {
-		if cmd.Name == name {
-			return cmd
-		}
-
-		for _, alias := range cmd.Aliases {
-			if alias == name {
-				return cmd
-			}
-		}
-	}
-
-	return nil
-}
-
-func (p *ctxPluginProvider) FindModule(invoke string) *plugin.ResolvedModule {
-	id := plugin.NewIDFromInvoke(invoke)
-	return p.Module(id)
-}
-
-func (p *ctxPluginProvider) UnavailablePluginProviders() []plugin.UnavailablePluginProvider {
-	p.lazyRepos()
-	return p.unavailableProviders
-}
 
 // =============================================================================
 // plugin.ErrorHandler
@@ -224,9 +29,7 @@ func (h ctxErrorHandler) HandleError(err error) {
 }
 
 func (h ctxErrorHandler) HandleErrorSilently(err error) {
-	if err = errors.Silent(err); err != nil {
-		h(err)
-	}
+	h.HandleError(errors.Silent(err))
 }
 
 // =============================================================================

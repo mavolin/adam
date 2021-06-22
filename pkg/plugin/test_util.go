@@ -56,67 +56,6 @@ func (l *mockLocalizer) build() *i18n.Localizer {
 	})
 }
 
-type mockCommand struct {
-	name            string
-	aliases         []string
-	args            ArgConfig
-	shortDesc       string
-	longDesc        string
-	exampleArgs     []string
-	hidden          bool
-	channelTypes    ChannelTypes
-	botPermissions  discord.Permissions
-	restrictionFunc RestrictionFunc
-	throttler       Throttler
-	invokeFunc      func(*state.State, *Context) (interface{}, error)
-}
-
-func (c mockCommand) GetName() string                            { return c.name }
-func (c mockCommand) GetAliases() []string                       { return c.aliases }
-func (c mockCommand) GetArgs() ArgConfig                         { return c.args }
-func (c mockCommand) GetShortDescription(*i18n.Localizer) string { return c.shortDesc }
-func (c mockCommand) GetLongDescription(*i18n.Localizer) string  { return c.longDesc }
-func (c mockCommand) GetExampleArgs(*i18n.Localizer) []string    { return c.exampleArgs }
-func (c mockCommand) IsHidden() bool                             { return c.hidden }
-func (c mockCommand) GetChannelTypes() ChannelTypes              { return c.channelTypes }
-func (c mockCommand) GetBotPermissions() discord.Permissions     { return c.botPermissions }
-
-func (c mockCommand) IsRestricted(s *state.State, ctx *Context) error {
-	if c.restrictionFunc == nil {
-		return nil
-	}
-
-	return c.restrictionFunc(s, ctx)
-}
-
-func (c mockCommand) GetThrottler() Throttler {
-	return c.throttler
-}
-
-func (c mockCommand) Invoke(s *state.State, ctx *Context) (interface{}, error) {
-	return c.invokeFunc(s, ctx)
-}
-
-type mockModule struct {
-	name      string
-	shortDesc string
-	longDesc  string
-	commands  []Command
-	modules   []Module
-}
-
-func (c mockModule) GetName() string                            { return c.name }
-func (c mockModule) GetShortDescription(*i18n.Localizer) string { return c.shortDesc }
-func (c mockModule) GetLongDescription(*i18n.Localizer) string  { return c.longDesc }
-func (c mockModule) Commands() []Command                        { return c.commands }
-func (c mockModule) Modules() []Module                          { return c.modules }
-
-type mockThrottler struct {
-	cmp string // used to make throttlers unique
-}
-
-func (m mockThrottler) Check(*state.State, *Context) (func(), error) { return func() {}, nil }
-
 // mockDiscordDataProvider is a copy of mock.DiscordDataProvider to prevent
 // import cycles.
 type mockDiscordDataProvider struct {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
+	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // LocalizedMeta is the localized implementation of the plugin.CommandMeta
@@ -22,7 +23,7 @@ type LocalizedMeta struct {
 	// LongDescription is an optional long description of the command.
 	LongDescription *i18n.Config
 	// ExampleArgs contains the optional example arguments of the command.
-	ExampleArgs []*i18n.Config
+	ExampleArgs exampleArgsGetter
 	// Args is the argument configuration of the command.
 	// If this is left empty, the command won't accept any arguments.
 	Args plugin.ArgConfig
@@ -65,25 +66,12 @@ func (m LocalizedMeta) GetLongDescription(l *i18n.Localizer) string {
 	return desc
 }
 
-func (m LocalizedMeta) GetExampleArgs(l *i18n.Localizer) []string {
-	if len(m.ExampleArgs) == 0 {
+func (m LocalizedMeta) GetExampleArgs(l *i18n.Localizer) plugin.ExampleArgs {
+	if m.ExampleArgs == nil {
 		return nil
 	}
 
-	examples := make([]string, 0, len(m.ExampleArgs))
-
-	for _, lexample := range m.ExampleArgs {
-		example, err := l.Localize(lexample)
-		if err == nil {
-			examples = append(examples, example)
-		}
-	}
-
-	if len(examples) == 0 {
-		return nil
-	}
-
-	return examples
+	return m.ExampleArgs.BaseType(l)
 }
 
 func (m LocalizedMeta) GetArgs() plugin.ArgConfig              { return m.Args }
@@ -100,3 +88,53 @@ func (m LocalizedMeta) IsRestricted(s *state.State, ctx *plugin.Context) error {
 }
 
 func (m LocalizedMeta) GetThrottler() plugin.Throttler { return m.Throttler }
+
+// =============================================================================
+// ExampleArgs
+// =====================================================================================
+
+type exampleArgsGetter interface {
+	BaseType(*i18n.Localizer) plugin.ExampleArgs
+}
+
+var _ exampleArgsGetter = plugin.ExampleArgs{}
+
+type LocalizedExampleArgs []struct {
+	// Flags is a map of exemplary flags.
+	Flags map[string]i18nutil.Text
+	// Args contains the example arguments.
+	Args []i18nutil.Text
+}
+
+var _ exampleArgsGetter = LocalizedExampleArgs{}
+
+func (lexamples LocalizedExampleArgs) BaseType(l *i18n.Localizer) plugin.ExampleArgs {
+	var (
+		base = make(plugin.ExampleArgs, len(lexamples))
+		err  error
+		i    int
+	)
+
+	for _, lexample := range lexamples {
+		base[i].Flags = make(map[string]string, len(lexample.Flags))
+		for name, lcontent := range lexample.Flags {
+			base[i].Flags[name], err = lcontent.Get(l)
+			if err != nil {
+				continue
+			}
+		}
+
+		base[i].Args = make([]string, len(lexample.Args))
+		for j, larg := range lexample.Args {
+			base[i].Args[j], err = larg.Get(l)
+			if err != nil {
+				continue
+			}
+		}
+
+		i++ // kinda hacky, but it gets the job done
+	}
+
+	// don't use i+1, since i is incremented at the end
+	return base[:i]
+}

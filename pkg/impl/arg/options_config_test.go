@@ -213,7 +213,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 			Required: []plugin.ArgInfo{
 				{
 					Name: "1.r1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "1.r1.type.name",
 						Description: "1.r1.type.desc",
 					},
@@ -221,7 +221,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "1.r2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "1.r2.type.name",
 						Description: "1.r2.type.desc",
 					},
@@ -231,7 +231,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 			Optional: []plugin.ArgInfo{
 				{
 					Name: "1.o1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "1.o1.type.name",
 						Description: "1.o1.type.desc",
 					},
@@ -239,7 +239,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "1.o2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "1.o2.type.name",
 						Description: "1.o2.type.desc",
 					},
@@ -251,7 +251,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				{
 					Name:    "1.f1.name",
 					Aliases: []string{"1.f1.alias.1"},
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "1.f1.type.name",
 						Description: "1.f1.type.desc",
 					},
@@ -261,7 +261,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				{
 					Name:    "1.f2.name",
 					Aliases: nil,
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "1.f2.type.name",
 						Description: "1.f2.type.desc",
 					},
@@ -275,7 +275,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 			Required: []plugin.ArgInfo{
 				{
 					Name: "2.r1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "2.r1.type.name",
 						Description: "2.r1.type.desc",
 					},
@@ -283,7 +283,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "2.r2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "2.r2.type.name",
 						Description: "2.r2.type.desc",
 					},
@@ -293,7 +293,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 			Optional: []plugin.ArgInfo{
 				{
 					Name: "2.o1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "2.o1.type.name",
 						Description: "2.o1.type.desc",
 					},
@@ -301,7 +301,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "2.o2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "2.o2.type.name",
 						Description: "2.o2.type.desc",
 					},
@@ -313,7 +313,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				{
 					Name:    "2.f1.name",
 					Aliases: []string{"2.f1.alias.1"},
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "2.f1.type.name",
 						Description: "2.f1.type.desc",
 					},
@@ -323,7 +323,7 @@ func TestOptionsConfig_Info(t *testing.T) {
 				{
 					Name:    "2.f2.name",
 					Aliases: nil,
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "2.f2.type.name",
 						Description: "2.f2.type.desc",
 					},

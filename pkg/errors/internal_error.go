@@ -14,9 +14,11 @@ import (
 
 // InternalError represents a non-user triggered error.
 // By default, an InternalError does not explicitly state any information about
-// the cause or context of the error, and instead sends a generalised message.
+// the cause or context of the error, and instead sends a generalized message.
 // However, a custom description can be added using WithDescription,
 // WithDescriptionl or WithDescriptionlt.
+//
+// The cause of the error is captured using Log.
 type InternalError struct {
 	// cause is the cause of the error.
 	cause error

@@ -3,6 +3,7 @@ package arg
 import (
 	"strings"
 
+	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -144,7 +145,7 @@ func (l *commaLexer) emit(typ commaItemType) {
 
 func (l *commaLexer) ignoreWhitespace() {
 	for l.has(1) { // skip whitespace
-		if !strings.ContainsRune(whitespace, l.next()) {
+		if !strings.ContainsRune(shared.Whitespace, l.next()) {
 			l.backup()
 			break
 		}
@@ -192,7 +193,7 @@ func (l *commaLexer) flag() (commaStateFunc, error) {
 	for l.has(1) {
 		next := l.next()
 
-		if strings.ContainsRune(whitespace, next) {
+		if strings.ContainsRune(shared.Whitespace, next) {
 			l.backup()
 			l.emit(itemFlagName)
 

@@ -86,7 +86,7 @@ func (u user) Default() interface{} {
 // =====================================================================================
 
 // Member is the Type used for members of a guild.
-// It will always return an error, if the command is called in a direct
+// It will always return an error, if the commandType is called in a direct
 // message.
 //
 // A Member can either be a mention of a member, or, if enabled, an id of a

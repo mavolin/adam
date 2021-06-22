@@ -1,14 +1,14 @@
 package plugin
 
 import (
+	"fmt"
 	"testing"
 
-	"fmt"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewIdentifierFromInvoke(t *testing.T) {
-	invoke := "  abc \tdef\njkl  mno"
+func TestNewIDFromInvoke(t *testing.T) {
+	invoke := "  abc  \ndef\njkl  mno"
 
 	var expect ID = ".abc.def.jkl.mno"
 
@@ -16,73 +16,73 @@ func TestNewIdentifierFromInvoke(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func TestIdentifier_Parent(t *testing.T) {
+func TestID_Parent(t *testing.T) {
 	testCases := []struct {
-		name       string
-		identifier ID
-		expect     []ID
+		name   string
+		ID     ID
+		expect []ID
 	}{
 		{
-			name:       "root",
-			identifier: ".",
-			expect:     []ID{"."},
+			name:   "root",
+			ID:     ".",
+			expect: []ID{"."},
 		},
 		{
-			name:       "single level",
-			identifier: ".mod",
-			expect:     []ID{"."},
+			name:   "single level",
+			ID:     ".mod",
+			expect: []ID{"."},
 		},
 		{
-			name:       "multi level",
-			identifier: ".mod.infr.edit",
-			expect:     []ID{".mod.infr", ".mod", "."},
+			name:   "multi level",
+			ID:     ".mod.infr.edit",
+			expect: []ID{".mod.infr", ".mod", "."},
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.identifier
+			actual := c.ID
 
 			for lvl, expect := range c.expect {
 				actual = actual.Parent()
-				assert.Equal(t, expect, actual, "unexpected identifier returned on level %d", lvl+1)
+				assert.Equal(t, expect, actual, "unexpected ID returned on level %d", lvl+1)
 			}
 		})
 	}
 }
 
-func TestIdentifier_All(t *testing.T) {
+func TestID_All(t *testing.T) {
 	testCases := []struct {
-		name       string
-		identifier ID
-		expect     []ID
+		name   string
+		ID     ID
+		expect []ID
 	}{
 		{
-			name:       "root",
-			identifier: ".",
-			expect:     []ID{"."},
+			name:   "root",
+			ID:     ".",
+			expect: []ID{"."},
 		},
 		{
-			name:       "single level",
-			identifier: ".mod",
-			expect:     []ID{".", ".mod"},
+			name:   "single level",
+			ID:     ".mod",
+			expect: []ID{".", ".mod"},
 		},
 		{
-			name:       "multi level",
-			identifier: ".mod.infr.edit",
-			expect:     []ID{".", ".mod", ".mod.infr", ".mod.infr.edit"},
+			name:   "multi level",
+			ID:     ".mod.infr.edit",
+			expect: []ID{".", ".mod", ".mod.infr", ".mod.infr.edit"},
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.identifier.All()
+			actual := c.ID.All()
 			assert.Equal(t, c.expect, actual)
 		})
 	}
 }
 
-func TestIdentifier_IsRoot(t *testing.T) {
+func TestID_IsRoot(t *testing.T) {
 	t.Run("root", func(t *testing.T) {
 		isRoot := ID(".").IsRoot()
 		assert.True(t, isRoot)
@@ -94,7 +94,7 @@ func TestIdentifier_IsRoot(t *testing.T) {
 	})
 }
 
-func TestIdentifier_NumParents(t *testing.T) {
+func TestID_NumParents(t *testing.T) {
 	t.Run("root", func(t *testing.T) {
 		actual := ID(".").NumParents()
 		assert.Equal(t, 0, actual)
@@ -111,77 +111,77 @@ func TestIdentifier_NumParents(t *testing.T) {
 	})
 }
 
-func TestIdentifier_IsParent(t *testing.T) {
+func TestID_IsParent(t *testing.T) {
 	testCases := []struct {
-		name       string
-		identifier ID
-		target     ID
-		expect     bool
+		name   string
+		ID     ID
+		target ID
+		expect bool
 	}{
 		{
-			name:       "parent",
-			identifier: ".mod.ban",
-			target:     ".mod",
-			expect:     true,
+			name:   "parent",
+			ID:     ".mod.ban",
+			target: ".mod",
+			expect: true,
 		},
 		{
-			name:       "equal",
-			identifier: ".mod.ban",
-			target:     ".mod.ban",
-			expect:     false,
+			name:   "equal",
+			ID:     ".mod.ban",
+			target: ".mod.ban",
+			expect: false,
 		},
 		{
-			name:       "child",
-			identifier: ".mod",
-			target:     ".mod.ban",
-			expect:     false,
+			name:   "child",
+			ID:     ".mod",
+			target: ".mod.ban",
+			expect: false,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.identifier.IsParent(c.target)
+			actual := c.ID.IsParent(c.target)
 			assert.Equal(t, c.expect, actual)
 		})
 	}
 }
 
-func TestIdentifier_IsChild(t *testing.T) {
+func TestID_IsChild(t *testing.T) {
 	testCases := []struct {
-		name       string
-		identifier ID
-		target     ID
-		expect     bool
+		name   string
+		ID     ID
+		target ID
+		expect bool
 	}{
 		{
-			name:       "parent",
-			identifier: ".mod.ban",
-			target:     ".mod",
-			expect:     false,
+			name:   "parent",
+			ID:     ".mod.ban",
+			target: ".mod",
+			expect: false,
 		},
 		{
-			name:       "equal",
-			identifier: ".mod.ban",
-			target:     ".mod.ban",
-			expect:     false,
+			name:   "equal",
+			ID:     ".mod.ban",
+			target: ".mod.ban",
+			expect: false,
 		},
 		{
-			name:       "child",
-			identifier: ".mod",
-			target:     ".mod.ban",
-			expect:     true,
+			name:   "child",
+			ID:     ".mod",
+			target: ".mod.ban",
+			expect: true,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.identifier.IsChild(c.target)
+			actual := c.ID.IsChild(c.target)
 			assert.Equal(t, c.expect, actual)
 		})
 	}
 }
 
-func TestIdentifier_AsCommandInvoke(t *testing.T) {
+func TestID_AsCommandInvoke(t *testing.T) {
 	testCases := []struct {
 		name   string
 		id     ID
@@ -212,32 +212,32 @@ func TestIdentifier_AsCommandInvoke(t *testing.T) {
 	}
 }
 
-func TestIdentifier_Name(t *testing.T) {
+func TestID_Name(t *testing.T) {
 	testCases := []struct {
-		name       string
-		identifier ID
-		expect     string
+		name   string
+		ID     ID
+		expect string
 	}{
 		{
-			name:       "root",
-			identifier: ".",
-			expect:     "",
+			name:   "root",
+			ID:     ".",
+			expect: "",
 		},
 		{
-			name:       "single level",
-			identifier: ".mod",
-			expect:     "mod",
+			name:   "single level",
+			ID:     ".mod",
+			expect: "mod",
 		},
 		{
-			name:       "multi level",
-			identifier: ".mod.infr.edit",
-			expect:     "edit",
+			name:   "multi level",
+			ID:     ".mod.infr.edit",
+			expect: "edit",
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.identifier.Name()
+			actual := c.ID.Name()
 			assert.Equal(t, c.expect, actual)
 		})
 	}

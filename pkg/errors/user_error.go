@@ -10,16 +10,16 @@ import (
 )
 
 // UserError is an error on the user-side.
-// The user will reported via a message containing a detailed description of
-// the problem.
-// The error won't be logged.
+// The error will be reported via a message containing a detailed description
+// of the problem.
+// It won't be logged.
 type UserError struct {
 	Embed *embedutil.Builder
 }
 
 var _ Error = new(UserError)
 
-// NewCustomUserError creates a new *UserError using the ErrorEmbed as a
+// NewCustomUserError creates a new *UserError using a NewErrorEmbed as a
 // template.
 func NewCustomUserError() *UserError {
 	return &UserError{Embed: NewErrorEmbed()}
@@ -31,7 +31,8 @@ func NewUserErrorFromEmbed(e *embedutil.Builder) *UserError {
 	return &UserError{Embed: e}
 }
 
-// NewUserError creates a new *UserError with the passed description.
+// NewUserError creates a new *UserError with the passed description using a
+// NewErrorEmbed as template.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserError(description string) *UserError {
 	return NewCustomUserError().

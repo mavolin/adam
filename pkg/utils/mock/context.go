@@ -2,7 +2,6 @@ package mock
 
 import (
 	"reflect"
-	"sort"
 	"sync"
 	"testing"
 
@@ -42,119 +41,6 @@ func (d DiscordDataProvider) SelfAsync() func() (*discord.Member, error) {
 	return func() (*discord.Member, error) {
 		return d.SelfReturn, d.SelfError
 	}
-}
-
-// PluginProvider is a mock implementation of plugin.Provider.
-// Calls to FindX must be made with trimmed, space-separated invokes.
-type PluginProvider struct {
-	// PluginRepositoriesReturn is the value returned by PluginRepositories.
-	// The first element's ProviderName must be 'built_in'.
-	PluginRepositoriesReturn []plugin.Repository
-
-	commands []*plugin.ResolvedCommand
-	modules  []*plugin.ResolvedModule
-
-	UnavailablePluginProvidersReturn []plugin.UnavailablePluginProvider
-}
-
-var _ plugin.Provider = PluginProvider{}
-
-func (p PluginProvider) PluginRepositories() []plugin.Repository {
-	return p.PluginRepositoriesReturn
-}
-
-func (p PluginProvider) Commands() []*plugin.ResolvedCommand {
-	if p.PluginRepositoriesReturn == nil {
-		return nil
-	} else if p.commands == nil {
-		p.commands = plugin.GenerateResolvedCommands(p.PluginRepositoriesReturn)
-	}
-
-	return p.commands
-}
-
-func (p PluginProvider) Modules() []*plugin.ResolvedModule {
-	if p.PluginRepositoriesReturn == nil {
-		return nil
-	} else if p.modules == nil {
-		p.modules = plugin.GenerateResolvedModules(p.PluginRepositoriesReturn)
-	}
-
-	return p.modules
-}
-
-func (p PluginProvider) Command(id plugin.ID) *plugin.ResolvedCommand {
-	all := id.All()
-	if len(all) <= 1 { // invalid or just root
-		return nil
-	}
-
-	all = all[1:]
-
-	if len(all) == 1 { // top-level command
-		cmds := p.Commands()
-
-		i := sort.Search(len(cmds), func(i int) bool {
-			return cmds[i].Name >= all[0].Name()
-		})
-
-		if i == len(cmds) { // nothing found
-			return nil
-		}
-
-		return cmds[i]
-	}
-
-	mod := p.Module(id.Parent())
-	if mod == nil {
-		return nil
-	}
-
-	return mod.FindCommand(id.Name())
-}
-
-func (p PluginProvider) Module(id plugin.ID) *plugin.ResolvedModule {
-	all := id.All()
-	if len(all) <= 1 { // invalid or just root
-		return nil
-	}
-
-	all = all[1:]
-
-	mods := p.Modules()
-
-	i := sort.Search(len(mods), func(i int) bool {
-		return mods[i].Name >= all[0].Name()
-	})
-
-	if i == len(mods) { // nothing found
-		return nil
-	}
-
-	mod := mods[i]
-
-	for _, id := range all[1:] {
-		mod = mod.FindModule(id.Name())
-		if mod == nil {
-			return nil
-		}
-	}
-
-	return mod
-}
-
-func (p PluginProvider) FindCommand(invoke string) *plugin.ResolvedCommand {
-	id := plugin.NewIDFromInvoke(invoke)
-	return p.Command(id)
-}
-
-func (p PluginProvider) FindModule(invoke string) *plugin.ResolvedModule {
-	id := plugin.NewIDFromInvoke(invoke)
-	return p.Module(id)
-}
-
-func (p PluginProvider) UnavailablePluginProviders() []plugin.UnavailablePluginProvider {
-	return p.UnavailablePluginProvidersReturn
 }
 
 type ErrorHandler struct {

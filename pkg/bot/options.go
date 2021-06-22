@@ -97,12 +97,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerCancelChecker func(error) bool
 
-	// AsyncPluginProviders specifies whether the plugins providers should be
-	// fetched asynchronously or one by one.
-	//
-	// Default: false
-	AsyncPluginProviders bool
-
 	// Cabinet is the store.Cabinet used for caching.
 	// Use store.NoopCabinet to deactivate caching.
 	//
@@ -167,24 +161,27 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// NoDefaultMiddlewares, if true, prevents the default middlewares from
 	// being added on creation.
 	// These middlewares are responsible for validating the user is allowed
-	// to run a command, and the bot is able to.
+	// to run a command and the bot is able to.
 	//
 	// If you set this to true, you are responsible for adding those checks,
 	// or equivalents of them.
 	// Although possible, it is highly discouraged to disable certain checks,
 	// unless the resulting behavior is explicitly desired.
-	// Default or third-party plugins may rely on these checks, to perform as
+	// Default or third-party plugins may rely on these checks to perform as
 	// intended.
 	//
 	// By default, the following middlewares are added upon creation of the
 	// bot.
 	//
+	//	Bot.AddMiddleware(NewPrefixChecker(selfID))
+	//	Bot.AddMiddleware(RouteCommand)
 	//	Bot.AddMiddleware(CheckChannelTypes)
 	//	Bot.AddMiddleware(CheckBotPermissions)
-	//	Bot.AddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+	//	Bot.AddMiddleware(NewThrottlerChecker(Bot.ThrottlerCancelChecker))
 	//
 	//	Bot.AddPostMiddleware(CheckRestrictions)
 	//	Bot.AddPostMiddleware(ParseArgs)
+	//	Bot.AddPostMiddleware(InvokeCommand)
 	NoDefaultMiddlewares bool
 }
 

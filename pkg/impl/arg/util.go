@@ -5,8 +5,6 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-const whitespace = " \t\n"
-
 func genArgsInfo(
 	l *i18n.Localizer, rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool,
 ) (info plugin.ArgsInfo) {
@@ -136,8 +134,8 @@ func flagInfol(l *i18n.Localizer, f LocalizedFlag) (info plugin.FlagInfo) {
 	return info
 }
 
-func typeInfo(l *i18n.Localizer, t Type) plugin.TypeInfo {
-	return plugin.TypeInfo{
+func typeInfo(l *i18n.Localizer, t Type) plugin.ArgType {
+	return plugin.ArgType{
 		Name:        t.Name(l),
 		Description: t.Description(l),
 	}

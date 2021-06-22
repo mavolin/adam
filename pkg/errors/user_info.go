@@ -9,7 +9,7 @@ import (
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
-// UserInfo is less sever error on the user-side.
+// UserInfo is less severe error on the user-side.
 // The error will reported to the user via a message containing a detailed
 // description of the problem.
 // It won't be logged
@@ -19,7 +19,7 @@ type UserInfo struct {
 
 var _ Error = new(UserInfo)
 
-// NewCustomUserInfo creates a new *UserInfo using the InfoEmbed as template.
+// NewCustomUserInfo creates a new *UserInfo using a NewInfoEmbed as template.
 func NewCustomUserInfo() *UserInfo {
 	return &UserInfo{Embed: NewInfoEmbed()}
 }
@@ -30,7 +30,8 @@ func NewUserInfoFromEmbed(e *embedutil.Builder) *UserInfo {
 	return &UserInfo{Embed: e}
 }
 
-// NewUserInfo creates a new *UserInfo using the passed description.
+// NewUserInfo creates a new *UserInfo using the passed description and the
+// NewInfoEmbed template.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserInfo(description string) *UserInfo {
 	return NewCustomUserInfo().

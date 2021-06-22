@@ -49,7 +49,7 @@ func (l *Localizer) ErrorOn(term i18n.Term) *Localizer {
 	return l
 }
 
-// Clone creates a copy of the localizer.
+// Clone creates a clone of the localizer.
 func (l *Localizer) Clone(t *testing.T) *Localizer {
 	on := make(map[i18n.Term]string, len(l.on))
 	errOn := make(map[i18n.Term]struct{}, len(l.on))

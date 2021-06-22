@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -22,8 +23,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "pass guild channels",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
 			allowed: plugin.GuildChannels,
@@ -34,8 +35,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildTextChannels},
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{ChannelTypes: plugin.GuildTextChannels},
 				}),
 			},
 			allowed: plugin.GuildChannels,
@@ -45,8 +46,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "pass direct messages",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 0},
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
 				}),
 			},
 			allowed: plugin.DirectMessages,
@@ -57,8 +58,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.AllChannels},
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{ChannelTypes: plugin.AllChannels},
 				}),
 			},
 			allowed: plugin.DirectMessages,
@@ -68,8 +69,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "all channels",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 0},
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.DirectMessages},
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
 				}),
 			},
 			allowed: plugin.AllChannels,
@@ -79,8 +80,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			name: "pass guild text",
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{
 						ChannelTypes: plugin.AllChannels,
 					},
 				}),
@@ -96,8 +97,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{ChannelTypes: plugin.GuildChannels},
 				}),
 			},
 			allowed: plugin.GuildTextChannels,
@@ -108,8 +109,8 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
 				Localizer: i18n.NewFallbackLocalizer(),
-				InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-					CommandMeta: mock.CommandMeta{ChannelTypes: plugin.GuildChannels},
+				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+					CommandMeta: command.Meta{ChannelTypes: plugin.GuildChannels},
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{Type: discord.GuildNews},

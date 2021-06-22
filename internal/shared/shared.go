@@ -3,6 +3,8 @@ package shared
 
 import "github.com/mavolin/adam/pkg/utils/embedutil"
 
+const Whitespace = " \n"
+
 // ErrorEmbed is the shared errors *embedutil.Builder.
 // See errors.SetErrorEmbed and errors.NewErrorEmbed for more information.
 var ErrorEmbed = embedutil.NewBuilder().

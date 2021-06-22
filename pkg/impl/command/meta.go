@@ -21,8 +21,8 @@ type Meta struct {
 	ShortDescription string
 	// LongDescription is an optional long description of the command.
 	LongDescription string
-	// ExampleArgs contains the optional example aruments of the command.
-	ExampleArgs []string
+	// ExampleArgs contains the optional example arguments of the command.
+	ExampleArgs plugin.ExampleArgs
 	// Args is the argument configuration of the command.
 	// If this is left empty, the command won't accept any arguments.
 	Args plugin.ArgConfig
@@ -44,15 +44,15 @@ type Meta struct {
 
 var _ plugin.CommandMeta = Meta{}
 
-func (m Meta) GetName() string                            { return m.Name }
-func (m Meta) GetAliases() []string                       { return m.Aliases }
-func (m Meta) GetShortDescription(*i18n.Localizer) string { return m.ShortDescription }
-func (m Meta) GetLongDescription(*i18n.Localizer) string  { return m.LongDescription }
-func (m Meta) GetExampleArgs(*i18n.Localizer) []string    { return m.ExampleArgs }
-func (m Meta) GetArgs() plugin.ArgConfig                  { return m.Args }
-func (m Meta) IsHidden() bool                             { return m.Hidden }
-func (m Meta) GetChannelTypes() plugin.ChannelTypes       { return m.ChannelTypes }
-func (m Meta) GetBotPermissions() discord.Permissions     { return m.BotPermissions }
+func (m Meta) GetName() string                                   { return m.Name }
+func (m Meta) GetAliases() []string                              { return m.Aliases }
+func (m Meta) GetShortDescription(*i18n.Localizer) string        { return m.ShortDescription }
+func (m Meta) GetLongDescription(*i18n.Localizer) string         { return m.LongDescription }
+func (m Meta) GetExampleArgs(*i18n.Localizer) plugin.ExampleArgs { return m.ExampleArgs }
+func (m Meta) GetArgs() plugin.ArgConfig                         { return m.Args }
+func (m Meta) IsHidden() bool                                    { return m.Hidden }
+func (m Meta) GetChannelTypes() plugin.ChannelTypes              { return m.ChannelTypes }
+func (m Meta) GetBotPermissions() discord.Permissions            { return m.BotPermissions }
 
 func (m Meta) IsRestricted(s *state.State, ctx *plugin.Context) error {
 	if m.Restrictions == nil {

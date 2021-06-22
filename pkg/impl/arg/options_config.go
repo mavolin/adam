@@ -5,6 +5,7 @@ import (
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -43,7 +44,7 @@ func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) error {
 				ctx.ArgCombinationID = o.Prefix
 			}
 
-			args := strings.TrimLeft(args[len(prefix):], whitespace)
+			args := strings.TrimLeft(args[len(prefix):], shared.Whitespace)
 
 			if o.Config == nil {
 				if len(args) != 0 {
@@ -67,7 +68,7 @@ func (o Options) Parse(args string, s *state.State, ctx *plugin.Context) error {
 // A word ends if it is followed by a space, tab or newline.
 func firstWord(s string) string {
 	for i, char := range s {
-		if strings.ContainsRune(whitespace, char) {
+		if strings.ContainsRune(shared.Whitespace, char) {
 			return s[:i]
 		}
 	}

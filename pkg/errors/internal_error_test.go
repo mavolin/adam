@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -437,8 +438,8 @@ func TestInternalError_Handle(t *testing.T) {
 		Localizer: mock.NewLocalizer(t).
 			On(internalErrorTitle.Term, "abc").
 			Build(),
-		InvokedCommand: mock.GenerateResolvedCommand("built_in", mock.Command{
-			CommandMeta: mock.CommandMeta{Name: "abc"},
+		InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+			CommandMeta: command.Meta{Name: "abc"},
 		}),
 		Replier: replierFromState(s, 123, 0),
 	}

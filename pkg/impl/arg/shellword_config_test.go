@@ -468,7 +468,7 @@ func TestShellwordConfig_Parse(t *testing.T) {
 			expect:  plugin.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
-			name:    "command accepts no args",
+			name:    "commandType accepts no args",
 			config:  ShellwordConfig{},
 			rawArgs: "abc",
 			expect:  plugin.NewArgumentErrorl(noArgsError),
@@ -601,7 +601,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 			Required: []plugin.ArgInfo{
 				{
 					Name: "r1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "r1.type.name",
 						Description: "r1.type.desc",
 					},
@@ -609,7 +609,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "r2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "r2.type.name",
 						Description: "r2.type.desc",
 					},
@@ -619,7 +619,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 			Optional: []plugin.ArgInfo{
 				{
 					Name: "o1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "o1.type.name",
 						Description: "o1.type.desc",
 					},
@@ -627,7 +627,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "o2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "o2.type.name",
 						Description: "o2.type.desc",
 					},
@@ -639,7 +639,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 				{
 					Name:    "f1.name",
 					Aliases: []string{"f1.alias.1"},
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "f1.type.name",
 						Description: "f1.type.desc",
 					},
@@ -649,7 +649,7 @@ func TestShellwordConfig_Info(t *testing.T) {
 				{
 					Name:    "f2.name",
 					Aliases: nil,
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "f2.type.name",
 						Description: "f2.type.desc",
 					},
@@ -1127,7 +1127,7 @@ func TestLocalizedShellwordConfig_Parse(t *testing.T) {
 			expect:  plugin.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
-			name:    "command accepts no args",
+			name:    "commandType accepts no args",
 			config:  LocalizedShellwordConfig{},
 			rawArgs: "abc",
 			expect:  plugin.NewArgumentErrorl(noArgsError),
@@ -1262,7 +1262,7 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 			Required: []plugin.ArgInfo{
 				{
 					Name: "r1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "r1.type.name",
 						Description: "r1.type.desc",
 					},
@@ -1270,7 +1270,7 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "r2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "r2.type.name",
 						Description: "r2.type.desc",
 					},
@@ -1280,7 +1280,7 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 			Optional: []plugin.ArgInfo{
 				{
 					Name: "o1.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "o1.type.name",
 						Description: "o1.type.desc",
 					},
@@ -1288,7 +1288,7 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 				},
 				{
 					Name: "o2.name",
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "o2.type.name",
 						Description: "o2.type.desc",
 					},
@@ -1300,7 +1300,7 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 				{
 					Name:    "f1.name",
 					Aliases: []string{"f1.alias.1"},
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "f1.type.name",
 						Description: "f1.type.desc",
 					},
@@ -1310,7 +1310,7 @@ func TestLocalizedShellwordConfig_Info(t *testing.T) {
 				{
 					Name:    "f2.name",
 					Aliases: nil,
-					Type: plugin.TypeInfo{
+					Type: plugin.ArgType{
 						Name:        "f2.type.name",
 						Description: "f2.type.desc",
 					},

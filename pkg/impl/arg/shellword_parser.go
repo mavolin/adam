@@ -5,6 +5,7 @@ import (
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -130,7 +131,7 @@ func (p *shellwordParser) skip(num int) {
 
 func (p *shellwordParser) skipWhitespace() {
 	for p.has(1) { // skip whitespace
-		if !strings.ContainsRune(whitespace, p.next()) {
+		if !strings.ContainsRune(shared.Whitespace, p.next()) {
 			p.backup()
 			break
 		}
@@ -181,7 +182,7 @@ func (p *shellwordParser) nextContent() (string, error) { //nolint:gocognit
 		case char == '\\' && gc == doubleQuote:
 			upEscape = true
 			continue
-		case strings.ContainsRune(whitespace, char) && gc == 0:
+		case strings.ContainsRune(shared.Whitespace, char) && gc == 0:
 			p.backup()
 			return p.builder.String(), nil
 		case char == '\'' && gc == singleQuote:
@@ -235,7 +236,7 @@ func (p *shellwordParser) parseFlags() error {
 		start := p.pos
 
 		for char := p.next(); !p.drained(); char = p.next() {
-			if strings.ContainsRune(whitespace, char) {
+			if strings.ContainsRune(shared.Whitespace, char) {
 				p.backup()
 				break
 			}

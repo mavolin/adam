@@ -102,19 +102,20 @@ func (t ChannelTypes) String() string {
 }
 
 type (
-	// RestrictionFunc is the function used to determine if a user is authorized
-	// to use a command or module.
+	// RestrictionFunc is the function used to determine if a user is
+	// authorized to use a command or module.
 	//
 	// Implementations can be found in impl/restriction.
 	RestrictionFunc func(*state.State, *Context) error
 
-	// RestrictionErrorWrapper is the interface used to wrap errors returned by a
-	// RestrictionFunc.
-	// If the RestrictionFunc of a plugin returns an error, that implements this,
-	// It will call Wrap() to properly wrap the error.
+	// RestrictionErrorWrapper is the interface used to wrap errors returned by
+	// a RestrictionFunc.
+	// If the RestrictionFunc of a plugin returns an error, that implements
+	// this, It will call Wrap() to properly wrap the error.
 	RestrictionErrorWrapper interface {
 		// Wrap wraps the error returned by the RestrictionFunc.
 		Wrap(*state.State, *Context) error
+		error
 	}
 )
 
