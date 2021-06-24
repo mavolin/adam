@@ -6,7 +6,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // LocalizedMeta is the localized implementation of the plugin.CommandMeta
@@ -22,14 +21,19 @@ type LocalizedMeta struct {
 	ShortDescription *i18n.Config
 	// LongDescription is an optional long description of the command.
 	LongDescription *i18n.Config
-	// ExampleArgs contains the optional example arguments of the command.
-	ExampleArgs exampleArgsGetter
+
 	// Args is the argument configuration of the command.
 	// If this is left empty, the command won't accept any arguments.
 	Args plugin.ArgConfig
+	// ArgParser is the optional custom ArgParser of the command.
+	ArgParser plugin.ArgParser
+	// ExampleArgs contains the optional example arguments of the command.
+	ExampleArgs exampleArgsGetter
+
 	// Hidden specifies whether this command should be hidden from the help
 	// message.
 	Hidden bool
+
 	// ChannelTypes are the plugin.ChannelTypes the command may be executed in.
 	//
 	// If this is not set, AllChannels.
@@ -75,6 +79,7 @@ func (m LocalizedMeta) GetExampleArgs(l *i18n.Localizer) plugin.ExampleArgs {
 }
 
 func (m LocalizedMeta) GetArgs() plugin.ArgConfig              { return m.Args }
+func (m LocalizedMeta) GetArgParser() plugin.ArgParser         { return m.ArgParser }
 func (m LocalizedMeta) IsHidden() bool                         { return m.Hidden }
 func (m LocalizedMeta) GetChannelTypes() plugin.ChannelTypes   { return m.ChannelTypes }
 func (m LocalizedMeta) GetBotPermissions() discord.Permissions { return m.BotPermissions }
@@ -101,34 +106,31 @@ var _ exampleArgsGetter = plugin.ExampleArgs{}
 
 type LocalizedExampleArgs []struct {
 	// Flags is a map of exemplary flags.
-	Flags map[string]i18nutil.Text
+	Flags map[string]*i18n.Config
 	// Args contains the example arguments.
-	Args []i18nutil.Text
+	Args []*i18n.Config
 }
 
 var _ exampleArgsGetter = LocalizedExampleArgs{}
 
 func (lexamples LocalizedExampleArgs) BaseType(l *i18n.Localizer) plugin.ExampleArgs {
-	var (
-		base = make(plugin.ExampleArgs, len(lexamples))
-		err  error
-		i    int
-	)
+	base := make(plugin.ExampleArgs, len(lexamples))
+	var i int
 
 	for _, lexample := range lexamples {
 		base[i].Flags = make(map[string]string, len(lexample.Flags))
-		for name, lcontent := range lexample.Flags {
-			base[i].Flags[name], err = lcontent.Get(l)
-			if err != nil {
-				continue
+		for name, contentConfig := range lexample.Flags {
+			content, err := l.Localize(contentConfig)
+			if err == nil {
+				base[i].Flags[name] = content
 			}
 		}
 
 		base[i].Args = make([]string, len(lexample.Args))
-		for j, larg := range lexample.Args {
-			base[i].Args[j], err = larg.Get(l)
+		for j, argConfig := range lexample.Args {
+			arg, err := l.Localize(argConfig)
 			if err != nil {
-				continue
+				base[i].Args[j] = arg
 			}
 		}
 

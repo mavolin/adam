@@ -13,7 +13,7 @@ import (
 
 func TestBot_AddPluginSource(t *testing.T) {
 	t.Run("name built_in", func(t *testing.T) {
-		b := &Bot{pluginResolver: resolved.NewPluginResolver()}
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		assert.Panics(t, func() {
 			pfunc := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -25,14 +25,14 @@ func TestBot_AddPluginSource(t *testing.T) {
 	})
 
 	t.Run("nil", func(t *testing.T) {
-		b := &Bot{pluginResolver: resolved.NewPluginResolver()}
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		b.AddPluginSource("abc", nil)
 		assert.Len(t, b.pluginResolver.Sources, 0)
 	})
 
 	t.Run("replace", func(t *testing.T) {
-		b := &Bot{pluginResolver: resolved.NewPluginResolver()}
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return nil, nil, nil
@@ -60,7 +60,7 @@ func TestBot_AddPluginSource(t *testing.T) {
 	})
 
 	t.Run("success", func(t *testing.T) {
-		b := &Bot{pluginResolver: resolved.NewPluginResolver()}
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return nil, nil, nil

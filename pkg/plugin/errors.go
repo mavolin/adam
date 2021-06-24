@@ -10,7 +10,6 @@ import (
 
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
@@ -21,20 +20,20 @@ import (
 // ArgumentError is the error used if an argument or flag a user supplied is
 // invalid.
 type ArgumentError struct {
-	desc *i18nutil.Text
+	desc *i18n.Config
 }
 
 // NewArgumentError returns a new *ArgumentError with the passed
 // description.
 // The description mustn't be empty for this error to be handled properly.
 func NewArgumentError(description string) *ArgumentError {
-	return &ArgumentError{desc: i18nutil.NewText(description)}
+	return &ArgumentError{desc: i18n.NewStaticConfig(description)}
 }
 
 // NewArgumentErrorl returns a new *ArgumentError using the passed *i18n.Config
 // to generate a description.
 func NewArgumentErrorl(description *i18n.Config) *ArgumentError {
-	return &ArgumentError{desc: i18nutil.NewTextl(description)}
+	return &ArgumentError{desc: description}
 }
 
 // NewArgumentErrorlt returns a new *ArgumentError using the passed term to
@@ -46,7 +45,7 @@ func NewArgumentErrorlt(description i18n.Term) *ArgumentError {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *ArgumentError) Description(l *i18n.Localizer) (string, error) {
-	return e.desc.Get(l)
+	return l.Localize(e.desc)
 }
 
 func (e *ArgumentError) Error() string {
@@ -288,7 +287,7 @@ var (
 // error and not using an Embed, which suppresses mentions by default.
 type RestrictionError struct {
 	// description of the error
-	desc *i18nutil.Text
+	desc *i18n.Config
 
 	// Fatal defines if the RestrictionError is fatal.
 	// A RestrictionError is fatal, if the user cannot prevent the error from
@@ -300,13 +299,13 @@ type RestrictionError struct {
 // NewRestrictionError creates a new *RestrictionError with the passed
 // description.
 func NewRestrictionError(description string) *RestrictionError {
-	return &RestrictionError{desc: i18nutil.NewText(description)}
+	return &RestrictionError{desc: i18n.NewStaticConfig(description)}
 }
 
 // NewRestrictionErrorl creates a new *RestrictionError using the message
 // generated from the passed *i18n.Config as description.
 func NewRestrictionErrorl(description *i18n.Config) *RestrictionError {
-	return &RestrictionError{desc: i18nutil.NewTextl(description)}
+	return &RestrictionError{desc: description}
 }
 
 // NewRestrictionErrorlt creates a new *RestrictionError using the message
@@ -319,7 +318,7 @@ func NewRestrictionErrorlt(description i18n.Term) *RestrictionError {
 // passed description.
 func NewFatalRestrictionError(description string) *RestrictionError {
 	return &RestrictionError{
-		desc:  i18nutil.NewText(description),
+		desc:  i18n.NewStaticConfig(description),
 		Fatal: true,
 	}
 }
@@ -328,7 +327,7 @@ func NewFatalRestrictionError(description string) *RestrictionError {
 // message generated from the passed *i18n.Config as description.
 func NewFatalRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{
-		desc:  i18nutil.NewTextl(description),
+		desc:  description,
 		Fatal: true,
 	}
 }
@@ -342,7 +341,7 @@ func NewFatalRestrictionErrorlt(description i18n.Term) *RestrictionError {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *RestrictionError) Description(l *i18n.Localizer) (string, error) {
-	return e.desc.Get(l)
+	return l.Localize(e.desc)
 }
 
 func (e *RestrictionError) Error() string { return "restriction error" }
@@ -376,19 +375,19 @@ var HandleRestrictionError = func(rerr *RestrictionError, s *state.State, ctx *C
 // again.
 type ThrottlingError struct {
 	// description of the error
-	desc *i18nutil.Text
+	desc *i18n.Config
 }
 
 // NewThrottlingError creates a new *ThrottlingError with the passed
 // description.
 func NewThrottlingError(description string) *ThrottlingError {
-	return &ThrottlingError{desc: i18nutil.NewText(description)}
+	return &ThrottlingError{desc: i18n.NewStaticConfig(description)}
 }
 
 // NewThrottlingErrorl creates a new *ThrottlingError using the message
 // generated from the passed *i18n.Config as description.
 func NewThrottlingErrorl(description *i18n.Config) *ThrottlingError {
-	return &ThrottlingError{desc: i18nutil.NewTextl(description)}
+	return &ThrottlingError{desc: description}
 }
 
 // NewThrottlingErrorlt creates a new *ThrottlingError using the message
@@ -400,7 +399,7 @@ func NewThrottlingErrorlt(description i18n.Term) *ThrottlingError {
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *ThrottlingError) Description(l *i18n.Localizer) (string, error) {
-	return e.desc.Get(l)
+	return l.Localize(e.desc)
 }
 
 func (e *ThrottlingError) Error() string { return "throttling error" }

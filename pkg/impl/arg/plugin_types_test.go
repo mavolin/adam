@@ -8,14 +8,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/impl/command"
-	"github.com/mavolin/adam/pkg/impl/module"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
 func TestCommand_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		ctx := &Context{
+		ctx := &plugin.ParseContext{
 			Raw: "abc",
 			Context: &plugin.Context{
 				Provider: mock.NewPluginProvider([]plugin.Source{
@@ -39,7 +38,7 @@ func TestCommand_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		t.Run("unknown commandType", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider([]plugin.Source{{Name: plugin.BuiltInSource}}, nil),
@@ -53,7 +52,7 @@ func TestCommand_Parse(t *testing.T) {
 		})
 
 		t.Run("unknown commandType - some commands unavailable", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider(nil, []plugin.UnavailablePluginSource{
@@ -75,14 +74,14 @@ func TestCommand_Parse(t *testing.T) {
 
 func TestModule_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		ctx := &Context{
+		ctx := &plugin.ParseContext{
 			Raw: "abc",
 			Context: &plugin.Context{
 				Provider: mock.NewPluginProvider([]plugin.Source{
 					{
 						Name: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mock.Module{ModuleMeta: module.Meta{Name: "abc"}},
+							mockModule{name: "abc"},
 						},
 					},
 				}, nil),
@@ -99,7 +98,7 @@ func TestModule_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		t.Run("unknown commandType", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider([]plugin.Source{{Name: plugin.BuiltInSource}}, nil),
@@ -113,7 +112,7 @@ func TestModule_Parse(t *testing.T) {
 		})
 
 		t.Run("unknown commandType - some commands unavailable", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider(nil, []plugin.UnavailablePluginSource{
@@ -136,7 +135,7 @@ func TestModule_Parse(t *testing.T) {
 func TestPlugin_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Run("commandType", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider([]plugin.Source{
@@ -159,14 +158,14 @@ func TestPlugin_Parse(t *testing.T) {
 		})
 
 		t.Run("moduleType", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider([]plugin.Source{
 						{
 							Name: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mock.Module{ModuleMeta: module.Meta{Name: "abc"}},
+								mockModule{name: "abc"},
 							},
 						},
 					}, nil),
@@ -184,7 +183,7 @@ func TestPlugin_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		t.Run("unknown plugin", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider([]plugin.Source{{Name: plugin.BuiltInSource}}, nil),
@@ -198,7 +197,7 @@ func TestPlugin_Parse(t *testing.T) {
 		})
 
 		t.Run("unknown commandType - some commands unavailable", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
 					Provider: mock.NewPluginProvider(nil, []plugin.UnavailablePluginSource{

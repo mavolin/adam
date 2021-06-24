@@ -9,13 +9,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 func TestRegularExpression_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := regexp.MustCompile("abc")
 
-		ctx := &Context{Raw: expect.String()}
+		ctx := &plugin.ParseContext{Raw: expect.String()}
 
 		actual, err := RegularExpression.Parse(nil, ctx)
 		require.NoError(t, err)
@@ -114,9 +115,9 @@ func TestRegularExpression_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(string(c.name), func(t *testing.T) {
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				placeholders := map[string]interface{}{"expression": c.expression}
@@ -126,7 +127,7 @@ func TestRegularExpression_Parse(t *testing.T) {
 				_, actual := RegularExpression.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, placeholders)
 
 				_, actual = RegularExpression.Parse(nil, ctx)

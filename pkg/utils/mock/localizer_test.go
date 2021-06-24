@@ -29,7 +29,7 @@ func TestLocalizer_Build(t *testing.T) {
 		l := NewLocalizerWithDefault(expect).
 			Build()
 
-		actual, err := l.LocalizeTerm("")
+		actual, err := l.LocalizeTerm("def")
 		require.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})

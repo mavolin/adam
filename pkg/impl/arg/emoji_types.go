@@ -7,6 +7,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
 )
 
@@ -26,23 +27,23 @@ var (
 	// limitations.
 	//
 	// Go type: *discord.Emoji
-	Emoji Type = &emoji{customEmojis: true}
+	Emoji plugin.ArgType = &emoji{customEmojis: true}
 	// UnicodeEmoji is the type used for unicode emojis.
 	//
 	// Go type: *discord.Emoji
-	UnicodeEmoji Type = &emoji{customEmojis: false}
+	UnicodeEmoji plugin.ArgType = &emoji{customEmojis: false}
 )
 
 type emoji struct {
 	customEmojis bool
 }
 
-func (e emoji) Name(l *i18n.Localizer) string {
+func (e emoji) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(emojiName) // we have a fallback
 	return name
 }
 
-func (e emoji) Description(l *i18n.Localizer) string {
+func (e emoji) GetDescription(l *i18n.Localizer) string {
 	if EmojiAllowIDs {
 		desc, err := l.Localize(emojiDescriptionWithID)
 		if err == nil {
@@ -56,7 +57,7 @@ func (e emoji) Description(l *i18n.Localizer) string {
 
 var customEmojiRegexp = regexp.MustCompile(`^<a?:(?P<name>[^:]+):(?P<id>\d+)>$`)
 
-func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
+func (e emoji) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if emojiutil.IsValid(ctx.Raw) {
 		return &discord.Emoji{Name: ctx.Raw}, nil
 	}
@@ -106,7 +107,7 @@ func (e emoji) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	return emoji, nil
 }
 
-func (e emoji) Default() interface{} {
+func (e emoji) GetDefault() interface{} {
 	return (*discord.Emoji)(nil)
 }
 
@@ -123,21 +124,21 @@ func (e emoji) Default() interface{} {
 // Unlike Emoji, this type only accepts actual emojis but no ids.
 //
 // Go type: discord.APIEmoji
-var RawEmoji Type = new(rawEmoji)
+var RawEmoji plugin.ArgType = new(rawEmoji)
 
 type rawEmoji struct{}
 
-func (r rawEmoji) Name(l *i18n.Localizer) string {
+func (r rawEmoji) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(emojiName) // we have a fallback
 	return name
 }
 
-func (r rawEmoji) Description(l *i18n.Localizer) string {
+func (r rawEmoji) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(emojiDescriptionNoID) // we have a fallback
 	return desc
 }
 
-func (r rawEmoji) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (r rawEmoji) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if emojiutil.IsValid(ctx.Raw) {
 		return discord.APIEmoji(ctx.Raw), nil
 	} else if matches := customEmojiRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 3 {
@@ -147,6 +148,6 @@ func (r rawEmoji) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return nil, newArgumentError(emojiInvalidError, ctx, nil)
 }
 
-func (r rawEmoji) Default() interface{} {
+func (r rawEmoji) GetDefault() interface{} {
 	return discord.APIEmoji("")
 }

@@ -1,8 +1,6 @@
 package bot
 
 import (
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -10,7 +8,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 
-	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
@@ -50,53 +47,6 @@ func SendTyping(next CommandFunc) CommandFunc {
 				}
 			}
 		}()
-
-		return next(s, ctx)
-	}
-}
-
-// NewPrefixChecker creates a new prefix checker middleware for the bot with
-// the passed id.
-func NewPrefixChecker(selfID discord.UserID) MiddlewareFunc {
-	selfMentionRegexp := regexp.MustCompile("^<@!?" + selfID.String() + ">")
-
-	return func(next CommandFunc) CommandFunc {
-		return func(s *state.State, ctx *plugin.Context) error {
-			indexes := selfMentionRegexp.FindStringIndex(ctx.Content)
-			if indexes != nil { // invoked by mention
-				ctx.InvokeIndex = len(ctx.Content) - len(strings.TrimLeft(ctx.Content[indexes[1]:], shared.Whitespace))
-				return next(s, ctx)
-			}
-
-			for _, p := range ctx.Prefixes {
-				if strings.HasPrefix(ctx.Content, p) {
-					ctx.InvokeIndex = len(ctx.Content) - len(strings.TrimLeft(ctx.Content[len(p):], shared.Whitespace))
-					return next(s, ctx)
-				}
-			}
-
-			if ctx.GuildID.IsValid() {
-				return nil
-			}
-
-			// prefix isn't required in direct messages, so this is valid
-			return next(s, ctx)
-		}
-	}
-}
-
-// RouteCommand routes the command invoked by the message.
-// If the message does not contain a valid command invoke, ErrUnknownCommand
-// will be returned.
-func RouteCommand(next CommandFunc) CommandFunc {
-	return func(s *state.State, ctx *plugin.Context) error {
-		cmd, rawArgs := ctx.FindCommandWithArgs(ctx.Content[ctx.InvokeIndex:])
-		if cmd == nil {
-			return ErrUnknownCommand
-		}
-
-		ctx.InvokedCommand = cmd
-		ctx.ArgsIndex = len(ctx.Content) - len(rawArgs)
 
 		return next(s, ctx)
 	}
@@ -196,7 +146,8 @@ func CheckRestrictions(next CommandFunc) CommandFunc {
 func ParseArgs(next CommandFunc) CommandFunc {
 	return func(s *state.State, ctx *plugin.Context) (err error) {
 		if ctx.InvokedCommand.Args() != nil {
-			err = ctx.InvokedCommand.Args().Parse(ctx.Content[ctx.ArgsIndex:], s, ctx)
+			err = ctx.InvokedCommand.ArgParser().
+				Parse(ctx.Content[ctx.ArgsIndex:], ctx.InvokedCommand.Args(), s, ctx)
 			if err != nil {
 				return err
 			}

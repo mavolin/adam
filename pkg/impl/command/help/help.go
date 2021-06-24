@@ -80,8 +80,10 @@ type Options struct {
 	// ArgFormatter is the plugin.ArgFormatter used to generate command usages.
 	//
 	// Defaults to DefaultArgFormatter
-	ArgFormatter plugin.ArgFormatter
+	ArgFormatter ArgFormatter
 }
+
+type ArgFormatter func(name, typeName string, optional, variadic bool) string
 
 // New creates a new help command using the passed Options.
 func New(o Options) *Help {
@@ -107,8 +109,8 @@ func New(o Options) *Help {
 			ShortDescription: shortDescription,
 			LongDescription:  longDescription,
 			ExampleArgs:      exampleArgs,
-			Args: &arg.LocalizedCommaConfig{
-				Optional: []arg.LocalizedOptionalArg{
+			Args: &arg.LocalizedConfig{
+				OptionalArgs: []arg.LocalizedOptionalArg{
 					{
 						Name:        argPluginName,
 						Type:        arg.Plugin,
@@ -129,9 +131,9 @@ func (h *Help) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) 
 	}
 
 	switch p := ctx.Args[0].(type) {
-	case *plugin.ResolvedModule:
+	case plugin.ResolvedModule:
 		return h.module(s, ctx, p)
-	case *plugin.ResolvedCommand:
+	case plugin.ResolvedCommand:
 		return h.command(s, ctx, p)
 	default:
 		panic(fmt.Sprintf("got illegal argument type %T from arg.Plugin, but expected only (interface{})(nil), "+
@@ -177,11 +179,11 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 	return e, nil
 }
 
-func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.ResolvedModule) (discord.Embed, error) {
+func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedModule) (discord.Embed, error) {
 	eb := BaseEmbed.Clone().
 		WithSimpleTitlel(moduleTitle.
 			WithPlaceholders(moduleTitlePlaceholders{
-				Module: mod.ID.AsInvoke(),
+				Module: mod.ID().AsInvoke(),
 			}))
 
 	if desc := mod.LongDescription(ctx.Localizer); len(desc) > 0 {
@@ -197,35 +199,35 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod *plugin.ResolvedM
 
 	b := capbuilder.New(embedutil.MaxChars-embedutil.CountChars(e), 1024)
 
-	if f := h.genCommandsField(b, s, ctx, mod.Commands); len(f.Name) > 0 {
+	if f := h.genCommandsField(b, s, ctx, mod.Commands()); len(f.Name) > 0 {
 		e.Fields = append(e.Fields, f)
 		maxMods--
 	}
 
-	e.Fields = append(e.Fields, h.genModuleFields(b, s, ctx, mod.Modules, maxMods)...)
+	e.Fields = append(e.Fields, h.genModuleFields(b, s, ctx, mod.Modules(), maxMods)...)
 
 	if len(e.Fields) == 0 {
 		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
 			WithPlaceholders(pluginNotFoundErrorPlaceholder{
-				Invoke: ctx.RawArgs,
+				Invoke: ctx.RawArgs(),
 			}))
 	}
 
 	return e, nil
 }
 
-func (h *Help) command(s *state.State, ctx *plugin.Context, cmd *plugin.ResolvedCommand) (discord.Embed, error) {
-	if len(filterCommands([]*plugin.ResolvedCommand{cmd}, s, ctx, Show, h.Options.HideFuncs...)) == 0 {
+func (h *Help) command(s *state.State, ctx *plugin.Context, cmd plugin.ResolvedCommand) (discord.Embed, error) {
+	if len(filterCommands([]plugin.ResolvedCommand{cmd}, s, ctx, Show, h.Options.HideFuncs...)) == 0 {
 		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
 			WithPlaceholders(pluginNotFoundErrorPlaceholder{
-				Invoke: ctx.RawArgs,
+				Invoke: ctx.RawArgs(),
 			}))
 	}
 
 	eb := BaseEmbed.Clone().
 		WithSimpleTitlel(commandTitle.
 			WithPlaceholders(commandTitlePlaceholders{
-				Command: cmd.Name,
+				Command: cmd.Name(),
 			}))
 
 	if desc := cmd.LongDescription(ctx.Localizer); len(desc) > 0 {
@@ -240,31 +242,39 @@ func (h *Help) command(s *state.State, ctx *plugin.Context, cmd *plugin.Resolved
 	var b strings.Builder
 	b.Grow(1024)
 
-	if aliases := h.genAliases(&b, cmd, ctx.Localizer); aliases != nil {
+	if aliases := h.genAliasesField(&b, ctx, cmd); aliases != nil {
 		e.Fields = append(e.Fields, *aliases)
 	}
 
-	e.Fields = append(e.Fields, h.genUsages(&b, ctx, cmd)...)
+	e.Fields = append(e.Fields, h.genUsage(&b, ctx, cmd))
 
-	if ex := h.genExamples(&b, cmd, ctx.Localizer); ex != nil {
+	if args := h.genArguments(&b, ctx, cmd); args != nil {
+		e.Fields = append(e.Fields, *args)
+	}
+
+	if flags := h.genFlags(&b, ctx, cmd); flags != nil {
+		e.Fields = append(e.Fields, *flags)
+	}
+
+	if ex := h.genExamples(&b, ctx, cmd); ex != nil {
 		e.Fields = append(e.Fields, *ex)
 	}
 
 	return e, nil
 }
 
-func DefaultArgFormatter(i plugin.ArgInfo, optional, variadic bool) string {
+func DefaultArgFormatter(name, _ string, optional, variadic bool) string {
 	if optional {
 		if variadic {
-			return "[" + i.Name + "+]"
+			return "[" + name + "+]"
 		}
 
-		return "[" + i.Name + "]"
+		return "[" + name + "]"
 	}
 
 	if variadic {
-		return "<" + i.Name + "+>"
+		return "<" + name + "+>"
 	}
 
-	return "<" + i.Name + ">"
+	return "<" + name + ">"
 }

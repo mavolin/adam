@@ -303,7 +303,7 @@ func TestLocalizer_MustLocalize(t *testing.T) {
 		}
 
 		assert.Panics(t, func() {
-			l.MustLocalize(&Config{})
+			l.MustLocalize(&Config{Term: "abc"})
 		})
 	})
 }

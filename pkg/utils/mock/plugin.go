@@ -23,25 +23,6 @@ func (c Command) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error
 	return c.InvokeFunc(s, ctx)
 }
 
-type ArgConfig struct {
-	Expect string
-
-	ArgCombinationID string
-	Args             plugin.Args
-	Flags            plugin.Flags
-	ErrorReturn      error
-}
-
-var _ plugin.ArgConfig = ArgConfig{}
-
-func (a ArgConfig) Parse(_ string, _ *state.State, ctx *plugin.Context) error {
-	ctx.ArgCombinationID = a.ArgCombinationID
-	ctx.Args = a.Args
-	ctx.Flags = a.Flags
-
-	return a.ErrorReturn
-}
-
 // =============================================================================
 // Module
 // =====================================================================================
@@ -64,7 +45,7 @@ func (m Module) Modules() []plugin.Module   { return m.ModulesReturn }
 // NewPluginProvider creates a new plugin.Provider using the passed
 // []plugin.Source and []plugin.UnavailablePluginSource.
 func NewPluginProvider(sources []plugin.Source, unavailableSources []plugin.UnavailablePluginSource) plugin.Provider {
-	r := resolved.NewPluginResolver()
+	r := resolved.NewPluginResolver(nil)
 
 	for _, source := range sources {
 		source := source
@@ -90,7 +71,7 @@ func NewPluginProvider(sources []plugin.Source, unavailableSources []plugin.Unav
 // ResolveCommand creates a plugin.ResolvedCommand from the passed
 // plugin.Command using the passed source name.
 func ResolveCommand(sourceName string, cmd plugin.Command) plugin.ResolvedCommand {
-	r := resolved.NewPluginResolver()
+	r := resolved.NewPluginResolver(nil)
 	r.AddSource(sourceName,
 		func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return []plugin.Command{cmd}, nil, nil
@@ -102,7 +83,7 @@ func ResolveCommand(sourceName string, cmd plugin.Command) plugin.ResolvedComman
 // ResolveModule creates a plugin.ResolvedModule from the passed
 // plugin.Module using the passed source name.
 func ResolveModule(sourceName string, mod plugin.Module) plugin.ResolvedModule {
-	r := resolved.NewPluginResolver()
+	r := resolved.NewPluginResolver(nil)
 	r.AddSource(sourceName,
 		func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return nil, []plugin.Module{mod}, nil

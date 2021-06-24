@@ -2,6 +2,7 @@
 package bot
 
 import (
+	"regexp"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -24,24 +25,25 @@ type Bot struct {
 
 	pluginResolver *resolved.PluginResolver
 
-	selfID discord.UserID
+	selfID            discord.UserID
+	selfMentionRegexp *regexp.Regexp
 
 	// ----- Settings -----
 
 	SettingsProvider SettingsProvider
 	Owners           []discord.UserID
-	EditAge          time.Duration
+
+	EditAge time.Duration
 
 	AllowBot bool
+	autoOpen bool
 
-	autoOpen        bool
 	autoAddHandlers bool
 
 	ThrottlerCancelChecker func(error) bool
+	ErrorHandler           func(error, *state.State, *plugin.Context)
 
-	ErrorHandler func(error, *state.State, *plugin.Context)
-	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
-
+	PanicHandler             func(recovered interface{}, s *state.State, ctx *plugin.Context)
 	MessageCreateMiddlewares []interface{}
 	MessageUpdateMiddlewares []interface{}
 }
@@ -94,7 +96,9 @@ func New(o Options) (*Bot, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	b.selfID = self.ID
+	b.selfMentionRegexp = regexp.MustCompile("^<@!?" + self.ID.String() + ">")
 
 	b.SettingsProvider = o.SettingsProvider
 	b.Owners = o.Owners
@@ -106,9 +110,9 @@ func New(o Options) (*Bot, error) {
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
+	b.pluginResolver = resolved.NewPluginResolver(o.ArgParser)
+
 	if !o.NoDefaultMiddlewares {
-		b.MustAddMiddleware(NewPrefixChecker(b.selfID))
-		b.MustAddMiddleware(RouteCommand)
 		b.MustAddMiddleware(CheckChannelTypes)
 		b.MustAddMiddleware(CheckBotPermissions)
 		b.MustAddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))

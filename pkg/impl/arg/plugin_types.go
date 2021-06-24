@@ -14,21 +14,21 @@ import (
 // Command is the type used for commands.
 //
 // Go type: plugin.ResolvedCommand
-var Command Type = new(commandType)
+var Command plugin.ArgType = new(commandType)
 
 type commandType struct{}
 
-func (c commandType) Name(l *i18n.Localizer) string {
+func (c commandType) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(commandName) // we have a fallback
 	return name
 }
 
-func (c commandType) Description(l *i18n.Localizer) string {
+func (c commandType) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(commandDescription) // we have a fallback
 	return desc
 }
 
-func (c commandType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (c commandType) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	cmd := ctx.FindCommand(ctx.Raw)
 	if cmd != nil {
 		return cmd, nil
@@ -41,7 +41,7 @@ func (c commandType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return nil, newArgumentError(commandNotFoundError, ctx, nil)
 }
 
-func (c commandType) Default() interface{} {
+func (c commandType) GetDefault() interface{} {
 	return (plugin.ResolvedCommand)(nil)
 }
 
@@ -52,21 +52,21 @@ func (c commandType) Default() interface{} {
 // Module is the type used for modules.
 //
 // Go type: plugin.ResolvedModule
-var Module Type = new(moduleType)
+var Module plugin.ArgType = new(moduleType)
 
 type moduleType struct{}
 
-func (m moduleType) Name(l *i18n.Localizer) string {
+func (m moduleType) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(moduleName) // we have a fallback
 	return name
 }
 
-func (m moduleType) Description(l *i18n.Localizer) string {
+func (m moduleType) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(moduleDescription) // we have a fallback
 	return desc
 }
 
-func (m moduleType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (m moduleType) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	mod := ctx.FindModule(ctx.Raw)
 	if mod != nil {
 		return mod, nil
@@ -79,7 +79,7 @@ func (m moduleType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return nil, newArgumentError(moduleNotFoundError, ctx, nil)
 }
 
-func (m moduleType) Default() interface{} {
+func (m moduleType) GetDefault() interface{} {
 	return (plugin.ResolvedModule)(nil)
 }
 
@@ -92,21 +92,21 @@ func (m moduleType) Default() interface{} {
 // Fallback for default will be interface{} nil.
 //
 // Go types: plugin.ResolvedCommand or plugin.ResolvedModule
-var Plugin Type = new(pluginType)
+var Plugin plugin.ArgType = new(pluginType)
 
 type pluginType struct{}
 
-func (p pluginType) Name(l *i18n.Localizer) string {
+func (p pluginType) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(pluginName) // we have a fallback
 	return name
 }
 
-func (p pluginType) Description(l *i18n.Localizer) string {
+func (p pluginType) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(pluginDescription) // we have a fallback
 	return desc
 }
 
-func (p pluginType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (p pluginType) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if cmd := ctx.FindCommand(ctx.Raw); cmd != nil {
 		return cmd, nil
 	} else if mod := ctx.FindModule(ctx.Raw); mod != nil {
@@ -120,7 +120,7 @@ func (p pluginType) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return nil, newArgumentError(pluginNotFoundError, ctx, nil)
 }
 
-func (p pluginType) Default() interface{} {
+func (p pluginType) GetDefault() interface{} {
 	// return interface{} nil, as described in type's doc
 	return nil
 }

@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/internal/capbuilder"
+	"github.com/mavolin/adam/pkg/impl/command"
+	"github.com/mavolin/adam/pkg/impl/module"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -14,63 +16,29 @@ import (
 // Formatters
 // =====================================================================================
 
-func Test_formatCommand(t *testing.T) {
-	t.Run("with short description", func(t *testing.T) {
-		expect := "`mod kick` - kicks someone"
-
-		cmd := &plugin.ResolvedCommand{
-			Source: mock.Command{
-				CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
-			},
-			ID: ".mod.kick",
-		}
-
-		b := capbuilder.New(100, 100)
-
-		new(Help).formatCommand(b, cmd, nil)
-
-		assert.Equal(t, expect, b.String())
-	})
-
-	t.Run("no short description", func(t *testing.T) {
-		expect := "`mod kick`"
-
-		cmd := &plugin.ResolvedCommand{
-			Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
-			ID:     ".mod.kick",
-		}
-
-		b := capbuilder.New(100, 100)
-
-		new(Help).formatCommand(b, cmd, nil)
-
-		assert.Equal(t, expect, b.String())
-	})
-}
-
 func Test_formatCommands(t *testing.T) {
-	expect := "`mod kick` - kicks someone\n" +
-		"`mod abc`\n" +
-		"`mod ban` - bans someone"
+	expect := "`mod abc`\n" +
+		"`mod ban` - bans someone\n" +
+		"`mod kick` - kicks someone"
 
-	cmds := []*plugin.ResolvedCommand{
-		{
-			Source: mock.Command{
-				CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
-			},
-			ID: ".mod.kick",
+	mod := module.New(&module.Meta{Name: "mod"})
+	mod.AddCommand(mock.Command{
+		CommandMeta: command.Meta{Name: "abc"},
+	})
+	mod.AddCommand(mock.Command{
+		CommandMeta: command.Meta{
+			Name:             "ban",
+			ShortDescription: "bans someone",
 		},
-		{
-			Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
-			ID:     ".mod.abc",
+	})
+	mod.AddCommand(mock.Command{
+		CommandMeta: command.Meta{
+			Name:             "kick",
+			ShortDescription: "kicks someone",
 		},
-		{
-			Source: mock.Command{
-				CommandMeta: mock.CommandMeta{ShortDescription: "bans someone"},
-			},
-			ID: ".mod.ban",
-		},
-	}
+	})
+
+	cmds := mock.ResolveModule(plugin.BuiltInSource, mod).Commands()
 
 	b := capbuilder.New(100, 100)
 
@@ -80,70 +48,64 @@ func Test_formatCommands(t *testing.T) {
 }
 
 func Test_formatModule(t *testing.T) {
-	expect := "`mod kick` - kicks someone\n" +
-		"`mod abc`\n" +
+	expect := "`mod abc`\n" +
 		"`mod ban` - bans someone\n" +
-		"`mod infr list` - lists all infractions\n" +
+		"`mod kick` - kicks someone\n" +
 		"`mod infr edit` - edits an infraction\n" +
+		"`mod infr list` - lists all infractions\n" +
 		"`mod infr rm`\n" +
 		"`mod invite toggle` - turns the invite module on or off"
 
-	mod := &plugin.ResolvedModule{
-		Commands: []*plugin.ResolvedCommand{
-			{
-				Source: mock.Command{
-					CommandMeta: mock.CommandMeta{ShortDescription: "kicks someone"},
-				},
-				ID: ".mod.kick",
-			},
-			{
-				Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
-				ID:     ".mod.abc",
-			},
-			{
-				Source: mock.Command{
-					CommandMeta: mock.CommandMeta{ShortDescription: "bans someone"},
-				},
-				ID: ".mod.ban",
-			},
+	mod := module.New(&module.Meta{Name: "mod"})
+	mod.AddCommand(mock.Command{
+		CommandMeta: command.Meta{Name: "abc"},
+	})
+	mod.AddCommand(mock.Command{
+		CommandMeta: command.Meta{
+			Name:             "ban",
+			ShortDescription: "bans someone",
 		},
-		Modules: []*plugin.ResolvedModule{
-			{
-				Commands: []*plugin.ResolvedCommand{
-					{
-						Source: mock.Command{
-							CommandMeta: mock.CommandMeta{ShortDescription: "lists all infractions"},
-						},
-						ID: ".mod.infr.list",
-					},
-					{
-						Source: mock.Command{
-							CommandMeta: mock.CommandMeta{ShortDescription: "edits an infraction"},
-						},
-						ID: ".mod.infr.edit",
-					},
-					{
-						Source: mock.Command{CommandMeta: new(mock.CommandMeta)},
-						ID:     ".mod.infr.rm",
-					},
-				},
-			},
-			{
-				Commands: []*plugin.ResolvedCommand{
-					{
-						Source: mock.Command{
-							CommandMeta: mock.CommandMeta{ShortDescription: "turns the invite module on or off"},
-						},
-						ID: ".mod.invite.toggle",
-					},
-				},
-			},
+	})
+	mod.AddCommand(mock.Command{
+		CommandMeta: command.Meta{
+			Name:             "kick",
+			ShortDescription: "kicks someone",
 		},
-	}
+	})
 
+	infr := module.New(module.Meta{Name: "infr"})
+	infr.AddCommand(mock.Command{
+		CommandMeta: command.Meta{
+			Name:             "edit",
+			ShortDescription: "edits an infraction",
+		},
+	})
+	infr.AddCommand(mock.Command{
+		CommandMeta: command.Meta{
+			Name:             "list",
+			ShortDescription: "lists all infractions",
+		},
+	})
+	infr.AddCommand(mock.Command{
+		CommandMeta: command.Meta{Name: "rm"},
+	})
+
+	mod.AddModule(infr)
+
+	invite := module.New(module.Meta{Name: "invite"})
+	invite.AddCommand(mock.Command{
+		CommandMeta: command.Meta{
+			Name:             "toggle",
+			ShortDescription: "turns the invite module on or off",
+		},
+	})
+
+	mod.AddModule(invite)
+
+	rmod := mock.ResolveModule(plugin.BuiltInSource, mod)
 	b := capbuilder.New(500, 5000)
 
-	new(Help).formatModule(b, mod, nil, new(plugin.Context), Show)
+	new(Help).formatModule(b, rmod, nil, new(plugin.Context), Show)
 
 	assert.Equal(t, expect, b.String())
 }

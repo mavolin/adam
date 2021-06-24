@@ -28,8 +28,8 @@ func New() *Kick {
 			Aliases:          nil,
 			ShortDescription: shortDescription,
 			ExampleArgs:      examples,
-			Args: arg.LocalizedCommaConfig{
-				Required: []arg.LocalizedRequiredArg{
+			Args: &arg.LocalizedConfig{
+				RequiredArgs: []arg.LocalizedRequiredArg{
 					{
 						Name:        argMemberName,
 						Type:        arg.Member,

@@ -16,7 +16,8 @@ type (
 		Commands []plugin.Command
 		Modules  []plugin.Module
 
-		provider *PluginProvider
+		provider  *PluginProvider
+		argParser plugin.ArgParser
 	}
 
 	UnqueriedPluginSource struct {
@@ -27,9 +28,10 @@ type (
 	PluginSourceFunc func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error)
 )
 
-func NewPluginResolver() *PluginResolver {
+func NewPluginResolver(defaultArgParser plugin.ArgParser) *PluginResolver {
 	return &PluginResolver{
-		provider: &PluginProvider{usedNames: make(map[string]struct{})},
+		provider:  &PluginProvider{usedNames: make(map[string]struct{})},
+		argParser: defaultArgParser,
 	}
 }
 

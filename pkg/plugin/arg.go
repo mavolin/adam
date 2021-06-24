@@ -16,93 +16,151 @@ type (
 	//
 	// Default implementations can be found in impl/arg.
 	ArgConfig interface {
+		// GetRequiredArgs returns the required arguments of the command.
+		GetRequiredArgs() []RequiredArg
+		// GetOptionalArgs returns the optional arguments of the command.
+		GetOptionalArgs() []OptionalArg
+		// IsVariadic returns whether the last argument is variadic, i.e. that
+		// it may be specified multiple times.
+		IsVariadic() bool
+
+		// GetFlags returns the flags of the command.
+		GetFlags() []Flag
+	}
+
+	// ArgParser is the abstraction of a parser that uses the information
+	// provided by the ArgConfig to parse the arguments and flags supplied to
+	// a command.
+	//
+	// Every bot instance defines a global ArgParser that can be overridden by
+	// the individual commands.
+	ArgParser interface {
 		// Parse parses the passed arguments and stores them in the passed
 		// *plugin.Context.
 		// args is the trimmed message, with prefix and command stripped.
+		Parse(args string, argConfig ArgConfig, s *state.State, ctx *Context) error
+
+		// FormatArgs formats the passed arguments and flags so that they would
+		// present a valid input for the passed ArgConfig by properly escaping
+		// and delimiting the individual arguments and flags.
 		//
-		// If there are nested argument overloads, their combination ids should
-		// be dot-separated.
-		Parse(args string, s *state.State, ctx *Context) error
-	}
-
-	// ArgsInfoer is an interface that can be optionally implemented by an
-	// ArgConfig.
-	// It provides meta information about the arguments and flags of a command.
-	ArgsInfoer interface {
-		// Info returns localized information about the arguments and flags of
-		// a command.
-		// If the returned slice is nil, it can be assumed, that no
-		// information is available.
-		Info(l *i18n.Localizer) []ArgsInfo
-	}
-
-	// ArgsInfo contains localized information about a single argument
-	// combination.
-	ArgsInfo struct {
-		// Prefix contains the optional prefix of the argument combination.
-		// If there is none, it will be ignored.
-		Prefix string
-		// Required contains information about required arguments.
-		Required []ArgInfo
-		// Optional contains information about optional arguments.
-		Optional []ArgInfo
-		// Variadic specifies whether the last possibly specifiable argument
-		// is variadic.
-		Variadic bool
-
-		// ArgsFormatter formats arguments using the delimiter of the command.
+		// It is guaranteed that the passed args and flags are valid in
+		// themselves, i.e. that they fulfil the requirements defined by their
+		// config.
 		//
-		// Individual args are formatted using the passed ArgFormatter, so that
-		// if the placeholders were to be replaced with actual values, the
-		// command would run without any errors.
-		ArgsFormatter func(f ArgFormatter) string
-
-		// Flags contains information about the command's flags.
-		Flags []FlagInfo
-
-		// FlagFormatter returns a flag with the passed name formatted, so that
-		// it would get recognized as such if a value were to be added.
-		FlagFormatter func(name string) string
+		// See package arg for example implementations.
+		FormatArgs(argConfig ArgConfig, args []string, flags map[string]string) string
+		// FormatUsage formats the passed arguments and flags so that they are
+		// properly delimited.
+		// It should ignore the need for escapes, as the produced output is
+		// solely intended to be used for usage illustrations such as
+		//	<Required Argument 1>, <Required Argument 2>, [Optional Argument 1]
+		// The above output would be produced if the args slice contained
+		// {"<Required Argument 1>", "<Required Argument 2>",
+		// "[Optional Argument 1"} and the ArgParser uses a "," as delimiter.
+		FormatUsage(argConfig ArgConfig, args []string) string
+		// FormatFlag formats the passed name of a flag as it would be required
+		// if using that flag.
+		// For example "my-flag" could become "-my-flag" if using a
+		// shellword-like flag notation.
+		FormatFlag(name string) string
 	}
 
-	// ArgInfo contains information about an argument.
-	ArgInfo struct {
-		// Name is the name of the argument.
-		Name string
-		// Type contains information about the type of the argument.
-		Type TypeInfo
-		// Description is the optional description of the argument.
-		Description string
+	// RequiredArg is the interface used to access information about a single
+	// required argument.
+	RequiredArg interface {
+		// GetName returns the name of the argument.
+		GetName(*i18n.Localizer) string
+		// GetType returns the ArgType of the argument.
+		GetType() ArgType
+		// GetDescription returns the optional description of the argument.
+		GetDescription(*i18n.Localizer) string
 	}
 
-	// ArgFormatter is a formatter function used to format a single argument
-	// using ArgsInfo.ArgsFormatter.
-	ArgFormatter func(i ArgInfo, optional, variadic bool) string
-
-	// FlagInfo contains information about a flag.
-	FlagInfo struct {
-		// Name is the name of the flag.
-		Name string
-		// Aliases contains the optional aliases of the flag.
-		Aliases []string
-		// Type contains information about the type of the flag.
-		Type TypeInfo
-		// Description is the optional description of the flag.
-		Description string
-		// Multi specifies whether the flag may be used multiple times.
-		Multi bool
+	// OptionalArg is the interface used to access information about a single
+	// optional argument.
+	OptionalArg interface {
+		// GetName returns the name of the argument.
+		GetName(*i18n.Localizer) string
+		// GetType returns the ArgType of the argument.
+		GetType() ArgType
+		// GetDefault is the default value of the argument.
+		//
+		// If Default is (interface{})(nil), ArgType.Default() will be used.
+		GetDefault() interface{}
+		// GetDescription returns the optional description of the argument.
+		GetDescription(*i18n.Localizer) string
 	}
 
-	// TypeInfo contains information about a flag or arg type.
+	// Flag contains information about a flag.
+	Flag interface {
+		// GetName returns the name of the flag.
+		GetName() string
+		// GetAliases returns the optional aliases of the flag.
+		GetAliases() []string
+		// GetType returns information about the type of the flag.
+		GetType() ArgType
+		// GetDefault is the default value of the flag.
+		//
+		// If Default is (interface{})(nil), ArgType.Default() will be used.
+		GetDefault() interface{}
+		// GetDescription returns the optional description of the flag.
+		GetDescription(*i18n.Localizer) string
+		// IsMulti returns whether the flag may be used multiple times.
+		IsMulti() bool
+	}
+
+	// ArgType contains information about a flag or arg type.
 	// The returned name and description must be the same for all arguments of
 	// the guild.
-	TypeInfo struct {
-		// Name is the optional name of the type.
-		Name string
-		// Description is the optional description of the type.
-		Description string
+	ArgType interface {
+		// GetName returns the name of the type.
+		// The name should be a noun.
+		GetName(*i18n.Localizer) string
+		// GetDescription returns the description of the type.
+		GetDescription(*i18n.Localizer) string
+		// Parse parses the argument or flag using the passed Context.
+		//
+		// The first return value must always be of the same type.
+		Parse(s *state.State, ctx *ParseContext) (interface{}, error)
+		// GetDefault returns the default value for the type.
+		// See Flag.Default or OptionalArg.Default for more info.
+		//
+		// It must return a value that is of the type returned by Parse.
+		GetDefault() interface{}
 	}
 )
+
+// ArgKind specifies whether a flag or an argument is being parsed.
+type ArgKind string
+
+const (
+	// KindArg is the Kind used for argument.
+	KindArg = "arg"
+	// KindFlag is the Kind used for flags.
+	KindFlag = "flag"
+)
+
+// ParseContext is the context passed to ArgType.Parse.
+type ParseContext struct {
+	*Context
+
+	// Raw is the raw argument or flag.
+	Raw string
+	// Name is the name of the argument or flag.
+	// It includes possible prefixes such as minuses.
+	Name string
+	// UsedName is the alias of the flag the Context represents.
+	// If the name of the flag was used, or the context represents an
+	// argument, UsedName will be equal to Name.
+	// It includes possible prefixes such as minuses.
+	UsedName string
+	// Index contains the index of the argument, if the context represents
+	// an argument.
+	Index int
+	// Kind specifies whether a flag or an argument is being parsed.
+	Kind ArgKind
+}
 
 // Args are the parsed arguments of a command.
 type Args []interface{}

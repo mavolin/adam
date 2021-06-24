@@ -19,7 +19,7 @@ func TestDuration_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := 1*duration.Week + 3*duration.Day
 
-		ctx := &Context{Raw: "1w 3d"}
+		ctx := &plugin.ParseContext{Raw: "1w 3d"}
 
 		actual, err := SimpleDuration.Parse(nil, ctx)
 		require.NoError(t, err)
@@ -29,7 +29,7 @@ func TestDuration_Parse(t *testing.T) {
 	failureCases := []struct {
 		name string
 
-		duration Type
+		duration plugin.ArgType
 		raw      string
 
 		expectArg, expectFlag *i18n.Config
@@ -85,9 +85,9 @@ func TestDuration_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
@@ -95,7 +95,7 @@ func TestDuration_Parse(t *testing.T) {
 				_, actual := c.duration.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
@@ -146,7 +146,7 @@ func TestTime_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Base: state.NewBase()},
 					Raw:     c.raw,
 				}
@@ -233,10 +233,10 @@ func TestTime_Parse(t *testing.T) {
 					Max: c.max,
 				}
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Base: state.NewBase()},
 					Raw:     c.raw,
-					Kind:    KindArg,
+					Kind:    plugin.KindArg,
 				}
 
 				if c.emptyLocationKey {
@@ -251,7 +251,7 @@ func TestTime_Parse(t *testing.T) {
 				_, actual := ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
@@ -315,7 +315,7 @@ func TestDate_Parse(t *testing.T) {
 
 				DefaultLocation = c.defaultLocation
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Base: state.NewBase()},
 					Raw:     c.raw,
 				}
@@ -412,12 +412,12 @@ func TestDate_Parse(t *testing.T) {
 					Max:              c.max,
 				}
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{
 						Base: state.NewBase(),
 					},
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				if c.emptyLocationKey {
@@ -432,7 +432,7 @@ func TestDate_Parse(t *testing.T) {
 				_, actual := ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
@@ -482,7 +482,7 @@ func TestDateTime_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Base: state.NewBase()},
 					Raw:     c.raw,
 				}
@@ -567,10 +567,10 @@ func TestDateTime_Parse(t *testing.T) {
 					Max: c.max,
 				}
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Base: state.NewBase()},
 					Raw:     c.raw,
-					Kind:    KindArg,
+					Kind:    plugin.KindArg,
 				}
 
 				if c.emptyLocationKey {
@@ -585,7 +585,7 @@ func TestDateTime_Parse(t *testing.T) {
 				_, actual := ti.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = ti.Parse(nil, ctx)
@@ -597,7 +597,7 @@ func TestDateTime_Parse(t *testing.T) {
 
 func TestTimeZone_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		ctx := &Context{Raw: "America/New_York"}
+		ctx := &plugin.ParseContext{Raw: "America/New_York"}
 
 		expect, err := time.LoadLocation("America/New_York")
 		if err != nil {
@@ -611,7 +611,7 @@ func TestTimeZone_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		ctx := &Context{Raw: "not a timezone"}
+		ctx := &plugin.ParseContext{Raw: "not a timezone"}
 
 		expect := newArgumentError(timeZoneInvalidError, ctx, nil)
 

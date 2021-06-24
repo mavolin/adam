@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
@@ -19,7 +18,7 @@ func TestEmbedBuilder_WithSimpleTitle(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithSimpleTitle(title).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -72,7 +71,7 @@ func TestEmbedBuilder_WithTitle(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithTitle(title, url).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -131,7 +130,7 @@ func TestEmbedBuilder_WithDescription(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithDescription(description).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -178,7 +177,7 @@ func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithTimestamp(timestamp).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -191,7 +190,7 @@ func TestEmbedBuilder_WithColor(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithColor(color).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -206,7 +205,7 @@ func TestEmbedBuilder_WithSimpleFooter(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithSimpleFooter(text).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -265,7 +264,7 @@ func TestEmbedBuilder_WithFooter(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithFooter(text, icon).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -330,7 +329,7 @@ func TestEmbedBuilder_WithImage(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithImage(image).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -345,7 +344,7 @@ func TestEmbedBuilder_WithThumbnail(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithThumbnail(thumbnail).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -360,7 +359,7 @@ func TestEmbedBuilder_WithSimpleAuthor(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithSimpleAuthor(name).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -419,7 +418,7 @@ func TestEmbedBuilder_WithSimpleAuthorWithURL(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithSimpleAuthorWithURL(name, url).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -490,7 +489,7 @@ func TestEmbedBuilder_WithAuthor(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithAuthor(name, icon).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -563,7 +562,7 @@ func TestEmbedBuilder_WithAuthorWithURL(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithAuthorWithURL(name, icon, url).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -634,7 +633,7 @@ func TestEmbedBuilder_WithField(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithField(field.Name, field.Value).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -695,7 +694,7 @@ func TestEmbedBuilder_WithInlinedField(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithInlinedField(field.Name, field.Value).
-		Build(nil)
+		Build(newMockedLocalizer(t).build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -756,8 +755,8 @@ func TestEmbedBuilder_withField(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name:    i18nutil.NewText(name),
-					value:   i18nutil.NewText(value),
+					name:    i18n.NewStaticConfig(name),
+					value:   i18n.NewStaticConfig(value),
 					inlined: inlined,
 				},
 			},
@@ -778,7 +777,7 @@ func TestEmbedBuilder_withField(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name:    i18nutil.NewText(name),
+					name:    i18n.NewStaticConfig(name),
 					inlined: inlined,
 				},
 			},
@@ -799,7 +798,7 @@ func TestEmbedBuilder_withField(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					value:   i18nutil.NewText(value),
+					value:   i18n.NewStaticConfig(value),
 					inlined: inlined,
 				},
 			},
@@ -823,8 +822,8 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name:    i18nutil.NewTextl(name),
-					value:   i18nutil.NewTextl(value),
+					name:    (*i18n.Config)(name),
+					value:   (*i18n.Config)(value),
 					inlined: inlined,
 				},
 			},
@@ -845,7 +844,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					name:    i18nutil.NewTextl(name),
+					name:    (*i18n.Config)(name),
 					inlined: inlined,
 				},
 			},
@@ -866,7 +865,7 @@ func TestEmbedBuilder_withFieldl(t *testing.T) {
 		expect := &Builder{
 			fields: []field{
 				{
-					value:   i18nutil.NewTextl(value),
+					value:   (*i18n.Config)(value),
 					inlined: inlined,
 				},
 			},

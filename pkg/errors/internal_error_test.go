@@ -11,7 +11,6 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
@@ -214,7 +213,7 @@ func TestWithDescription(t *testing.T) {
 		ierr := WithDescription(cause, expectDesc).(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewStaticConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -226,7 +225,7 @@ func TestWithDescription(t *testing.T) {
 		ierr := WithDescription(cause, expectDesc).(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewStaticConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -245,7 +244,7 @@ func TestWithDescription(t *testing.T) {
 
 		ierr := WithDescription(cause, expectDesc).(*InternalError)
 
-		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewStaticConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause, ierr.cause)
 	})
 }
@@ -264,7 +263,7 @@ func TestWithDescriptionf(t *testing.T) {
 		ierr := WithDescription(cause, expectDesc).(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewStaticConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -276,7 +275,7 @@ func TestWithDescriptionf(t *testing.T) {
 		ierr := WithDescriptionf(cause, "def %s", "ghi").(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewStaticConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -295,7 +294,7 @@ func TestWithDescriptionf(t *testing.T) {
 
 		ierr := WithDescriptionf(cause, "def %s", "ghi").(*InternalError)
 
-		assert.Equal(t, i18nutil.NewText(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewStaticConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause, ierr.cause)
 	})
 }
@@ -314,7 +313,7 @@ func TestWithDescriptionl(t *testing.T) {
 		ierr := WithDescriptionl(cause, expectDesc).(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewTextl(expectDesc), ierr.desc)
+		assert.Equal(t, (*i18n.Config)(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -326,7 +325,7 @@ func TestWithDescriptionl(t *testing.T) {
 		ierr := WithDescriptionl(cause, expectDesc).(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewTextl(expectDesc), ierr.desc)
+		assert.Equal(t, (*i18n.Config)(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -345,7 +344,7 @@ func TestWithDescriptionl(t *testing.T) {
 
 		ierr := WithDescriptionl(cause, expectDesc).(*InternalError)
 
-		assert.Equal(t, i18nutil.NewTextl(expectDesc), ierr.desc)
+		assert.Equal(t, (*i18n.Config)(expectDesc), ierr.desc)
 		assert.Equal(t, cause, ierr.cause)
 	})
 }
@@ -364,7 +363,7 @@ func TestWithDescriptionlt(t *testing.T) {
 		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewTextlt(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewTermConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -376,7 +375,7 @@ func TestWithDescriptionlt(t *testing.T) {
 		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
 
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, i18nutil.NewTextlt(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewTermConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause.stack, ierr.stack)
 	})
 
@@ -395,7 +394,7 @@ func TestWithDescriptionlt(t *testing.T) {
 
 		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
 
-		assert.Equal(t, i18nutil.NewTextlt(expectDesc), ierr.desc)
+		assert.Equal(t, i18n.NewTermConfig(expectDesc), ierr.desc)
 		assert.Equal(t, cause, ierr.cause)
 	})
 }

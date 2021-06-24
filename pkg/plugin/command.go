@@ -66,6 +66,8 @@ type (
 		//
 		// If this is nil, the command will accept no arguments and flags.
 		GetArgs() ArgConfig
+		// GetArgParser returns the optional custom ArgParser of the command.
+		GetArgParser() ArgParser
 		// GetExampleArgs returns optional example arguments of the command.
 		GetExampleArgs(l *i18n.Localizer) ExampleArgs
 
@@ -98,10 +100,10 @@ type (
 	// flags.
 	// They are formatted using their ArgParser's FormatArgs method.
 	ExampleArgs []struct {
-		// Flags is a map of exemplary flags.
-		Flags map[string]string
 		// Args contains the example arguments.
 		Args []string
+		// Flags is a map of exemplary flags.
+		Flags map[string]string
 	}
 )
 
@@ -149,6 +151,10 @@ type ResolvedCommand interface {
 	//
 	// If this is nil, the command accepts no arguments.
 	Args() ArgConfig
+	// ArgParser returns ArgParser of the command.
+	// In contrast to Command's GetArgParser equivalent, ArgParser will return
+	// the global ArgParser if the command did not define one.
+	ArgParser() ArgParser
 
 	// ExampleArgs returns optional example arguments of the command.
 	ExampleArgs(*i18n.Localizer) ExampleArgs

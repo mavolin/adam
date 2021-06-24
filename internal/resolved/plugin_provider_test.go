@@ -14,7 +14,7 @@ import (
 
 func TestPluginProvider_PluginSources(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
-		r := NewPluginResolver()
+		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return []plugin.Command{mockCommand{name: "def"}}, []plugin.Module{mockModule{name: "ghi"}}, nil
@@ -58,7 +58,7 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 
 	t.Run("loaded", func(t *testing.T) {
 		p := &PluginProvider{
-			resolver: NewPluginResolver(),
+			resolver: NewPluginResolver(nil),
 			commands: make([]plugin.ResolvedCommand, 0),
 			sources: []plugin.Source{
 				{
@@ -88,7 +88,7 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 
 func TestPluginProvider_Commands(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
-		r := NewPluginResolver()
+		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return []plugin.Command{
@@ -152,7 +152,7 @@ func TestPluginProvider_Commands(t *testing.T) {
 
 	t.Run("loaded", func(t *testing.T) {
 		p := new(PluginProvider)
-		p.resolver = NewPluginResolver()
+		p.resolver = NewPluginResolver(nil)
 		p.sources = []plugin.Source{
 			{
 				Name:     plugin.BuiltInSource,
@@ -377,7 +377,7 @@ func TestPluginProvider_Commands(t *testing.T) {
 
 func TestPluginProvider_Modules(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
-		r := NewPluginResolver()
+		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, []plugin.Module{
@@ -517,7 +517,7 @@ func TestPluginProvider_Modules(t *testing.T) {
 
 	t.Run("loaded", func(t *testing.T) {
 		p := new(PluginProvider)
-		p.resolver = NewPluginResolver()
+		p.resolver = NewPluginResolver(nil)
 
 		p.usedNames = make(map[string]struct{})
 
@@ -1355,7 +1355,7 @@ func TestPluginProvider_Command(t *testing.T) {
 
 	t.Run("nested", func(t *testing.T) {
 		p := new(PluginProvider)
-		p.resolver = NewPluginResolver()
+		p.resolver = NewPluginResolver(nil)
 
 		p.sources = []plugin.Source{
 			{
@@ -1480,7 +1480,7 @@ func TestPluginProvider_Command(t *testing.T) {
 
 func TestPluginProvider_Module(t *testing.T) {
 	p := new(PluginProvider)
-	p.resolver = NewPluginResolver()
+	p.resolver = NewPluginResolver(nil)
 
 	p.sources = []plugin.Source{
 		{
@@ -1712,7 +1712,7 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 
 	t.Run("nested", func(t *testing.T) {
 		p := new(PluginProvider)
-		p.resolver = NewPluginResolver()
+		p.resolver = NewPluginResolver(nil)
 
 		p.sources = []plugin.Source{
 			{
@@ -1839,7 +1839,7 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 
 func TestPluginProvider_FindModule(t *testing.T) {
 	p := new(PluginProvider)
-	p.resolver = NewPluginResolver()
+	p.resolver = NewPluginResolver(nil)
 
 	p.sources = []plugin.Source{
 		{
@@ -2048,7 +2048,7 @@ func TestPluginProvider_FindModule(t *testing.T) {
 
 func TestPluginProvider_UnavailablePluginSources(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
-		r := NewPluginResolver()
+		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, nil, errors.New("abc")
@@ -2083,7 +2083,7 @@ func TestPluginProvider_UnavailablePluginSources(t *testing.T) {
 
 	t.Run("loaded", func(t *testing.T) {
 		p := &PluginProvider{
-			resolver: NewPluginResolver(),
+			resolver: NewPluginResolver(nil),
 			commands: make([]plugin.ResolvedCommand, 0),
 			sources: []plugin.Source{
 				{

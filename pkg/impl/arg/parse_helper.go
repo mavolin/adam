@@ -6,15 +6,16 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
+
+var interfaceType = reflect.TypeOf(func(interface{}) {}).In(0)
 
 // parseHelper is a helper struct that aids in parsing plugin.ArgConfigs.
 // It assumes flags always start with a single minus ('-').
 type parseHelper struct {
-	rargData []requiredArg
-	oargData []optionalArg
-	flagData []flag
+	rargData []plugin.RequiredArg
+	oargData []plugin.OptionalArg
+	flagData []plugin.Flag
 	variadic bool
 
 	state *state.State
@@ -30,31 +31,14 @@ type parseHelper struct {
 	multiFlags map[string]reflect.Value
 }
 
-type (
-	requiredArg struct {
-		name *i18nutil.Text
-		typ  Type
-	}
-
-	optionalArg struct {
-		name   *i18nutil.Text
-		typ    Type
-		dfault interface{}
-	}
-
-	flag struct {
-		name    string
-		aliases []string
-		typ     Type
-		dfault  interface{}
-		multi   bool
-	}
-)
-
 func newParseHelper( //nolint:dupl
-	rargs []RequiredArg, oargs []OptionalArg, flags []Flag, variadic bool, s *state.State, ctx *plugin.Context,
+	rargs []plugin.RequiredArg, oargs []plugin.OptionalArg, flags []plugin.Flag, variadic bool, s *state.State,
+	ctx *plugin.Context,
 ) *parseHelper {
 	p := &parseHelper{
+		rargData: rargs,
+		oargData: oargs,
+		flagData: flags,
 		variadic: variadic,
 		state:    s,
 		ctx:      ctx,
@@ -62,111 +46,10 @@ func newParseHelper( //nolint:dupl
 		flags:    make(plugin.Flags, len(flags)),
 	}
 
-	if len(rargs) > 0 {
-		p.rargData = make([]requiredArg, len(rargs))
-
-		for i, arg := range rargs {
-			p.rargData[i] = requiredArg{
-				name: i18nutil.NewText(arg.Name),
-				typ:  arg.Type,
-			}
-		}
-	}
-
-	if len(oargs) > 0 {
-		p.oargData = make([]optionalArg, len(oargs))
-
-		for i, arg := range oargs {
-			p.oargData[i] = optionalArg{
-				name:   i18nutil.NewText(arg.Name),
-				typ:    arg.Type,
-				dfault: arg.Default,
-			}
-		}
-	}
-
-	if len(flags) > 0 {
-		p.flagData = make([]flag, len(flags))
-
-		for i, f := range flags {
-			p.flagData[i] = flag{
-				name:    f.Name,
-				aliases: f.Aliases,
-				typ:     f.Type,
-				dfault:  f.Default,
-				multi:   f.Multi,
-			}
-		}
-	}
-
 	var numMultiFlags int
 
 	for _, f := range flags {
-		if f.Multi {
-			numMultiFlags++
-		}
-	}
-
-	if numMultiFlags > 0 {
-		p.multiFlags = make(map[string]reflect.Value, numMultiFlags)
-	}
-
-	return p
-}
-
-func newParseHelperl( //nolint:dupl
-	rargs []LocalizedRequiredArg, oargs []LocalizedOptionalArg, flags []LocalizedFlag, variadic bool,
-	s *state.State, ctx *plugin.Context,
-) *parseHelper {
-	p := &parseHelper{
-		variadic: variadic,
-		state:    s,
-		ctx:      ctx,
-		args:     make(plugin.Args, 0, len(rargs)+len(oargs)),
-		flags:    make(plugin.Flags, len(flags)),
-	}
-
-	if len(rargs) > 0 {
-		p.rargData = make([]requiredArg, len(rargs))
-
-		for i, arg := range rargs {
-			p.rargData[i] = requiredArg{
-				name: i18nutil.NewTextl(arg.Name),
-				typ:  arg.Type,
-			}
-		}
-	}
-
-	if len(oargs) > 0 {
-		p.oargData = make([]optionalArg, len(oargs))
-
-		for i, arg := range oargs {
-			p.oargData[i] = optionalArg{
-				name:   i18nutil.NewTextl(arg.Name),
-				typ:    arg.Type,
-				dfault: arg.Default,
-			}
-		}
-	}
-
-	if len(flags) > 0 {
-		p.flagData = make([]flag, len(flags))
-
-		for i, f := range flags {
-			p.flagData[i] = flag{
-				name:    f.Name,
-				aliases: f.Aliases,
-				typ:     f.Type,
-				dfault:  f.Default,
-				multi:   f.Multi,
-			}
-		}
-	}
-
-	var numMultiFlags int
-
-	for _, f := range flags {
-		if f.Multi {
+		if f.IsMulti() {
 			numMultiFlags++
 		}
 	}
@@ -206,16 +89,16 @@ func (h *parseHelper) mergeFlags() {
 
 func (h *parseHelper) fillFlagDefaults() {
 	for _, f := range h.flagData {
-		if _, ok := h.flags[f.name]; !ok {
+		if _, ok := h.flags[f.GetName()]; !ok {
 			var val interface{}
 
-			if f.multi {
-				if f.dfault != nil {
-					val = f.dfault
+			if f.IsMulti() {
+				if f.GetDefault() != nil {
+					val = f.GetDefault()
 				} else {
 					var t reflect.Type
 
-					if def := f.typ.Default(); def == nil {
+					if def := f.GetType().GetDefault(); def == nil {
 						t = interfaceType
 					} else {
 						t = reflect.TypeOf(def)
@@ -225,13 +108,13 @@ func (h *parseHelper) fillFlagDefaults() {
 					val = reflect.Zero(t).Interface()
 				}
 			} else {
-				val = f.dfault
+				val = f.GetDefault()
 				if val == nil {
-					val = f.typ.Default()
+					val = f.GetType().GetDefault()
 				}
 			}
 
-			h.flags[f.name] = val
+			h.flags[f.GetName()] = val
 		}
 	}
 }
@@ -244,9 +127,9 @@ func (h *parseHelper) fillArgDefaults() {
 	}
 
 	for _, arg := range h.oargData[argIndex : len(h.oargData)-1] {
-		val := arg.dfault
+		val := arg.GetDefault()
 		if val == nil {
-			val = arg.typ.Default()
+			val = arg.GetType().GetDefault()
 		}
 
 		h.args = append(h.args, val)
@@ -257,12 +140,12 @@ func (h *parseHelper) fillArgDefaults() {
 	var val interface{}
 
 	if h.variadic {
-		if last.dfault != nil {
-			val = last.dfault
+		if last.GetDefault() != nil {
+			val = last.GetDefault()
 		} else {
 			var t reflect.Type
 
-			if def := last.typ.Default(); def == nil {
+			if def := last.GetType().GetDefault(); def == nil {
 				t = interfaceType
 			} else {
 				t = reflect.TypeOf(def)
@@ -272,24 +155,24 @@ func (h *parseHelper) fillArgDefaults() {
 			val = reflect.Zero(t).Interface()
 		}
 	} else {
-		val = last.dfault
+		val = last.GetDefault()
 		if val == nil {
-			val = last.typ.Default()
+			val = last.GetType().GetDefault()
 		}
 	}
 
 	h.args = append(h.args, val)
 }
 
-func (h *parseHelper) flag(name string) *flag {
+func (h *parseHelper) flag(name string) plugin.Flag {
 	for _, flag := range h.flagData {
-		if flag.name == name {
-			return &flag
+		if flag.GetName() == name {
+			return flag
 		}
 
-		for _, alias := range flag.aliases {
+		for _, alias := range flag.GetAliases() {
 			if alias == name {
-				return &flag
+				return flag
 			}
 		}
 	}
@@ -297,31 +180,31 @@ func (h *parseHelper) flag(name string) *flag {
 	return nil
 }
 
-func (h *parseHelper) addFlag(flag *flag, usedName, content string) (err error) {
+func (h *parseHelper) addFlag(flag plugin.Flag, usedName, content string) (err error) {
 	var val interface{}
 
-	if flag.typ == Switch {
+	if flag.GetType() == Switch {
 		val = true
 	} else {
-		ctx := &Context{
+		ctx := &plugin.ParseContext{
 			Context:  h.ctx,
 			Raw:      content,
-			Name:     "-" + flag.name,
+			Name:     "-" + flag.GetName(),
 			UsedName: "-" + usedName,
-			Kind:     KindFlag,
+			Kind:     plugin.KindFlag,
 		}
 
-		val, err = flag.typ.Parse(h.state, ctx)
+		val, err = flag.GetType().Parse(h.state, ctx)
 		if err != nil {
 			return err
 		}
 	}
 
-	if !flag.multi {
-		return h.setSingleFlag(flag.name, usedName, val)
+	if !flag.IsMulti() {
+		return h.setSingleFlag(flag.GetName(), usedName, val)
 	}
 
-	h.setMultiFlag(flag.name, val)
+	h.setMultiFlag(flag.GetName(), val)
 	return nil
 }
 
@@ -363,7 +246,7 @@ func (h *parseHelper) setMultiFlag(name string, val interface{}) {
 }
 
 // nextArg returns meta information about the next argument.
-func (h *parseHelper) nextArg() (name string, typ Type, variadic bool, err error) {
+func (h *parseHelper) nextArg() (name string, typ plugin.ArgType, variadic bool, err error) {
 	totalArgs := len(h.rargData) + len(h.oargData)
 	if totalArgs == 0 {
 		return "", nil, false, plugin.NewArgumentErrorl(tooManyArgsError)
@@ -377,14 +260,14 @@ func (h *parseHelper) nextArg() (name string, typ Type, variadic bool, err error
 		if len(h.oargData) > 0 {
 			arg := h.oargData[len(h.oargData)-1]
 
-			name, err = arg.name.Get(h.ctx.Localizer)
-			return name, arg.typ, true, err
+			name = arg.GetName(h.ctx.Localizer)
+			return name, arg.GetType(), true, nil
 		}
 
 		arg := h.rargData[len(h.rargData)-1]
 
-		name, err = arg.name.Get(h.ctx.Localizer)
-		return name, arg.typ, true, err
+		name = arg.GetName(h.ctx.Localizer)
+		return name, arg.GetType(), true, nil
 	}
 
 	variadic = h.argIndex == totalArgs-1 && h.variadic
@@ -392,13 +275,13 @@ func (h *parseHelper) nextArg() (name string, typ Type, variadic bool, err error
 	if h.argIndex < len(h.rargData) {
 		arg := h.rargData[h.argIndex]
 
-		name, err = arg.name.Get(h.ctx.Localizer)
-		return name, arg.typ, variadic, err
+		name = arg.GetName(h.ctx.Localizer)
+		return name, arg.GetType(), variadic, nil
 	}
 
 	arg := h.oargData[h.argIndex-len(h.rargData)]
-	name, err = arg.name.Get(h.ctx.Localizer)
-	return name, arg.typ, variadic, err
+	name = arg.GetName(h.ctx.Localizer)
+	return name, arg.GetType(), variadic, nil
 }
 
 func (h *parseHelper) addArg(content string) error {
@@ -407,13 +290,13 @@ func (h *parseHelper) addArg(content string) error {
 		return err
 	}
 
-	ctx := &Context{
+	ctx := &plugin.ParseContext{
 		Context:  h.ctx,
 		Raw:      content,
 		Name:     name,
 		UsedName: name,
 		Index:    h.argIndex,
-		Kind:     KindArg,
+		Kind:     plugin.KindArg,
 	}
 
 	val, err := typ.Parse(h.state, ctx)

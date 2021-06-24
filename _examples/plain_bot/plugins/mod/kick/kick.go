@@ -28,9 +28,11 @@ func New() *Kick {
 			Name:             "kick",
 			Aliases:          nil,
 			ShortDescription: "Kicks a user.",
-			ExampleArgs:      []string{"@Clyde", "@Clyde, self-botting"},
-			Args: arg.CommaConfig{
-				Required: []arg.RequiredArg{
+			ExampleArgs: plugin.ExampleArgs{
+				{Args: []string{"@Clyde", "@Clyde, self-botting"}},
+			},
+			Args: &arg.Config{
+				RequiredArgs: []arg.RequiredArg{
 					{
 						Name:        "Member",
 						Type:        arg.Member,

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 func TestText_Name(t *testing.T) {
@@ -18,16 +18,16 @@ func TestText_Name(t *testing.T) {
 
 		txt := SimpleText
 
-		actual := txt.Name(i18n.NewFallbackLocalizer())
+		actual := txt.GetName(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("custom name", func(t *testing.T) {
 		expect := "abc"
 
-		txt := Text{CustomName: i18nutil.NewText(expect)}
+		txt := Text{CustomName: i18n.NewStaticConfig(expect)}
 
-		actual := txt.Name(i18n.NewFallbackLocalizer())
+		actual := txt.GetName(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -38,16 +38,16 @@ func TestText_Description(t *testing.T) {
 
 		txt := SimpleText
 
-		actual := txt.Description(i18n.NewFallbackLocalizer())
+		actual := txt.GetDescription(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("custom description", func(t *testing.T) {
 		expect := "abc"
 
-		txt := Text{CustomDescription: i18nutil.NewText(expect)}
+		txt := Text{CustomDescription: i18n.NewStaticConfig(expect)}
 
-		actual := txt.Description(i18n.NewFallbackLocalizer())
+		actual := txt.GetDescription(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -55,7 +55,7 @@ func TestText_Description(t *testing.T) {
 func TestText_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		text Type
+		text plugin.ArgType
 
 		raw string
 
@@ -90,7 +90,7 @@ func TestText_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range sucessCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{Raw: c.raw}
+				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.text.Parse(nil, ctx)
 				require.NoError(t, err)
@@ -149,9 +149,9 @@ func TestText_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
@@ -159,7 +159,7 @@ func TestText_Parse(t *testing.T) {
 				_, actual := c.text.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.text.Parse(nil, ctx)
@@ -173,8 +173,8 @@ func TestLink_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := "https://github.com/mavolin/adam"
 
-		ctx := &Context{
-			Kind: KindArg,
+		ctx := &plugin.ParseContext{
+			Kind: plugin.KindArg,
 			Raw:  expect,
 		}
 
@@ -185,7 +185,7 @@ func TestLink_Parse(t *testing.T) {
 
 	failureCases := []struct {
 		name string
-		link Type
+		link plugin.ArgType
 
 		raw string
 
@@ -224,9 +224,9 @@ func TestLink_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, nil)
@@ -234,7 +234,7 @@ func TestLink_Parse(t *testing.T) {
 				_, actual := c.link.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				_, actual = c.link.Parse(nil, ctx)
@@ -250,16 +250,16 @@ func TestAlphanumericID_Name(t *testing.T) {
 
 		id := SimpleAlphanumericID
 
-		actual := id.Name(i18n.NewFallbackLocalizer())
+		actual := id.GetName(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("custom name", func(t *testing.T) {
 		expect := "abc"
 
-		id := AlphanumericID{CustomName: i18nutil.NewText(expect)}
+		id := AlphanumericID{CustomName: i18n.NewStaticConfig(expect)}
 
-		actual := id.Name(i18n.NewFallbackLocalizer())
+		actual := id.GetName(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -270,16 +270,16 @@ func TestAlphanumericID_Description(t *testing.T) {
 
 		id := SimpleAlphanumericID
 
-		actual := id.Description(i18n.NewFallbackLocalizer())
+		actual := id.GetDescription(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("custom description", func(t *testing.T) {
 		expect := "abc"
 
-		id := AlphanumericID{CustomDescription: i18nutil.NewText(expect)}
+		id := AlphanumericID{CustomDescription: i18n.NewStaticConfig(expect)}
 
-		actual := id.Description(i18n.NewFallbackLocalizer())
+		actual := id.GetDescription(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -287,7 +287,7 @@ func TestAlphanumericID_Description(t *testing.T) {
 func TestAlphanumericID_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		id   Type
+		id   plugin.ArgType
 
 		raw string
 
@@ -322,7 +322,7 @@ func TestAlphanumericID_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range sucessCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{Raw: c.raw}
+				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.id.Parse(nil, ctx)
 				require.NoError(t, err)
@@ -381,9 +381,9 @@ func TestAlphanumericID_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
@@ -391,7 +391,7 @@ func TestAlphanumericID_Parse(t *testing.T) {
 				_, actual := c.id.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.id.Parse(nil, ctx)

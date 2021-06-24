@@ -1,9 +1,12 @@
 package bot
 
 import (
+	"strings"
+
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/replier"
@@ -23,19 +26,25 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	}
 
 	ctx := &plugin.Context{
-		Message:     *msg,
-		Member:      member,
-		Base:        base,
-		BotOwnerIDs: b.Owners,
-		Replier:     replier.WrapState(b.State, false),
-		Provider:    b.pluginResolver.NewProvider(base, msg),
-		DiscordDataProvider: &discordDataProvider{
-			s:         b.State,
-			guildID:   msg.GuildID,
-			channelID: msg.ChannelID,
-			selfID:    b.selfID,
-		},
+		Message: *msg,
+		Member:  member,
+		Base:    base,
 	}
+
+	if !b.checkPrefix(ctx) {
+		return
+	}
+
+	ctx.BotOwnerIDs = b.Owners
+	ctx.Replier = replier.WrapState(b.State, false)
+	ctx.Provider = b.pluginResolver.NewProvider(base, msg)
+	ctx.DiscordDataProvider = &discordDataProvider{
+		s:         b.State,
+		guildID:   msg.GuildID,
+		channelID: msg.ChannelID,
+		selfID:    b.selfID,
+	}
+
 	ctx.ErrorHandler = newCtxErrorHandler(b.State, ctx, b.ErrorHandler)
 
 	var ok bool
@@ -53,6 +62,15 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 		member.User = msg.Author
 	}
 
+	cmd, rawArgs := ctx.FindCommandWithArgs(ctx.Content[ctx.InvokeIndex:])
+	if cmd == nil {
+		ctx.HandleError(ErrUnknownCommand)
+		return
+	}
+
+	ctx.InvokedCommand = cmd
+	ctx.ArgsIndex = len(ctx.Content) - len(rawArgs)
+
 	defer func() {
 		if rec := recover(); rec != nil {
 			b.PanicHandler(rec, b.State, ctx)
@@ -63,6 +81,24 @@ func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Memb
 	if err := inv(b.State, ctx); err != nil {
 		b.ErrorHandler(err, b.State, ctx)
 	}
+}
+
+func (b *Bot) checkPrefix(ctx *plugin.Context) bool {
+	indexes := b.selfMentionRegexp.FindStringIndex(ctx.Content)
+	if indexes != nil { // invoked by mention
+		ctx.InvokeIndex = len(ctx.Content) - len(strings.TrimLeft(ctx.Content[indexes[1]:], shared.Whitespace))
+		return true
+	}
+
+	for _, p := range ctx.Prefixes {
+		if strings.HasPrefix(ctx.Content, p) {
+			ctx.InvokeIndex = len(ctx.Content) - len(strings.TrimLeft(ctx.Content[len(p):], shared.Whitespace))
+			return true
+		}
+	}
+
+	// prefix isn't required in direct messages, so DM's always "match"
+	return !ctx.GuildID.IsValid()
 }
 
 func (b *Bot) applyMiddlewares(ctx *plugin.Context) CommandFunc {

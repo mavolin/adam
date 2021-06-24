@@ -11,9 +11,10 @@ import (
 type mockCommand struct {
 	name            string
 	aliases         []string
-	args            plugin.ArgConfig
 	shortDesc       string
 	longDesc        string
+	args            plugin.ArgConfig
+	argParser       plugin.ArgParser
 	exampleArgs     plugin.ExampleArgs
 	hidden          bool
 	channelTypes    plugin.ChannelTypes
@@ -25,9 +26,10 @@ type mockCommand struct {
 
 func (c mockCommand) GetName() string                                   { return c.name }
 func (c mockCommand) GetAliases() []string                              { return c.aliases }
-func (c mockCommand) GetArgs() plugin.ArgConfig                         { return c.args }
 func (c mockCommand) GetShortDescription(*i18n.Localizer) string        { return c.shortDesc }
 func (c mockCommand) GetLongDescription(*i18n.Localizer) string         { return c.longDesc }
+func (c mockCommand) GetArgs() plugin.ArgConfig                         { return c.args }
+func (c mockCommand) GetArgParser() plugin.ArgParser                    { return c.argParser }
 func (c mockCommand) GetExampleArgs(*i18n.Localizer) plugin.ExampleArgs { return c.exampleArgs }
 func (c mockCommand) IsHidden() bool                                    { return c.hidden }
 func (c mockCommand) GetChannelTypes() plugin.ChannelTypes              { return c.channelTypes }
@@ -84,7 +86,7 @@ type mockThrottler struct {
 func (m mockThrottler) Check(*state.State, *plugin.Context) (func(), error) { return func() {}, nil }
 
 func newProviderFromSources(sources []plugin.Source) *PluginProvider {
-	r := NewPluginResolver()
+	r := NewPluginResolver(nil)
 
 	for _, source := range sources {
 		source := source

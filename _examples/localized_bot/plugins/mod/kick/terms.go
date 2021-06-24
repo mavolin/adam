@@ -1,6 +1,9 @@
 package kick
 
-import "github.com/mavolin/adam/pkg/i18n"
+import (
+	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/impl/command"
+)
 
 // =============================================================================
 // Meta
@@ -9,9 +12,18 @@ import "github.com/mavolin/adam/pkg/i18n"
 var (
 	shortDescription = i18n.NewFallbackConfig("plugin.mod.kick.short_description", "Kicks a user.")
 
-	examples = []*i18n.Config{
-		i18n.NewFallbackConfig("plugin.mod.kick.example.plain", "@Clyde"),
-		i18n.NewFallbackConfig("plugin.mod.kick.example.reason", "@Clyde, self-botting"),
+	examples = command.LocalizedExampleArgs{
+		{
+			Args: []*i18n.Config{
+				i18n.NewFallbackConfig("plugin.mod.kick.example.plain.arg.0", "@Clyde"),
+			},
+		},
+		{
+			Args: []*i18n.Config{
+				i18n.NewFallbackConfig("plugin.mod.kick.example.reason.arg.0", "@Clyde"),
+				i18n.NewFallbackConfig("plugin.mod.kick.example.reason.arg.1", "self-botting"),
+			},
+		},
 	}
 )
 

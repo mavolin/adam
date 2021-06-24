@@ -51,7 +51,7 @@ func TestEmoji_Parse(t *testing.T) {
 				m, s := state.NewMocker(t)
 				defer m.Eval()
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{
 						Message: discord.Message{GuildID: 123},
 					},
@@ -71,7 +71,7 @@ func TestEmoji_Parse(t *testing.T) {
 		t.Run("unicode emoji", func(t *testing.T) {
 			expect := &discord.Emoji{Name: emojiutil.Cloud}
 
-			ctx := &Context{Raw: expect.Name}
+			ctx := &plugin.ParseContext{Raw: expect.Name}
 
 			actual, err := Emoji.Parse(nil, ctx)
 			require.NoError(t, err)
@@ -179,10 +179,10 @@ func TestEmoji_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				EmojiAllowIDs = c.allowEmojiIDs
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:     c.raw,
 					Context: new(plugin.Context),
-					Kind:    KindArg,
+					Kind:    plugin.KindArg,
 				}
 
 				if c.guild {
@@ -197,7 +197,7 @@ func TestEmoji_Parse(t *testing.T) {
 				_, actual := emoji.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
@@ -212,10 +212,10 @@ func TestEmoji_Parse(t *testing.T) {
 
 				EmojiAllowIDs = c.allowEmojiIDs
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:     c.raw,
 					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
-					Kind:    KindArg,
+					Kind:    plugin.KindArg,
 				}
 
 				srcMocker.Emojis(ctx.GuildID, []discord.Emoji{})
@@ -229,7 +229,7 @@ func TestEmoji_Parse(t *testing.T) {
 
 				m.Eval()
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
@@ -267,7 +267,7 @@ func TestRawEmoji_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{Raw: c.raw}
+				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := RawEmoji.Parse(nil, ctx)
 				require.NoError(t, err)
@@ -277,7 +277,7 @@ func TestRawEmoji_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		ctx := &Context{Raw: "abc"}
+		ctx := &plugin.ParseContext{Raw: "abc"}
 
 		expect := newArgumentError(emojiInvalidError, ctx, nil)
 

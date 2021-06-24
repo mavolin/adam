@@ -10,14 +10,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 func TestInteger_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := 123
 
-		ctx := &Context{Raw: "123"}
+		ctx := &plugin.ParseContext{Raw: "123"}
 
 		actual, err := SimpleInteger.Parse(nil, ctx)
 		require.NoError(t, err)
@@ -80,7 +80,7 @@ func TestInteger_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				var i Type
+				var i plugin.ArgType
 
 				switch {
 				case c.min != 0 && c.max != 0:
@@ -93,9 +93,9 @@ func TestInteger_Parse(t *testing.T) {
 					i = SimpleInteger
 				}
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
@@ -103,7 +103,7 @@ func TestInteger_Parse(t *testing.T) {
 				_, actual := i.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = i.Parse(nil, ctx)
@@ -117,7 +117,7 @@ func TestDecimal_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		expect := 123.456
 
-		ctx := &Context{Raw: "123.456"}
+		ctx := &plugin.ParseContext{Raw: "123.456"}
 
 		actual, err := SimpleDecimal.Parse(nil, ctx)
 		require.NoError(t, err)
@@ -190,9 +190,9 @@ func TestDecimal_Parse(t *testing.T) {
 				d = DecimalWithMax(c.max)
 			}
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw:  c.raw,
-				Kind: KindArg,
+				Kind: plugin.KindArg,
 			}
 
 			expect := newArgumentError(c.expectArg, ctx, c.placeholders)
@@ -200,7 +200,7 @@ func TestDecimal_Parse(t *testing.T) {
 			_, actual := d.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
-			ctx.Kind = KindFlag
+			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 			_, actual = d.Parse(nil, ctx)
@@ -215,7 +215,7 @@ func TestNumericID_Name(t *testing.T) {
 
 		id := SimpleNumericID
 
-		actual := id.Name(i18n.NewFallbackLocalizer())
+		actual := id.GetName(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
@@ -223,10 +223,10 @@ func TestNumericID_Name(t *testing.T) {
 		expect := "abc"
 
 		id := NumericID{
-			CustomName: i18nutil.NewText(expect),
+			CustomName: i18n.NewStaticConfig(expect),
 		}
 
-		actual := id.Name(i18n.NewFallbackLocalizer())
+		actual := id.GetName(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -237,7 +237,7 @@ func TestNumericID_Description(t *testing.T) {
 
 		id := SimpleNumericID
 
-		actual := id.Description(i18n.NewFallbackLocalizer())
+		actual := id.GetDescription(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 
@@ -245,10 +245,10 @@ func TestNumericID_Description(t *testing.T) {
 		expect := "abc"
 
 		id := NumericID{
-			CustomDescription: i18nutil.NewText(expect),
+			CustomDescription: i18n.NewStaticConfig(expect),
 		}
 
-		actual := id.Description(i18n.NewFallbackLocalizer())
+		actual := id.GetDescription(i18n.NewFallbackLocalizer())
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -256,7 +256,7 @@ func TestNumericID_Description(t *testing.T) {
 func TestNumericID_Parse(t *testing.T) {
 	sucessCases := []struct {
 		name string
-		id   Type
+		id   plugin.ArgType
 
 		raw string
 
@@ -285,7 +285,7 @@ func TestNumericID_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range sucessCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{Raw: c.raw}
+				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.id.Parse(nil, ctx)
 				require.NoError(t, err)
@@ -296,7 +296,7 @@ func TestNumericID_Parse(t *testing.T) {
 
 	failureCases := []struct {
 		name string
-		id   Type
+		id   plugin.ArgType
 
 		raw string
 
@@ -331,9 +331,9 @@ func TestNumericID_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
-					Kind: KindArg,
+					Kind: plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, c.placeholders)
@@ -341,7 +341,7 @@ func TestNumericID_Parse(t *testing.T) {
 				_, actual := c.id.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, c.placeholders)
 
 				_, actual = c.id.Parse(nil, ctx)

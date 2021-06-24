@@ -71,7 +71,7 @@ func (l *Localizer) WithPlaceholders(p map[string]interface{}) {
 
 // Localize generates a localized message using the passed config.
 // c.NewTermConfig must be set.
-func (l *Localizer) Localize(c *Config) (s string, err error) {
+func (l *Localizer) Localize(c *Config) (string, error) {
 	if c == nil {
 		return "", errorutil.WithStack(ErrNilConfig)
 	}
@@ -94,20 +94,23 @@ func (l *Localizer) Localize(c *Config) (s string, err error) {
 		placeholders[k] = v
 	}
 
-	if l.f != nil { // try the user-defined translator first, if there is one
-		s, err = l.f(c.Term, placeholders, c.Plural)
+	// try the user-defined translator first, if there is one
+	if len(c.Term) > 0 && l.f != nil {
+		s, err := l.f(c.Term, placeholders, c.Plural)
 		if err == nil {
 			return s, nil
 		}
 	}
 
-	// otherwise use fallback if there is;
+	// if this config is empty or there is no translation available, check
+	// if there is a fallback available
+
 	// checking other suffices as it will always be set if there is a fallback
-	if len(c.Fallback.Other) == 0 && !c.Fallback.empty {
-		return "", newNoTranslationGeneratedError(c.Term)
+	if len(c.Fallback.Other) > 0 || len(c.Term) == 0 {
+		return c.Fallback.genTranslation(placeholders, c.Plural)
 	}
 
-	return c.Fallback.genTranslation(placeholders, c.Plural)
+	return "", newNoTranslationGeneratedError(c.Term)
 }
 
 // LocalizeTerm is a short for

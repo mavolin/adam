@@ -24,10 +24,15 @@ func New() *Say {
 			Name:             "say",
 			Aliases:          []string{"repeat"},
 			ShortDescription: "Repeats what you say.",
-			ExampleArgs:      []string{"Hello"},
-			Args: arg.Raw{
-				Name:        "Text",
-				Description: "The text you want me to say.",
+			ExampleArgs:      plugin.ExampleArgs{{Args: []string{"Hello"}}},
+			ArgParser:        arg.RawParser,
+			Args: &arg.Config{
+				RequiredArgs: []arg.RequiredArg{
+					{
+						Name:        "Text",
+						Description: "The text you want me to say.",
+					},
+				},
 			},
 			ChannelTypes:   plugin.AllChannels,
 			BotPermissions: discord.PermissionSendMessages,

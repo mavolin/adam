@@ -40,11 +40,6 @@ type Context struct {
 	// ArgsIndex is the starting index of the argument as found in Content.
 	ArgsIndex int
 
-	// ArgCombinationID is the id of the argument combination that was used.
-	//
-	// This can be used to deduce the type of the arguments, if the command was
-	// overloaded, for example using arg.Options.
-	ArgCombinationID string
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Args Args

@@ -93,13 +93,28 @@ func (cmd *Command) LongDescription(l *i18n.Localizer) string {
 
 func (cmd *Command) Args() plugin.ArgConfig { return cmd.source.GetArgs() }
 
+func (cmd *Command) ArgParser() plugin.ArgParser {
+	if p := cmd.source.GetArgParser(); p != nil {
+		return p
+	}
+
+	return cmd.provider.resolver.argParser
+}
+
 func (cmd *Command) ExampleArgs(l *i18n.Localizer) plugin.ExampleArgs {
 	return cmd.source.GetExampleArgs(l)
 }
 
 func (cmd *Command) Examples(l *i18n.Localizer) []string {
-	// todo: implement this when the new arg sys is done
-	panic("implement me!")
+	exampleArgs := cmd.ExampleArgs(l)
+	examples := make([]string, len(exampleArgs))
+
+	for i, exampleArg := range exampleArgs {
+		examples[i] = cmd.ID().AsInvoke() + " " +
+			cmd.ArgParser().FormatArgs(cmd.Args(), exampleArg.Args, exampleArg.Flags)
+	}
+
+	return examples
 }
 
 func (cmd *Command) IsHidden() bool                      { return cmd.source.IsHidden() }

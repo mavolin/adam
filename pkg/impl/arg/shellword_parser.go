@@ -1,4 +1,4 @@
-package arg
+package arg //nolint:dupl
 
 import (
 	"strings"
@@ -8,6 +8,123 @@ import (
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/plugin"
 )
+
+// ShellwordParser is a plugin.ArgConfig that roughly follows the parsing rules
+// of the Bourne shell.
+//
+// Flags
+//
+// Flags can be placed both before and after arguments.
+// For simplicity, flags always start with a single minus, double minuses are
+// not permitted.
+//
+// Arguments
+//
+// Arguments are space separated.
+// To use arguments with whitespace quotes, both single and double, can be
+// used.
+// Additionally, lines of code as well as code blocks will be parsed as a
+// single argument.
+//
+// Escapes
+//
+// Escapes are only permitted if using double quotes.
+// Valid escapes are '\\' and '\"', all other combinations will be parsed
+// literally to make usage easier for users unaware of escapes.
+var ShellwordParser plugin.ArgParser = new(shellwordParser)
+
+type shellwordParser struct{}
+
+func (p *shellwordParser) Parse(args string, argConfig plugin.ArgConfig, s *state.State, ctx *plugin.Context) error {
+	return newShellwordParserState(args, argConfig, s, ctx).parse()
+}
+
+var shellwordEscapeReplacer = strings.NewReplacer(`"`, `\"`, `\`, `\\`)
+
+func (p *shellwordParser) FormatArgs(_ plugin.ArgConfig, args []string, flags map[string]string) string {
+	if len(args) > 0 && strings.HasPrefix(args[0], "-") {
+		args[0] = "-" + args[0]
+	}
+
+	var n int
+
+	for i, arg := range args {
+		if strings.Contains(arg, " ") || strings.HasPrefix(arg, "-") {
+			arg = shellwordEscapeReplacer.Replace(arg)
+			arg = `"` + arg + `"`
+		}
+
+		n += len(arg) + len(" ")
+		args[i] = arg
+	}
+
+	for name, val := range flags {
+		if strings.Contains(val, " ") || strings.HasPrefix(val, "-") {
+			val = shellwordEscapeReplacer.Replace(val)
+			val = `"` + val + `"`
+		}
+
+		n += len("-") + len(name) + len(" ") + len(val) + len(" ")
+		flags[name] = val
+	}
+
+	// remove the trailing delimiter
+	n -= len(" ")
+
+	var b strings.Builder
+	b.Grow(n)
+
+	for name, val := range flags {
+		if b.Len() > 0 {
+			b.WriteRune(' ')
+		}
+
+		b.WriteRune('-')
+		b.WriteString(name)
+		b.WriteRune(' ')
+		b.WriteString(val)
+	}
+
+	for _, arg := range args {
+		if b.Len() > 0 {
+			b.WriteRune(' ')
+		}
+
+		b.WriteString(arg)
+	}
+
+	return b.String()
+}
+
+func (p *shellwordParser) FormatUsage(_ plugin.ArgConfig, args []string) string {
+	// we need (len(args)-1) space-separators
+	n := len(args) - 1
+
+	for _, arg := range args {
+		n += len(arg)
+	}
+
+	var b strings.Builder
+	b.Grow(n)
+
+	for _, arg := range args {
+		if b.Len() > 0 {
+			b.WriteRune(' ')
+		}
+
+		b.WriteString(arg)
+	}
+
+	return b.String()
+}
+
+func (p *shellwordParser) FormatFlag(name string) string {
+	return "-" + name
+}
+
+// =============================================================================
+// Parsing Logic
+// =====================================================================================
 
 type groupingCharacter uint8
 
@@ -36,7 +153,7 @@ func (c groupingCharacter) String() string {
 	}
 }
 
-type shellwordParser struct {
+type shellwordParserState struct {
 	helper *parseHelper
 
 	raw []rune
@@ -45,10 +162,13 @@ type shellwordParser struct {
 	builder strings.Builder
 }
 
-func newShellwordParser(args string, cfg ShellwordConfig, s *state.State, ctx *plugin.Context) *shellwordParser {
-	p := &shellwordParser{
-		helper: newParseHelper(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
-		raw:    []rune(args),
+func newShellwordParserState(
+	args string, argConfig plugin.ArgConfig, s *state.State, ctx *plugin.Context,
+) *shellwordParserState {
+	p := &shellwordParserState{
+		helper: newParseHelper(argConfig.GetRequiredArgs(), argConfig.GetOptionalArgs(), argConfig.GetFlags(),
+			argConfig.IsVariadic(), s, ctx),
+		raw: []rune(args),
 	}
 
 	p.builder.Grow(len(args))
@@ -56,20 +176,7 @@ func newShellwordParser(args string, cfg ShellwordConfig, s *state.State, ctx *p
 	return p
 }
 
-func newShellwordParserl(
-	args string, cfg LocalizedShellwordConfig, s *state.State, ctx *plugin.Context,
-) *shellwordParser {
-	p := &shellwordParser{
-		helper: newParseHelperl(cfg.Required, cfg.Optional, cfg.Flags, cfg.Variadic, s, ctx),
-		raw:    []rune(args),
-	}
-
-	p.builder.Grow(len(args))
-
-	return p
-}
-
-func (p *shellwordParser) parse() error {
+func (p *shellwordParserState) parse() error {
 	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && len(p.raw) != 0 {
 		return plugin.NewArgumentErrorl(noArgsError)
 	}
@@ -90,15 +197,15 @@ func (p *shellwordParser) parse() error {
 }
 
 // has checks if there are at least min runes remaining.
-func (p *shellwordParser) has(min int) bool {
+func (p *shellwordParserState) has(min int) bool {
 	return p.pos <= len(p.raw)-min
 }
 
-func (p *shellwordParser) drained() bool {
+func (p *shellwordParserState) drained() bool {
 	return !p.has(1)
 }
 
-func (p *shellwordParser) next() rune {
+func (p *shellwordParserState) next() rune {
 	if !p.has(1) {
 		return 0
 	}
@@ -109,12 +216,12 @@ func (p *shellwordParser) next() rune {
 }
 
 // backup goes one character back.
-func (p *shellwordParser) backup() {
+func (p *shellwordParserState) backup() {
 	p.pos--
 }
 
 // peek peeks numAhead characters ahead, without incrementing the position.
-func (p *shellwordParser) peek(numAhead int) rune {
+func (p *shellwordParserState) peek(numAhead int) rune {
 	if !p.has(numAhead) {
 		return 0
 	}
@@ -123,13 +230,13 @@ func (p *shellwordParser) peek(numAhead int) rune {
 }
 
 // skip skips the next num characters.
-func (p *shellwordParser) skip(num int) {
+func (p *shellwordParserState) skip(num int) {
 	if p.has(num) {
 		p.pos += num
 	}
 }
 
-func (p *shellwordParser) skipWhitespace() {
+func (p *shellwordParserState) skipWhitespace() {
 	for p.has(1) { // skip whitespace
 		if !strings.ContainsRune(shared.Whitespace, p.next()) {
 			p.backup()
@@ -138,7 +245,7 @@ func (p *shellwordParser) skipWhitespace() {
 	}
 }
 
-func (p *shellwordParser) nextContent() (string, error) { //nolint:gocognit
+func (p *shellwordParserState) nextContent() (string, error) { //nolint:gocognit
 	var (
 		gc       groupingCharacter
 		upEscape bool
@@ -220,7 +327,7 @@ func (p *shellwordParser) nextContent() (string, error) { //nolint:gocognit
 	return p.builder.String(), nil
 }
 
-func (p *shellwordParser) parseFlags() error {
+func (p *shellwordParserState) parseFlags() error {
 	for {
 		p.skipWhitespace()
 		if p.drained() {
@@ -257,7 +364,7 @@ func (p *shellwordParser) parseFlags() error {
 				}))
 		}
 
-		if f.typ == Switch {
+		if f.GetType() == Switch {
 			if err := p.helper.addFlag(f, "", ""); err != nil {
 				return err
 			}
@@ -281,7 +388,7 @@ func (p *shellwordParser) parseFlags() error {
 	}
 }
 
-func (p *shellwordParser) parseArgs() error {
+func (p *shellwordParserState) parseArgs() error {
 	for {
 		p.skipWhitespace()
 		if p.drained() {

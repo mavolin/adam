@@ -3,6 +3,7 @@ package arg
 import (
 	"testing"
 
+	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -77,7 +78,7 @@ func TestCode_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{Raw: c.raw}
+				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := Code.Parse(nil, ctx)
 				require.NoError(t, err)
@@ -87,9 +88,9 @@ func TestCode_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		ctx := &Context{
+		ctx := &plugin.ParseContext{
 			Raw:  "def not code",
-			Kind: KindArg,
+			Kind: plugin.KindArg,
 		}
 
 		expect := newArgumentError(codeInvalidErrorArg, ctx, nil)
@@ -97,7 +98,7 @@ func TestCode_Parse(t *testing.T) {
 		_, actual := Code.Parse(nil, ctx)
 		assert.Equal(t, expect, actual)
 
-		ctx.Kind = KindFlag
+		ctx.Kind = plugin.KindFlag
 		expect = newArgumentError(codeInvalidErrorFlag, ctx, nil)
 
 		_, actual = Code.Parse(nil, ctx)

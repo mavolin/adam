@@ -17,13 +17,13 @@ func TestRole_Parse(t *testing.T) {
 	successCases := []struct {
 		name string
 
-		ctx *Context
+		ctx *plugin.ParseContext
 
 		expect *discord.Role
 	}{
 		{
 			name: "mention",
-			ctx: &Context{
+			ctx: &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "<@&456>",
 			},
@@ -31,7 +31,7 @@ func TestRole_Parse(t *testing.T) {
 		},
 		{
 			name: "id",
-			ctx: &Context{
+			ctx: &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "456",
 			},
@@ -56,10 +56,10 @@ func TestRole_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     fmt.Sprintf("<@&%d9>", uint64(math.MaxUint64)),
-				Kind:    KindArg,
+				Kind:    plugin.KindArg,
 			}
 
 			expect := newArgumentError(roleInvalidMentionErrorArg, ctx, nil)
@@ -67,7 +67,7 @@ func TestRole_Parse(t *testing.T) {
 			_, actual := Role.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
-			ctx.Kind = KindFlag
+			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(roleInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = Role.Parse(nil, ctx)
@@ -79,10 +79,10 @@ func TestRole_Parse(t *testing.T) {
 
 			var roleID discord.RoleID = 123
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
 				Raw:     roleID.Mention(),
-				Kind:    KindArg,
+				Kind:    plugin.KindArg,
 			}
 
 			srcMocker.Roles(ctx.GuildID, []discord.Role{})
@@ -96,7 +96,7 @@ func TestRole_Parse(t *testing.T) {
 
 			m.Eval()
 
-			ctx.Kind = KindFlag
+			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(roleInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
@@ -108,7 +108,7 @@ func TestRole_Parse(t *testing.T) {
 		})
 
 		t.Run("not id", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "abc",
 			}
@@ -123,7 +123,7 @@ func TestRole_Parse(t *testing.T) {
 			m, s := state.NewMocker(t)
 			defer m.Eval()
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "456",
 			}

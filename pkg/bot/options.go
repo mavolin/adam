@@ -15,6 +15,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/impl/arg"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -62,6 +63,12 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: None
 	ActivityURL discord.URL
+
+	// ArgParser is the plugin.ArgParser used to parse the arguments of all
+	// commands that don't define a custom one.
+	//
+	// Default: &arg.DelimiterParser{Delimiter: ','}
+	ArgParser plugin.ArgParser
 
 	// AllowBot specifies whether bots may trigger commands.
 	//
@@ -173,8 +180,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// By default, the following middlewares are added upon creation of the
 	// bot.
 	//
-	//	Bot.AddMiddleware(NewPrefixChecker(selfID))
-	//	Bot.AddMiddleware(RouteCommand)
 	//	Bot.AddMiddleware(CheckChannelTypes)
 	//	Bot.AddMiddleware(CheckBotPermissions)
 	//	Bot.AddMiddleware(NewThrottlerChecker(Bot.ThrottlerCancelChecker))
@@ -193,6 +198,10 @@ func (o *Options) SetDefaults() (err error) {
 
 	if len(o.Status) == 0 {
 		o.Status = gateway.OnlineStatus
+	}
+
+	if o.ArgParser == nil {
+		o.ArgParser = &arg.DelimiterParser{Delimiter: ','}
 	}
 
 	if o.ThrottlerCancelChecker == nil {

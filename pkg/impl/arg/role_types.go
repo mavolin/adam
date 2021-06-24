@@ -25,16 +25,16 @@ var RoleAllowIDs = true
 // It will return an error if used on a guild.
 //
 // Go type: *discord.Role
-var Role Type = new(role)
+var Role plugin.ArgType = new(role)
 
 type role struct{}
 
-func (r role) Name(l *i18n.Localizer) string {
+func (r role) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(roleName) // we have a fallback
 	return name
 }
 
-func (r role) Description(l *i18n.Localizer) string {
+func (r role) GetDescription(l *i18n.Localizer) string {
 	if RoleAllowIDs {
 		desc, err := l.Localize(roleDescriptionWithID)
 		if err == nil {
@@ -48,7 +48,7 @@ func (r role) Description(l *i18n.Localizer) string {
 
 var roleMentionRegexp = regexp.MustCompile(`^<@&(?P<id>\d+)>$`)
 
-func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
+func (r role) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	err := restriction.ChannelTypes(plugin.GuildChannels)(s, ctx.Context)
 	if err != nil {
 		return nil, err
@@ -87,6 +87,6 @@ func (r role) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	return role, nil
 }
 
-func (r role) Default() interface{} {
+func (r role) GetDefault() interface{} {
 	return (*discord.Role)(nil)
 }

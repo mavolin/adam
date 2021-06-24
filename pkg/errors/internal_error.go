@@ -9,7 +9,6 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 // InternalError represents a non-user triggered error.
@@ -26,7 +25,7 @@ type InternalError struct {
 	stack errorutil.Stack
 
 	// description of the error
-	desc *i18nutil.Text
+	desc *i18n.Config
 }
 
 var _ Error = new(InternalError)
@@ -72,7 +71,7 @@ func withStack(err error) error {
 	return &InternalError{
 		cause: err,
 		stack: stack,
-		desc:  i18nutil.NewTextl(defaultInternalDesc),
+		desc:  defaultInternalDesc,
 	}
 }
 
@@ -134,7 +133,7 @@ func Wrap(err error, message string) error {
 			cause: err,
 		},
 		stack: stack,
-		desc:  i18nutil.NewTextl(defaultInternalDesc),
+		desc:  defaultInternalDesc,
 	}
 }
 
@@ -197,7 +196,7 @@ func WithDescription(err error, description string) error {
 	return &InternalError{
 		cause: err,
 		stack: stack,
-		desc:  i18nutil.NewText(description),
+		desc:  i18n.NewStaticConfig(description),
 	}
 }
 
@@ -223,7 +222,7 @@ func WithDescriptionf(err error, format string, a ...interface{}) error {
 	return &InternalError{
 		cause: err,
 		stack: stack,
-		desc:  i18nutil.NewText(fmt.Sprintf(format, a...)),
+		desc:  i18n.NewStaticConfig(fmt.Sprintf(format, a...)),
 	}
 }
 
@@ -249,7 +248,7 @@ func WithDescriptionl(err error, description *i18n.Config) error {
 	return &InternalError{
 		cause: err,
 		stack: stack,
-		desc:  i18nutil.NewTextl(description),
+		desc:  description,
 	}
 }
 
@@ -275,7 +274,7 @@ func WithDescriptionlt(err error, description i18n.Term) error {
 	return &InternalError{
 		cause: err,
 		stack: stack,
-		desc:  i18nutil.NewTextlt(description),
+		desc:  i18n.NewTermConfig(description),
 	}
 }
 
@@ -285,7 +284,7 @@ func WithDescriptionlt(err error, description i18n.Term) error {
 // Description will fall back on the default description.
 func (e *InternalError) Description(l *i18n.Localizer) string {
 	if e.desc != nil {
-		desc, err := e.desc.Get(l)
+		desc, err := l.Localize(e.desc)
 		if err == nil && len(desc) > 0 {
 			return desc
 		}
@@ -319,9 +318,9 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 
 			return
 		case discorderr.Is(derr, discorderr.TemporarilyDisabled):
-			ierr.desc = i18nutil.NewTextl(discordErrorFeatureTemporarilyDisabled)
+			ierr.desc = discordErrorFeatureTemporarilyDisabled
 		case derr.Status >= 500:
-			ierr.desc = i18nutil.NewTextl(discordErrorServerError)
+			ierr.desc = discordErrorServerError
 		}
 	}
 
