@@ -32,7 +32,7 @@ var (
 	switchName        = i18n.NewFallbackConfig("arg.type.switch.name", "Switch")
 	switchDescription = i18n.NewFallbackConfig(
 		"arg.type.switch.description",
-		"Used to turn on a feature of a commandType. Only used for flags.")
+		"Used to turn on a feature of a command. Only used for flags.")
 )
 
 // ================================ Errors ================================
@@ -513,7 +513,7 @@ var (
 	userName        = i18n.NewFallbackConfig("arg.type.user.name", "User")
 	userDescription = i18n.NewFallbackConfig(
 		"arg.type.user.description",
-		"A user mention or their id. The commandType doesn't need to be invoked on the server the user is on. "+
+		"A user mention or their id. The command doesn't need to be invoked on the server the user is on. "+
 			"For example: @Wumpus or 123456789098765432")
 )
 
@@ -815,20 +815,20 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	commandName        = i18n.NewFallbackConfig("arg.type.commandType.name", "Command")
+	commandName        = i18n.NewFallbackConfig("arg.type.command.name", "Command")
 	commandDescription = i18n.NewFallbackConfig(
-		"arg.type.commandType.description", "The name of a commandType without the commandType's prefix.")
+		"arg.type.command.description", "The name of a Command without the Command's prefix.")
 )
 
 // ================================ Errors ================================
 
 var (
 	commandNotFoundError = i18n.NewFallbackConfig(
-		"arg.type.commandType.error.not_found",
+		"arg.type.command.error.not_found",
 		"I don't know any commands by the name of `{{.raw}}`. Make sure you spelled it right.")
 
 	commandNotFoundErrorProvidersUnavailable = i18n.NewFallbackConfig(
-		"arg.type.commandType.error.not_found.providers_unavailable",
+		"arg.type.command.error.not_found.providers_unavailable",
 		"I couldn't find any commands by the name of `{{.raw}}`, "+
 			"but I don't have access to some commands right now. Try again later or check your spelling.")
 )
@@ -840,21 +840,21 @@ var (
 // ================================ Meta Data ================================
 
 var (
-	moduleName        = i18n.NewFallbackConfig("arg.type.moduleType.name", "Module")
+	moduleName        = i18n.NewFallbackConfig("arg.type.module.name", "Module")
 	moduleDescription = i18n.NewFallbackConfig(
-		"arg.type.moduleType.description",
-		"The name of a moduleType, without the bot's prefix.")
+		"arg.type.module.description",
+		"The name of a module, without the bot's prefix.")
 )
 
 // ================================ Errors ================================
 
 var (
 	moduleNotFoundError = i18n.NewFallbackConfig(
-		"arg.type.moduleType.error.not_found",
+		"arg.type.module.error.not_found",
 		"I don't know any modules by the name of `{{.raw}}`. Make sure you spelled it right.")
 
 	moduleNotFoundErrorProvidersUnavailable = i18n.NewFallbackConfig(
-		"arg.type.moduleType.error.not_found.providers_unavailable",
+		"arg.type.module.error.not_found.providers_unavailable",
 		"I couldn't find any modules by the name of `{{.raw}}`, "+
 			"but I don't have access to some modules right now. Try again later or check your spelling.")
 )
@@ -869,7 +869,7 @@ var (
 	pluginName        = i18n.NewFallbackConfig("arg.type.plugin.name", "Command or Module")
 	pluginDescription = i18n.NewFallbackConfig(
 		"arg.type.plugin.description",
-		"The name of a commandType or moduleType, without the bot's prefix.")
+		"The name of a command or module, without the bot's prefix.")
 )
 
 // ================================ Errors ================================

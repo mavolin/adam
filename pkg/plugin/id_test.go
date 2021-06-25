@@ -45,7 +45,7 @@ func TestID_Parent(t *testing.T) {
 
 			for lvl, expect := range c.expect {
 				actual = actual.Parent()
-				assert.Equal(t, expect, actual, "unexpected ID returned on level %d", lvl+1)
+				assert.Equal(t, expect, actual, "unexpected id returned on level %d", lvl+1)
 			}
 		})
 	}
@@ -111,36 +111,36 @@ func TestID_NumParents(t *testing.T) {
 	})
 }
 
-func TestID_IsParent(t *testing.T) {
+func TestID_IsParentOf(t *testing.T) {
 	testCases := []struct {
 		name   string
-		ID     ID
+		id     ID
 		target ID
 		expect bool
 	}{
 		{
 			name:   "parent",
-			ID:     ".mod.ban",
-			target: ".mod",
+			id:     ".mod",
+			target: ".mod.ban",
 			expect: true,
 		},
 		{
 			name:   "equal",
-			ID:     ".mod.ban",
+			id:     ".mod.ban",
 			target: ".mod.ban",
 			expect: false,
 		},
 		{
 			name:   "child",
-			ID:     ".mod",
-			target: ".mod.ban",
+			id:     ".mod.ban",
+			target: ".mod",
 			expect: false,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.ID.IsParent(c.target)
+			actual := c.id.IsParentOf(c.target)
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -149,33 +149,33 @@ func TestID_IsParent(t *testing.T) {
 func TestID_IsChild(t *testing.T) {
 	testCases := []struct {
 		name   string
-		ID     ID
+		id     ID
 		target ID
 		expect bool
 	}{
 		{
 			name:   "parent",
-			ID:     ".mod.ban",
-			target: ".mod",
+			id:     ".mod",
+			target: ".mod.ban",
 			expect: false,
 		},
 		{
 			name:   "equal",
-			ID:     ".mod.ban",
+			id:     ".mod.ban",
 			target: ".mod.ban",
 			expect: false,
 		},
 		{
 			name:   "child",
-			ID:     ".mod",
-			target: ".mod.ban",
+			id:     ".mod.ban",
+			target: ".mod",
 			expect: true,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := c.ID.IsChild(c.target)
+			actual := c.id.IsChildOf(c.target)
 			assert.Equal(t, c.expect, actual)
 		})
 	}

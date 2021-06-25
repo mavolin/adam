@@ -4,13 +4,13 @@ import "github.com/mavolin/adam/pkg/i18n"
 
 var (
 	notEnoughArgsError = i18n.NewFallbackConfig(
-		"arg.parser.error.not_enough_args", "There are not enough arguments to execute the commandType.")
+		"arg.parser.error.not_enough_args", "There are not enough arguments to execute the command.")
 
 	tooManyArgsError = i18n.NewFallbackConfig(
-		"arg.parser.error.too_many_args", "The commandType you're using doesn't accept that many arguments.")
+		"arg.parser.error.too_many_args", "The command you're using doesn't accept that many arguments.")
 
 	noArgsError = i18n.NewFallbackConfig(
-		"arg.parser.error.no_args", "This commandType has no arguments and flags.")
+		"arg.parser.error.no_args", "This command has no arguments and flags.")
 
 	unknownFlagError = i18n.NewFallbackConfig(
 		"arg.parser.error.unknown_flag", "I don't know a flag by the name of `-{{.name}}`.")
@@ -26,9 +26,6 @@ var (
 
 	groupNotClosedError = i18n.NewFallbackConfig(
 		"arg.parser.error.group_not_closed", "You need to close the {{.quote}}.")
-
-	unknownPrefixError = i18n.NewFallbackConfig(
-		"arg.parser.error.unknown_prefix", "I don't know any prefix with the name `{{.name}}`.")
 )
 
 type (
@@ -50,9 +47,5 @@ type (
 
 	groupNotClosedErrorPlaceholders struct {
 		Quote string
-	}
-
-	unknownPrefixErrorPlaceholders struct {
-		Name string
 	}
 )

@@ -38,8 +38,7 @@ type Text struct {
 	Regexp *regexp.Regexp
 	// RegexpErrorArg is the error message used if an argument doesn't match
 	// the regular expression defined.
-	// If you want an unlocalized error, just fill Fallback.Other field of the
-	// config.
+	// If you want to use an unlocalized error, use i18n.NewStaticConfig.
 	//
 	// Available Placeholders are:
 	//
@@ -52,8 +51,7 @@ type Text struct {
 	RegexpErrorArg *i18n.Config
 	// RegexpErrorFlag is the error message used if a flag doesn't match the
 	// regular expression defined.
-	// If you want an unlocalized error, just fill Fallback.Other field of the
-	// config.
+	// If you want to use an unlocalized error, use i18n.NewStaticConfig.
 	//
 	// Available Placeholders are:
 	//
@@ -67,7 +65,8 @@ type Text struct {
 }
 
 var (
-	// SimpleText is a Text with no length boundaries and no regular expression.
+	// SimpleText is a Text with no length boundaries and no regular
+	// expression.
 	SimpleText plugin.ArgType = new(Text)
 	_          plugin.ArgType = Text{}
 )

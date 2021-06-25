@@ -87,7 +87,7 @@ var (
 		"plugin.help.all.embed.description.guild",
 		"Below is a list of all commands on this server.")
 
-	allPrefixesFieldName = i18n.NewFallbackConfig("plugin.help.all.embed.field.prefix.name", "Prefixes")
+	allPrefixesFieldName = i18n.NewFallbackConfig("plugin.help.all.embed.field.prefixes.name", "Prefixes")
 )
 
 // ================================ Command ================================
@@ -101,9 +101,7 @@ var (
 
 	argumentsFieldName = i18n.NewFallbackConfig("plugin.help.command.embed.fields.arguments.name", "Arguments")
 	flagsFieldName     = i18n.NewFallbackConfig("plugin.help.command.embed.fields.flags.name", "Flags")
-	examplesFieldName  = i18n.NewFallbackConfig(
-		"plugin.help.command.embed.fields.example_args.name",
-		"Example Arguments")
+	examplesFieldName  = i18n.NewFallbackConfig("plugin.help.command.embed.fields.examples.name", "Examples")
 )
 
 type commandTitlePlaceholders struct {

@@ -11,6 +11,8 @@ import (
 // Switch is the type used for bool flags.
 // If the flag gets set, Switch returns true.
 // It cannot be used as an argument type.
+// Due to the special nature of this type, plugin.ArgParsers must handle it
+// specially, i.e. expect no content for it.
 //
 // Switch flags cannot be used as multi flags.
 var Switch plugin.ArgType = new(typeSwitch)

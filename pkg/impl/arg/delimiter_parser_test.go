@@ -480,7 +480,7 @@ func TestDelimiterParser_Parse(t *testing.T) {
 			expect:  plugin.NewArgumentErrorl(tooManyArgsError),
 		},
 		{
-			name:    "commandType accepts no args",
+			name:    "command accepts no args",
 			config:  &Config{},
 			rawArgs: "abc",
 			expect:  plugin.NewArgumentErrorl(noArgsError),

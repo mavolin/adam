@@ -66,7 +66,8 @@ func (c Choice) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, er
 	return nil, newArgumentError(choiceInvalidError, ctx, nil)
 }
 
-// Default tries to derive the default type from the value of the first choice.
+// GetDefault tries to derive the default type from the value of the first
+// choice.
 // If the choice is empty, Default returns nil.
 func (c Choice) GetDefault() interface{} {
 	if len(c) > 0 {
@@ -121,7 +122,8 @@ func (c LocalizedChoice) Parse(_ *state.State, ctx *plugin.ParseContext) (interf
 	return nil, newArgumentError(choiceInvalidError, ctx, nil)
 }
 
-// Default tries to derive the default type from the value of the first choice.
+// GetDefault tries to derive the default type from the value of the first
+// choice.
 // If the choice is empty, Default returns nil.
 func (c LocalizedChoice) GetDefault() interface{} {
 	if len(c) > 0 && c[0].Value != nil {

@@ -11,6 +11,9 @@ import (
 // All plugins are dot-separated, e.g. '.mod.ban'.
 type ID string
 
+// RootID is the ID representing root, i.e. the parent of all plugins.
+const RootID ID = "."
+
 // NewIDFromInvoke creates a new ID from the passed invoke.
 func NewIDFromInvoke(invoke string) ID {
 	invoke = strings.Trim(invoke, shared.Whitespace)
@@ -26,7 +29,7 @@ func NewIDFromInvoke(invoke string) ID {
 //
 // If the ID is invalid, Parent returns an empty string.
 func (id ID) Parent() ID {
-	if id == "." {
+	if id == RootID {
 		return id
 	}
 
@@ -46,7 +49,7 @@ func (id ID) Parent() ID {
 // If the ID is invalid, All returns nil.
 func (id ID) All() []ID {
 	if id.IsRoot() {
-		return []ID{"."}
+		return []ID{RootID}
 	}
 
 	pluginCount := strings.Count(string(id), ".")
@@ -69,7 +72,7 @@ func (id ID) All() []ID {
 
 // IsRoot checks if the identifier is the root identifier.
 func (id ID) IsRoot() bool {
-	return id == "."
+	return id == RootID
 }
 
 // NumParents returns the number of parents the plugin has.
@@ -79,14 +82,14 @@ func (id ID) NumParents() int {
 	return strings.Count(string(id), ".") - 1
 }
 
-// IsParent checks if the passed ID is a parent of this identifier.
-func (id ID) IsParent(target ID) bool {
-	return len(id) > len(target) && strings.HasPrefix(string(id), string(target))
+// IsParentOf checks if the this ID is a parent of target.
+func (id ID) IsParentOf(target ID) bool {
+	return len(id) < len(target) && strings.HasPrefix(string(target), string(id))
 }
 
-// IsChild checks if the passed ID is a child of this identifier.
-func (id ID) IsChild(target ID) bool {
-	return len(id) < len(target) && strings.HasPrefix(string(target), string(id))
+// IsChildOf checks if the this ID is a child of target.
+func (id ID) IsChildOf(target ID) bool {
+	return len(id) > len(target) && strings.HasPrefix(string(id), string(target))
 }
 
 // AsInvoke returns the identifier as a prefixless command invoke.
