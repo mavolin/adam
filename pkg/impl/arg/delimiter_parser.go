@@ -31,12 +31,18 @@ type DelimiterParser struct {
 	//
 	// Minus ('-'), Space (' ') and New-Lines ('\n') are not permitted and may
 	// lead to unexpected behavior.
+	//
+	// Default: ','
 	Delimiter rune
 }
 
 var _ plugin.ArgParser = new(DelimiterParser)
 
 func (p *DelimiterParser) Parse(args string, argConfig plugin.ArgConfig, s *state.State, ctx *plugin.Context) error {
+	if p.Delimiter == 0 {
+		p.Delimiter = ','
+	}
+
 	return newDelimiterParser(args, argConfig, p.Delimiter, s, ctx).parse()
 }
 
