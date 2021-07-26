@@ -147,7 +147,7 @@ func ParseArgs(next CommandFunc) CommandFunc {
 	return func(s *state.State, ctx *plugin.Context) (err error) {
 		if ctx.InvokedCommand.Args() != nil {
 			err = ctx.InvokedCommand.ArgParser().
-				Parse(ctx.Content[ctx.ArgsIndex:], ctx.InvokedCommand.Args(), s, ctx)
+				Parse(ctx.RawArgs(), ctx.InvokedCommand.Args(), s, ctx)
 			if err != nil {
 				return err
 			}
@@ -163,7 +163,8 @@ func InvokeCommand(next CommandFunc) CommandFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		reply, err := ctx.InvokedCommand.Invoke(s, ctx)
 		if err != nil {
-			// special case, prevent this from going through as an *InternalError
+			// special case, prevent this from going through as an
+			// *InternalError
 			if discorderr.Is(discorderr.As(err), discorderr.InsufficientPermissions) {
 				err = plugin.DefaultBotPermissionsError
 			}

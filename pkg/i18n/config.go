@@ -23,10 +23,12 @@ var EmptyConfig = new(Config)
 // resort to its Fallback.
 type Config struct {
 	// Term is the key of the translation.
+	//
+	// Term may be empty, in which case the Config will be considered static.
+	// A static Config will always resort to it's Other fallback.
 	Term Term
 	// Placeholders contains the placeholder data.
-	// This can either be a map[string]string or a struct (see section
-	// Structs for further info).
+	// This can either be a map[string]string or a struct.
 	//
 	// Structs
 	//
@@ -123,8 +125,7 @@ func (c Config) placeholdersToMap() (map[string]interface{}, error) {
 	return placeholders, nil
 }
 
-// Term is a type used to make distinction between unlocalized strings and
-// actual Config.Terms easier.
+// Term is a unique identifier of a localized message.
 type Term string
 
 // AsConfig wraps the term in a Config.
@@ -133,8 +134,8 @@ func (t Term) AsConfig() *Config {
 }
 
 // Fallback is the English fallback used if a translation is not available.
-// The message is created using go's text/template system and left and
-// right delimiters are {{ and }} respectively.
+// The message is created using go's text/template system and '{{' and '}}' are
+// used as left and right delimiters, respectively.
 type Fallback struct {
 	// One is the singular form of the fallback message, if there is any.
 	One string

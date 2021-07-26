@@ -10,30 +10,30 @@ import (
 // identical.
 func New(text string) error { return errors.New(text) }
 
-// NewWithStack returns an new InternalError with an error with the passed text
-// as cause.
+// NewWithStack returns an new *InternalError using the default description and
+// an error using the passed text as cause.
 // Each call to NewWithStack returns a distinct error value even if the text is
 // identical.
 func NewWithStack(text string) error { return withStack(New(text)) }
 
-// NewWithStackf returns an InternalError with an error that formats as the
-// passed text as cause.
+// NewWithStackf returns a new *InternalError using the default description
+// and an error that formats as the passed text as cause.
 // Each call to NewWithStackf returns a distinct error value even if the text
 // is identical.
 func NewWithStackf(format string, a ...interface{}) error {
 	return withStack(New(fmt.Sprintf(format, a...)))
 }
 
-// NewSilent returns a new SilentError with an error with the passed text as
-// cause.
+// NewSilent returns a new *SilentError with no description and an error with
+// the passed text as cause.
 // Each call to NewWithStack returns a distinct error value even if the text is
 // identical.
 func NewSilent(text string) error {
 	return Silent(New(text))
 }
 
-// NewSilentf returns a SilentError with an error that formats as the passed
-// text as cause.
+// NewSilentf returns a new *SilentError with no description and an error that
+// formats as the passed text as cause.
 // Each call to NewSilentf returns a distinct error value even if the text
 // is identical.
 func NewSilentf(format string, a ...interface{}) error {

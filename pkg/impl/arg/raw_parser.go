@@ -63,7 +63,7 @@ func (r raw) Parse(args string, argConfig plugin.ArgConfig, s *state.State, ctx 
 		return err
 	}
 
-	panic("arg: RawParser: ArgConfig does not contain a single RequiredArg or a single OptionalArg")
+	panic("arg: RawParser: ArgConfig does neither contain a single RequiredArg nor a single OptionalArg, but needs to")
 }
 
 func (r raw) FormatArgs(_ plugin.ArgConfig, args []string, _ map[string]string) string {
@@ -83,7 +83,7 @@ func (r raw) FormatUsage(_ plugin.ArgConfig, args []string) string {
 }
 
 func (r raw) FormatFlag(string) string {
-	panic("arg.RawParser should not define flags")
+	panic("arg: RawParser.FormatFlag was called, but commands using RawParser may not define flags")
 }
 
 // =============================================================================

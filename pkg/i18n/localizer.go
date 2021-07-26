@@ -18,8 +18,8 @@ type Localizer struct {
 	// f is the Func used to create translations.
 	f Func
 	// Lang is the language the Localizer is translating to.
-	// This does not account for possible fallbacks being used, because
-	// the wanted language was not available.
+	// This does not account for possible fallbacks used by either the Func
+	// itself or the Fallback field of a Config.
 	//
 	// It is unique to every language and dialect.
 	//
@@ -34,7 +34,7 @@ type Localizer struct {
 // NewLocalizer creates a new Localizer for the passed language that generates
 // text using the passed Func.
 //
-// Lang must be unique to every language and dialect used.
+// lang must be unique for every language and dialect used.
 func NewLocalizer(lang string, f Func) *Localizer {
 	return &Localizer{f: f, Lang: lang}
 }
@@ -48,9 +48,7 @@ func NewFallbackLocalizer() *Localizer {
 // WithPlaceholder adds the passed default placeholder to the Localizer.
 func (l *Localizer) WithPlaceholder(key string, val interface{}) {
 	if l.defaultPlaceholders == nil {
-		l.defaultPlaceholders = map[string]interface{}{key: val}
-
-		return
+		l.defaultPlaceholders = make(map[string]interface{}, 1)
 	}
 
 	l.defaultPlaceholders[key] = val
@@ -70,7 +68,6 @@ func (l *Localizer) WithPlaceholders(p map[string]interface{}) {
 }
 
 // Localize generates a localized message using the passed config.
-// c.NewTermConfig must be set.
 func (l *Localizer) Localize(c *Config) (string, error) {
 	if c == nil {
 		return "", errorutil.WithStack(ErrNilConfig)
@@ -102,10 +99,10 @@ func (l *Localizer) Localize(c *Config) (string, error) {
 		}
 	}
 
-	// if this config is empty or there is no translation available, check
+	// if this config is static or there is no translation available, check
 	// if there is a fallback available
 
-	// checking other suffices as it will always be set if there is a fallback
+	// checking Other suffices as it will always be set if there is a fallback
 	if len(c.Fallback.Other) > 0 || len(c.Term) == 0 {
 		return c.Fallback.genTranslation(placeholders, c.Plural)
 	}
@@ -113,10 +110,8 @@ func (l *Localizer) Localize(c *Config) (string, error) {
 	return "", newNoTranslationGeneratedError(c.Term)
 }
 
-// LocalizeTerm is a short for
-//		l.Localize(&i18n.Config{
-//			Term: term,
-//		})
+// LocalizeTerm is short for
+//		l.Localize(&i18n.Config{Term: term})
 func (l *Localizer) LocalizeTerm(term Term) (string, error) {
 	return l.Localize(term.AsConfig())
 }

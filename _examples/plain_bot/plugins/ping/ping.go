@@ -21,7 +21,7 @@ func New() *Ping {
 	return &Ping{
 		Meta: command.Meta{
 			Name:             "ping",
-			ShortDescription: "Tells you the ping to Discord.",
+			ShortDescription: "Pong!",
 			// we can leave this empty, if we want to use the ShortDescription
 			// as LongDescription as well
 			LongDescription: "",

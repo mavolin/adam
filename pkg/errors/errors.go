@@ -47,7 +47,7 @@ func Handle(err error, s *state.State, ctx *plugin.Context, maxHandles int) {
 	for maxHandles != 0 && err != nil {
 		var Err Error
 		if !errors.As(err, &Err) {
-			Err = withStack(err).(Error) //nolint:errorlint
+			Err = WithStack(err).(Error) //nolint:errorlint
 		}
 
 		err = Err.Handle(s, ctx)
