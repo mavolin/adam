@@ -50,6 +50,7 @@ func (p *DelimiterParser) Parse(args string, argConfig plugin.ArgConfig, s *stat
 // It uses the parser's Delimiter followed by a space to separate arguments and
 // flags.
 func (p *DelimiterParser) FormatArgs(_ plugin.ArgConfig, args []string, flags map[string]string) string {
+	// add double-minus escape to the first arg, if it starts with a minus
 	if len(args) > 0 && strings.HasPrefix(args[0], "-") {
 		args[0] = "-" + args[0]
 	}
@@ -75,6 +76,9 @@ func (p *DelimiterParser) FormatArgs(_ plugin.ArgConfig, args []string, flags ma
 
 	// remove the trailing delimiter
 	n -= 1 + len(" ")
+	if n <= 0 {
+		return ""
+	}
 
 	var b strings.Builder
 	b.Grow(n)

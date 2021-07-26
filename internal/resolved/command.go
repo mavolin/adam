@@ -110,8 +110,12 @@ func (cmd *Command) Examples(l *i18n.Localizer) []string {
 	examples := make([]string, len(exampleArgs))
 
 	for i, exampleArg := range exampleArgs {
-		examples[i] = cmd.ID().AsInvoke() + " " +
-			cmd.ArgParser().FormatArgs(cmd.Args(), exampleArg.Args, exampleArg.Flags)
+		examples[i] = cmd.ID().AsInvoke()
+
+		exampleArgString := cmd.ArgParser().FormatArgs(cmd.Args(), exampleArg.Args, exampleArg.Flags)
+		if len(exampleArgString) > 0 {
+			examples[i] += " " + exampleArgString
+		}
 	}
 
 	return examples

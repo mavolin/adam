@@ -23,7 +23,7 @@ var (
 			"or the name of a command to display detailed usage information.")
 
 	exampleArgs = command.LocalizedExampleArgs{
-		{Args: []*i18n.Config{i18n.EmptyConfig}},
+		{},
 		{
 			Args: []*i18n.Config{
 				i18n.NewFallbackConfig("plugin.help.example.command.arg.0", "some_command"),
@@ -55,7 +55,7 @@ var (
 // ================================ Common ================================
 
 var (
-	commandsFieldName = i18n.NewFallbackConfig("plugin.help.common.commands", "commands")
+	commandsFieldName = i18n.NewFallbackConfig("plugin.help.common.commands", "Commands")
 
 	moduleTitle = i18n.NewFallbackConfig("plugin.help.common.module_title", "`{{.module}}` Module")
 

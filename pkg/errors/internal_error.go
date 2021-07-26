@@ -490,7 +490,7 @@ func (e *InternalError) Format(s fmt.State, verb rune) { //goland:noinspection G
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
-			fmt.Fprintf(s, "%+v", e.Unwrap())
+			fmt.Fprintf(s, "%s\n", e.cause.Error())
 			e.stackTrace.Format(s, verb)
 			return
 		}

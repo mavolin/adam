@@ -105,7 +105,7 @@ type exampleArgsGetter interface {
 var _ exampleArgsGetter = plugin.ExampleArgs{}
 
 type LocalizedExampleArgs []struct {
-	// Flags is a map of exemplary flags.
+	// Flags is a map of example flags.
 	Flags map[string]*i18n.Config
 	// Args contains the example arguments.
 	Args []*i18n.Config
@@ -117,19 +117,28 @@ func (lexamples LocalizedExampleArgs) BaseType(l *i18n.Localizer) plugin.Example
 	base := make(plugin.ExampleArgs, len(lexamples))
 	var i int
 
+Examples:
 	for _, lexample := range lexamples {
-		base[i].Flags = make(map[string]string, len(lexample.Flags))
-		for name, contentConfig := range lexample.Flags {
-			content, err := l.Localize(contentConfig)
-			if err == nil {
+		if len(lexample.Flags) > 0 {
+			base[i].Flags = make(map[string]string, len(lexample.Flags))
+			for name, contentConfig := range lexample.Flags {
+				content, err := l.Localize(contentConfig)
+				if err != nil {
+					continue Examples
+				}
+
 				base[i].Flags[name] = content
 			}
 		}
 
-		base[i].Args = make([]string, len(lexample.Args))
-		for j, argConfig := range lexample.Args {
-			arg, err := l.Localize(argConfig)
-			if err != nil {
+		if len(lexample.Args) > 0 {
+			base[i].Args = make([]string, len(lexample.Args))
+			for j, argConfig := range lexample.Args {
+				arg, err := l.Localize(argConfig)
+				if err != nil {
+					continue Examples
+				}
+
 				base[i].Args[j] = arg
 			}
 		}

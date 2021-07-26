@@ -196,7 +196,7 @@ type (
 )
 
 func (r LocalizedRequiredArg) GetName(l *i18n.Localizer) string {
-	if name, err := l.Localize(r.Name); err != nil {
+	if name, err := l.Localize(r.Name); err == nil {
 		return name
 	}
 
@@ -206,15 +206,15 @@ func (r LocalizedRequiredArg) GetName(l *i18n.Localizer) string {
 func (r LocalizedRequiredArg) GetType() plugin.ArgType { return r.Type }
 
 func (r LocalizedRequiredArg) GetDescription(l *i18n.Localizer) string {
-	if name, err := l.Localize(r.Description); err != nil {
-		return name
+	if desc, err := l.Localize(r.Description); err == nil {
+		return desc
 	}
 
 	return ""
 }
 
 func (o LocalizedOptionalArg) GetName(l *i18n.Localizer) string {
-	if name, err := l.Localize(o.Name); err != nil {
+	if name, err := l.Localize(o.Name); err == nil {
 		return name
 	}
 
@@ -225,8 +225,8 @@ func (o LocalizedOptionalArg) GetType() plugin.ArgType { return o.Type }
 func (o LocalizedOptionalArg) GetDefault() interface{} { return o.Default }
 
 func (o LocalizedOptionalArg) GetDescription(l *i18n.Localizer) string {
-	if name, err := l.Localize(o.Description); err != nil {
-		return name
+	if desc, err := l.Localize(o.Description); err == nil {
+		return desc
 	}
 
 	return ""
@@ -238,8 +238,8 @@ func (f LocalizedFlag) GetType() plugin.ArgType { return f.Type }
 func (f LocalizedFlag) GetDefault() interface{} { return f.Default }
 
 func (f LocalizedFlag) GetDescription(l *i18n.Localizer) string {
-	if name, err := l.Localize(f.Description); err != nil {
-		return name
+	if desc, err := l.Localize(f.Description); err == nil {
+		return desc
 	}
 
 	return ""
