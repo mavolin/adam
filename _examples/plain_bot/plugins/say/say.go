@@ -31,6 +31,7 @@ func New() *Say {
 					{
 						Name:        "Text",
 						Description: "The text you want me to say.",
+						Type:        arg.SimpleText,
 					},
 				},
 			},

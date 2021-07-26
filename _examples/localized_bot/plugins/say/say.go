@@ -31,6 +31,7 @@ func New() *Say {
 					{
 						Name:        argTextName,
 						Description: argTextDescription,
+						Type:        arg.SimpleText,
 					},
 				},
 			},
