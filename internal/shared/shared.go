@@ -8,11 +8,11 @@ const Whitespace = " \n"
 // ErrorEmbed is the shared errors *embedutil.Builder.
 // See errors.SetErrorEmbed and errors.NewErrorEmbed for more information.
 var ErrorEmbed = embedutil.NewBuilder().
-	WithSimpleTitlel(errorTitle).
+	WithTitlel(errorTitle).
 	WithColor(0xff5a5a)
 
 // InfoEmbed is the shared info *embedutil.Builder.
 // See errors.SetInfoEmbed and errors.NewInfoEmbed for more information.
 var InfoEmbed = embedutil.NewBuilder().
-	WithSimpleTitlel(infoTitle).
+	WithTitlel(infoTitle).
 	WithColor(0x6eb7b1)

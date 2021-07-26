@@ -536,7 +536,7 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 	}
 
 	embed := NewErrorEmbed().
-		WithSimpleTitlel(internalErrorTitle).
+		WithTitlel(internalErrorTitle).
 		WithDescription(desc)
 
 	_, _ = ctx.ReplyEmbedBuilder(embed)

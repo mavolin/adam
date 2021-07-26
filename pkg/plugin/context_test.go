@@ -187,7 +187,7 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
@@ -432,7 +432,7 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
@@ -644,7 +644,7 @@ func TestContext_EditEmbedBuilder(t *testing.T) {
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
@@ -889,7 +889,7 @@ func TestContext_EditEmbedBuilderDM(t *testing.T) {
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 

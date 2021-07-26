@@ -491,7 +491,7 @@ func TestWithDescriptionl(t *testing.T) {
 
 		require.NotSame(t, cause, ierr)
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, (*i18n.Config)(expectDesc), ierr.desc)
+		assert.Equal(t, expectDesc, ierr.desc)
 		assert.Equal(t, cause.stackTrace, ierr.stackTrace)
 	})
 
@@ -504,7 +504,7 @@ func TestWithDescriptionl(t *testing.T) {
 
 		require.NotSame(t, cause, ierr)
 		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, (*i18n.Config)(expectDesc), ierr.desc)
+		assert.Equal(t, expectDesc, ierr.desc)
 		assert.Equal(t, cause.stackTrace, ierr.stackTrace)
 	})
 
@@ -648,7 +648,7 @@ func TestInternalError_Handle(t *testing.T) {
 		}
 
 		embed := NewErrorEmbed().
-			WithSimpleTitlelt(internalErrorTitle.Term).
+			WithTitlelt(internalErrorTitle.Term).
 			WithDescription(expectDesc).
 			MustBuild(ctx.Localizer)
 

@@ -117,7 +117,7 @@ func TestHelp_Invoke(t *testing.T) {
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(allTitle).
+				WithTitlel(allTitle).
 				WithDescriptionl(allDescriptionGuild).
 				WithField(ctx.MustLocalize(allPrefixesFieldName), "`@Testy`, `my_cool_prefix`").
 				WithField(ctx.MustLocalize(commandsFieldName), "`def` - def desc\n`ghi`").
@@ -157,7 +157,7 @@ func TestHelp_Invoke(t *testing.T) {
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(allTitle).
+				WithTitlel(allTitle).
 				WithDescriptionl(allDescriptionDM).
 				WithField(ctx.MustLocalize(commandsFieldName), "`abc`\n`def`").
 				MustBuild(ctx.Localizer)
@@ -259,7 +259,7 @@ func TestHelp_Invoke(t *testing.T) {
 		}
 
 		expect := BaseEmbed.Clone().
-			WithSimpleTitlel(moduleTitle.
+			WithTitlel(moduleTitle.
 				WithPlaceholders(moduleTitlePlaceholders{
 					Module: "abc",
 				})).
@@ -343,7 +343,7 @@ func TestHelp_Invoke(t *testing.T) {
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(commandTitle.
+				WithTitlel(commandTitle.
 					WithPlaceholders(commandTitlePlaceholders{
 						Command: "abc",
 					})).
@@ -382,7 +382,7 @@ func TestHelp_Invoke(t *testing.T) {
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(commandTitle.
+				WithTitlel(commandTitle.
 					WithPlaceholders(commandTitlePlaceholders{
 						Command: "abc",
 					})).

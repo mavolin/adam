@@ -211,6 +211,7 @@ func (c category) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, 
 		}
 	}
 
+	//goland:noinspection GoBoolExpressions
 	if !CategoryAllowSearch {
 		return nil, newArgumentError2(categoryIDInvalidErrorArg, categoryIDInvalidErrorFlag, ctx, nil)
 	}
@@ -352,7 +353,7 @@ func (c category) genChooserEmbed(
 	ctx *plugin.ParseContext, fullMatches, partialMatches []categoryMatch,
 ) (chooser *embedutil.Builder, numMatches int, err error) {
 	chooser = CategoryChooserBuilder.Clone().
-		WithSimpleTitlel(categoryChooserTitle).
+		WithTitlel(categoryChooserTitle).
 		WithDescriptionl(categoryChooserDescription.
 			WithPlaceholders(categoryChooserDescriptionPlaceholders{
 				CancelEmoji: CategoryCancelEmoji,
@@ -473,6 +474,7 @@ func (c voiceChannel) Parse(s *state.State, ctx *plugin.ParseContext) (interface
 		}
 	}
 
+	//goland:noinspection GoBoolExpressions
 	if !VoiceChannelAllowSearch {
 		return nil, newArgumentError2(voiceChannelIDInvalidErrorArg, voiceChannelIDInvalidErrorFlag, ctx, nil)
 	}
@@ -626,7 +628,7 @@ func (c voiceChannel) genChooserEmbed( //nolint:dupl,funlen
 	ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
 ) (chooser *embedutil.Builder, numMatches int, err error) {
 	chooser = VoiceChannelChooserBuilder.Clone().
-		WithSimpleTitlel(voiceChannelChooserTitle).
+		WithTitlel(voiceChannelChooserTitle).
 		WithDescriptionl(voiceChannelChooserDescription.
 			WithPlaceholders(voiceChannelChooserDescriptionPlaceholders{
 				CancelEmoji: VoiceChannelCancelEmoji,

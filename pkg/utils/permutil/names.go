@@ -1,6 +1,7 @@
 package permutil
 
 import (
+	"math/bits"
 	"sort"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -16,15 +17,17 @@ func Names(perms discord.Permissions) []string {
 
 // Namesl returns the sorted and localized names of the passed
 // discord.Permissions, as found in the client.
-func Namesl(perms discord.Permissions, l *i18n.Localizer) (s []string) {
+func Namesl(perms discord.Permissions, l *i18n.Localizer) []string {
+	names := make([]string, 0, bits.OnesCount64(uint64(perms)))
+
 	for perm, c := range permissionConfigs {
 		if perms.Has(perm) {
 			permString, _ := l.Localize(c)
-			s = append(s, permString)
+			names = append(names, permString)
 		}
 	}
 
-	sort.Strings(s)
+	sort.Strings(names)
 
-	return s
+	return names
 }

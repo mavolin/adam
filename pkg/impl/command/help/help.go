@@ -143,7 +143,7 @@ func (h *Help) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) 
 
 func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 	eb := BaseEmbed.Clone().
-		WithSimpleTitlel(allTitle)
+		WithTitlel(allTitle)
 
 	if ctx.GuildID == 0 {
 		eb.WithDescriptionl(allDescriptionDM)
@@ -181,7 +181,7 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 
 func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedModule) (discord.Embed, error) {
 	eb := BaseEmbed.Clone().
-		WithSimpleTitlel(moduleTitle.
+		WithTitlel(moduleTitle.
 			WithPlaceholders(moduleTitlePlaceholders{
 				Module: mod.ID().AsInvoke(),
 			}))
@@ -225,7 +225,7 @@ func (h *Help) command(s *state.State, ctx *plugin.Context, cmd plugin.ResolvedC
 	}
 
 	eb := BaseEmbed.Clone().
-		WithSimpleTitlel(commandTitle.
+		WithTitlel(commandTitle.
 			WithPlaceholders(commandTitlePlaceholders{
 				Command: cmd.Name(),
 			}))
