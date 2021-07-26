@@ -347,8 +347,8 @@ func (e *anyError) Error() string {
 // The first return value is the normal indent, and the second is the indent
 // needed for newlines within an entry.
 func genIndent(indentLvl int) (indent, nlIndent string) {
-	// use an "ideographic space" for indenting, as Discord strips whitespace
-	// on new lines in embeds.
+	// use an "ideographic space" for indenting, as Discord strips normal
+	// whitespace on new lines in embeds
 	indent = strings.Repeat("\u3000", indentLvl*indentMultiplier)
 	nlIndent = strings.Repeat("\u3000", indentLvl*indentMultiplier)
 
