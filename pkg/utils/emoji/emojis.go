@@ -42,10 +42,12 @@ var (
 	NeutralFace                 Emoji = "\U0001f610"
 	ExpressionlessFace          Emoji = "\U0001f611"
 	FaceWithoutMouth            Emoji = "\U0001f636"
+	FaceInClouds                Emoji = "\U0001f636\u200d\U0001f32b\ufe0f"
 	SmirkingFace                Emoji = "\U0001f60f"
 	UnamusedFace                Emoji = "\U0001f612"
 	FaceWithRollingEyes         Emoji = "\U0001f644"
 	GrimacingFace               Emoji = "\U0001f62c"
+	FaceExhaling                Emoji = "\U0001f62e\u200d\U0001f4a8"
 	LyingFace                   Emoji = "\U0001f925"
 	RelievedFace                Emoji = "\U0001f60c"
 	PensiveFace                 Emoji = "\U0001f614"
@@ -61,7 +63,8 @@ var (
 	HotFace                     Emoji = "\U0001f975"
 	ColdFace                    Emoji = "\U0001f976"
 	WoozyFace                   Emoji = "\U0001f974"
-	DizzyFace                   Emoji = "\U0001f635"
+	KnockedOutFace              Emoji = "\U0001f635"
+	FaceWithSpiralEyes          Emoji = "\U0001f635\u200d\U0001f4ab"
 	ExplodingHead               Emoji = "\U0001f92f"
 	CowboyHatFace               Emoji = "\U0001f920"
 	PartyingFace                Emoji = "\U0001f973"
@@ -133,6 +136,8 @@ var (
 	HeartDecoration             Emoji = "\U0001f49f"
 	HeartExclamation            Emoji = "\u2763\ufe0f"
 	BrokenHeart                 Emoji = "\U0001f494"
+	HeartOnFire                 Emoji = "\u2764\ufe0f\u200d\U0001f525"
+	MendingHeart                Emoji = "\u2764\ufe0f\u200d\U0001fa79"
 	RedHeart                    Emoji = "\u2764\ufe0f"
 	OrangeHeart                 Emoji = "\U0001f9e1"
 	YellowHeart                 Emoji = "\U0001f49b"
@@ -539,13 +544,29 @@ var (
 		MediumDarkSkin:  "\U0001f468\U0001f3fe",
 		DarkSkin:        "\U0001f468\U0001f3ff",
 	}
-	ManBeard = SkinToneEmoji{
+	PersonBeard = SkinToneEmoji{
 		NeutralSkin:     "\U0001f9d4",
 		LightSkin:       "\U0001f9d4\U0001f3fb",
 		MediumLightSkin: "\U0001f9d4\U0001f3fc",
 		MediumSkin:      "\U0001f9d4\U0001f3fd",
 		MediumDarkSkin:  "\U0001f9d4\U0001f3fe",
 		DarkSkin:        "\U0001f9d4\U0001f3ff",
+	}
+	ManBeard = SkinToneEmoji{
+		NeutralSkin:     "\U0001f9d4\u200d\u2642\ufe0f",
+		LightSkin:       "\U0001f9d4\U0001f3fb\u200d\u2642\ufe0f",
+		MediumLightSkin: "\U0001f9d4\U0001f3fc\u200d\u2642\ufe0f",
+		MediumSkin:      "\U0001f9d4\U0001f3fd\u200d\u2642\ufe0f",
+		MediumDarkSkin:  "\U0001f9d4\U0001f3fe\u200d\u2642\ufe0f",
+		DarkSkin:        "\U0001f9d4\U0001f3ff\u200d\u2642\ufe0f",
+	}
+	WomanBeard = SkinToneEmoji{
+		NeutralSkin:     "\U0001f9d4\u200d\u2640\ufe0f",
+		LightSkin:       "\U0001f9d4\U0001f3fb\u200d\u2640\ufe0f",
+		MediumLightSkin: "\U0001f9d4\U0001f3fc\u200d\u2640\ufe0f",
+		MediumSkin:      "\U0001f9d4\U0001f3fd\u200d\u2640\ufe0f",
+		MediumDarkSkin:  "\U0001f9d4\U0001f3fe\u200d\u2640\ufe0f",
+		DarkSkin:        "\U0001f9d4\U0001f3ff\u200d\u2640\ufe0f",
 	}
 	ManRedHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9b0",
@@ -2441,45 +2462,101 @@ var (
 		MediumDarkSkin:  "\U0001f46c\U0001f3fe",
 		DarkSkin:        "\U0001f46c\U0001f3ff",
 	}
-	Kiss                      Emoji = "\U0001f48f"
-	KissWomanMan              Emoji = "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468"
-	KissManMan                Emoji = "\U0001f468\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468"
-	KissWomanWoman            Emoji = "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469"
-	CoupleWithHeart           Emoji = "\U0001f491"
-	CoupleWithHeartWomanMan   Emoji = "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f468"
-	CoupleWithHeartManMan     Emoji = "\U0001f468\u200d\u2764\ufe0f\u200d\U0001f468"
-	CoupleWithHeartWomanWoman Emoji = "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f469"
-	Family                    Emoji = "\U0001f46a"
-	FamilyManWomanBoy         Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f466"
-	FamilyManWomanGirl        Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f467"
-	FamilyManWomanGirlBoy     Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f467\u200d\U0001f466"
-	FamilyManWomanBoyBoy      Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f466\u200d\U0001f466"
-	FamilyManWomanGirlGirl    Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f467\u200d\U0001f467"
-	FamilyManManBoy           Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f466"
-	FamilyManManGirl          Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f467"
-	FamilyManManGirlBoy       Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f467\u200d\U0001f466"
-	FamilyManManBoyBoy        Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f466\u200d\U0001f466"
-	FamilyManManGirlGirl      Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f467\u200d\U0001f467"
-	FamilyWomanWomanBoy       Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f466"
-	FamilyWomanWomanGirl      Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f467"
-	FamilyWomanWomanGirlBoy   Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f467\u200d\U0001f466"
-	FamilyWomanWomanBoyBoy    Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f466\u200d\U0001f466"
-	FamilyWomanWomanGirlGirl  Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f467\u200d\U0001f467"
-	FamilyManBoy              Emoji = "\U0001f468\u200d\U0001f466"
-	FamilyManBoyBoy           Emoji = "\U0001f468\u200d\U0001f466\u200d\U0001f466"
-	FamilyManGirl             Emoji = "\U0001f468\u200d\U0001f467"
-	FamilyManGirlBoy          Emoji = "\U0001f468\u200d\U0001f467\u200d\U0001f466"
-	FamilyManGirlGirl         Emoji = "\U0001f468\u200d\U0001f467\u200d\U0001f467"
-	FamilyWomanBoy            Emoji = "\U0001f469\u200d\U0001f466"
-	FamilyWomanBoyBoy         Emoji = "\U0001f469\u200d\U0001f466\u200d\U0001f466"
-	FamilyWomanGirl           Emoji = "\U0001f469\u200d\U0001f467"
-	FamilyWomanGirlBoy        Emoji = "\U0001f469\u200d\U0001f467\u200d\U0001f466"
-	FamilyWomanGirlGirl       Emoji = "\U0001f469\u200d\U0001f467\u200d\U0001f467"
-	SpeakingHead              Emoji = "\U0001f5e3\ufe0f"
-	BustInSilhouette          Emoji = "\U0001f464"
-	BustsInSilhouette         Emoji = "\U0001f465"
-	PeopleHugging             Emoji = "\U0001fac2"
-	Footprints                Emoji = "\U0001f463"
+	Kiss = SkinToneEmoji{
+		NeutralSkin:     "\U0001f48f",
+		LightSkin:       "\U0001f48f\U0001f3fb",
+		MediumLightSkin: "\U0001f48f\U0001f3fc",
+		MediumSkin:      "\U0001f48f\U0001f3fd",
+		MediumDarkSkin:  "\U0001f48f\U0001f3fe",
+		DarkSkin:        "\U0001f48f\U0001f3ff",
+	}
+	KissWomanMan = SkinToneEmoji{
+		NeutralSkin:     "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		LightSkin:       "\U0001f469\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		MediumSkin:      "\U0001f469\U0001f3fd\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		DarkSkin:        "\U0001f469\U0001f3ff\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+	}
+	KissManMan = SkinToneEmoji{
+		NeutralSkin:     "\U0001f468\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		LightSkin:       "\U0001f468\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		MediumSkin:      "\U0001f468\U0001f3fd\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+		DarkSkin:        "\U0001f468\U0001f3ff\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468",
+	}
+	KissWomanWoman = SkinToneEmoji{
+		NeutralSkin:     "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469",
+		LightSkin:       "\U0001f469\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469",
+		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469",
+		MediumSkin:      "\U0001f469\U0001f3fd\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469",
+		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469",
+		DarkSkin:        "\U0001f469\U0001f3ff\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469",
+	}
+	CoupleWithHeart = SkinToneEmoji{
+		NeutralSkin:     "\U0001f491",
+		LightSkin:       "\U0001f491\U0001f3fb",
+		MediumLightSkin: "\U0001f491\U0001f3fc",
+		MediumSkin:      "\U0001f491\U0001f3fd",
+		MediumDarkSkin:  "\U0001f491\U0001f3fe",
+		DarkSkin:        "\U0001f491\U0001f3ff",
+	}
+	CoupleWithHeartWomanMan = SkinToneEmoji{
+		NeutralSkin:     "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f468",
+		LightSkin:       "\U0001f469\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f468",
+		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\u2764\ufe0f\u200d\U0001f468",
+		MediumSkin:      "\U0001f469\U0001f3fd\u200d\u2764\ufe0f\u200d\U0001f468",
+		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\u2764\ufe0f\u200d\U0001f468",
+		DarkSkin:        "\U0001f469\U0001f3ff\u200d\u2764\ufe0f\u200d\U0001f468",
+	}
+	CoupleWithHeartManMan = SkinToneEmoji{
+		NeutralSkin:     "\U0001f468\u200d\u2764\ufe0f\u200d\U0001f468",
+		LightSkin:       "\U0001f468\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f468",
+		MediumLightSkin: "\U0001f468\U0001f3fc\u200d\u2764\ufe0f\u200d\U0001f468",
+		MediumSkin:      "\U0001f468\U0001f3fd\u200d\u2764\ufe0f\u200d\U0001f468",
+		MediumDarkSkin:  "\U0001f468\U0001f3fe\u200d\u2764\ufe0f\u200d\U0001f468",
+		DarkSkin:        "\U0001f468\U0001f3ff\u200d\u2764\ufe0f\u200d\U0001f468",
+	}
+	CoupleWithHeartWomanWoman = SkinToneEmoji{
+		NeutralSkin:     "\U0001f469\u200d\u2764\ufe0f\u200d\U0001f469",
+		LightSkin:       "\U0001f469\U0001f3fb\u200d\u2764\ufe0f\u200d\U0001f469",
+		MediumLightSkin: "\U0001f469\U0001f3fc\u200d\u2764\ufe0f\u200d\U0001f469",
+		MediumSkin:      "\U0001f469\U0001f3fd\u200d\u2764\ufe0f\u200d\U0001f469",
+		MediumDarkSkin:  "\U0001f469\U0001f3fe\u200d\u2764\ufe0f\u200d\U0001f469",
+		DarkSkin:        "\U0001f469\U0001f3ff\u200d\u2764\ufe0f\u200d\U0001f469",
+	}
+	Family                   Emoji = "\U0001f46a"
+	FamilyManWomanBoy        Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f466"
+	FamilyManWomanGirl       Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f467"
+	FamilyManWomanGirlBoy    Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f467\u200d\U0001f466"
+	FamilyManWomanBoyBoy     Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f466\u200d\U0001f466"
+	FamilyManWomanGirlGirl   Emoji = "\U0001f468\u200d\U0001f469\u200d\U0001f467\u200d\U0001f467"
+	FamilyManManBoy          Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f466"
+	FamilyManManGirl         Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f467"
+	FamilyManManGirlBoy      Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f467\u200d\U0001f466"
+	FamilyManManBoyBoy       Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f466\u200d\U0001f466"
+	FamilyManManGirlGirl     Emoji = "\U0001f468\u200d\U0001f468\u200d\U0001f467\u200d\U0001f467"
+	FamilyWomanWomanBoy      Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f466"
+	FamilyWomanWomanGirl     Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f467"
+	FamilyWomanWomanGirlBoy  Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f467\u200d\U0001f466"
+	FamilyWomanWomanBoyBoy   Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f466\u200d\U0001f466"
+	FamilyWomanWomanGirlGirl Emoji = "\U0001f469\u200d\U0001f469\u200d\U0001f467\u200d\U0001f467"
+	FamilyManBoy             Emoji = "\U0001f468\u200d\U0001f466"
+	FamilyManBoyBoy          Emoji = "\U0001f468\u200d\U0001f466\u200d\U0001f466"
+	FamilyManGirl            Emoji = "\U0001f468\u200d\U0001f467"
+	FamilyManGirlBoy         Emoji = "\U0001f468\u200d\U0001f467\u200d\U0001f466"
+	FamilyManGirlGirl        Emoji = "\U0001f468\u200d\U0001f467\u200d\U0001f467"
+	FamilyWomanBoy           Emoji = "\U0001f469\u200d\U0001f466"
+	FamilyWomanBoyBoy        Emoji = "\U0001f469\u200d\U0001f466\u200d\U0001f466"
+	FamilyWomanGirl          Emoji = "\U0001f469\u200d\U0001f467"
+	FamilyWomanGirlBoy       Emoji = "\U0001f469\u200d\U0001f467\u200d\U0001f466"
+	FamilyWomanGirlGirl      Emoji = "\U0001f469\u200d\U0001f467\u200d\U0001f467"
+	SpeakingHead             Emoji = "\U0001f5e3\ufe0f"
+	BustInSilhouette         Emoji = "\U0001f464"
+	BustsInSilhouette        Emoji = "\U0001f465"
+	PeopleHugging            Emoji = "\U0001fac2"
+	Footprints               Emoji = "\U0001f463"
 
 	// ================================ Animals & Nature ================================
 
@@ -3030,7 +3107,7 @@ var (
 	Skis                Emoji = "\U0001f3bf"
 	Sled                Emoji = "\U0001f6f7"
 	CurlingStone        Emoji = "\U0001f94c"
-	DirectHit           Emoji = "\U0001f3af"
+	Bullseye            Emoji = "\U0001f3af"
 	YoYo                Emoji = "\U0001fa80"
 	Kite                Emoji = "\U0001fa81"
 	Pool8Ball           Emoji = "\U0001f3b1"
@@ -3253,7 +3330,7 @@ var (
 	HammerAndWrench              Emoji = "\U0001f6e0\ufe0f"
 	Dagger                       Emoji = "\U0001f5e1\ufe0f"
 	CrossedSwords                Emoji = "\u2694\ufe0f"
-	Pistol                       Emoji = "\U0001f52b"
+	WaterPistol                  Emoji = "\U0001f52b"
 	Boomerang                    Emoji = "\U0001fa83"
 	BowAndArrow                  Emoji = "\U0001f3f9"
 	Shield                       Emoji = "\U0001f6e1\ufe0f"
@@ -3422,10 +3499,10 @@ var (
 	Infinity                      Emoji = "\u267e\ufe0f"
 	DoubleExclamationMark         Emoji = "\u203c\ufe0f"
 	ExclamationQuestionMark       Emoji = "\u2049\ufe0f"
-	QuestionMark                  Emoji = "\u2753"
+	RedQuestionMark               Emoji = "\u2753"
 	WhiteQuestionMark             Emoji = "\u2754"
 	WhiteExclamationMark          Emoji = "\u2755"
-	ExclamationMark               Emoji = "\u2757"
+	RedExclamationMark            Emoji = "\u2757"
 	WavyDash                      Emoji = "\u3030\ufe0f"
 	CurrencyExchange              Emoji = "\U0001f4b1"
 	HeavyDollarSign               Emoji = "\U0001f4b2"

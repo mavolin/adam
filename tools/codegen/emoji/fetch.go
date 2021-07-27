@@ -10,29 +10,27 @@ type gemoji struct {
 	Emoji          string  `json:"emoji"`
 	Description    string  `json:"description"`
 	Category       string  `json:"category"`
-	UnicodeVersion float32 `json:"unicode_version"`
+	UnicodeVersion float32 `json:"-"`
 	SkinTones      bool    `json:"skin_tones,omitempty"`
 }
 
 func (g *gemoji) UnmarshalJSON(bytes []byte) error {
-	var emoji struct {
-		Emoji          string `json:"emoji"`
-		Description    string `json:"description"`
-		Category       string `json:"category"`
-		UnicodeVersion string `json:"unicode_version"`
-		SkinTones      bool   `json:"skin_tones,omitempty"`
-	}
+	type rawGemoji gemoji
+
+	emoji := struct {
+		rawGemoji
+		UnicodeVersion string
+	}{}
 
 	err := json.Unmarshal(bytes, &emoji)
 	if err != nil {
 		return err
 	}
 
-	g.Emoji = emoji.Emoji
-	g.Description = emoji.Description
-	g.Category = emoji.Category
-	g.SkinTones = emoji.SkinTones
+	*g = gemoji(emoji.rawGemoji)
 
+	// some older emojis don't have a version, leaving them at ver 0 is just
+	// fine
 	if len(emoji.UnicodeVersion) > 0 {
 		ver, err := strconv.ParseFloat(emoji.UnicodeVersion, 32)
 		if err != nil {
@@ -41,8 +39,6 @@ func (g *gemoji) UnmarshalJSON(bytes []byte) error {
 
 		g.UnicodeVersion = float32(ver)
 	}
-	// some older emojis don't have a version, leaving them at ver 0 is just
-	// fine
 
 	return nil
 }

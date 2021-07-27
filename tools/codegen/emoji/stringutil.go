@@ -60,6 +60,14 @@ func genName(desc string) string {
 	return strcase.ToCamel(desc)
 }
 
+const (
+	lightSkin       = '\U0001F3FB'
+	mediumLightSkin = '\U0001F3FC'
+	mediumSkin      = '\U0001F3FD'
+	mediumDarkSkin  = '\U0001F3FE'
+	darkSkin        = '\U0001F3FF'
+)
+
 func withSkinTone(base string, tone rune) string {
 	chars := []rune(base)
 
