@@ -180,7 +180,8 @@ func InvokeCommand(next CommandFunc) CommandFunc {
 	}
 }
 
-func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err error) { //nolint:funlen,gocyclo
+//nolint:funlen,gocyclo
+func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err error) {
 	if reply == nil {
 		return nil
 	}

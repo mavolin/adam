@@ -305,7 +305,8 @@ func (c category) handleName(s *state.State, ctx *plugin.ParseContext) (*discord
 	}
 }
 
-func (c category) sendChooser( //nolint:dupl
+//nolint:dupl
+func (c category) sendChooser(
 	s *state.State, ctx *plugin.ParseContext, fullMatches, partialMatches []categoryMatch,
 ) (*discord.Channel, error) {
 	chooser, numMatches, err := c.genChooserEmbed(ctx, fullMatches, partialMatches)
@@ -484,7 +485,9 @@ func (c voiceChannel) Parse(s *state.State, ctx *plugin.ParseContext) (interface
 
 // handleID attempts to fetch the voice channel with the passed id.
 // It returns nil, nil if no such channel exists.
-func (c voiceChannel) handleID(s *state.State, ctx *plugin.ParseContext, id discord.ChannelID) (*discord.Channel, error) {
+func (c voiceChannel) handleID(
+	s *state.State, ctx *plugin.ParseContext, id discord.ChannelID,
+) (*discord.Channel, error) {
 	channel, err := s.Channel(id)
 	if err == nil {
 		if channel.Type != discord.GuildVoice {
@@ -580,7 +583,8 @@ func (c voiceChannel) handleName(s *state.State, ctx *plugin.ParseContext) (*dis
 	}
 }
 
-func (c voiceChannel) sendChooser( //nolint:dupl
+//nolint:dupl
+func (c voiceChannel) sendChooser(
 	s *state.State, ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
 ) (*discord.Channel, error) {
 	chooser, numMatches, err := c.genChooserEmbed(ctx, fullMatches, partialMatches)
@@ -624,7 +628,8 @@ func (c voiceChannel) sendChooser( //nolint:dupl
 	return partialMatches[i-len(fullMatches)].channel, nil
 }
 
-func (c voiceChannel) genChooserEmbed( //nolint:dupl,funlen
+//nolint:dupl,funlen,gocognit
+func (c voiceChannel) genChooserEmbed(
 	ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
 ) (chooser *embedutil.Builder, numMatches int, err error) {
 	chooser = VoiceChannelChooserBuilder.Clone().

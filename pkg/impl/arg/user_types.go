@@ -103,6 +103,7 @@ func (m member) GetName(l *i18n.Localizer) string {
 }
 
 func (m member) GetDescription(l *i18n.Localizer) string {
+	//goland:noinspection GoBoolExpressions
 	if MemberAllowIDs {
 		desc, err := l.Localize(memberDescriptionWithIDs)
 		if err == nil {
@@ -143,6 +144,7 @@ func (m member) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, er
 		return member, nil
 	}
 
+	//goland:noinspection GoBoolExpressions
 	if !MemberAllowIDs {
 		return nil, newArgumentError(userInvalidMentionWithRawError, ctx, nil)
 	}

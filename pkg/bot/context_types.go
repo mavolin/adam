@@ -58,7 +58,8 @@ type discordDataProvider struct {
 	selfID    discord.UserID
 }
 
-func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) { //nolint:dupl
+//nolint:dupl
+func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) {
 	if d.guild != nil || d.guildErr != nil {
 		return func() (*discord.Guild, error) { return d.guild, d.guildErr }
 	}
@@ -95,7 +96,8 @@ func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) { //no
 	}
 }
 
-func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) { //nolint:dupl
+//nolint:dupl
+func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
 	if d.channel != nil || d.channelErr != nil {
 		return func() (*discord.Channel, error) { return d.channel, d.channelErr }
 	}
@@ -132,7 +134,8 @@ func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) { 
 	}
 }
 
-func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) { //nolint:dupl
+//nolint:dupl
+func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) {
 	if d.self != nil || d.selfErr != nil {
 		return func() (*discord.Member, error) { return d.self, d.selfErr }
 	}

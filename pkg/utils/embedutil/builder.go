@@ -280,7 +280,8 @@ func (b *Builder) Clone() *Builder {
 }
 
 // Build builds the discord.Embed.
-func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) { //nolint:funlen
+//nolint:funlen
+func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	if b.title != nil {
 		e.Title, err = l.Localize(b.title)
 		if err != nil {

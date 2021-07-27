@@ -44,6 +44,7 @@ func (c Choice) GetDescription(l *i18n.Localizer) string {
 
 func (c Choice) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	for _, e := range c {
+		//goland:noinspection GoBoolExpressions
 		if (ChoiceCaseSensitive && e.Name == ctx.Raw) || strings.EqualFold(e.Name, ctx.Raw) {
 			if e.Value == nil {
 				return e.Name, nil
@@ -53,6 +54,7 @@ func (c Choice) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, er
 		}
 
 		for _, alias := range e.Aliases {
+			//goland:noinspection GoBoolExpressions
 			if (ChoiceCaseSensitive && alias == ctx.Raw) || strings.EqualFold(alias, ctx.Raw) {
 				if e.Value == nil {
 					return e.Name, nil
@@ -113,6 +115,7 @@ func (c LocalizedChoice) Parse(_ *state.State, ctx *plugin.ParseContext) (interf
 				return nil, err
 			}
 
+			//goland:noinspection GoBoolExpressions
 			if (ChoiceCaseSensitive && name == ctx.Raw) || strings.EqualFold(name, ctx.Raw) {
 				return e.Value, nil
 			}

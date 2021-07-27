@@ -3,9 +3,10 @@ package arg
 import (
 	"testing"
 
-	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 func TestCode_Parse(t *testing.T) {

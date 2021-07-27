@@ -145,7 +145,8 @@ var (
 	timeFormatWithTZ = "15:04 -0700"
 )
 
-func (t Time) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) { //nolint:dupl // errors differ
+//nolint:dupl
+func (t Time) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	var (
 		parsed time.Time
 		err    error
@@ -345,7 +346,8 @@ var (
 	dateTimeFormatWithTZ = "2006-01-02 15:04 -0700"
 )
 
-func (t DateTime) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) { //nolint:dupl // errors differ
+//nolint:dupl
+func (t DateTime) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	var (
 		parsed time.Time
 		err    error

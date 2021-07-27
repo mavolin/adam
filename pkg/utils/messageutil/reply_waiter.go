@@ -18,7 +18,7 @@ var (
 	// DefaultReplyWaiter is the waiter used for NewReplyWaiterFromDefault.
 	// DefaultReplyWaiter must not be used directly to handleMessages reply.
 	DefaultReplyWaiter = &ReplyWaiter{
-		cancelKeywords: []*i18n.Config{(*i18n.Config)(defaultCancelKeyword)},
+		cancelKeywords: []*i18n.Config{defaultCancelKeyword},
 	}
 
 	// ReplyMaxTimeout is the default maximum mount of time ReplyWaiter.Await
@@ -197,10 +197,7 @@ func (w *ReplyWaiter) WithCancelKeywords(keywords ...string) *ReplyWaiter {
 // If the user filtered for writes one of the keywords AwaitReply will return
 // errors.Abort.
 func (w *ReplyWaiter) WithCancelKeywordsl(keywords ...*i18n.Config) *ReplyWaiter {
-	for _, k := range keywords {
-		w.cancelKeywords = append(w.cancelKeywords, (*i18n.Config)(k))
-	}
-
+	w.cancelKeywords = append(w.cancelKeywords, keywords...)
 	return w
 }
 

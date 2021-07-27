@@ -65,7 +65,9 @@ func GenerateStackTrace(skip int) StackTrace {
 // Format accepts flags that alter the printing of some verbs, as follows:
 //
 //    %+v   Prints filename, function, and line number for each Frame in the stack.
-func (st StackTrace) Format(s fmt.State, verb rune) { //goland:noinspection GoUnhandledErrorResult
+//nolint:errcheck
+//goland:noinspection GoUnhandledErrorResult
+func (st StackTrace) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		switch {
@@ -89,6 +91,7 @@ func (st StackTrace) Format(s fmt.State, verb rune) { //goland:noinspection GoUn
 
 // formatSlice will format this StackTrace into the given buffer as a slice of
 // Frame, only valid when called with '%s' or '%v'.
+//nolint:errcheck
 func (st StackTrace) formatSlice(s fmt.State, verb rune) {
 	io.WriteString(s, "[")
 	for i, f := range st {
@@ -149,7 +152,8 @@ func (f Frame) name() string {
 //
 //    %+s   function name and path of source file
 //    %+v   equivalent to %+s:%d
-func (f Frame) Format(s fmt.State, verb rune) { //goland:noinspection GoUnhandledErrorResult
+//nolint:errcheck
+func (f Frame) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
 		switch {

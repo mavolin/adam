@@ -35,6 +35,7 @@ func (r role) GetName(l *i18n.Localizer) string {
 }
 
 func (r role) GetDescription(l *i18n.Localizer) string {
+	//goland:noinspection GoBoolExpressions
 	if RoleAllowIDs {
 		desc, err := l.Localize(roleDescriptionWithID)
 		if err == nil {
@@ -70,6 +71,7 @@ func (r role) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, erro
 		return role, nil
 	}
 
+	//goland:noinspection GoBoolExpressions
 	if !RoleAllowIDs {
 		return nil, newArgumentError(roleInvalidMentionWithRawError, ctx, nil)
 	}

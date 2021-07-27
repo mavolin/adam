@@ -496,7 +496,7 @@ func (e *InternalError) Format(s fmt.State, verb rune) { //goland:noinspection G
 		}
 		fallthrough
 	case 's':
-		io.WriteString(s, e.Error())
+		io.WriteString(s, e.Error()) //nolint:errcheck
 	case 'q':
 		fmt.Fprintf(s, "%q", e.Error())
 	}

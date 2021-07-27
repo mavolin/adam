@@ -97,7 +97,8 @@ func newModule(parent *Module, provider *PluginProvider, sourceName string, smod
 	return rmod
 }
 
-func updateModule(rmod *Module, provider *PluginProvider, sourceName string, smod plugin.Module) { //nolint:funlen,gocognit
+//nolint:funlen,gocognit
+func updateModule(rmod *Module, provider *PluginProvider, sourceName string, smod plugin.Module) {
 	if rmod.Parent() != nil {
 		for _, parentSource := range rmod.Parent().Sources() {
 			if parentSource.SourceName == sourceName {

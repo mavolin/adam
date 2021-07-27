@@ -33,7 +33,8 @@ func New() *Ban {
 			Aliases:          []string{"banhammer"},
 			ShortDescription: "Bans someone.",
 			ExampleArgs: plugin.ExampleArgs{
-				{Args: []string{"@Wumpus", "@Wumpus, using offensive language"}}},
+				{Args: []string{"@Wumpus", "@Wumpus, using offensive language"}},
+			},
 			Args: &arg.Config{
 				RequiredArgs: []arg.RequiredArg{
 					{

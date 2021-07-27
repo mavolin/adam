@@ -128,6 +128,7 @@ func (t LocalizedRawType) GetName(l *i18n.Localizer) string {
 
 	return ""
 }
+
 func (t LocalizedRawType) GetDescription(l *i18n.Localizer) string {
 	if desc, err := l.Localize(t.Description); err == nil {
 		return desc

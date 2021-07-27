@@ -31,7 +31,8 @@ type parseHelper struct {
 	multiFlags map[string]reflect.Value
 }
 
-func newParseHelper( //nolint:dupl
+//nolint:dupl
+func newParseHelper(
 	rargs []plugin.RequiredArg, oargs []plugin.OptionalArg, flags []plugin.Flag, variadic bool, s *state.State,
 	ctx *plugin.Context,
 ) *parseHelper {

@@ -59,7 +59,7 @@ func TestEmbedBuilder_WithTitlel(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithTitleURL(t *testing.T) {
-	var url = "def"
+	url := "def"
 
 	expect := discord.Embed{URL: url}
 
@@ -192,7 +192,7 @@ func TestEmbedBuilder_WithFooterl(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithFooterIcon(t *testing.T) {
-	var icon = "def"
+	icon := "def"
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Icon: icon}}
 
@@ -288,7 +288,7 @@ func TestEmbedBuilder_WithAuthorl(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithAuthorURL(t *testing.T) {
-	var url = "def"
+	url := "def"
 
 	expect := discord.Embed{
 		Author: &discord.EmbedAuthor{
@@ -305,7 +305,7 @@ func TestEmbedBuilder_WithAuthorURL(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithAuthorIcon(t *testing.T) {
-	var icon = "def"
+	icon := "def"
 
 	expect := discord.Embed{
 		Author: &discord.EmbedAuthor{

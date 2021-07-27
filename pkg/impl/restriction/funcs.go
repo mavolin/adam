@@ -64,7 +64,7 @@ var _ plugin.RestrictionFunc = BotOwner
 
 // Users creates a plugin.RestrictionFunc that defines a set of users that may
 // use a command.
-// It returns a plugin.DefaultRestrictionError if the author isn't one of them.
+// It returns plugin.DefaultRestrictionError if the author isn't one of them.
 func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if len(allowed) == 0 {
@@ -91,7 +91,8 @@ func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 // to use the command at all.
 //
 // It fails if the command is used in a direct message.
-func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:gocognit
+//nolint:gocognit
+func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if len(allowed) == 0 {
 			return nil
@@ -167,7 +168,8 @@ func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:gocog
 // to use the command at all.
 //
 // It fails if the command is used in a direct message.
-func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc { //nolint:gocognit
+//nolint:gocognit
+func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if len(allowed) == 0 {
 			return nil

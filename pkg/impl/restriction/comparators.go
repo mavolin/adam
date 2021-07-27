@@ -42,7 +42,8 @@ func (e *EmbeddableError) Error() string                            { return e.D
 // If at least one of the passed plugin.RestrictionFuncs returns a fatal
 // plugin.RestrictionError, the error produced by the returned function will be
 // fatal as well.
-func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:gocognit
+//nolint:gocognit
+func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
 			return nil

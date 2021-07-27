@@ -168,9 +168,10 @@ func (h *Help) genUsage(
 	return usage
 }
 
+//nolint:funlen,gocognit
 func (h *Help) genArguments(
 	b *strings.Builder, ctx *plugin.Context, cmd plugin.ResolvedCommand,
-) *discord.EmbedField { //nolint:gocognit
+) *discord.EmbedField {
 	if cmd.Args() == nil {
 		return nil
 	}

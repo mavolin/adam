@@ -20,7 +20,8 @@ import (
 )
 
 // Options contains different configurations for a Bot.
-type Options struct { //nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
+//nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
+type Options struct {
 	// Token is the bot token without the 'Bot' prefix.
 	//
 	// This field is required.

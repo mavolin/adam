@@ -17,7 +17,8 @@ var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
 
 // Route attempts to route the passed message.
 // It aborts if the message is not a valid invoke.
-func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Member) { //nolint:funlen
+//nolint:funlen
+func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Member) {
 	// Only accept regular text messages.
 	// Also check if a bot wrote the message, if !b.AllowBot.
 	// Lastly, also discard if this bot wrote this message, even if b.AllowBot.
