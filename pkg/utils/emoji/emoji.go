@@ -54,9 +54,9 @@ func CountryFlag(code string) Emoji {
 	return flag
 }
 
-const flagBaseIndex = '\U0001F1E6' - 'a'
-
 // countryCodeLetter shifts given letter byte as flagBaseIndex.
 func countryCodeLetter(l byte) string {
+	const flagBaseIndex = '\U0001F1E6' - 'a'
+
 	return string(rune(l) + flagBaseIndex)
 }
