@@ -94,16 +94,16 @@ var (
 // TextChannel will always fail if used in a direct message.
 //
 // Go type: *discord.Channel
-var TextChannel Type = new(textChannel)
+var TextChannel plugin.ArgType = new(textChannel)
 
 type textChannel struct{}
 
-func (t textChannel) Name(l *i18n.Localizer) string {
+func (t textChannel) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(textChannelName) // we have a fallback
 	return name
 }
 
-func (t textChannel) Description(l *i18n.Localizer) string {
+func (t textChannel) GetDescription(l *i18n.Localizer) string {
 	if TextChannelAllowIDs {
 		desc, err := l.Localize(textChannelDescriptionWithID)
 		if err == nil {
@@ -117,7 +117,7 @@ func (t textChannel) Description(l *i18n.Localizer) string {
 
 var textChannelMentionRegexp = regexp.MustCompile(`^<#(?P<id>\d+)>$`)
 
-func (t textChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
+func (t textChannel) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	err := restriction.ChannelTypes(plugin.GuildChannels)(s, ctx.Context)
 	if err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ func (t textChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	return c, nil
 }
 
-func (t textChannel) Default() interface{} {
+func (t textChannel) GetDefault() interface{} {
 	return (*discord.Channel)(nil)
 }
 
@@ -188,21 +188,21 @@ func (t textChannel) Default() interface{} {
 // reaction.
 //
 // Go type: *discord.Channel
-var Category Type = new(category)
+var Category plugin.ArgType = new(category)
 
 type category struct{}
 
-func (c category) Name(l *i18n.Localizer) string {
+func (c category) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(categoryName) // we have a fallback
 	return name
 }
 
-func (c category) Description(l *i18n.Localizer) string {
+func (c category) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(categoryDescription) // we have a fallback
 	return desc
 }
 
-func (c category) Parse(s *state.State, ctx *Context) (interface{}, error) {
+func (c category) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err == nil {
 		channel, err := c.handleID(s, ctx, discord.ChannelID(id))
@@ -211,6 +211,7 @@ func (c category) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		}
 	}
 
+	//goland:noinspection GoBoolExpressions
 	if !CategoryAllowSearch {
 		return nil, newArgumentError2(categoryIDInvalidErrorArg, categoryIDInvalidErrorFlag, ctx, nil)
 	}
@@ -220,7 +221,7 @@ func (c category) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 // handleID attempts to fetch the category with the passed id.
 // It returns nil, nil if no such channel exists.
-func (c category) handleID(s *state.State, ctx *Context, id discord.ChannelID) (*discord.Channel, error) {
+func (c category) handleID(s *state.State, ctx *plugin.ParseContext, id discord.ChannelID) (*discord.Channel, error) {
 	channel, err := s.Channel(id)
 	if err == nil {
 		if channel.Type != discord.GuildCategory {
@@ -248,7 +249,7 @@ type categoryMatch struct {
 // handleName attempts to find a category that matches ctx.Raw partially or
 // fully.
 // It ignores case.
-func (c category) handleName(s *state.State, ctx *Context) (*discord.Channel, error) {
+func (c category) handleName(s *state.State, ctx *plugin.ParseContext) (*discord.Channel, error) {
 	channels, err := s.Channels(ctx.GuildID)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -304,8 +305,9 @@ func (c category) handleName(s *state.State, ctx *Context) (*discord.Channel, er
 	}
 }
 
-func (c category) sendChooser( //nolint:dupl
-	s *state.State, ctx *Context, fullMatches, partialMatches []categoryMatch,
+//nolint:dupl
+func (c category) sendChooser(
+	s *state.State, ctx *plugin.ParseContext, fullMatches, partialMatches []categoryMatch,
 ) (*discord.Channel, error) {
 	chooser, numMatches, err := c.genChooserEmbed(ctx, fullMatches, partialMatches)
 	if err != nil {
@@ -349,10 +351,10 @@ func (c category) sendChooser( //nolint:dupl
 }
 
 func (c category) genChooserEmbed(
-	ctx *Context, fullMatches, partialMatches []categoryMatch,
+	ctx *plugin.ParseContext, fullMatches, partialMatches []categoryMatch,
 ) (chooser *embedutil.Builder, numMatches int, err error) {
 	chooser = CategoryChooserBuilder.Clone().
-		WithSimpleTitlel(categoryChooserTitle).
+		WithTitlel(categoryChooserTitle).
 		WithDescriptionl(categoryChooserDescription.
 			WithPlaceholders(categoryChooserDescriptionPlaceholders{
 				CancelEmoji: CategoryCancelEmoji,
@@ -431,7 +433,7 @@ func (c category) genChooserEmbed(
 	return chooser, numMatches, nil
 }
 
-func (c category) Default() interface{} {
+func (c category) GetDefault() interface{} {
 	return (*discord.Channel)(nil)
 }
 
@@ -450,21 +452,21 @@ func (c category) Default() interface{} {
 // reaction.
 //
 // Go type: *discord.Channel
-var VoiceChannel Type = new(voiceChannel)
+var VoiceChannel plugin.ArgType = new(voiceChannel)
 
 type voiceChannel struct{}
 
-func (c voiceChannel) Name(l *i18n.Localizer) string {
+func (c voiceChannel) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(voiceChannelName) // we have a fallback
 	return name
 }
 
-func (c voiceChannel) Description(l *i18n.Localizer) string {
+func (c voiceChannel) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(voiceChannelDescription) // we have a fallback
 	return desc
 }
 
-func (c voiceChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
+func (c voiceChannel) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	id, err := discord.ParseSnowflake(ctx.Raw)
 	if err == nil {
 		channel, err := c.handleID(s, ctx, discord.ChannelID(id))
@@ -473,6 +475,7 @@ func (c voiceChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		}
 	}
 
+	//goland:noinspection GoBoolExpressions
 	if !VoiceChannelAllowSearch {
 		return nil, newArgumentError2(voiceChannelIDInvalidErrorArg, voiceChannelIDInvalidErrorFlag, ctx, nil)
 	}
@@ -482,7 +485,9 @@ func (c voiceChannel) Parse(s *state.State, ctx *Context) (interface{}, error) {
 
 // handleID attempts to fetch the voice channel with the passed id.
 // It returns nil, nil if no such channel exists.
-func (c voiceChannel) handleID(s *state.State, ctx *Context, id discord.ChannelID) (*discord.Channel, error) {
+func (c voiceChannel) handleID(
+	s *state.State, ctx *plugin.ParseContext, id discord.ChannelID,
+) (*discord.Channel, error) {
 	channel, err := s.Channel(id)
 	if err == nil {
 		if channel.Type != discord.GuildVoice {
@@ -511,7 +516,7 @@ type voiceMatch struct {
 // handleName attempts to find a voice channel that matches ctx.Raw partially or
 // fully.
 // It ignores case.
-func (c voiceChannel) handleName(s *state.State, ctx *Context) (*discord.Channel, error) {
+func (c voiceChannel) handleName(s *state.State, ctx *plugin.ParseContext) (*discord.Channel, error) {
 	channels, err := s.Channels(ctx.GuildID)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -578,8 +583,9 @@ func (c voiceChannel) handleName(s *state.State, ctx *Context) (*discord.Channel
 	}
 }
 
-func (c voiceChannel) sendChooser( //nolint:dupl
-	s *state.State, ctx *Context, fullMatches, partialMatches []voiceMatch,
+//nolint:dupl
+func (c voiceChannel) sendChooser(
+	s *state.State, ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
 ) (*discord.Channel, error) {
 	chooser, numMatches, err := c.genChooserEmbed(ctx, fullMatches, partialMatches)
 	if err != nil {
@@ -622,11 +628,12 @@ func (c voiceChannel) sendChooser( //nolint:dupl
 	return partialMatches[i-len(fullMatches)].channel, nil
 }
 
-func (c voiceChannel) genChooserEmbed( //nolint:dupl,funlen
-	ctx *Context, fullMatches, partialMatches []voiceMatch,
+//nolint:dupl,funlen,gocognit
+func (c voiceChannel) genChooserEmbed(
+	ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
 ) (chooser *embedutil.Builder, numMatches int, err error) {
 	chooser = VoiceChannelChooserBuilder.Clone().
-		WithSimpleTitlel(voiceChannelChooserTitle).
+		WithTitlel(voiceChannelChooserTitle).
 		WithDescriptionl(voiceChannelChooserDescription.
 			WithPlaceholders(voiceChannelChooserDescriptionPlaceholders{
 				CancelEmoji: VoiceChannelCancelEmoji,
@@ -741,6 +748,6 @@ func findVoiceStart(c []discord.Channel) int {
 	})
 }
 
-func (c voiceChannel) Default() interface{} {
+func (c voiceChannel) GetDefault() interface{} {
 	return (*discord.Channel)(nil)
 }

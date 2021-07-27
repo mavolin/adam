@@ -23,12 +23,12 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes) error 
 		return nil
 	}
 
-	remaining := ctx.InvokedCommand.ChannelTypes & allowed
+	remaining := ctx.InvokedCommand.ChannelTypes() & allowed
 	if remaining == 0 { // no channel types remaining
 		// there is no need to prevent execution, as another restriction
 		// may permit it, still we should capture this
 		ctx.HandleErrorSilently(fmt.Errorf("restriction: need channel types %s, but command only allows %s",
-			allowed, ctx.InvokedCommand.ChannelTypes))
+			allowed, ctx.InvokedCommand.ChannelTypes()))
 
 		return plugin.DefaultFatalRestrictionError
 	}

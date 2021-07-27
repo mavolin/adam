@@ -9,7 +9,7 @@ import (
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 )
 
-// UserInfo is less sever error on the user-side.
+// UserInfo is less severe error on the user-side.
 // The error will reported to the user via a message containing a detailed
 // description of the problem.
 // It won't be logged
@@ -19,7 +19,7 @@ type UserInfo struct {
 
 var _ Error = new(UserInfo)
 
-// NewCustomUserInfo creates a new *UserInfo using the InfoEmbed as template.
+// NewCustomUserInfo creates a new *UserInfo using a NewInfoEmbed as template.
 func NewCustomUserInfo() *UserInfo {
 	return &UserInfo{Embed: NewInfoEmbed()}
 }
@@ -30,7 +30,8 @@ func NewUserInfoFromEmbed(e *embedutil.Builder) *UserInfo {
 	return &UserInfo{Embed: e}
 }
 
-// NewUserInfo creates a new *UserInfo using the passed description.
+// NewUserInfo creates a new *UserInfo using the passed description and the
+// NewInfoEmbed template.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserInfo(description string) *UserInfo {
 	return NewCustomUserInfo().
@@ -50,234 +51,168 @@ func NewUserInfolt(description i18n.Term) *UserInfo {
 	return NewUserInfol(description.AsConfig())
 }
 
-// WithSimpleTitle adds a plain title (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleTitle(title string) *UserInfo {
-	i.Embed.WithSimpleTitle(title)
+// WithTitle sets the title (max. 256 characters) to the passed title.
+func (i *UserInfo) WithTitle(title string) *UserInfo {
+	return i.WithTitlel(i18n.NewStaticConfig(title))
+}
+
+// WithTitlelt sets the title (max. 256 characters) to the passed title.
+func (i *UserInfo) WithTitlelt(title i18n.Term) *UserInfo {
+	return i.WithTitlel(title.AsConfig())
+}
+
+// WithTitlel sets the title (max. 256 characters) to the passed title.
+func (i *UserInfo) WithTitlel(title *i18n.Config) *UserInfo {
+	i.Embed.WithTitlel(title)
 	return i
 }
 
-// WithSimpleTitlel adds a plain title (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleTitlel(title *i18n.Config) *UserInfo {
-	i.Embed.WithSimpleTitlel(title)
+// WithTitleURL assigns a discord.URL to the title.
+func (i *UserInfo) WithTitleURL(url discord.URL) *UserInfo {
+	i.Embed.WithTitleURL(url)
 	return i
 }
 
-// WithSimpleTitlelt adds a plain title (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleTitlelt(title i18n.Term) *UserInfo {
-	return i.WithSimpleTitlel(title.AsConfig())
-}
-
-// WithTitle adds a title (max. 256 characters) with a link to the UserInfo.
-func (i *UserInfo) WithTitle(title string, url discord.URL) *UserInfo {
-	i.Embed.WithTitle(title, url)
-	return i
-}
-
-// WithTitlel adds a title (max. 256 characters) with a link to the UserInfo.
-func (i *UserInfo) WithTitlel(title *i18n.Config, url discord.URL) *UserInfo {
-	i.Embed.WithTitlel(title, url)
-	return i
-}
-
-// WithTitlelt adds a title (max. 256 characters) with a link to the UserInfo.
-func (i *UserInfo) WithTitlelt(title i18n.Term, url discord.URL) *UserInfo {
-	return i.WithTitlel(title.AsConfig(), url)
-}
-
-// WithDescription adds a description (max. 2048 characters) to the UserInfo.
+// WithDescription sets the description (max. 2048 characters) to the passed
+// description.
 func (i *UserInfo) WithDescription(description string) *UserInfo {
-	i.Embed.WithDescription(description)
-	return i
+	return i.WithDescriptionl(i18n.NewStaticConfig(description))
 }
 
-// WithDescriptionl adds a description (max. 2048 characters) to the UserInfo.
+// WithDescriptionlt sets the description (max. 2048 characters) to the passed
+// description.
+func (i *UserInfo) WithDescriptionlt(description i18n.Term) *UserInfo {
+	return i.WithDescriptionl(description.AsConfig())
+}
+
+// WithDescriptionl sets the description (max. 2048 characters) to the passed
+// description.
 func (i *UserInfo) WithDescriptionl(description *i18n.Config) *UserInfo {
 	i.Embed.WithDescriptionl(description)
 	return i
 }
 
-// WithDescriptionlt adds a description (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithDescriptionlt(description i18n.Term) *UserInfo {
-	return i.WithDescriptionl(description.AsConfig())
-}
-
-// WithTimestamp adds a discord.Timestamp to the UserInfo.
+// WithTimestamp sets the timestamp to the passed discord.Timestamp.
 func (i *UserInfo) WithTimestamp(timestamp discord.Timestamp) *UserInfo {
 	i.Embed.WithTimestamp(timestamp)
 	return i
 }
 
-// WithTimestampNow adds a timestamp of the current time to the UserInfo.
+// WithTimestampNow sets the timestamp to a timestamp of the current time.
 func (i *UserInfo) WithTimestampNow() *UserInfo {
 	return i.WithTimestamp(discord.NowTimestamp())
 }
 
-// WithColor sets the color of the Embed to the passed discord.Color.
+// WithColor sets the color to the passed discord.Color.
 func (i *UserInfo) WithColor(color discord.Color) *UserInfo {
 	i.Embed.WithColor(color)
 	return i
 }
 
-// WithSimpleFooter adds a plain footer (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleFooter(text string) *UserInfo {
-	i.Embed.WithSimpleFooter(text)
+// WithFooter sets the text of the footer (max. 2048 characters) to the passed
+// text.
+func (i *UserInfo) WithFooter(text string) *UserInfo {
+	return i.WithFooterl(i18n.NewStaticConfig(text))
+}
+
+// WithFooterlt sets the text of the footer (max. 2048 characters) to the
+// passed text.
+func (i *UserInfo) WithFooterlt(text i18n.Term) *UserInfo {
+	return i.WithFooterl(text.AsConfig())
+}
+
+// WithFooterl sets the text of the footer (max. 2048 characters) to the passed
+// text.
+func (i *UserInfo) WithFooterl(text *i18n.Config) *UserInfo {
+	i.Embed.WithFooterl(text)
 	return i
 }
 
-// WithSimpleFooterl adds a plain footer (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleFooterl(text *i18n.Config) *UserInfo {
-	i.Embed.WithSimpleFooterl(text)
+// WithFooterIcon sets the icon of the footer to the passed icon url.
+func (i *UserInfo) WithFooterIcon(icon discord.URL) *UserInfo {
+	i.Embed.WithFooterIcon(icon)
 	return i
 }
 
-// WithSimpleFooterlt adds a plain footer (max. 2048 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleFooterlt(text i18n.Term) *UserInfo {
-	return i.WithSimpleFooterl(text.AsConfig())
-}
-
-// WithFooter adds a footer (max. 2048 character) with an icon to the UserInfo.
-func (i *UserInfo) WithFooter(text string, icon discord.URL) *UserInfo {
-	i.Embed.WithField(text, icon)
-	return i
-}
-
-// WithFooterl adds a footer (max. 2048 character) with an icon to the UserInfo.
-func (i *UserInfo) WithFooterl(text *i18n.Config, icon discord.URL) *UserInfo {
-	i.Embed.WithFooterl(text, icon)
-	return i
-}
-
-// WithFooterlt adds a footer (max. 2048 character) with an icon to the UserInfo.
-func (i *UserInfo) WithFooterlt(text i18n.Term, icon discord.URL) *UserInfo {
-	return i.WithFooterl(text.AsConfig(), icon)
-}
-
-// WithImage adds an image to the UserInfo.
+// WithImage sets the image to the passed image url.
 func (i *UserInfo) WithImage(image discord.URL) *UserInfo {
 	i.Embed.WithImage(image)
 	return i
 }
 
-// WithThumbnail adds a thumbnail to the UserInfo.
+// WithThumbnail adds a thumbnail to the error.
 func (i *UserInfo) WithThumbnail(thumbnail discord.URL) *UserInfo {
 	i.Embed.WithThumbnail(thumbnail)
 	return i
 }
 
-// WithSimpleAuthor adds a plain author (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleAuthor(name string) *UserInfo {
-	i.Embed.WithSimpleAuthor(name)
+// WithAuthor sets the author's name (max. 256 characters) to the passed
+// name.
+func (i *UserInfo) WithAuthor(name string) *UserInfo {
+	return i.WithAuthorl(i18n.NewStaticConfig(name))
+}
+
+// WithAuthorlt sets the author's name (max. 256 characters) to the passed
+// name.
+func (i *UserInfo) WithAuthorlt(name i18n.Term) *UserInfo {
+	return i.WithAuthorl(name.AsConfig())
+}
+
+// WithAuthorl sets the author's name (max. 256 characters) to the passed
+// name.
+func (i *UserInfo) WithAuthorl(name *i18n.Config) *UserInfo {
+	i.Embed.WithAuthorl(name)
 	return i
 }
 
-// WithSimpleAuthorl adds a plain author (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleAuthorl(name *i18n.Config) *UserInfo {
-	i.Embed.WithSimpleAuthorl(name)
+// WithAuthorURL assigns the author the passed discord.URL.
+func (i *UserInfo) WithAuthorURL(url discord.URL) *UserInfo {
+	i.Embed.WithAuthorURL(url)
 	return i
 }
 
-// WithSimpleAuthorlt adds a plain author (max. 256 characters) to the UserInfo.
-func (i *UserInfo) WithSimpleAuthorlt(name i18n.Term) *UserInfo {
-	return i.WithSimpleAuthorl(name.AsConfig())
-}
-
-// WithSimpleAuthorWithURL adds an author (max. 256 character) with a URL to
-// the Embed.
-func (i *UserInfo) WithSimpleAuthorWithURL(name string, url discord.URL) *UserInfo {
-	i.Embed.WithSimpleAuthorWithURL(name, url)
+// WithAuthorIcon sets the icon of the author to the passed icon url.
+func (i *UserInfo) WithAuthorIcon(icon discord.URL) *UserInfo {
+	i.Embed.WithAuthorIcon(icon)
 	return i
 }
 
-// WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
-// the Embed.
-func (i *UserInfo) WithSimpleAuthorWithURLl(name *i18n.Config, url discord.URL) *UserInfo {
-	i.Embed.WithSimpleAuthorWithURLl(name, url)
-	return i
-}
-
-// WithSimpleAuthorWithURLlt adds an author (max. 256 character) with a URL to
-// the Embed.
-func (i *UserInfo) WithSimpleAuthorWithURLlt(name i18n.Term, url discord.URL) *UserInfo {
-	return i.WithSimpleAuthorWithURLl(name.AsConfig(), url)
-}
-
-// WithAuthor adds an author (max 256 characters) with an icon to the UserInfo.
-func (i *UserInfo) WithAuthor(name string, icon discord.URL) *UserInfo {
-	i.Embed.WithAuthor(name, icon)
-	return i
-}
-
-// WithAuthorl adds an author (max 256 characters) with an icon to the UserInfo.
-func (i *UserInfo) WithAuthorl(name *i18n.Config, icon discord.URL) *UserInfo {
-	i.Embed.WithAuthorl(name, icon)
-	return i
-}
-
-// WithAuthorlt adds an author (max 256 characters) with an icon to the UserInfo.
-func (i *UserInfo) WithAuthorlt(name i18n.Term, icon discord.URL) *UserInfo {
-	return i.WithAuthorl(name.AsConfig(), icon)
-}
-
-// WithAuthorWithURL adds an author (max 256 characters) with an icon and a URL
-// to the UserInfo.
-func (i *UserInfo) WithAuthorWithURL(name string, icon, url discord.URL) *UserInfo {
-	i.Embed.WithAuthorWithURL(name, icon, url)
-	return i
-}
-
-// WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
-// URL to the UserInfo.
-func (i *UserInfo) WithAuthorWithURLl(name *i18n.Config, icon, url discord.URL) *UserInfo {
-	i.Embed.WithAuthorWithURLl(name, icon, url)
-	return i
-}
-
-// WithAuthorWithURLlt adds an author (max 256 characters) with an icon and a
-// URL to the UserInfo.
-func (i *UserInfo) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *UserInfo {
-	return i.WithAuthorWithURLl(name.AsConfig(), icon, url)
-}
-
-// WithField adds the passed field to the UserInfo, and returns a pointer to
-// the UserInfo to allow chaining.
+// WithField adds a field (name: max. 256 characters, value: max 1024
+// characters) to the embed.
 func (i *UserInfo) WithField(name, value string) *UserInfo {
-	i.Embed.WithField(name, value)
-	return i
+	return i.WithFieldl(i18n.NewStaticConfig(name), i18n.NewStaticConfig(value))
 }
 
-// WithFieldl adds the passed field to the UserInfo, and returns a pointer to
-// the UserInfo to allow chaining.
+// WithFieldlt adds a field (name: max. 256 characters, value: max 1024
+// characters) to the embed.
+func (i *UserInfo) WithFieldlt(name, value i18n.Term) *UserInfo {
+	return i.WithFieldl(name.AsConfig(), value.AsConfig())
+}
+
+// WithFieldl adds a field (name: max. 256 characters, value: max 1024
+// characters) to the embed.
 func (i *UserInfo) WithFieldl(name, value *i18n.Config) *UserInfo {
 	i.Embed.WithFieldl(name, value)
 	return i
 }
 
-// WithFieldlt adds the passed field to the UserInfo, and returns a pointer to
-// the UserInfo to allow chaining.
-// Name or value may be empty, in which case the field won't have a name or
-// value.
-func (i *UserInfo) WithFieldlt(name, value i18n.Term) *UserInfo {
+// WithInlinedField adds an inlined field (name: max. 256 characters, value:
+// max 1024 characters) to the embed.
+func (i *UserInfo) WithInlinedField(name, value string) *UserInfo {
+	return i.WithInlinedFieldl(i18n.NewStaticConfig(name), i18n.NewStaticConfig(value))
+}
+
+// WithInlinedFieldlt adds an inlined field (name: max. 256 characters,
+// value: max 1024 characters) to the embed.
+func (i *UserInfo) WithInlinedFieldlt(name, value i18n.Term) *UserInfo {
 	return i.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
-// WithInlinedField adds the passed inlined field to the UserInfo, and returns
-// a pointer to the UserInfo to allow chaining.
-func (i *UserInfo) WithInlinedField(name, value string) *UserInfo {
-	i.Embed.WithInlinedField(name, value)
-	return i
-}
-
-// WithInlinedFieldl adds the passed inlined field to the UserInfo, and returns
-// a pointer to the UserInfo to allow chaining.
+// WithInlinedFieldl adds an inlined field (name: max. 256 characters,
+// value: max 1024 characters) to the embed.
 func (i *UserInfo) WithInlinedFieldl(name, value *i18n.Config) *UserInfo {
 	i.Embed.WithInlinedFieldl(name, value)
 	return i
-}
-
-// WithInlinedFieldlt adds the passed inlined field to the UserInfo, and
-// returns a pointer to the UserInfo to allow chaining.
-func (i *UserInfo) WithInlinedFieldlt(name, value i18n.Term) *UserInfo {
-	return i.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
 func (i *UserInfo) Error() string { return "user info" }

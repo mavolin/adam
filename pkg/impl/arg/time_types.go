@@ -7,6 +7,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/duration"
 )
 
@@ -48,19 +49,19 @@ type Duration struct {
 	Max time.Duration
 }
 
-var SimpleDuration Type = new(Duration)
+var SimpleDuration plugin.ArgType = new(Duration)
 
-func (d Duration) Name(l *i18n.Localizer) string {
+func (d Duration) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(durationName) // we have a fallback
 	return name
 }
 
-func (d Duration) Description(l *i18n.Localizer) string {
+func (d Duration) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(durationDescription) // we have a fallback
 	return desc
 }
 
-func (d Duration) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (d Duration) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	parsed, err := duration.Parse(ctx.Raw)
 
 	var perr *duration.ParseError
@@ -96,7 +97,7 @@ func (d Duration) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return parsed, nil
 }
 
-func (d Duration) Default() interface{} {
+func (d Duration) GetDefault() interface{} {
 	return time.Duration(0)
 }
 
@@ -122,14 +123,14 @@ type Time struct {
 }
 
 // SimpleTime is a Time with no bounds.
-var SimpleTime Type = new(Time)
+var SimpleTime plugin.ArgType = new(Time)
 
-func (t Time) Name(l *i18n.Localizer) string {
+func (t Time) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(timeName) // we have a fallback
 	return name
 }
 
-func (t Time) Description(l *i18n.Localizer) (desc string) {
+func (t Time) GetDescription(l *i18n.Localizer) (desc string) {
 	if LocationKey == nil && DefaultLocation == nil {
 		desc, _ = l.Localize(timeDescriptionMustUTC) // we have a fallback
 	} else {
@@ -144,7 +145,8 @@ var (
 	timeFormatWithTZ = "15:04 -0700"
 )
 
-func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl // errors differ
+//nolint:dupl
+func (t Time) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	var (
 		parsed time.Time
 		err    error
@@ -183,7 +185,7 @@ func (t Time) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolin
 	return parsed, nil
 }
 
-func (t Time) Default() interface{} {
+func (t Time) GetDefault() interface{} {
 	return time.Time{}
 }
 
@@ -222,17 +224,17 @@ type Date struct {
 var (
 	// SimpleDate is a Date with no bounds that doesn't require timezone
 	// information.
-	SimpleDate Type = new(Date)
+	SimpleDate plugin.ArgType = new(Date)
 	// DateWithTZ is a Date with no bounds that requires timezone information.
-	DateWithTZ Type = &Date{NoIgnoreTimeZone: true}
+	DateWithTZ plugin.ArgType = &Date{NoIgnoreTimeZone: true}
 )
 
-func (d Date) Name(l *i18n.Localizer) string {
+func (d Date) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(dateName) // we have a fallback
 	return name
 }
 
-func (d Date) Description(l *i18n.Localizer) (desc string) {
+func (d Date) GetDescription(l *i18n.Localizer) (desc string) {
 	if LocationKey == nil && DefaultLocation == nil && d.NoIgnoreTimeZone {
 		desc, _ = l.Localize(dateDescriptionMustUTC) // we have a fallback
 	} else {
@@ -247,7 +249,7 @@ var (
 	dateFormatWithTZ = "2006-01-02 -0700"
 )
 
-func (d Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (d Date) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	var (
 		parsed time.Time
 		err    error
@@ -297,7 +299,7 @@ func (d Date) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return parsed, nil
 }
 
-func (d Date) Default() interface{} {
+func (d Date) GetDefault() interface{} {
 	return time.Time{}
 }
 
@@ -322,14 +324,14 @@ type DateTime struct {
 }
 
 // SimpleDateTime is a DateTime with no bounds
-var SimpleDateTime Type = new(DateTime)
+var SimpleDateTime plugin.ArgType = new(DateTime)
 
-func (t DateTime) Name(l *i18n.Localizer) string {
+func (t DateTime) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(dateTimeName) // we have a fallback
 	return name
 }
 
-func (t DateTime) Description(l *i18n.Localizer) (desc string) {
+func (t DateTime) GetDescription(l *i18n.Localizer) (desc string) {
 	if LocationKey == nil && DefaultLocation == nil {
 		desc, _ = l.Localize(dateTimeDescriptionMustUTC) // we have a fallback
 	} else {
@@ -344,7 +346,8 @@ var (
 	dateTimeFormatWithTZ = "2006-01-02 15:04 -0700"
 )
 
-func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl // errors differ
+//nolint:dupl
+func (t DateTime) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	var (
 		parsed time.Time
 		err    error
@@ -383,7 +386,7 @@ func (t DateTime) Parse(_ *state.State, ctx *Context) (interface{}, error) { //n
 	return parsed, nil
 }
 
-func (t DateTime) Default() interface{} {
+func (t DateTime) GetDefault() interface{} {
 	return time.Time{}
 }
 
@@ -400,21 +403,21 @@ func (t DateTime) Default() interface{} {
 // executable.
 //
 // Go type: *time.Location
-var TimeZone Type = new(timeZone)
+var TimeZone plugin.ArgType = new(timeZone)
 
 type timeZone struct{}
 
-func (z timeZone) Name(l *i18n.Localizer) string {
+func (z timeZone) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(timeZoneName) // we have a fallback
 	return name
 }
 
-func (z timeZone) Description(l *i18n.Localizer) string {
+func (z timeZone) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(timeZoneDescription) // we have a fallback
 	return desc
 }
 
-func (z timeZone) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (z timeZone) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	parsed, err := time.LoadLocation(ctx.Raw)
 	if err != nil {
 		return nil, newArgumentError(timeZoneInvalidError, ctx, nil)
@@ -423,7 +426,7 @@ func (z timeZone) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return parsed, nil
 }
 
-func (z timeZone) Default() interface{} {
+func (z timeZone) GetDefault() interface{} {
 	return (*time.Location)(nil)
 }
 
@@ -431,7 +434,7 @@ func (z timeZone) Default() interface{} {
 // Helpers
 // =====================================================================================
 
-func location(ctx *Context) *time.Location {
+func location(ctx *plugin.ParseContext) *time.Location {
 	l := DefaultLocation
 
 	if LocationKey != nil {

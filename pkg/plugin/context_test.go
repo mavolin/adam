@@ -180,17 +180,18 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 	defer m.Eval()
 
 	ctx := &Context{
-		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Message:   discord.Message{ChannelID: 123},
+		Replier:   replierFromState(s, 123, 0),
+		Localizer: newMockedLocalizer(t).build(),
 	}
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
-	embed := builder.MustBuild(nil)
+	embed := builder.MustBuild(ctx.Localizer)
 	embed.Type = discord.NormalEmbed
 
 	expect := &discord.Message{
@@ -425,16 +426,17 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier:   replierFromState(s, 0, 123),
+		Localizer: newMockedLocalizer(t).build(),
 	}
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
-	embed := builder.MustBuild(nil)
+	embed := builder.MustBuild(ctx.Localizer)
 	embed.Type = discord.NormalEmbed
 
 	var channelID discord.ChannelID = 456
@@ -635,17 +637,18 @@ func TestContext_EditEmbedBuilder(t *testing.T) {
 	defer m.Eval()
 
 	ctx := &Context{
-		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Message:   discord.Message{ChannelID: 123},
+		Replier:   replierFromState(s, 123, 0),
+		Localizer: newMockedLocalizer(t).build(),
 	}
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
-	embed := builder.MustBuild(nil)
+	embed := builder.MustBuild(ctx.Localizer)
 	embed.Type = discord.NormalEmbed
 
 	expect := &discord.Message{
@@ -880,16 +883,17 @@ func TestContext_EditEmbedBuilderDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier:   replierFromState(s, 0, 123),
+		Localizer: newMockedLocalizer(t).build(),
 	}
 
 	builder := embedutil.
 		NewBuilder().
-		WithSimpleTitle("abc").
+		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
 
-	embed := builder.MustBuild(nil)
+	embed := builder.MustBuild(ctx.Localizer)
 	embed.Type = discord.NormalEmbed
 
 	var channelID discord.ChannelID = 456

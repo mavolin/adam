@@ -11,6 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/mavolin/disstate/v3/pkg/state"
 
+	"github.com/mavolin/adam/internal/resolved"
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -22,9 +23,7 @@ type Bot struct {
 	MiddlewareManager
 	postMiddlewares MiddlewareManager
 
-	commands        []plugin.Command
-	modules         []plugin.Module
-	pluginProviders []*pluginProvider
+	pluginResolver *resolved.PluginResolver
 
 	selfID            discord.UserID
 	selfMentionRegexp *regexp.Regexp
@@ -33,38 +32,34 @@ type Bot struct {
 
 	SettingsProvider SettingsProvider
 	Owners           []discord.UserID
-	EditAge          time.Duration
+
+	EditAge time.Duration
 
 	AllowBot bool
+	autoOpen bool
 
-	autoOpen        bool
 	autoAddHandlers bool
 
-	AsyncPluginProviders bool
-
 	ThrottlerCancelChecker func(error) bool
+	ErrorHandler           func(error, *state.State, *plugin.Context)
 
-	ErrorHandler func(error, *state.State, *plugin.Context)
-	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
-
+	PanicHandler             func(recovered interface{}, s *state.State, ctx *plugin.Context)
 	MessageCreateMiddlewares []interface{}
 	MessageUpdateMiddlewares []interface{}
 }
 
-type pluginProvider struct {
-	name     string
-	provider PluginProvider
-}
-
-// PluginProvider is the function used by plugin providers.
+// A PluginSourceFunc is the function used to retrieve additional plugins from
+// other sources only available at runtime.
+// A typical example for this would be custom commands or tags.
+//
 // PluginProviders will be called in the order they were added to a Bot, until
 // one of the returns a matching plugin.
 //
 // If there are no plugins to return, all return values should be nil.
 // If there is an error the returned plugins will be discarded, and the error
 // will be noted in the Context of the command, available via
-// Context.UnavailablePluginProviders().
-type PluginProvider func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error)
+// Context.UnavailablePluginSource().
+type PluginSourceFunc = resolved.PluginSourceFunc
 
 // New creates a new Bot from the passed options.
 // The Options.Token field must be set.
@@ -97,6 +92,14 @@ func New(o Options) (*Bot, error) {
 	b.State.ErrorHandler = o.StateErrorHandler
 	b.State.PanicHandler = o.StatePanicHandler
 
+	self, err := b.State.Me()
+	if err != nil {
+		return nil, err
+	}
+
+	b.selfID = self.ID
+	b.selfMentionRegexp = regexp.MustCompile("^<@!?" + self.ID.String() + ">")
+
 	b.SettingsProvider = o.SettingsProvider
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
@@ -104,9 +107,10 @@ func New(o Options) (*Bot, error) {
 	b.autoOpen = !o.NoAutoOpen
 	b.autoAddHandlers = o.AutoAddHandlers
 	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
-	b.AsyncPluginProviders = o.AsyncPluginProviders
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
+
+	b.pluginResolver = resolved.NewPluginResolver(o.ArgParser)
 
 	if !o.NoDefaultMiddlewares {
 		b.MustAddMiddleware(CheckChannelTypes)
@@ -115,6 +119,7 @@ func New(o Options) (*Bot, error) {
 
 		b.MustAddPostMiddleware(CheckRestrictions)
 		b.MustAddPostMiddleware(ParseArgs)
+		b.MustAddPostMiddleware(InvokeCommand)
 	}
 
 	return b, nil
@@ -138,27 +143,18 @@ func (b *Bot) Open() error {
 	}
 
 	if b.autoOpen {
-		for _, cmd := range b.commands {
+		for _, cmd := range b.pluginResolver.Commands {
 			if err := b.callOpen(cmd); err != nil {
 				return err
 			}
 		}
 
-		for _, mod := range b.modules {
+		for _, mod := range b.pluginResolver.Modules {
 			if err := b.openModule(mod); err != nil {
 				return err
 			}
 		}
 	}
-
-	done := make(chan struct{})
-
-	b.State.MustAddHandlerOnce(func(_ *state.State, r *state.ReadyEvent) {
-		b.selfID = r.User.ID
-		b.selfMentionRegexp = regexp.MustCompile("^<@!?" + r.User.ID.String() + ">")
-
-		done <- struct{}{}
-	})
 
 	_, err := b.State.AddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
 		b.Route(e.Base, &e.Message, e.Member)
@@ -182,8 +178,6 @@ func (b *Bot) Open() error {
 		return err
 	}
 
-	<-done
-
 	return nil
 }
 
@@ -194,7 +188,7 @@ func (b *Bot) openModule(mod plugin.Module) error {
 		}
 	}
 
-	for _, mod := range mod.Modules() {
+	for _, mod = range mod.Modules() {
 		if err := b.openModule(mod); err != nil {
 			return err
 		}
@@ -236,13 +230,13 @@ func (b *Bot) Close() error {
 		return nil
 	}
 
-	for _, cmd := range b.commands {
+	for _, cmd := range b.pluginResolver.Commands {
 		if err := b.callClose(cmd); err != nil {
 			return err
 		}
 	}
 
-	for _, mod := range b.modules {
+	for _, mod := range b.pluginResolver.Modules {
 		if err := b.closeModule(mod); err != nil {
 			return err
 		}
@@ -258,7 +252,7 @@ func (b *Bot) closeModule(mod plugin.Module) error {
 		}
 	}
 
-	for _, mod := range mod.Modules() {
+	for _, mod = range mod.Modules() {
 		if err := b.closeModule(mod); err != nil {
 			return err
 		}
@@ -298,10 +292,10 @@ func (b *Bot) AddIntents(i gateway.Intents) {
 // If automatic handler adding is enabled, all methods of the Command
 // representing a handler func will be added to the State's event handler.
 func (b *Bot) AddCommand(cmd plugin.Command) {
-	b.commands = append(b.commands, cmd)
+	b.pluginResolver.AddBuiltInCommand(cmd)
 
 	if b.autoAddHandlers {
-		b.State.AutoAddHandlers(b.commands)
+		b.State.AutoAddHandlers(cmd)
 	}
 }
 
@@ -311,7 +305,7 @@ func (b *Bot) AddCommand(cmd plugin.Command) {
 // representing a handler func will be added to the State's event handler.
 // The same goes for all sub-modules and sub-commands of the module.
 func (b *Bot) AddModule(mod plugin.Module) {
-	b.modules = append(b.modules, mod)
+	b.pluginResolver.AddBuiltInModule(mod)
 
 	if b.autoAddHandlers {
 		b.autoAddModuleHandlers(mod)
@@ -356,35 +350,26 @@ func (b *Bot) MustAddPostMiddleware(f interface{}) {
 	b.postMiddlewares.MustAddMiddleware(f)
 }
 
-// AddPluginProvider adds the passed PluginProvider under the passed name.
+// AddPluginSource adds the passed PluginSourceFunc under the passed name.
 // The is similar name to a key and can be used later on to distinguish between
-// different plugin providers.
+// different plugin sources.
 // It is typically snake_case.
 //
-// 'built_in' is reserved for built-in plugins, and AddPluginProvider will
-// panic if attempting to use it.
+// 'built_in' is reserved for built-in plugins, and AddPluginSource will panic
+// if attempting to use it.
 //
-// If there is another plugin provider with the passed name, it will be removed
+// If there is another plugin source with the passed name, it will be removed
 // first.
 //
-// The plugin providers will be used in the order they are added in.
-func (b *Bot) AddPluginProvider(name string, p PluginProvider) {
-	if p == nil {
+// The plugin sources will be used in the order they are added in.
+func (b *Bot) AddPluginSource(name string, f PluginSourceFunc) {
+	if f == nil {
 		return
 	}
 
-	if name == plugin.BuiltInProvider {
-		panic("you cannot use " + plugin.BuiltInProvider + " as plugin provider")
+	if name == plugin.BuiltInSource {
+		panic("you cannot use " + plugin.BuiltInSource + " as plugin provider")
 	}
 
-	for i, rp := range b.pluginProviders {
-		if rp.name == name {
-			b.pluginProviders = append(b.pluginProviders[:i], b.pluginProviders[i+1:]...)
-		}
-	}
-
-	b.pluginProviders = append(b.pluginProviders, &pluginProvider{
-		name:     name,
-		provider: p,
-	})
+	b.pluginResolver.AddSource(name, f)
 }

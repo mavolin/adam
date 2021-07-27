@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -10,6 +11,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/internal/errorutil"
+	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
@@ -20,23 +22,24 @@ import (
 type Context struct {
 	// Message is the invoking message.
 	discord.Message
-	// Member is the invoking member, if this happened in a guild.
+	// Member is the invoking member, or nil if the command was invoked in a
+	// direct message.
 	*discord.Member
 
-	// Base is the Base MessageCreateEvent or MessageUpdateEvent that triggered
-	// the invoke.
+	// Base is the *state.Base of the MessageCreateEvent or MessageUpdateEvent
+	// that triggered the invoke.
 	*state.Base
 
-	// Localizer is the localizer set to the guilds language.
+	// Localizer is the localizer set to the guild's or user's language.
 	*i18n.Localizer
 
-	// RawArgs are the trimmed raw arguments stripped of prefix and invoke.
-	RawArgs string
-	// ArgCombinationID is the id of the argument combination that was used.
-	//
-	// This can be used to deduce the type of the arguments, if the command was
-	// overloaded, for example using arg.Options.
-	ArgCombinationID string
+	// InvokeIndex is the starting index of the invoke as found in Content.
+	// The invoke ends at ArgsIndex-1 and will be trailed by whitespace
+	// (' ', '\n').
+	InvokeIndex int
+	// ArgsIndex is the starting index of the argument as found in Content.
+	ArgsIndex int
+
 	// Args contains the arguments supplied to the bot.
 	// They are guaranteed to be valid and parsed according to the type spec.
 	Args Args
@@ -45,20 +48,31 @@ type Context struct {
 	Flags Flags
 
 	// InvokedCommand is the ResolvedCommand that is being invoked.
-	InvokedCommand *ResolvedCommand
+	InvokedCommand ResolvedCommand
 
-	// Prefixes contains the prefixes of the bot in the guild.
-	// Length may be 0, if the guild allows the use of mentions only.
+	// Prefixes contains the prefixes of the bot as defined for the invoking
+	// guild or user.
+	// Prefixes does not include the bot's mention, which is always a valid
+	// prefix.
+	// This also means that Prefixes may be empty, in which case the command
+	// was invoked used the bot's mention.
+	//
+	// Note that direct messages do not require prefixes.
+	// However, the bot's mention or any other prefix returned by the bot's
+	// bot.SettingsProvider (as stored in this variable), will be stripped if
+	// the message starts with such.
 	Prefixes []string
 
-	// BotOwnerIDs contains the ids of the bot owners.
+	// BotOwnerIDs contains the ids of the bot owners, as defined in the bot's
+	// bot.Options.
 	BotOwnerIDs []discord.UserID
 
 	// Replier is the interface used to send replies to a command.
+	//
 	// Defaults to replier.WrapState, as found in impl/replier.
 	Replier Replier
 
-	// Provider is an embedded interface that provides access to the Commands
+	// Provider is an embedded interface that provides access to the commands
 	// and Modules of the Bot, as well as the runtime commands and modules
 	// for the guild.
 	Provider
@@ -67,8 +81,10 @@ type Context struct {
 	// capabilities to the command.
 	ErrorHandler
 
-	// DiscordDataProvider is an embedded interface that provides additional
-	// data fetched from Discord's API.
+	// DiscordDataProvider is an embedded interface that gives direct access to
+	// common data types needed during execution.
+	// It's asynchronous methods are supplemented by blocking methods provided
+	// by the context.
 	DiscordDataProvider
 }
 
@@ -81,6 +97,22 @@ func (ctx *Context) IsBotOwner() bool {
 	}
 
 	return false
+}
+
+// UsedPrefix returns the prefix used to invoke the command.
+func (ctx *Context) UsedPrefix() string {
+	return strings.TrimRight(ctx.Content[:ctx.InvokeIndex], shared.Whitespace)
+}
+
+// RawInvoke returns the raw invoke stripped of prefix and args, as the user
+// typed it.
+func (ctx *Context) RawInvoke() string {
+	return strings.TrimRight(ctx.Content[ctx.InvokeIndex:ctx.ArgsIndex], shared.Whitespace)
+}
+
+// RawArgs returns the raw arguments, as the user typed them.
+func (ctx *Context) RawArgs() string {
+	return ctx.Content[ctx.ArgsIndex:]
 }
 
 // Reply replies with the passed message in the channel the command was
@@ -434,29 +466,29 @@ type (
 	//
 	// Copies are only created on call of one of the methods.
 	Provider interface {
-		// PluginRepositories returns plugin repositories containing all
-		// commands and modules of the bot.
-		// Repositories[0] contains the built-in plugins of the bot, and is
-		// named 'built_in'.
+		// PluginSources returns a slice of Sources containing all commands and
+		// modules of the bot.
+		// PluginSources()[0] contains the built-in plugins of the bot, and is
+		// named BuiltInSource.
 		//
-		// To check if any runtime plugin providers returned an error, call
-		// UnavailablePluginProviders.
-		PluginRepositories() []Repository
+		// To check if any runtime plugin sources returned an error, call
+		// UnavailablePluginSources.
+		PluginSources() []Source
 
 		// Commands returns all top-level commands sorted in ascending order by
 		// name.
 		//
-		// To check if any of the plugin providers returned an error, call
+		// To check if any of the plugin sources returned an error, call
 		// UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
-		Commands() []*ResolvedCommand
+		Commands() []ResolvedCommand
 		// Modules returns all top-level modules sorted in ascending order by
 		// name.
 		//
-		// To check if any of the plugin providers returned an error, call
+		// To check if any of the plugin sources returned an error, call
 		// UnavailablePluginProviders.
 		// If that is the case, the data returned might be incomplete.
-		Modules() []*ResolvedModule
+		Modules() []ResolvedModule
 
 		// Command returns the ResolvedCommand with the passed ID.
 		//
@@ -465,68 +497,73 @@ type (
 		//
 		// It will return nil if no command matching the identifier was found.
 		//
-		// To check if any of the runtime plugin providers returned an error,
+		// To check if any of the runtime plugin sources returned an error,
 		// call UnavailablePluginProviders.
-		Command(ID) *ResolvedCommand
+		Command(ID) ResolvedCommand
 		// Module returns the ResolvedModule with the passed ID.
 		//
 		// It will return nil if no module matching the identifier was found.
 		//
-		// To check if any of the plugin providers returned an error, call
+		// To check if any of the plugin sources returned an error, call
 		// UnavailablePluginProviders.
 		// If that is the case, the module's description might not be available
-		// or differ from the description that is used if all plugin providers
+		// or differ from the description that is used if all plugin sources
 		// function properly.
-		Module(ID) *ResolvedModule
+		Module(ID) ResolvedModule
 
 		// FindCommand returns the ResolvedCommand with the passed invoke.
 		//
 		// It will return nil if no command matching the passed invoke was
 		// found.
 		//
-		// To check if any of the plugin providers returned an error, call
+		// To check if any of the plugin sources returned an error, call
 		// UnavailablePluginProviders.
-		FindCommand(invoke string) *ResolvedCommand
+		FindCommand(invoke string) ResolvedCommand
+		// FindCommandWithArgs is the same as FindCommand, but allows invoke
+		// to contain trailing arguments.
+		//
+		// If a command is found, it is returned alongside the arguments.
+		// Otherwise (nil, "") will be returned.
+		FindCommandWithArgs(invoke string) (cmd ResolvedCommand, args string)
 		// FindModule returns the ResolvedModule with the passed invoke.
 		//
 		// It will return nil if no module matching the passed invoke was
 		// found.
 		//
-		// To check if any of the plugin providers returned an error, call
+		// To check if any of the plugin sources returned an error, call
 		// UnavailablePluginProviders.
 		// If that is the case, the module's description might not be available
-		// or differ from the description that is used if all plugin providers
+		// or differ from the description that is used if all plugin sources
 		// function properly.
-		FindModule(invoke string) *ResolvedModule
+		FindModule(invoke string) ResolvedModule
 
-		// UnavailablePluginProviders returns a list of all unavailable runtime
-		// plugin providers.
+		// UnavailablePluginSources returns a list of all unavailable plugin
+		// sources.
 		// If no runtime plugins were requested yet, it will request them and
 		// return the list of unavailable ones.
 		//
-		// If the length of the returned slice is 0, all plugin providers are
+		// If the length of the returned slice is 0, all plugin sources are
 		// available.
-		UnavailablePluginProviders() []UnavailablePluginProvider
+		UnavailablePluginSources() []UnavailablePluginSource
 	}
 
-	// Repository is the struct returned by Provider.PluginRepositories.
+	// Source is the struct returned by Provider.PluginSources.
 	// It contains the top-level plugins of a single repository.
-	Repository struct {
-		// ProviderName is the name of the bot.PluginProvider that provides
-		// these plugins.
-		ProviderName string
+	Source struct {
+		// Name is the name of the source that provides these plugins.
+		Name string
 		// Commands are the top-level commands of the repository.
 		Commands []Command
 		// Modules are the top-level modules of the repository.
 		Modules []Module
 	}
 
-	// UnavailablePluginProvider contains information about an unavailable
-	// plugin provider.
-	UnavailablePluginProvider struct {
-		// Name is the name of the plugin provider.
+	// UnavailablePluginSource contains information about an unavailable
+	// plugin sources.
+	UnavailablePluginSource struct {
+		// Name is the name of the plugin source.
 		Name string
-		// Error is the error returned by the plugin provider.
+		// Error is the error returned by the plugin source.
 		Error error
 	}
 

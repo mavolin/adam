@@ -10,16 +10,16 @@ import (
 )
 
 // UserError is an error on the user-side.
-// The user will reported via a message containing a detailed description of
-// the problem.
-// The error won't be logged.
+// The error will be reported via a message containing a detailed description
+// of the problem.
+// It won't be logged.
 type UserError struct {
 	Embed *embedutil.Builder
 }
 
 var _ Error = new(UserError)
 
-// NewCustomUserError creates a new *UserError using the ErrorEmbed as a
+// NewCustomUserError creates a new *UserError using a NewErrorEmbed as a
 // template.
 func NewCustomUserError() *UserError {
 	return &UserError{Embed: NewErrorEmbed()}
@@ -31,7 +31,8 @@ func NewUserErrorFromEmbed(e *embedutil.Builder) *UserError {
 	return &UserError{Embed: e}
 }
 
-// NewUserError creates a new *UserError with the passed description.
+// NewUserError creates a new *UserError with the passed description using a
+// NewErrorEmbed as template.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserError(description string) *UserError {
 	return NewCustomUserError().
@@ -51,109 +52,90 @@ func NewUserErrorlt(description i18n.Term) *UserError {
 	return NewUserErrorl(description.AsConfig())
 }
 
-// WithSimpleTitle adds a plain title (max. 256 characters) to the error.
-func (e *UserError) WithSimpleTitle(title string) *UserError {
-	e.Embed.WithSimpleTitle(title)
+// WithTitle sets the title (max. 256 characters) to the passed title.
+func (e *UserError) WithTitle(title string) *UserError {
+	return e.WithTitlel(i18n.NewStaticConfig(title))
+}
+
+// WithTitlelt sets the title (max. 256 characters) to the passed title.
+func (e *UserError) WithTitlelt(title i18n.Term) *UserError {
+	return e.WithTitlel(title.AsConfig())
+}
+
+// WithTitlel sets the title (max. 256 characters) to the passed title.
+func (e *UserError) WithTitlel(title *i18n.Config) *UserError {
+	e.Embed.WithTitlel(title)
 	return e
 }
 
-// WithSimpleTitlel adds a plain title (max. 256 characters) to the error.
-func (e *UserError) WithSimpleTitlel(title *i18n.Config) *UserError {
-	e.Embed.WithSimpleTitlel(title)
+// WithTitleURL assigns a discord.URL to the title.
+func (e *UserError) WithTitleURL(url discord.URL) *UserError {
+	e.Embed.WithTitleURL(url)
 	return e
 }
 
-// WithSimpleTitlelt adds a plain title (max. 256 characters) to the error.
-func (e *UserError) WithSimpleTitlelt(title i18n.Term) *UserError {
-	return e.WithSimpleTitlel(title.AsConfig())
-}
-
-// WithTitle adds a title (max. 256 characters) with a link to the error.
-func (e *UserError) WithTitle(title string, url discord.URL) *UserError {
-	e.Embed.WithTitle(title, url)
-	return e
-}
-
-// WithTitlel adds a title (max. 256 characters) with a link to the error.
-func (e *UserError) WithTitlel(title *i18n.Config, url discord.URL) *UserError {
-	e.Embed.WithTitlel(title, url)
-	return e
-}
-
-// WithTitlelt adds a title (max. 256 characters) with a link to the error.
-func (e *UserError) WithTitlelt(title i18n.Term, url discord.URL) *UserError {
-	return e.WithTitlel(title.AsConfig(), url)
-}
-
-// WithDescription adds a description (max. 2048 characters) to the error.
+// WithDescription sets the description (max. 2048 characters) to the passed
+// description.
 func (e *UserError) WithDescription(description string) *UserError {
-	e.Embed.WithDescription(description)
-	return e
+	return e.WithDescriptionl(i18n.NewStaticConfig(description))
 }
 
-// WithDescriptionl adds a description (max. 2048 characters) to the error.
+// WithDescriptionlt sets the description (max. 2048 characters) to the passed
+// description.
+func (e *UserError) WithDescriptionlt(description i18n.Term) *UserError {
+	return e.WithDescriptionl(description.AsConfig())
+}
+
+// WithDescriptionl sets the description (max. 2048 characters) to the passed
+// description.
 func (e *UserError) WithDescriptionl(description *i18n.Config) *UserError {
 	e.Embed.WithDescriptionl(description)
 	return e
 }
 
-// WithDescriptionlt adds a description (max. 2048 characters) to the error.
-func (e *UserError) WithDescriptionlt(description i18n.Term) *UserError {
-	return e.WithDescriptionl(description.AsConfig())
-}
-
-// WithTimestamp adds a discord.Timestamp to the error.
+// WithTimestamp sets the timestamp to the passed discord.Timestamp.
 func (e *UserError) WithTimestamp(timestamp discord.Timestamp) *UserError {
 	e.Embed.WithTimestamp(timestamp)
 	return e
 }
 
-// WithTimestampNow adds a timestamp of the current time to the error.
+// WithTimestampNow sets the timestamp to a timestamp of the current time.
 func (e *UserError) WithTimestampNow() *UserError {
 	return e.WithTimestamp(discord.NowTimestamp())
 }
 
-// WithColor sets the color of the Embed to the passed discord.Color.
+// WithColor sets the color to the passed discord.Color.
 func (e *UserError) WithColor(color discord.Color) *UserError {
 	e.Embed.WithColor(color)
 	return e
 }
 
-// WithSimpleFooter adds a plain footer (max. 2048 characters) to the error.
-func (e *UserError) WithSimpleFooter(text string) *UserError {
-	e.Embed.WithSimpleFooter(text)
+// WithFooter sets the text of the footer (max. 2048 characters) to the passed
+// text.
+func (e *UserError) WithFooter(text string) *UserError {
+	return e.WithFooterl(i18n.NewStaticConfig(text))
+}
+
+// WithFooterlt sets the text of the footer (max. 2048 characters) to the
+// passed text.
+func (e *UserError) WithFooterlt(text i18n.Term) *UserError {
+	return e.WithFooterl(text.AsConfig())
+}
+
+// WithFooterl sets the text of the footer (max. 2048 characters) to the passed
+// text.
+func (e *UserError) WithFooterl(text *i18n.Config) *UserError {
+	e.Embed.WithFooterl(text)
 	return e
 }
 
-// WithSimpleFooterl adds a plain footer (max. 2048 characters) to the error.
-func (e *UserError) WithSimpleFooterl(text *i18n.Config) *UserError {
-	e.Embed.WithSimpleFooterl(text)
+// WithFooterIcon sets the icon of the footer to the passed icon url.
+func (e *UserError) WithFooterIcon(icon discord.URL) *UserError {
+	e.Embed.WithFooterIcon(icon)
 	return e
 }
 
-// WithSimpleFooterlt adds a plain footer (max. 2048 characters) to the error.
-func (e *UserError) WithSimpleFooterlt(text i18n.Term) *UserError {
-	return e.WithSimpleFooterl(text.AsConfig())
-}
-
-// WithFooter adds a footer (max. 2048 character) with an icon to the error.
-func (e *UserError) WithFooter(text string, icon discord.URL) *UserError {
-	e.Embed.WithField(text, icon)
-	return e
-}
-
-// WithFooterl adds a footer (max. 2048 character) with an icon to the error.
-func (e *UserError) WithFooterl(text *i18n.Config, icon discord.URL) *UserError {
-	e.Embed.WithFooterl(text, icon)
-	return e
-}
-
-// WithFooterlt adds a footer (max. 2048 character) with an icon to the error.
-func (e *UserError) WithFooterlt(text i18n.Term, icon discord.URL) *UserError {
-	return e.WithFooterl(text.AsConfig(), icon)
-}
-
-// WithImage adds an image to the error.
+// WithImage sets the image to the passed image url.
 func (e *UserError) WithImage(image discord.URL) *UserError {
 	e.Embed.WithImage(image)
 	return e
@@ -165,118 +147,73 @@ func (e *UserError) WithThumbnail(thumbnail discord.URL) *UserError {
 	return e
 }
 
-// WithSimpleAuthor adds a plain author (max. 256 characters) to the error.
-func (e *UserError) WithSimpleAuthor(name string) *UserError {
-	e.Embed.WithSimpleAuthor(name)
+// WithAuthor sets the author's name (max. 256 characters) to the passed
+// name.
+func (e *UserError) WithAuthor(name string) *UserError {
+	return e.WithAuthorl(i18n.NewStaticConfig(name))
+}
+
+// WithAuthorlt sets the author's name (max. 256 characters) to the passed
+// name.
+func (e *UserError) WithAuthorlt(name i18n.Term) *UserError {
+	return e.WithAuthorl(name.AsConfig())
+}
+
+// WithAuthorl sets the author's name (max. 256 characters) to the passed
+// name.
+func (e *UserError) WithAuthorl(name *i18n.Config) *UserError {
+	e.Embed.WithAuthorl(name)
 	return e
 }
 
-// WithSimpleAuthorl adds a plain author (max. 256 characters) to the error.
-func (e *UserError) WithSimpleAuthorl(name *i18n.Config) *UserError {
-	e.Embed.WithSimpleAuthorl(name)
+// WithAuthorURL assigns the author the passed discord.URL.
+func (e *UserError) WithAuthorURL(url discord.URL) *UserError {
+	e.Embed.WithAuthorURL(url)
 	return e
 }
 
-// WithSimpleAuthorlt adds a plain author (max. 256 characters) to the error.
-func (e *UserError) WithSimpleAuthorlt(name i18n.Term) *UserError {
-	return e.WithSimpleAuthorl(name.AsConfig())
-}
-
-// WithSimpleAuthorWithURL adds an author (max. 256 character) with a URL to
-// the Embed.
-func (e *UserError) WithSimpleAuthorWithURL(name string, url discord.URL) *UserError {
-	e.Embed.WithSimpleAuthorWithURL(name, url)
+// WithAuthorIcon sets the icon of the author to the passed icon url.
+func (e *UserError) WithAuthorIcon(icon discord.URL) *UserError {
+	e.Embed.WithAuthorIcon(icon)
 	return e
 }
 
-// WithSimpleAuthorWithURLl adds an author (max. 256 character) with a URL to
-// the Embed.
-func (e *UserError) WithSimpleAuthorWithURLl(name *i18n.Config, url discord.URL) *UserError {
-	e.Embed.WithSimpleAuthorWithURLl(name, url)
-	return e
-}
-
-// WithSimpleAuthorWithURLlt adds an author (max. 256 character) with a URL to
-// the Embed.
-func (e *UserError) WithSimpleAuthorWithURLlt(name i18n.Term, url discord.URL) *UserError {
-	return e.WithSimpleAuthorWithURLl(name.AsConfig(), url)
-}
-
-// WithAuthor adds an author (max 256 characters) with an icon to the error.
-func (e *UserError) WithAuthor(name string, icon discord.URL) *UserError {
-	e.Embed.WithAuthor(name, icon)
-	return e
-}
-
-// WithAuthorl adds an author (max 256 characters) with an icon to the error.
-func (e *UserError) WithAuthorl(name *i18n.Config, icon discord.URL) *UserError {
-	e.Embed.WithAuthorl(name, icon)
-	return e
-}
-
-// WithAuthorlt adds an author (max 256 characters) with an icon to the error.
-func (e *UserError) WithAuthorlt(name i18n.Term, icon discord.URL) *UserError {
-	return e.WithAuthorl(name.AsConfig(), icon)
-}
-
-// WithAuthorWithURL adds an author (max 256 characters) with an icon and a URL
-// to the error.
-func (e *UserError) WithAuthorWithURL(name string, icon, url discord.URL) *UserError {
-	e.Embed.WithAuthorWithURL(name, icon, url)
-	return e
-}
-
-// WithAuthorWithURLl adds an author (max 256 characters) with an icon and a
-// URL to the error.
-func (e *UserError) WithAuthorWithURLl(name *i18n.Config, icon, url discord.URL) *UserError {
-	e.Embed.WithAuthorWithURLl(name, icon, url)
-	return e
-}
-
-// WithAuthorWithURLlt adds an author (max 256 characters) with an icon and a
-// URL to the error.
-func (e *UserError) WithAuthorWithURLlt(name i18n.Term, icon, url discord.URL) *UserError {
-	return e.WithAuthorWithURLl(name.AsConfig(), icon, url)
-}
-
-// WithField adds the passed field to the error, and returns a pointer to the
-// UserError to allow chaining.
+// WithField adds a field (name: max. 256 characters, value: max 1024
+// characters) to the embed.
 func (e *UserError) WithField(name, value string) *UserError {
-	e.Embed.WithField(name, value)
-	return e
+	return e.WithFieldl(i18n.NewStaticConfig(name), i18n.NewStaticConfig(value))
 }
 
-// WithFieldl adds the passed field to the error, and returns a pointer to the
-// UserError to allow chaining.
+// WithFieldlt adds a field (name: max. 256 characters, value: max 1024
+// characters) to the embed.
+func (e *UserError) WithFieldlt(name, value i18n.Term) *UserError {
+	return e.WithFieldl(name.AsConfig(), value.AsConfig())
+}
+
+// WithFieldl adds a field (name: max. 256 characters, value: max 1024
+// characters) to the embed.
 func (e *UserError) WithFieldl(name, value *i18n.Config) *UserError {
 	e.Embed.WithFieldl(name, value)
 	return e
 }
 
-// WithFieldlt adds the passed field to the error, and returns a pointer to the
-// UserError to allow chaining.
-func (e *UserError) WithFieldlt(name, value i18n.Term) *UserError {
+// WithInlinedField adds an inlined field (name: max. 256 characters, value:
+// max 1024 characters) to the embed.
+func (e *UserError) WithInlinedField(name, value string) *UserError {
+	return e.WithInlinedFieldl(i18n.NewStaticConfig(name), i18n.NewStaticConfig(value))
+}
+
+// WithInlinedFieldlt adds an inlined field (name: max. 256 characters,
+// value: max 1024 characters) to the embed.
+func (e *UserError) WithInlinedFieldlt(name, value i18n.Term) *UserError {
 	return e.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
-// WithInlinedField adds the passed inlined field to the error, and returns a
-// pointer to the UserError to allow chaining.
-func (e *UserError) WithInlinedField(name, value string) *UserError {
-	e.Embed.WithInlinedField(name, value)
-	return e
-}
-
-// WithInlinedFieldl adds the passed inlined field to the error, and returns a
-// pointer to the UserError to allow chaining.
+// WithInlinedFieldl adds an inlined field (name: max. 256 characters,
+// value: max 1024 characters) to the embed.
 func (e *UserError) WithInlinedFieldl(name, value *i18n.Config) *UserError {
 	e.Embed.WithInlinedFieldl(name, value)
 	return e
-}
-
-// WithInlinedFieldlt adds the passed inlined field to the error, and returns a
-// pointer to the UserError to allow chaining.
-func (e *UserError) WithInlinedFieldlt(name, value i18n.Term) *UserError {
-	return e.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
 func (e *UserError) Error() string { return "user error" }

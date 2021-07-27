@@ -12,14 +12,13 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
 )
 
 var (
 	// DefaultReplyWaiter is the waiter used for NewReplyWaiterFromDefault.
 	// DefaultReplyWaiter must not be used directly to handleMessages reply.
 	DefaultReplyWaiter = &ReplyWaiter{
-		cancelKeywords: []*i18nutil.Text{i18nutil.NewTextl(defaultCancelKeyword)},
+		cancelKeywords: []*i18n.Config{defaultCancelKeyword},
 	}
 
 	// ReplyMaxTimeout is the default maximum mount of time ReplyWaiter.Await
@@ -38,9 +37,8 @@ type replyMiddlewaresKeyType struct{}
 // typing event, if the user is continuously typing.
 //
 // It has been observed that the first follow-up event is received after about
-// 9.5 seconds, all successive events are received in an intervall of approx.
-// 8.25 seconds.
-// Additionally, there is a 1.5 second margin for network delays.
+// 9.5 seconds, all successive events are received in an interval of
+// approximately 8.25 seconds. Additionally, we add a 1.5 second margin for network delays.
 var typingInterval = 11 * time.Second
 
 type (
@@ -60,7 +58,7 @@ type (
 		caseSensitive bool
 		noAutoReact   bool
 
-		cancelKeywords  []*i18nutil.Text
+		cancelKeywords  []*i18n.Config
 		cancelReactions []cancelReaction
 
 		middlewares []interface{}
@@ -189,7 +187,7 @@ func (w *ReplyWaiter) WithMiddlewares(middlewares ...interface{}) *ReplyWaiter {
 // errors.Abort.
 func (w *ReplyWaiter) WithCancelKeywords(keywords ...string) *ReplyWaiter {
 	for _, k := range keywords {
-		w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewText(k))
+		w.cancelKeywords = append(w.cancelKeywords, i18n.NewStaticConfig(k))
 	}
 
 	return w
@@ -199,10 +197,7 @@ func (w *ReplyWaiter) WithCancelKeywords(keywords ...string) *ReplyWaiter {
 // If the user filtered for writes one of the keywords AwaitReply will return
 // errors.Abort.
 func (w *ReplyWaiter) WithCancelKeywordsl(keywords ...*i18n.Config) *ReplyWaiter {
-	for _, k := range keywords {
-		w.cancelKeywords = append(w.cancelKeywords, i18nutil.NewTextl(k))
-	}
-
+	w.cancelKeywords = append(w.cancelKeywords, keywords...)
 	return w
 }
 
@@ -238,7 +233,7 @@ func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 		noAutoReact:   w.noAutoReact,
 	}
 
-	cp.cancelKeywords = make([]*i18nutil.Text, len(w.cancelKeywords))
+	cp.cancelKeywords = make([]*i18n.Config, len(w.cancelKeywords))
 	copy(cp.cancelKeywords, w.cancelKeywords)
 
 	cp.cancelReactions = make([]cancelReaction, len(w.cancelReactions))
@@ -336,7 +331,7 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 
 		// check if the message is a cancel keyword
 		for _, kt := range w.cancelKeywords {
-			k, err := kt.Get(w.ctx.Localizer)
+			k, err := w.ctx.Localizer.Localize(kt)
 			if err != nil {
 				w.ctx.HandleErrorSilently(err)
 				continue

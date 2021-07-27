@@ -36,14 +36,13 @@ func TestNewFallbackConfig(t *testing.T) {
 			},
 		},
 		{
-			name:     "empty fallback",
-			term:     "abc",
+			name:     "empty term and empty fallback",
+			term:     "",
 			fallback: "",
 			expect: &Config{
-				Term: "abc",
+				Term: "",
 				Fallback: Fallback{
 					Other: "",
-					empty: true,
 				},
 			},
 		},

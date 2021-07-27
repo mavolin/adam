@@ -9,7 +9,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // =============================================================================
@@ -30,11 +30,11 @@ type Integer struct {
 
 var (
 	// SimpleInteger is an Integer with no bounds.
-	SimpleInteger Type = new(Integer)
+	SimpleInteger plugin.ArgType = new(Integer)
 	// PositiveInteger is an Integer with inclusive minimum 0.
-	PositiveInteger Type = IntegerWithMin(0)
+	PositiveInteger plugin.ArgType = IntegerWithMin(0)
 	// NegativeInteger is an Integer with inclusive maximum -1.
-	NegativeInteger Type = IntegerWithMax(-1)
+	NegativeInteger plugin.ArgType = IntegerWithMax(-1)
 )
 
 // IntegerWithMin creates a new Integer with the passed inclusive minimum.
@@ -56,17 +56,17 @@ func IntegerWithBounds(min, max int) *Integer {
 	}
 }
 
-func (i Integer) Name(l *i18n.Localizer) string {
+func (i Integer) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(integerName) // we have a fallback
 	return name
 }
 
-func (i Integer) Description(l *i18n.Localizer) string {
+func (i Integer) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(integerDescription) // we have a fallback
 	return desc
 }
 
-func (i Integer) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (i Integer) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	parsed, err := strconv.Atoi(ctx.Raw)
 	if err != nil {
 		var nerr *strconv.NumError
@@ -96,7 +96,7 @@ func (i Integer) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return parsed, nil
 }
 
-func (i Integer) Default() interface{} {
+func (i Integer) GetDefault() interface{} {
 	return 0
 }
 
@@ -114,11 +114,11 @@ type Decimal struct {
 
 var (
 	// SimpleDecimal is a decimal with no bounds
-	SimpleDecimal Type = new(Decimal)
+	SimpleDecimal plugin.ArgType = new(Decimal)
 	// PositiveDecimal is an Decimal with inclusive minimum 0.
-	PositiveDecimal Type = DecimalWithMin(0)
+	PositiveDecimal plugin.ArgType = DecimalWithMin(0)
 	// NegativeDecimal is an Decimal with inclusive maximum -1.
-	NegativeDecimal Type = DecimalWithMax(-1)
+	NegativeDecimal plugin.ArgType = DecimalWithMax(-1)
 )
 
 // DecimalWithMin creates a new Decimal with the passed inclusive minimum.
@@ -140,17 +140,17 @@ func DecimalWithBounds(min, max float64) Decimal {
 	}
 }
 
-func (i Decimal) Name(l *i18n.Localizer) string {
+func (i Decimal) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(decimalName) // we have a fallback
 	return name
 }
 
-func (i Decimal) Description(l *i18n.Localizer) string {
+func (i Decimal) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(decimalDescription) // we have a fallback
 	return desc
 }
 
-func (i Decimal) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (i Decimal) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	parsed, err := strconv.ParseFloat(ctx.Raw, 64)
 	if err != nil || math.IsInf(parsed, 0) || math.IsNaN(parsed) {
 		var nerr *strconv.NumError
@@ -180,7 +180,7 @@ func (i Decimal) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return parsed, nil
 }
 
-func (i Decimal) Default() interface{} {
+func (i Decimal) GetDefault() interface{} {
 	return float64(0)
 }
 
@@ -202,10 +202,10 @@ func (i Decimal) Default() interface{} {
 type NumericID struct {
 	// CustomName allows you to set a custom name for the id.
 	// If not set, the default name will be used.
-	CustomName *i18nutil.Text
+	CustomName *i18n.Config
 	// CustomDescription allows you to set a custom description for the id.
 	// If not set, the default description will be used.
-	CustomDescription *i18nutil.Text
+	CustomDescription *i18n.Config
 
 	// MinLength is the inclusive minimum length the id may have.
 	MinLength uint
@@ -217,13 +217,13 @@ type NumericID struct {
 var (
 	// SimpleNumericID is a NumericID with no length boundaries and no custom name
 	// or description.
-	SimpleNumericID Type = new(NumericID)
-	_               Type = NumericID{}
+	SimpleNumericID plugin.ArgType = new(NumericID)
+	_               plugin.ArgType = NumericID{}
 )
 
-func (id NumericID) Name(l *i18n.Localizer) string {
+func (id NumericID) GetName(l *i18n.Localizer) string {
 	if id.CustomName != nil {
-		name, err := id.CustomName.Get(l)
+		name, err := l.Localize(id.CustomName)
 		if err == nil {
 			return name
 		}
@@ -233,9 +233,9 @@ func (id NumericID) Name(l *i18n.Localizer) string {
 	return name
 }
 
-func (id NumericID) Description(l *i18n.Localizer) string {
+func (id NumericID) GetDescription(l *i18n.Localizer) string {
 	if id.CustomDescription != nil {
-		desc, err := id.CustomDescription.Get(l)
+		desc, err := l.Localize(id.CustomDescription)
 		if err == nil {
 			return desc
 		}
@@ -245,7 +245,7 @@ func (id NumericID) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (id NumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (id NumericID) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	parsed, err := strconv.ParseUint(ctx.Raw, 10, 64)
 	if err != nil {
 		return nil, newArgumentError2(idInvalidErrorArg, idInvalidErrorFlag, ctx, nil)
@@ -266,6 +266,6 @@ func (id NumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return parsed, nil
 }
 
-func (id NumericID) Default() interface{} {
+func (id NumericID) GetDefault() interface{} {
 	return uint64(0)
 }

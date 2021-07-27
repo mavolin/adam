@@ -42,7 +42,8 @@ func (e *EmbeddableError) Error() string                            { return e.D
 // If at least one of the passed plugin.RestrictionFuncs returns a fatal
 // plugin.RestrictionError, the error produced by the returned function will be
 // fatal as well.
-func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc { //nolint:gocognit
+//nolint:gocognit
+func All(funcs ...plugin.RestrictionFunc) plugin.RestrictionFunc {
 	return func(s *state.State, ctx *plugin.Context) error {
 		if len(funcs) == 0 {
 			return nil
@@ -347,8 +348,8 @@ func (e *anyError) Error() string {
 // The first return value is the normal indent, and the second is the indent
 // needed for newlines within an entry.
 func genIndent(indentLvl int) (indent, nlIndent string) {
-	// use an "ideographic space" for indenting, as discord strips whitespace
-	// on new lines in embeds.
+	// use an "ideographic space" for indenting, as Discord strips normal
+	// whitespace on new lines in embeds
 	indent = strings.Repeat("\u3000", indentLvl*indentMultiplier)
 	nlIndent = strings.Repeat("\u3000", indentLvl*indentMultiplier)
 

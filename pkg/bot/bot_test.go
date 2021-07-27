@@ -6,67 +6,67 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
+	"github.com/mavolin/adam/internal/resolved"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-func TestBot_AddPluginProvider(t *testing.T) {
+func TestBot_AddPluginSource(t *testing.T) {
 	t.Run("name built_in", func(t *testing.T) {
-		b, err := New(Options{Token: "abc"})
-		require.NoError(t, err)
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		assert.Panics(t, func() {
 			pfunc := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, nil, nil
 			}
 
-			b.AddPluginProvider(plugin.BuiltInProvider, pfunc)
+			b.AddPluginSource(plugin.BuiltInSource, pfunc)
 		})
 	})
 
 	t.Run("nil", func(t *testing.T) {
-		b, err := New(Options{Token: "abc"})
-		require.NoError(t, err)
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
-		b.AddPluginProvider("abc", nil)
-		assert.Len(t, b.pluginProviders, 0)
+		b.AddPluginSource("abc", nil)
+		assert.Len(t, b.pluginResolver.Sources, 0)
 	})
 
 	t.Run("replace", func(t *testing.T) {
-		b, err := New(Options{Token: "abc"})
-		require.NoError(t, err)
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
-		p := mockPluginProvider(nil, nil, nil)
+		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			return nil, nil, nil
+		}
 
-		b.AddPluginProvider("abc", p)
-		b.AddPluginProvider("def", p)
+		b.AddPluginSource("abc", p)
+		b.AddPluginSource("def", p)
 
-		assert.Len(t, b.pluginProviders, 2)
+		assert.Len(t, b.pluginResolver.Sources, 2)
 
 		var called bool
 
-		b.AddPluginProvider("abc",
+		b.AddPluginSource("abc",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				called = true
 				return nil, nil, nil
 			})
 
-		assert.Len(t, b.pluginProviders, 2)
-		assert.Equal(t, b.pluginProviders[0].name, "def")
-		assert.Equal(t, b.pluginProviders[1].name, "abc")
+		assert.Len(t, b.pluginResolver.Sources, 2)
+		assert.Equal(t, b.pluginResolver.Sources[0].Name, "def")
+		assert.Equal(t, b.pluginResolver.Sources[1].Name, "abc")
 
-		_, _, _ = b.pluginProviders[1].provider(nil, nil)
-		assert.True(t, called, "Bot.AddPluginProvider did not replace abc")
+		_, _, _ = b.pluginResolver.Sources[1].Func(nil, nil)
+		assert.True(t, called, "Bot.AddPluginSource did not replace abc")
 	})
 
 	t.Run("success", func(t *testing.T) {
-		b, err := New(Options{Token: "abc"})
-		require.NoError(t, err)
+		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
-		p := mockPluginProvider(nil, nil, nil)
+		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			return nil, nil, nil
+		}
 
-		b.AddPluginProvider("abc", p)
-		assert.Len(t, b.pluginProviders, 1)
+		b.AddPluginSource("abc", p)
+		assert.Len(t, b.pluginResolver.Sources, 1)
 	})
 }

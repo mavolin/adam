@@ -23,13 +23,13 @@ const (
 	Hide
 )
 
-type HideFunc func(*plugin.ResolvedCommand, *state.State, *plugin.Context) HiddenLevel
+type HideFunc func(plugin.ResolvedCommand, *state.State, *plugin.Context) HiddenLevel
 
 // CheckHidden returns a HideFunc that returns the passed HiddenLevel, if the
 // checked command is marked as Hidden.
 func CheckHidden(lvl HiddenLevel) HideFunc {
-	return func(cmd *plugin.ResolvedCommand, s *state.State, ctx *plugin.Context) HiddenLevel {
-		if cmd.Hidden {
+	return func(cmd plugin.ResolvedCommand, s *state.State, ctx *plugin.Context) HiddenLevel {
+		if cmd.IsHidden() {
 			return lvl
 		}
 
@@ -43,8 +43,8 @@ func CheckHidden(lvl HiddenLevel) HideFunc {
 //
 // If an error occurs, it will be handled silently and Show will be returned.
 func CheckChannelTypes(lvl HiddenLevel) HideFunc {
-	return func(cmd *plugin.ResolvedCommand, _ *state.State, ctx *plugin.Context) HiddenLevel {
-		ok, err := cmd.ChannelTypes.Check(ctx)
+	return func(cmd plugin.ResolvedCommand, _ *state.State, ctx *plugin.Context) HiddenLevel {
+		ok, err := cmd.ChannelTypes().Check(ctx)
 		if err != nil {
 			ctx.HandleErrorSilently(err)
 			return Show
@@ -65,7 +65,7 @@ func CheckChannelTypes(lvl HiddenLevel) HideFunc {
 // handled silently, and Show will be returned.
 // If the error fulfils errors.As for that case lvl will be returned.
 func CheckRestrictions(lvl HiddenLevel) HideFunc {
-	return func(cmd *plugin.ResolvedCommand, s *state.State, ctx *plugin.Context) HiddenLevel {
+	return func(cmd plugin.ResolvedCommand, s *state.State, ctx *plugin.Context) HiddenLevel {
 		err := cmd.IsRestricted(s, ctx)
 		if err != nil {
 			var rerr *plugin.RestrictionError
@@ -87,7 +87,7 @@ func CheckRestrictions(lvl HiddenLevel) HideFunc {
 
 // checkHideFuncs checks the passed HideFuncs and returns the highest
 // HiddenLevel found.
-func checkHideFuncs(cmd *plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, f ...HideFunc) HiddenLevel {
+func checkHideFuncs(cmd plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, f ...HideFunc) HiddenLevel {
 	var lvl HiddenLevel
 
 	for _, f := range f {
@@ -103,9 +103,9 @@ func checkHideFuncs(cmd *plugin.ResolvedCommand, s *state.State, ctx *plugin.Con
 }
 
 func filterCommands(
-	cmds []*plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel, f ...HideFunc,
-) []*plugin.ResolvedCommand {
-	filtered := make([]*plugin.ResolvedCommand, 0, len(cmds))
+	cmds []plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel, f ...HideFunc,
+) []plugin.ResolvedCommand {
+	filtered := make([]plugin.ResolvedCommand, 0, len(cmds))
 
 	for _, cmd := range cmds {
 		if checkHideFuncs(cmd, s, ctx, f...) <= lvl {

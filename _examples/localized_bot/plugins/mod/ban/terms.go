@@ -1,6 +1,9 @@
 package ban
 
-import "github.com/mavolin/adam/pkg/i18n"
+import (
+	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/impl/command"
+)
 
 // =============================================================================
 // Meta
@@ -9,9 +12,18 @@ import "github.com/mavolin/adam/pkg/i18n"
 var (
 	shortDescription = i18n.NewFallbackConfig("plugin.mod.kick.short_description", "Bans someone.")
 
-	examples = []*i18n.Config{
-		i18n.NewFallbackConfig("plugin.mod.kick.example.plain", "@Wumpus"),
-		i18n.NewFallbackConfig("plugin.mod.kick.example.reason", "@Wumpus, using offensive language"),
+	examples = command.LocalizedExampleArgs{
+		{
+			Args: []*i18n.Config{
+				i18n.NewFallbackConfig("plugin.mod.kick.example.plain.arg.0", "@Wumpus"),
+			},
+		},
+		{
+			Args: []*i18n.Config{
+				i18n.NewFallbackConfig("plugin.mod.kick.example.reason.arg.0", "@Wumpus"),
+				i18n.NewFallbackConfig("plugin.mod.kick.example.reason.arg.1", "using offensive language"),
+			},
+		},
 	}
 )
 

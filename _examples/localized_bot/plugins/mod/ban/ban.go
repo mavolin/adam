@@ -32,15 +32,15 @@ func New() *Ban {
 			Aliases:          []string{"banhammer"},
 			ShortDescription: shortDescription,
 			ExampleArgs:      examples,
-			Args: arg.LocalizedCommaConfig{
-				Required: []arg.LocalizedRequiredArg{
+			Args: &arg.LocalizedConfig{
+				RequiredArgs: []arg.LocalizedRequiredArg{
 					{
 						Name:        argMemberName,
 						Type:        arg.Member,
 						Description: argMemberDescription,
 					},
 				},
-				Optional: []arg.LocalizedOptionalArg{
+				OptionalArgs: []arg.LocalizedOptionalArg{
 					{
 						Name:        argReasonName,
 						Type:        arg.SimpleText,

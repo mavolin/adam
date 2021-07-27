@@ -7,7 +7,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/i18nutil"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // =============================================================================
@@ -20,10 +20,10 @@ import (
 type Text struct {
 	// CustomName allows you to set a custom name for the id.
 	// If not set, the default name will be used.
-	CustomName *i18nutil.Text
+	CustomName *i18n.Config
 	// CustomDescription allows you to set a custom description for the id.
 	// If not set, the default description will be used.
-	CustomDescription *i18nutil.Text
+	CustomDescription *i18n.Config
 
 	// MinLength is the inclusive minimum length the text may have.
 	MinLength uint
@@ -38,8 +38,7 @@ type Text struct {
 	Regexp *regexp.Regexp
 	// RegexpErrorArg is the error message used if an argument doesn't match
 	// the regular expression defined.
-	// If you want an unlocalized error, just fill Fallback.Other field of the
-	// config.
+	// If you want to use an unlocalized error, use i18n.NewStaticConfig.
 	//
 	// Available Placeholders are:
 	//
@@ -52,8 +51,7 @@ type Text struct {
 	RegexpErrorArg *i18n.Config
 	// RegexpErrorFlag is the error message used if a flag doesn't match the
 	// regular expression defined.
-	// If you want an unlocalized error, just fill Fallback.Other field of the
-	// config.
+	// If you want to use an unlocalized error, use i18n.NewStaticConfig.
 	//
 	// Available Placeholders are:
 	//
@@ -67,14 +65,15 @@ type Text struct {
 }
 
 var (
-	// SimpleText is a Text with no length boundaries and no regular expression.
-	SimpleText Type = new(Text)
-	_          Type = Text{}
+	// SimpleText is a Text with no length boundaries and no regular
+	// expression.
+	SimpleText plugin.ArgType = new(Text)
+	_          plugin.ArgType = Text{}
 )
 
-func (t Text) Name(l *i18n.Localizer) string {
+func (t Text) GetName(l *i18n.Localizer) string {
 	if t.CustomName != nil {
-		name, err := t.CustomName.Get(l)
+		name, err := l.Localize(t.CustomName)
 		if err == nil {
 			return name
 		}
@@ -84,9 +83,9 @@ func (t Text) Name(l *i18n.Localizer) string {
 	return name
 }
 
-func (t Text) Description(l *i18n.Localizer) string {
+func (t Text) GetDescription(l *i18n.Localizer) string {
 	if t.CustomDescription != nil {
-		desc, err := t.CustomDescription.Get(l)
+		desc, err := l.Localize(t.CustomDescription)
 		if err == nil {
 			return desc
 		}
@@ -96,7 +95,8 @@ func (t Text) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl
+//nolint:dupl
+func (t Text) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if uint(len(ctx.Raw)) < t.MinLength {
 		return nil, newArgumentError2(
 			textBelowMinLengthErrorArg, textBelowMinLengthErrorFlag, ctx, map[string]interface{}{
@@ -110,9 +110,9 @@ func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolin
 	}
 
 	if t.Regexp != nil && !t.Regexp.MatchString(ctx.Raw) {
-		if ctx.Kind == KindArg && t.RegexpErrorArg == nil {
+		if ctx.Kind == plugin.KindArg && t.RegexpErrorArg == nil {
 			t.RegexpErrorArg = regexpNotMatchingErrorArg
-		} else if ctx.Kind == KindFlag && t.RegexpErrorFlag == nil {
+		} else if ctx.Kind == plugin.KindFlag && t.RegexpErrorFlag == nil {
 			t.RegexpErrorFlag = regexpNotMatchingErrorFlag
 		}
 
@@ -124,7 +124,7 @@ func (t Text) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolin
 	return ctx.Raw, nil
 }
 
-func (t Text) Default() interface{} {
+func (t Text) GetDefault() interface{} {
 	return ""
 }
 
@@ -173,28 +173,28 @@ type Link struct {
 
 var (
 	// SimpleLink is a link that uses no custom regular expression.
-	SimpleLink Type = new(Link)
-	_          Type = Link{}
+	SimpleLink plugin.ArgType = new(Link)
+	_          plugin.ArgType = Link{}
 )
 
-func (l Link) Name(loc *i18n.Localizer) string {
+func (l Link) GetName(loc *i18n.Localizer) string {
 	name, _ := loc.Localize(linkName) // we have a fallback
 	return name
 }
 
-func (l Link) Description(loc *i18n.Localizer) string {
+func (l Link) GetDescription(loc *i18n.Localizer) string {
 	desc, _ := loc.Localize(linkDescription)
 	return desc
 }
 
-func (l Link) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (l Link) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if l.Validator == nil {
 		l.Validator = defaultLinkValidator
 	}
 
 	u, err := url.ParseRequestURI(ctx.Raw)
 	if err != nil || !l.Validator(u) {
-		if (ctx.Kind == KindArg && l.ErrorArg == nil) || (ctx.Kind == KindFlag && l.ErrorFlag == nil) {
+		if (ctx.Kind == plugin.KindArg && l.ErrorArg == nil) || (ctx.Kind == plugin.KindFlag && l.ErrorFlag == nil) {
 			return nil, newArgumentError2(linkInvalidErrorArg, linkInvalidErrorFlag, ctx, nil)
 		}
 
@@ -204,7 +204,7 @@ func (l Link) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return ctx.Raw, nil
 }
 
-func (l Link) Default() interface{} {
+func (l Link) GetDefault() interface{} {
 	return ""
 }
 
@@ -227,10 +227,10 @@ func defaultLinkValidator(u *url.URL) bool {
 type AlphanumericID struct {
 	// CustomName allows you to set a custom name for the id.
 	// If not set, the default name will be used.
-	CustomName *i18nutil.Text
+	CustomName *i18n.Config
 	// CustomDescription allows you to set a custom description for the id.
 	// If not set, the default description will be used.
-	CustomDescription *i18nutil.Text
+	CustomDescription *i18n.Config
 
 	// MinLength is the inclusive minimum length the ID may have.
 	MinLength uint
@@ -274,13 +274,13 @@ type AlphanumericID struct {
 }
 
 var (
-	SimpleAlphanumericID Type = new(AlphanumericID)
-	_                    Type = AlphanumericID{}
+	SimpleAlphanumericID plugin.ArgType = new(AlphanumericID)
+	_                    plugin.ArgType = AlphanumericID{}
 )
 
-func (id AlphanumericID) Name(l *i18n.Localizer) string {
+func (id AlphanumericID) GetName(l *i18n.Localizer) string {
 	if id.CustomName != nil {
-		name, err := id.CustomName.Get(l)
+		name, err := l.Localize(id.CustomName)
 		if err == nil {
 			return name
 		}
@@ -290,9 +290,9 @@ func (id AlphanumericID) Name(l *i18n.Localizer) string {
 	return name
 }
 
-func (id AlphanumericID) Description(l *i18n.Localizer) string {
+func (id AlphanumericID) GetDescription(l *i18n.Localizer) string {
 	if id.CustomDescription != nil {
-		desc, err := id.CustomDescription.Get(l)
+		desc, err := l.Localize(id.CustomDescription)
 		if err == nil {
 			return desc
 		}
@@ -302,7 +302,8 @@ func (id AlphanumericID) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error) { //nolint:dupl
+//nolint:dupl
+func (id AlphanumericID) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if uint(len(ctx.Raw)) < id.MinLength {
 		return nil, newArgumentError2(
 			idBelowMinLengthErrorArg, idBelowMinLengthErrorFlag, ctx, map[string]interface{}{
@@ -316,9 +317,9 @@ func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error
 	}
 
 	if id.Regexp != nil && !id.Regexp.MatchString(ctx.Raw) {
-		if ctx.Kind == KindArg && id.RegexpErrorArg == nil {
+		if ctx.Kind == plugin.KindArg && id.RegexpErrorArg == nil {
 			id.RegexpErrorArg = regexpNotMatchingErrorArg
-		} else if ctx.Kind == KindFlag && id.RegexpErrorFlag == nil {
+		} else if ctx.Kind == plugin.KindFlag && id.RegexpErrorFlag == nil {
 			id.RegexpErrorFlag = regexpNotMatchingErrorFlag
 		}
 
@@ -330,6 +331,6 @@ func (id AlphanumericID) Parse(_ *state.State, ctx *Context) (interface{}, error
 	return ctx.Raw, nil
 }
 
-func (id AlphanumericID) Default() interface{} {
+func (id AlphanumericID) GetDefault() interface{} {
 	return ""
 }

@@ -8,26 +8,27 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // RegularExpression is the Type used for regular expressions.
 //
 // Go type: *regexp.Regexp
-var RegularExpression Type = new(regularExpression)
+var RegularExpression plugin.ArgType = new(regularExpression)
 
 type regularExpression struct{}
 
-func (r regularExpression) Name(l *i18n.Localizer) string {
+func (r regularExpression) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(regexpName) // we have a fallback
 	return name
 }
 
-func (r regularExpression) Description(l *i18n.Localizer) string {
+func (r regularExpression) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(regexpDescription) // we have a fallback
 	return desc
 }
 
-func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (r regularExpression) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	compiled, err := regexp.Compile(ctx.Raw)
 	if err == nil {
 		return compiled, nil
@@ -82,6 +83,6 @@ func (r regularExpression) Parse(_ *state.State, ctx *Context) (interface{}, err
 	}
 }
 
-func (r regularExpression) Default() interface{} {
+func (r regularExpression) GetDefault() interface{} {
 	return (*regexp.Regexp)(nil)
 }

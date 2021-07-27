@@ -14,16 +14,21 @@ import (
 var ErrPlaceholders = errors.New("i18n: placeholders must be of type map[string]string or struct")
 
 // EmptyConfig is the Config used as a replacement for an empty string.
-var EmptyConfig = &Config{Fallback: Fallback{empty: true}}
+var EmptyConfig = new(Config)
 
 // Config is a data struct that contains all information needed to create
 // a localized message.
+// However, Configs don't necessarily produce localized text:
+// If the Term is empty, or the Func returns with an error, the Config will
+// resort to its Fallback.
 type Config struct {
 	// Term is the key of the translation.
+	//
+	// Term may be empty, in which case the Config will be considered static.
+	// A static Config will always resort to it's Other fallback.
 	Term Term
 	// Placeholders contains the placeholder data.
-	// This can either be a map[string]string or a struct (see section
-	// Structs for further info).
+	// This can either be a map[string]string or a struct.
 	//
 	// Structs
 	//
@@ -49,16 +54,17 @@ func NewTermConfig(term Term) *Config {
 	return term.AsConfig()
 }
 
+// NewStaticConfig returns a *Config that always produces string s.
+func NewStaticConfig(s string) *Config {
+	return NewFallbackConfig("", s)
+}
+
 // NewFallbackConfig is a utility function that can be used to inline
 // term-only Configs with a fallback.
 func NewFallbackConfig(term Term, fallback string) *Config {
 	c := &Config{
 		Term:     term,
 		Fallback: Fallback{Other: fallback},
-	}
-
-	if len(fallback) == 0 {
-		c.Fallback.empty = true
 	}
 
 	return c
@@ -119,8 +125,7 @@ func (c Config) placeholdersToMap() (map[string]interface{}, error) {
 	return placeholders, nil
 }
 
-// Term is a type used to make distinction between unlocalized strings and
-// actual Config.Terms easier.
+// Term is a unique identifier of a localized message.
 type Term string
 
 // AsConfig wraps the term in a Config.
@@ -129,8 +134,8 @@ func (t Term) AsConfig() *Config {
 }
 
 // Fallback is the English fallback used if a translation is not available.
-// The message is created using go's text/template system and left and
-// right delimiters are {{ and }} respectively.
+// The message is created using go's text/template system and '{{' and '}}' are
+// used as left and right delimiters, respectively.
 type Fallback struct {
 	// One is the singular form of the fallback message, if there is any.
 	One string
@@ -138,9 +143,6 @@ type Fallback struct {
 	// This is also the default form, meaning if no pluralization is needed
 	// this field should be used.
 	Other string
-	// empty signals that there i8s a fallback, even though it is just an
-	// empty string.
-	empty bool
 }
 
 // genTranslation attempts to generate the translation using the passed

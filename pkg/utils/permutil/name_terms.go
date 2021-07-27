@@ -13,7 +13,7 @@ var permissionConfigs = map[Permissions]*Config{
 	PermissionAdministrator:       NewFallbackConfig("permission.administrator", "Administrator"),
 	PermissionManageChannels:      NewFallbackConfig("permission.manage_channels", "Manage Channels"),
 	PermissionManageGuild:         NewFallbackConfig("permission.manage_guild", "Manage Server"),
-	PermissionAddReactions:        NewFallbackConfig("permission.add_reactions", "Add Reactions"),
+	PermissionAddReactions:        NewFallbackConfig("permission.add_reactions", "AddSource Reactions"),
 	PermissionViewAuditLog:        NewFallbackConfig("permission.view_audit_log", "View Audit Log"),
 	PermissionPrioritySpeaker:     NewFallbackConfig("permission.priority_speaker", "Priority Speaker"),
 	PermissionStream:              NewFallbackConfig("permission.stream", "Video"),

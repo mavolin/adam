@@ -1,6 +1,9 @@
 package help
 
-import "github.com/mavolin/adam/pkg/i18n"
+import (
+	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/impl/command"
+)
 
 // =============================================================================
 // Meta
@@ -19,10 +22,18 @@ var (
 			"Optionally, you can use the name of a module to list all commands in that module, "+
 			"or the name of a command to display detailed usage information.")
 
-	exampleArgs = []*i18n.Config{
-		i18n.EmptyConfig,
-		i18n.NewFallbackConfig("plugin.help.example_args.command", "some_command"),
-		i18n.NewFallbackConfig("plugin.help.example_args.module", "some_module"),
+	exampleArgs = command.LocalizedExampleArgs{
+		{},
+		{
+			Args: []*i18n.Config{
+				i18n.NewFallbackConfig("plugin.help.example.command.arg.0", "some_command"),
+			},
+		},
+		{
+			Args: []*i18n.Config{
+				i18n.NewFallbackConfig("plugin.help.example.module.arg.0", "some_module"),
+			},
+		},
 	}
 )
 
@@ -76,7 +87,7 @@ var (
 		"plugin.help.all.embed.description.guild",
 		"Below is a list of all commands on this server.")
 
-	allPrefixesFieldName = i18n.NewFallbackConfig("plugin.help.all.embed.field.prefix.name", "Prefixes")
+	allPrefixesFieldName = i18n.NewFallbackConfig("plugin.help.all.embed.field.prefixes.name", "Prefixes")
 )
 
 // ================================ Command ================================
@@ -86,24 +97,13 @@ var (
 
 	aliasesFieldName = i18n.NewFallbackConfig("plugin.help.command.embed.fields.aliases.name", "Aliases")
 
-	usageFieldNameSingle = i18n.NewFallbackConfig("plugin.help.command.embed.fields.usage.name.single", "Usage")
-	usageFieldNameMulti  = i18n.NewFallbackConfig(
-		"plugin.help.command.embed.fields.usage.name.single",
-		"Usage {{.num}}")
+	usageFieldNameSingle = i18n.NewFallbackConfig("plugin.help.command.embed.fields.usage.name", "Usage")
 
 	argumentsFieldName = i18n.NewFallbackConfig("plugin.help.command.embed.fields.arguments.name", "Arguments")
 	flagsFieldName     = i18n.NewFallbackConfig("plugin.help.command.embed.fields.flags.name", "Flags")
-	examplesFieldName  = i18n.NewFallbackConfig(
-		"plugin.help.command.embed.fields.example_args.name",
-		"Example Arguments")
+	examplesFieldName  = i18n.NewFallbackConfig("plugin.help.command.embed.fields.examples.name", "Examples")
 )
 
-type (
-	commandTitlePlaceholders struct {
-		Command string
-	}
-
-	usageFieldNameMultiPlaceholders struct {
-		Num int
-	}
-)
+type commandTitlePlaceholders struct {
+	Command string
+}

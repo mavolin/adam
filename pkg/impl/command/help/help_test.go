@@ -9,6 +9,8 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/arg"
+	"github.com/mavolin/adam/pkg/impl/command"
+	"github.com/mavolin/adam/pkg/impl/module"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -21,93 +23,91 @@ func TestHelp_Invoke(t *testing.T) {
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args:      plugin.Args{nil},
 				Prefixes:  []string{"my_cool_prefix"},
-				Provider: mock.PluginProvider{
-					PluginRepositoriesReturn: []plugin.Repository{
-						{
-							ProviderName: plugin.BuiltInProvider,
-							Commands: []plugin.Command{
-								mock.Command{
-									CommandMeta: mock.CommandMeta{
-										Name:             "abc",
-										ShortDescription: "abc desc",
-										Hidden:           true,
-									},
-								},
-								mock.Command{
-									CommandMeta: mock.CommandMeta{
-										Name:             "def",
-										ShortDescription: "def desc",
-									},
-								},
-								mock.Command{
-									CommandMeta: mock.CommandMeta{Name: "ghi"},
+				Provider: mock.NewPluginProvider([]plugin.Source{
+					{
+						Name: plugin.BuiltInSource,
+						Commands: []plugin.Command{
+							mock.Command{
+								CommandMeta: command.Meta{
+									Name:             "abc",
+									ShortDescription: "abc desc",
+									Hidden:           true,
 								},
 							},
-							Modules: []plugin.Module{
-								mock.Module{
-									ModuleMeta: mock.ModuleMeta{Name: "jkl"},
-									CommandsReturn: []plugin.Command{
-										mock.Command{
-											CommandMeta: mock.CommandMeta{
-												Name:   "abc",
-												Hidden: true,
-											},
-										},
-										mock.Command{
-											CommandMeta: mock.CommandMeta{
-												Name:             "def",
-												ShortDescription: "def desc",
-											},
+							mock.Command{
+								CommandMeta: command.Meta{
+									Name:             "def",
+									ShortDescription: "def desc",
+								},
+							},
+							mock.Command{
+								CommandMeta: command.Meta{Name: "ghi"},
+							},
+						},
+						Modules: []plugin.Module{
+							mock.Module{
+								ModuleMeta: module.Meta{Name: "jkl"},
+								CommandsReturn: []plugin.Command{
+									mock.Command{
+										CommandMeta: command.Meta{
+											Name:   "abc",
+											Hidden: true,
 										},
 									},
-									ModulesReturn: []plugin.Module{
-										mock.Module{
-											ModuleMeta: mock.ModuleMeta{
-												Name: "ghi",
-											},
-											CommandsReturn: []plugin.Command{
-												mock.Command{
-													CommandMeta: mock.CommandMeta{
-														Name:             "abc",
-														ShortDescription: "abc desc",
-													},
+									mock.Command{
+										CommandMeta: command.Meta{
+											Name:             "def",
+											ShortDescription: "def desc",
+										},
+									},
+								},
+								ModulesReturn: []plugin.Module{
+									mock.Module{
+										ModuleMeta: module.Meta{
+											Name: "ghi",
+										},
+										CommandsReturn: []plugin.Command{
+											mock.Command{
+												CommandMeta: command.Meta{
+													Name:             "abc",
+													ShortDescription: "abc desc",
 												},
 											},
 										},
 									},
 								},
-								mock.Module{
-									ModuleMeta: mock.ModuleMeta{Name: "mno"},
-									CommandsReturn: []plugin.Command{
-										mock.Command{
-											CommandMeta: mock.CommandMeta{
-												Name:             "abc",
-												ShortDescription: "abc desc",
-											},
+							},
+							mock.Module{
+								ModuleMeta: module.Meta{Name: "mno"},
+								CommandsReturn: []plugin.Command{
+									mock.Command{
+										CommandMeta: command.Meta{
+											Name:             "abc",
+											ShortDescription: "abc desc",
 										},
-										mock.Command{
-											CommandMeta: mock.CommandMeta{
-												Name:             "def",
-												ShortDescription: "def desc",
-											},
+									},
+									mock.Command{
+										CommandMeta: command.Meta{
+											Name:             "def",
+											ShortDescription: "def desc",
 										},
 									},
 								},
-								mock.Module{
-									ModuleMeta: mock.ModuleMeta{Name: "pqr"},
-									CommandsReturn: []plugin.Command{
-										mock.Command{
-											CommandMeta: mock.CommandMeta{
-												Name:   "stu,abc",
-												Hidden: true,
-											},
+							},
+							mock.Module{
+								ModuleMeta: module.Meta{Name: "pqr"},
+								CommandsReturn: []plugin.Command{
+									mock.Command{
+										CommandMeta: command.Meta{
+											Name:   "stu,abc",
+											Hidden: true,
 										},
 									},
 								},
 							},
 						},
 					},
-				},
+				}, nil),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					SelfReturn: &discord.Member{
 						User: discord.User{Username: "NotTesty"},
@@ -117,7 +117,7 @@ func TestHelp_Invoke(t *testing.T) {
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(allTitle).
+				WithTitlel(allTitle).
 				WithDescriptionl(allDescriptionGuild).
 				WithField(ctx.MustLocalize(allPrefixesFieldName), "`@Testy`, `my_cool_prefix`").
 				WithField(ctx.MustLocalize(commandsFieldName), "`def` - def desc\n`ghi`").
@@ -141,25 +141,23 @@ func TestHelp_Invoke(t *testing.T) {
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args:      plugin.Args{nil},
-				Provider: mock.PluginProvider{
-					PluginRepositoriesReturn: []plugin.Repository{
-						{
-							ProviderName: plugin.BuiltInProvider,
-							Commands: []plugin.Command{
-								mock.Command{
-									CommandMeta: mock.CommandMeta{Name: "abc"},
-								},
-								mock.Command{
-									CommandMeta: mock.CommandMeta{Name: "def"},
-								},
+				Provider: mock.NewPluginProvider([]plugin.Source{
+					{
+						Name: plugin.BuiltInSource,
+						Commands: []plugin.Command{
+							mock.Command{
+								CommandMeta: command.Meta{Name: "abc"},
+							},
+							mock.Command{
+								CommandMeta: command.Meta{Name: "def"},
 							},
 						},
 					},
-				},
+				}, nil),
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(allTitle).
+				WithTitlel(allTitle).
 				WithDescriptionl(allDescriptionDM).
 				WithField(ctx.MustLocalize(commandsFieldName), "`abc`\n`def`").
 				MustBuild(ctx.Localizer)
@@ -173,38 +171,38 @@ func TestHelp_Invoke(t *testing.T) {
 
 	t.Run("module", func(t *testing.T) {
 		mod := mock.Module{
-			ModuleMeta: mock.ModuleMeta{
+			ModuleMeta: module.Meta{
 				Name:            "abc",
 				LongDescription: "abc desc",
 			},
 			CommandsReturn: []plugin.Command{
 				mock.Command{
-					CommandMeta: mock.CommandMeta{
+					CommandMeta: command.Meta{
 						Name:             "def",
 						ShortDescription: "def desc",
 						Hidden:           true,
 					},
 				},
 				mock.Command{
-					CommandMeta: mock.CommandMeta{
+					CommandMeta: command.Meta{
 						Name:             "ghi",
 						ShortDescription: "ghi desc",
 					},
 				},
-				mock.Command{CommandMeta: mock.CommandMeta{Name: "jkl"}},
+				mock.Command{CommandMeta: command.Meta{Name: "jkl"}},
 			},
 			ModulesReturn: []plugin.Module{
 				mock.Module{
-					ModuleMeta: mock.ModuleMeta{Name: "mno"},
+					ModuleMeta: module.Meta{Name: "mno"},
 					CommandsReturn: []plugin.Command{
 						mock.Command{
-							CommandMeta: mock.CommandMeta{
+							CommandMeta: command.Meta{
 								Name:   "abc",
 								Hidden: true,
 							},
 						},
 						mock.Command{
-							CommandMeta: mock.CommandMeta{
+							CommandMeta: command.Meta{
 								Name:             "def",
 								ShortDescription: "def desc",
 							},
@@ -212,10 +210,10 @@ func TestHelp_Invoke(t *testing.T) {
 					},
 					ModulesReturn: []plugin.Module{
 						mock.Module{
-							ModuleMeta: mock.ModuleMeta{Name: "ghi"},
+							ModuleMeta: module.Meta{Name: "ghi"},
 							CommandsReturn: []plugin.Command{
 								mock.Command{
-									CommandMeta: mock.CommandMeta{
+									CommandMeta: command.Meta{
 										Name:             "abc",
 										ShortDescription: "abc desc",
 									},
@@ -225,16 +223,16 @@ func TestHelp_Invoke(t *testing.T) {
 					},
 				},
 				mock.Module{
-					ModuleMeta: mock.ModuleMeta{Name: "pqr"},
+					ModuleMeta: module.Meta{Name: "pqr"},
 					CommandsReturn: []plugin.Command{
 						mock.Command{
-							CommandMeta: mock.CommandMeta{
+							CommandMeta: command.Meta{
 								Name:             "abc",
 								ShortDescription: "abc desc",
 							},
 						},
 						mock.Command{
-							CommandMeta: mock.CommandMeta{
+							CommandMeta: command.Meta{
 								Name:             "def",
 								ShortDescription: "def desc",
 							},
@@ -242,10 +240,10 @@ func TestHelp_Invoke(t *testing.T) {
 					},
 				},
 				mock.Module{
-					ModuleMeta: mock.ModuleMeta{Name: "stu"},
+					ModuleMeta: module.Meta{Name: "stu"},
 					CommandsReturn: []plugin.Command{
 						mock.Command{
-							CommandMeta: mock.CommandMeta{
+							CommandMeta: command.Meta{
 								Name:   "stu,abc",
 								Hidden: true,
 							},
@@ -257,13 +255,11 @@ func TestHelp_Invoke(t *testing.T) {
 
 		ctx := &plugin.Context{
 			Localizer: i18n.NewFallbackLocalizer(),
-			Args: plugin.Args{
-				mock.GenerateResolvedModule(plugin.BuiltInProvider, mod),
-			},
+			Args:      plugin.Args{mock.ResolveModule(plugin.BuiltInSource, mod)},
 		}
 
 		expect := BaseEmbed.Clone().
-			WithSimpleTitlel(moduleTitle.
+			WithTitlel(moduleTitle.
 				WithPlaceholders(moduleTitlePlaceholders{
 					Module: "abc",
 				})).
@@ -289,12 +285,13 @@ func TestHelp_Invoke(t *testing.T) {
 	t.Run("command", func(t *testing.T) {
 		t.Run("single option", func(t *testing.T) {
 			cmd := mock.Command{
-				CommandMeta: mock.CommandMeta{
+				CommandMeta: command.Meta{
 					Name:            "abc",
 					Aliases:         []string{"cba"},
 					LongDescription: "long description",
-					Args: arg.CommaConfig{
-						Required: []arg.RequiredArg{
+					ArgParser:       &arg.DelimiterParser{Delimiter: ','},
+					Args: &arg.Config{
+						RequiredArgs: []arg.RequiredArg{
 							{
 								Name:        "my arg",
 								Type:        arg.SimpleText,
@@ -306,7 +303,7 @@ func TestHelp_Invoke(t *testing.T) {
 								Description: "date description",
 							},
 						},
-						Optional: []arg.OptionalArg{
+						OptionalArgs: []arg.OptionalArg{
 							{
 								Name: "optional arg",
 								Type: arg.SimpleInteger,
@@ -333,19 +330,20 @@ func TestHelp_Invoke(t *testing.T) {
 						},
 						Variadic: true,
 					},
-					ExampleArgs: []string{"example one", "example two"},
+					ExampleArgs: plugin.ExampleArgs{
+						{Args: []string{"example one", "2021-06-24"}},
+						{Args: []string{"example two", "2003-05-09"}},
+					},
 				},
 			}
 
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
-				Args: plugin.Args{
-					mock.GenerateResolvedCommand(plugin.BuiltInProvider, cmd),
-				},
+				Args:      plugin.Args{mock.ResolveCommand(plugin.BuiltInSource, cmd)},
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(commandTitle.
+				WithTitlel(commandTitle.
 					WithPlaceholders(commandTitlePlaceholders{
 						Command: "abc",
 					})).
@@ -357,85 +355,8 @@ func TestHelp_Invoke(t *testing.T) {
 						"`decimal (Decimal+)` - decimal description").
 				WithField(ctx.MustLocalize(flagsFieldName),
 					"`-flag (User)` - flag description\n`-multi, -m (ID+)`").
-				WithField(ctx.MustLocalize(examplesFieldName), "```abc example one``````abc example two```").
-				MustBuild(ctx.Localizer)
-
-			actual, err := New(Options{HideFuncs: []HideFunc{}}).Invoke(nil, ctx)
-			require.NoError(t, err)
-			assert.Equal(t, expect, actual)
-		})
-
-		t.Run("multiple options", func(t *testing.T) {
-			cmd := mock.Command{
-				CommandMeta: mock.CommandMeta{
-					Name:            "abc",
-					LongDescription: "long description",
-					Args: arg.Options{
-						{
-							Prefix: "def",
-							Config: nil,
-						},
-						{
-							Prefix: "ghi",
-							Config: arg.CommaConfig{
-								Required: []arg.RequiredArg{
-									{
-										Name: "my arg",
-										Type: arg.SimpleText,
-									},
-								},
-							},
-						},
-						{
-							Prefix: "jkl",
-							Config: arg.CommaConfig{
-								Flags: []arg.Flag{
-									{
-										Name:        "flag",
-										Type:        arg.SimpleInteger,
-										Description: "flag description",
-										Multi:       true,
-									},
-								},
-							},
-						},
-					},
-				},
-			}
-
-			ctx := &plugin.Context{
-				Localizer: i18n.NewFallbackLocalizer(),
-				Args: plugin.Args{
-					mock.GenerateResolvedCommand(plugin.BuiltInProvider, cmd),
-				},
-			}
-
-			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(commandTitle.
-					WithPlaceholders(commandTitlePlaceholders{
-						Command: "abc",
-					})).
-				WithDescription("long description").
-				WithField(
-					ctx.MustLocalize(usageFieldNameMulti.
-						WithPlaceholders(usageFieldNameMultiPlaceholders{
-							Num: 1,
-						})),
-					"```abc def```").
-				WithField(
-					ctx.MustLocalize(usageFieldNameMulti.
-						WithPlaceholders(usageFieldNameMultiPlaceholders{
-							Num: 2,
-						})),
-					"```abc ghi <my arg>```").
-				WithField(
-					ctx.MustLocalize(usageFieldNameMulti.
-						WithPlaceholders(usageFieldNameMultiPlaceholders{
-							Num: 3,
-						})),
-					"```abc jkl```").
-				WithField(ctx.MustLocalize(flagsFieldName),
-					"`-flag (Integer+)` - flag description").
+				WithField(ctx.MustLocalize(examplesFieldName),
+					"```abc example one, 2021-06-24``````abc example two, 2003-05-09```").
 				MustBuild(ctx.Localizer)
 
 			actual, err := New(Options{HideFuncs: []HideFunc{}}).Invoke(nil, ctx)
@@ -445,7 +366,7 @@ func TestHelp_Invoke(t *testing.T) {
 
 		t.Run("no args", func(t *testing.T) {
 			cmd := mock.Command{
-				CommandMeta: mock.CommandMeta{
+				CommandMeta: command.Meta{
 					Name:            "abc",
 					Aliases:         []string{"cba"},
 					LongDescription: "long description",
@@ -456,12 +377,12 @@ func TestHelp_Invoke(t *testing.T) {
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args: plugin.Args{
-					mock.GenerateResolvedCommand(plugin.BuiltInProvider, cmd),
+					mock.ResolveCommand(plugin.BuiltInSource, cmd),
 				},
 			}
 
 			expect := BaseEmbed.Clone().
-				WithSimpleTitlel(commandTitle.
+				WithTitlel(commandTitle.
 					WithPlaceholders(commandTitlePlaceholders{
 						Command: "abc",
 					})).

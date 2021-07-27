@@ -817,7 +817,7 @@ var (
 var (
 	commandName        = i18n.NewFallbackConfig("arg.type.command.name", "Command")
 	commandDescription = i18n.NewFallbackConfig(
-		"arg.type.command.description", "The name of a command without the command's prefix.")
+		"arg.type.command.description", "The name of a Command without the Command's prefix.")
 )
 
 // ================================ Errors ================================

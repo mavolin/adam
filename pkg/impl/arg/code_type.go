@@ -7,13 +7,14 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // Code is the type used for code enclosed in a markdown code block.
 // Single, double, and triple backticks are permitted.
 //
 // Go type: *CodeBlock
-var Code Type = new(code)
+var Code plugin.ArgType = new(code)
 
 type code struct{}
 
@@ -29,12 +30,12 @@ type CodeBlock struct {
 	QtyBackticks int
 }
 
-func (c code) Name(l *i18n.Localizer) string {
+func (c code) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(codeName) // we have a fallback
 	return name
 }
 
-func (c code) Description(l *i18n.Localizer) string {
+func (c code) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(codeDescription) // we have a fallback
 	return desc
 }
@@ -48,7 +49,7 @@ var (
 		`^\x60\x60\x60(?:(?P<lang>\S+)\n)?(?P<code>(?:\x60\x60[^\x60]|\x60[^\x60]|[^\x60])+)\x60\x60\x60$`)
 )
 
-func (c code) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (c code) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if matches := singleBacktickRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 2 {
 		return &CodeBlock{
 			Code:         strings.Trim(matches[1], "\n"),
@@ -77,6 +78,6 @@ func (c code) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return nil, newArgumentError2(codeInvalidErrorArg, codeInvalidErrorFlag, ctx, nil)
 }
 
-func (c code) Default() interface{} {
+func (c code) GetDefault() interface{} {
 	return (*CodeBlock)(nil)
 }

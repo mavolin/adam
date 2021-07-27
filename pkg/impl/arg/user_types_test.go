@@ -19,13 +19,13 @@ func TestUser_Parse(t *testing.T) {
 	successCases := []struct {
 		name string
 
-		ctx *Context
+		ctx *plugin.ParseContext
 
 		expect *discord.User
 	}{
 		{
 			name: "mention fallback",
-			ctx: &Context{
+			ctx: &plugin.ParseContext{
 				Context: new(plugin.Context),
 				Raw:     "<@123>",
 			},
@@ -33,7 +33,7 @@ func TestUser_Parse(t *testing.T) {
 		},
 		{
 			name:   "id",
-			ctx:    &Context{Raw: "123"},
+			ctx:    &plugin.ParseContext{Raw: "123"},
 			expect: &discord.User{ID: 123},
 		},
 	}
@@ -55,7 +55,7 @@ func TestUser_Parse(t *testing.T) {
 		t.Run("mention", func(t *testing.T) {
 			expect := &discord.User{ID: 123}
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{
 					Message: discord.Message{
 						Mentions: []discord.GuildUser{{User: *expect}},
@@ -72,9 +72,9 @@ func TestUser_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Raw:  fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
-				Kind: KindArg,
+				Kind: plugin.KindArg,
 			}
 
 			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
@@ -82,7 +82,7 @@ func TestUser_Parse(t *testing.T) {
 			_, actual := User.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
-			ctx.Kind = KindFlag
+			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = User.Parse(nil, ctx)
@@ -94,10 +94,10 @@ func TestUser_Parse(t *testing.T) {
 
 			var userID discord.UserID = 123
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: new(plugin.Context),
 				Raw:     userID.Mention(),
-				Kind:    KindArg,
+				Kind:    plugin.KindArg,
 			}
 
 			srcMocker.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
@@ -115,7 +115,7 @@ func TestUser_Parse(t *testing.T) {
 
 			m.Eval()
 
-			ctx.Kind = KindFlag
+			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
@@ -127,7 +127,7 @@ func TestUser_Parse(t *testing.T) {
 		})
 
 		t.Run("not id", func(t *testing.T) {
-			ctx := &Context{Raw: "abc"}
+			ctx := &plugin.ParseContext{Raw: "abc"}
 
 			expect := newArgumentError(userInvalidError, ctx, nil)
 
@@ -141,7 +141,7 @@ func TestUser_Parse(t *testing.T) {
 
 			var userID discord.UserID = 123
 
-			ctx := &Context{Raw: "123"}
+			ctx := &plugin.ParseContext{Raw: "123"}
 
 			m.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
@@ -161,13 +161,13 @@ func TestMember_Parse(t *testing.T) {
 	successCases := []struct {
 		name string
 
-		ctx *Context
+		ctx *plugin.ParseContext
 
 		expect *discord.Member
 	}{
 		{
 			name: "mention fallback",
-			ctx: &Context{
+			ctx: &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "<@456>",
 			},
@@ -177,7 +177,7 @@ func TestMember_Parse(t *testing.T) {
 		},
 		{
 			name: "id",
-			ctx: &Context{
+			ctx: &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "456",
 			},
@@ -207,7 +207,7 @@ func TestMember_Parse(t *testing.T) {
 				Deaf: true,
 			}
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{
 					Message: discord.Message{
 						GuildID: 123,
@@ -230,10 +230,10 @@ func TestMember_Parse(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		t.Run("mention id range", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
-				Kind:    KindArg,
+				Kind:    plugin.KindArg,
 			}
 
 			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
@@ -241,7 +241,7 @@ func TestMember_Parse(t *testing.T) {
 			_, actual := Member.Parse(nil, ctx)
 			assert.Equal(t, expect, actual)
 
-			ctx.Kind = KindFlag
+			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			_, actual = Member.Parse(nil, ctx)
@@ -253,10 +253,10 @@ func TestMember_Parse(t *testing.T) {
 
 			var userID discord.UserID = 456
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     userID.Mention(),
-				Kind:    KindArg,
+				Kind:    plugin.KindArg,
 			}
 
 			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
@@ -274,7 +274,7 @@ func TestMember_Parse(t *testing.T) {
 
 			m.Eval()
 
-			ctx.Kind = KindFlag
+			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
 			m, s = state.CloneMocker(srcMocker, t)
@@ -286,7 +286,7 @@ func TestMember_Parse(t *testing.T) {
 		})
 
 		t.Run("not id", func(t *testing.T) {
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "abc",
 			}
@@ -303,7 +303,7 @@ func TestMember_Parse(t *testing.T) {
 
 			var userID discord.UserID = 456
 
-			ctx := &Context{
+			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     userID.String(),
 			}

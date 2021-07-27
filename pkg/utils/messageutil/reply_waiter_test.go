@@ -167,6 +167,9 @@ func TestWaiter_handleMessages(t *testing.T) {
 			defer m.Eval()
 
 			c.waiter.state = s
+			c.waiter.ctx = &plugin.Context{
+				Localizer: mock.NewLocalizer(t).Build(),
+			}
 
 			var result chan interface{}
 			// cause a nil pointer dereference, if something gets sent anyway

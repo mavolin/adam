@@ -42,7 +42,7 @@ func TestChoice_Parse(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				ctx := &Context{Raw: c.raw}
+				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.choice.Parse(nil, ctx)
 				require.NoError(t, err)
@@ -54,7 +54,7 @@ func TestChoice_Parse(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		choice := Choice{{Name: "abc"}}
 
-		ctx := &Context{Raw: "def"}
+		ctx := &plugin.ParseContext{Raw: "def"}
 
 		expect := newArgumentError(choiceInvalidError, ctx, nil)
 
@@ -69,7 +69,7 @@ func TestChoice_Default(t *testing.T) {
 
 		expect := 0
 
-		actual := choice.Default()
+		actual := choice.GetDefault()
 		assert.Equal(t, expect, actual)
 	})
 
@@ -78,7 +78,7 @@ func TestChoice_Default(t *testing.T) {
 
 		expect := ""
 
-		actual := choice.Default()
+		actual := choice.GetDefault()
 		assert.Equal(t, expect, actual)
 	})
 
@@ -87,7 +87,7 @@ func TestChoice_Default(t *testing.T) {
 
 		var expect interface{} = nil
 
-		actual := choice.Default()
+		actual := choice.GetDefault()
 		assert.Equal(t, expect, actual)
 	})
 }
@@ -103,7 +103,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 			},
 		}
 
-		ctx := &Context{
+		ctx := &plugin.ParseContext{
 			Context: &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 			},
@@ -123,7 +123,7 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 			},
 		}
 
-		ctx := &Context{
+		ctx := &plugin.ParseContext{
 			Context: &plugin.Context{Localizer: i18n.NewFallbackLocalizer()},
 			Raw:     "jkl",
 		}
@@ -146,7 +146,7 @@ func TestLocalizedChoice_Default(t *testing.T) {
 
 		expect := 0
 
-		actual := choice.Default()
+		actual := choice.GetDefault()
 		assert.Equal(t, expect, actual)
 	})
 
@@ -155,7 +155,7 @@ func TestLocalizedChoice_Default(t *testing.T) {
 
 		var expect interface{} = nil
 
-		actual := choice.Default()
+		actual := choice.GetDefault()
 		assert.Equal(t, expect, actual)
 	})
 }

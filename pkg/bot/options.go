@@ -1,7 +1,6 @@
 package bot
 
 import (
-	"fmt"
 	"log"
 	"syscall"
 	"time"
@@ -16,11 +15,13 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/impl/arg"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // Options contains different configurations for a Bot.
-type Options struct { //nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
+//nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
+type Options struct {
 	// Token is the bot token without the 'Bot' prefix.
 	//
 	// This field is required.
@@ -64,6 +65,12 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// Default: None
 	ActivityURL discord.URL
 
+	// ArgParser is the plugin.ArgParser used to parse the arguments of all
+	// commands that don't define a custom one.
+	//
+	// Default: &arg.DelimiterParser{Delimiter: ','}
+	ArgParser plugin.ArgParser
+
 	// AllowBot specifies whether bots may trigger commands.
 	//
 	// Default: false
@@ -97,12 +104,6 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	// Default: DefaultThrottlerErrorCheck
 	ThrottlerCancelChecker func(error) bool
-
-	// AsyncPluginProviders specifies whether the plugins providers should be
-	// fetched asynchronously or one by one.
-	//
-	// Default: false
-	AsyncPluginProviders bool
 
 	// Cabinet is the store.Cabinet used for caching.
 	// Use store.NoopCabinet to deactivate caching.
@@ -168,13 +169,13 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	// NoDefaultMiddlewares, if true, prevents the default middlewares from
 	// being added on creation.
 	// These middlewares are responsible for validating the user is allowed
-	// to run a command, and the bot is able to.
+	// to run a command and the bot is able to.
 	//
 	// If you set this to true, you are responsible for adding those checks,
 	// or equivalents of them.
 	// Although possible, it is highly discouraged to disable certain checks,
 	// unless the resulting behavior is explicitly desired.
-	// Default or third-party plugins may rely on these checks, to perform as
+	// Default or third-party plugins may rely on these checks to perform as
 	// intended.
 	//
 	// By default, the following middlewares are added upon creation of the
@@ -182,10 +183,11 @@ type Options struct { //nolint:maligned // only one-time use anyway, ordered by 
 	//
 	//	Bot.AddMiddleware(CheckChannelTypes)
 	//	Bot.AddMiddleware(CheckBotPermissions)
-	//	Bot.AddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+	//	Bot.AddMiddleware(NewThrottlerChecker(Bot.ThrottlerCancelChecker))
 	//
 	//	Bot.AddPostMiddleware(CheckRestrictions)
 	//	Bot.AddPostMiddleware(ParseArgs)
+	//	Bot.AddPostMiddleware(InvokeCommand)
 	NoDefaultMiddlewares bool
 }
 
@@ -197,6 +199,10 @@ func (o *Options) SetDefaults() (err error) {
 
 	if len(o.Status) == 0 {
 		o.Status = gateway.OnlineStatus
+	}
+
+	if o.ArgParser == nil {
+		o.ArgParser = &arg.DelimiterParser{Delimiter: ','}
 	}
 
 	if o.ThrottlerCancelChecker == nil {
@@ -365,32 +371,21 @@ func DefaultThrottlerErrorCheck(err error) bool {
 }
 
 func DefaultGatewayErrorHandler(err error) {
-	if FilterGatewayError(err) {
+	if !FilterGatewayError(err) {
 		log.Println(err)
 	}
 }
 
-// FilterGatewayError filters out reconnect informational errors.
+// FilterGatewayError filters out informational reconnect errors.
 func FilterGatewayError(err error) bool {
 	var cerr *websocket.CloseError
-	switch {
-	case errors.As(err, &cerr) && websocket.IsCloseError(cerr, websocket.CloseGoingAway, websocket.CloseAbnormalClosure):
-		fallthrough
-	case errors.Is(err, syscall.ECONNRESET):
-		return false
-	}
-	return true
+	return (errors.As(err, &cerr) &&
+		(cerr.Code == websocket.CloseGoingAway || cerr.Code == websocket.CloseAbnormalClosure)) ||
+		errors.Is(err, syscall.ECONNRESET)
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
-	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
-		var Err errors.Error
-		if !errors.As(err, &Err) {
-			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
-		}
-
-		err = Err.Handle(s, ctx)
-	}
+	errors.Handle(err, s, ctx, 4)
 }
 
 func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Context) {
@@ -398,15 +393,8 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 	if ok {
 		err = errors.Wrap(err, "panic")
 	} else {
-		err = fmt.Errorf("panic: %+v", recovered)
+		err = errors.NewWithStackf("panic: %+v", recovered)
 	}
 
-	for i := 0; i < 4 && err != nil; i++ { // prevent error cycle
-		var Err errors.Error
-		if !errors.As(err, &Err) {
-			Err = errors.WithStack(err).(errors.Error) //nolint:errorlint
-		}
-
-		err = Err.Handle(s, ctx)
-	}
+	errors.Handle(err, s, ctx, 4)
 }

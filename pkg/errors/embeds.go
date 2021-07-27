@@ -8,7 +8,7 @@ import (
 // SetErrorEmbed updates the *embedutil.Builder used to create new error
 // embeds.
 //
-// It should be made sure, that Builder always succeeds in building, as
+// It should be made sure that Builder always succeeds in building, as
 // otherwise errors might not get sent.
 // This means if localizing the Embed, fallbacks should be defined.
 //
@@ -26,7 +26,7 @@ func NewErrorEmbed() *embedutil.Builder {
 
 // SetInfoEmbed updates the *embedutil.Builder used to create new info embeds.
 //
-// It should be made sure, that Embed builder always succeeds in building, as
+// It should be made sure that Embed builder always succeeds in building, as
 // otherwise errors might not get sent.
 // This means if localizing the Embed, fallbacks should be defined.
 //

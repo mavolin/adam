@@ -32,16 +32,18 @@ func New() *Ban {
 			Name:             "ban",
 			Aliases:          []string{"banhammer"},
 			ShortDescription: "Bans someone.",
-			ExampleArgs:      []string{"@Wumpus", "@Wumpus, using offensive language"},
-			Args: arg.CommaConfig{
-				Required: []arg.RequiredArg{
+			ExampleArgs: plugin.ExampleArgs{
+				{Args: []string{"@Wumpus", "@Wumpus, using offensive language"}},
+			},
+			Args: &arg.Config{
+				RequiredArgs: []arg.RequiredArg{
 					{
 						Name:        "Member",
 						Type:        arg.Member,
 						Description: "The member you want to ban.",
 					},
 				},
-				Optional: []arg.OptionalArg{
+				OptionalArgs: []arg.OptionalArg{
 					{
 						Name:        "Reason",
 						Type:        arg.SimpleText,

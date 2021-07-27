@@ -12,7 +12,7 @@ import (
 // underlying Func, nor the Fallback return a non-error value.
 type NoTranslationGeneratedError struct {
 	Term Term
-	s    errorutil.Stack
+	s    errorutil.StackTrace
 }
 
 // NewNoTranslationGeneratedError creates a new NoTranslationGeneratedError
@@ -33,7 +33,7 @@ func (e *NoTranslationGeneratedError) Error() string {
 	return "unable to generate a translation"
 }
 
-func (e *NoTranslationGeneratedError) StackTrace() []uintptr { return e.s }
+func (e *NoTranslationGeneratedError) StackTrace() errorutil.StackTrace { return e.s }
 
 // Is checks if the error matches the passed error.
 func (e *NoTranslationGeneratedError) Is(target error) bool {

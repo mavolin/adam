@@ -23,7 +23,7 @@ func TestArgumentParsingError_Description(t *testing.T) {
 
 		e := NewArgumentError(expect)
 
-		actual, err := e.Description(nil)
+		actual, err := e.Description(newMockedLocalizer(t).build())
 		assert.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})

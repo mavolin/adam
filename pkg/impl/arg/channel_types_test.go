@@ -54,7 +54,7 @@ func TestTextChannel_Parse(t *testing.T) {
 				m, s := state.NewMocker(t)
 				defer m.Eval()
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{
 						Message: discord.Message{GuildID: c.expect.GuildID},
 					},
@@ -185,10 +185,10 @@ func TestTextChannel_Parse(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				TextChannelAllowIDs = c.allowIDs
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
 					Raw:     c.raw,
-					Kind:    KindArg,
+					Kind:    plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, nil)
@@ -196,7 +196,7 @@ func TestTextChannel_Parse(t *testing.T) {
 				_, actual := TextChannel.Parse(nil, ctx)
 				assert.Equal(t, expect, actual)
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				_, actual = TextChannel.Parse(nil, ctx)
@@ -215,10 +215,10 @@ func TestTextChannel_Parse(t *testing.T) {
 					Message: "Unknown channel",
 				})
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
 					Raw:     c.raw,
-					Kind:    KindArg,
+					Kind:    plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, nil)
@@ -230,7 +230,7 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				m.Eval()
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)
@@ -249,10 +249,10 @@ func TestTextChannel_Parse(t *testing.T) {
 				srcMocker, _ := state.NewMocker(t)
 				srcMocker.Channel(c.channel)
 
-				ctx := &Context{
+				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{Message: discord.Message{GuildID: 456}},
 					Raw:     c.raw,
-					Kind:    KindArg,
+					Kind:    plugin.KindArg,
 				}
 
 				expect := newArgumentError(c.expectArg, ctx, nil)
@@ -264,7 +264,7 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				m.Eval()
 
-				ctx.Kind = KindFlag
+				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
 				m, s = state.CloneMocker(srcMocker, t)

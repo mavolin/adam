@@ -3,42 +3,45 @@ package arg
 import (
 	"strings"
 
+	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
 type (
-	commaLexer struct {
+	delimiterLexer struct {
 		raw []rune
 
 		start int
 		pos   int // next char
 
-		emitChan chan commaItem
-		state    commaStateFunc
+		emitChan chan delimiterItem
+		state    delimiterStateFunc
 
 		nextArg      int
 		parsingFlags bool
+
+		delimiter rune
 	}
 
-	commaStateFunc func() (commaStateFunc, error)
+	delimiterStateFunc func() (delimiterStateFunc, error)
 
-	commaItem struct {
-		typ commaItemType
+	delimiterItem struct {
+		typ delimiterItemType
 		val string
 	}
 )
 
-type commaItemType uint8
+type delimiterItemType uint8
 
 const (
-	itemEOF commaItemType = iota
+	itemEOF delimiterItemType = iota
 	itemFlagName
 	itemFlagContent
 	itemArgContent
-	itemComma
+	itemDelimiter
 )
 
-func (i commaItemType) String() string {
+func (i delimiterItemType) String() string {
 	switch i {
 	case itemEOF:
 		return "EOF"
@@ -48,39 +51,40 @@ func (i commaItemType) String() string {
 		return "flagContent"
 	case itemArgContent:
 		return "argContent"
-	case itemComma:
+	case itemDelimiter:
 		return "comma"
 	default:
 		return ""
 	}
 }
 
-func newCommaLexer(args string) *commaLexer {
-	l := &commaLexer{
+func newCommaLexer(args string, delim rune) *delimiterLexer {
+	l := &delimiterLexer{
 		raw:          []rune(args),
-		emitChan:     make(chan commaItem, 2), // pseudo ring buffer, see nextItem
+		emitChan:     make(chan delimiterItem, 2), // pseudo ring buffer, see nextItem
 		parsingFlags: true,
+		delimiter:    delim,
 	}
 
 	l.state = l.item
 	return l
 }
 
-func (l *commaLexer) nextItem() (commaItem, error) {
+func (l *delimiterLexer) nextItem() (delimiterItem, error) {
 	for {
 		select {
 		case emit := <-l.emitChan:
 			return emit, nil
 		default:
 			if l.state == nil {
-				return commaItem{typ: itemEOF}, nil
+				return delimiterItem{typ: itemEOF}, nil
 			}
 
 			var err error
 
 			l.state, err = l.state()
 			if err != nil {
-				return commaItem{}, err
+				return delimiterItem{}, err
 			}
 		}
 	}
@@ -89,15 +93,15 @@ func (l *commaLexer) nextItem() (commaItem, error) {
 // ================================ Helpers ================================
 
 // has checks if there are at least min runes remaining.
-func (l *commaLexer) has(min int) bool {
+func (l *delimiterLexer) has(min int) bool {
 	return l.pos <= len(l.raw)-min
 }
 
-func (l *commaLexer) drained() bool {
+func (l *delimiterLexer) drained() bool {
 	return !l.has(1)
 }
 
-func (l *commaLexer) next() rune {
+func (l *delimiterLexer) next() rune {
 	if !l.has(1) {
 		return 0
 	}
@@ -107,12 +111,12 @@ func (l *commaLexer) next() rune {
 }
 
 // backup goes one character back.
-func (l *commaLexer) backup() {
+func (l *delimiterLexer) backup() {
 	l.pos--
 }
 
 // peek peeks numAhead characters ahead, without incrementing the position.
-func (l *commaLexer) peek(numAhead int) rune {
+func (l *delimiterLexer) peek(numAhead int) rune {
 	if !l.has(numAhead) {
 		return 0
 	}
@@ -121,7 +125,7 @@ func (l *commaLexer) peek(numAhead int) rune {
 }
 
 // skip skips the next num characters.
-func (l *commaLexer) skip() {
+func (l *delimiterLexer) skip() {
 	if l.has(1) {
 		l.pos++
 	}
@@ -129,12 +133,12 @@ func (l *commaLexer) skip() {
 
 // ignore ignores all content up to this point.
 // It starts at the upcoming character.
-func (l *commaLexer) ignore() {
+func (l *delimiterLexer) ignore() {
 	l.start = l.pos
 }
 
-func (l *commaLexer) emit(typ commaItemType) {
-	l.emitChan <- commaItem{
+func (l *delimiterLexer) emit(typ delimiterItemType) {
+	l.emitChan <- delimiterItem{
 		typ: typ,
 		val: string(l.raw[l.start:l.pos]),
 	}
@@ -142,9 +146,9 @@ func (l *commaLexer) emit(typ commaItemType) {
 	l.start = l.pos
 }
 
-func (l *commaLexer) ignoreWhitespace() {
+func (l *delimiterLexer) ignoreWhitespace() {
 	for l.has(1) { // skip whitespace
-		if !strings.ContainsRune(whitespace, l.next()) {
+		if !strings.ContainsRune(shared.Whitespace, l.next()) {
 			l.backup()
 			break
 		}
@@ -153,10 +157,10 @@ func (l *commaLexer) ignoreWhitespace() {
 	l.ignore()
 }
 
-func (l *commaLexer) consumeContent() {
+func (l *delimiterLexer) consumeContent() {
 	for l.has(1) {
-		if l.next() == ',' {
-			if l.peek(1) == ',' { // escaped comma
+		if l.next() == l.delimiter {
+			if l.peek(1) == l.delimiter { // escaped delimiter
 				l.skip()
 			} else {
 				l.backup()
@@ -168,7 +172,7 @@ func (l *commaLexer) consumeContent() {
 
 // ================================ State functions ================================
 
-func (l *commaLexer) item() (commaStateFunc, error) {
+func (l *delimiterLexer) item() (delimiterStateFunc, error) {
 	if l.drained() {
 		return nil, nil
 	}
@@ -188,11 +192,11 @@ func (l *commaLexer) item() (commaStateFunc, error) {
 }
 
 // flag parses a flag.
-func (l *commaLexer) flag() (commaStateFunc, error) {
+func (l *delimiterLexer) flag() (delimiterStateFunc, error) {
 	for l.has(1) {
 		next := l.next()
 
-		if strings.ContainsRune(whitespace, next) {
+		if strings.ContainsRune(shared.Whitespace, next) {
 			l.backup()
 			l.emit(itemFlagName)
 
@@ -204,7 +208,7 @@ func (l *commaLexer) flag() (commaStateFunc, error) {
 	return nil, nil
 }
 
-func (l *commaLexer) flagContent() (commaStateFunc, error) {
+func (l *delimiterLexer) flagContent() (delimiterStateFunc, error) {
 	l.ignoreWhitespace()
 	l.consumeContent()
 
@@ -215,7 +219,7 @@ func (l *commaLexer) flagContent() (commaStateFunc, error) {
 	return l.end, nil
 }
 
-func (l *commaLexer) arg() (commaStateFunc, error) {
+func (l *delimiterLexer) arg() (delimiterStateFunc, error) {
 	l.consumeContent()
 
 	if l.pos == l.start { // make sure we actually collected some flagContent
@@ -233,13 +237,13 @@ func (l *commaLexer) arg() (commaStateFunc, error) {
 
 // end is called if the end of an argument or a flag is reached.
 // It expects either EOF or a comma.
-func (l *commaLexer) end() (commaStateFunc, error) {
+func (l *delimiterLexer) end() (delimiterStateFunc, error) {
 	if l.drained() {
 		return nil, nil
 	}
 
 	l.skip()
-	l.emit(itemComma)
+	l.emit(itemDelimiter)
 
 	l.ignoreWhitespace()
 	return l.item, nil

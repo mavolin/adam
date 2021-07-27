@@ -25,9 +25,15 @@ func New() *Say {
 			Aliases:          []string{"repeat"},
 			ShortDescription: shortDescription,
 			ExampleArgs:      examples,
-			Args: arg.LocalizedRaw{
-				Name:        argTextName,
-				Description: argTextDescription,
+			ArgParser:        arg.RawParser,
+			Args: &arg.LocalizedConfig{
+				RequiredArgs: []arg.LocalizedRequiredArg{
+					{
+						Name:        argTextName,
+						Description: argTextDescription,
+						Type:        arg.SimpleText,
+					},
+				},
 			},
 			ChannelTypes:   plugin.AllChannels,
 			BotPermissions: discord.PermissionSendMessages,

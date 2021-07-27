@@ -12,7 +12,7 @@
 
 ## About
 
-Adam is a bot framework for Discord, built on top of [diamondburned's](https://github.com/diamondburned) library [arikawa](https://github.com/diamondburned).
+Adam is a bot framework for Discord, built on top of [arikawa](https://github.com/diamondburned).
 I originally started working on this because I needed a simple command router with support for localization, but along the way of building it, it turned into a fully-featured bot framework.
 You can do everything from a simple `ping` bot to a localized bot with custom commands.
 
@@ -20,12 +20,11 @@ You can do everything from a simple `ping` bot to a localized bot with custom co
 
 * 🖥️ Typed (variadic) arguments and flags, as well as out-of-the-box parsing for shellword, and comma-based notations
 * 🌍 Support for localization
-* 🗒️ Utilities for things like permission handling, emojis, and awaiting responses and reactions
+* 🗒️ Utilities for permission handling, emojis, and awaiting responses and reactions
 * ⚡ Error handling with automatic stack trace generation
 * 👪 Command grouping through modules
 * ⏳ Command throttling/cooldowns
 * ✏️ Support for message edits
-* 🔄 Command overloading through options
 * 🤝 Middlewares
 * 🛑 Powerful access control system
 * 🔌 Custom command sources for commands available at runtime

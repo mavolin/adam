@@ -7,7 +7,6 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/internal/capbuilder"
-	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -46,7 +45,7 @@ func (h *Help) genPrefixesField(b *capbuilder.CappedBuilder, ctx *plugin.Context
 }
 
 func (h *Help) genCommandsField(
-	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, cmds []*plugin.ResolvedCommand,
+	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, cmds []plugin.ResolvedCommand,
 ) (f discord.EmbedField) {
 	b.Reset(1024)
 
@@ -63,7 +62,7 @@ func (h *Help) genCommandsField(
 }
 
 func (h *Help) genModuleFields(
-	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, mods []*plugin.ResolvedModule, max int,
+	b *capbuilder.CappedBuilder, s *state.State, ctx *plugin.Context, mods []plugin.ResolvedModule, max int,
 ) []discord.EmbedField {
 	fields := make([]discord.EmbedField, 0, max)
 
@@ -74,7 +73,7 @@ func (h *Help) genModuleFields(
 		var f discord.EmbedField
 
 		f.Name = ctx.MustLocalize(moduleTitle.
-			WithPlaceholders(moduleTitlePlaceholders{Module: mod.ID.AsInvoke()}))
+			WithPlaceholders(moduleTitlePlaceholders{Module: mod.ID().AsInvoke()}))
 		b.Use(len(f.Name))
 
 		if b.Rem() < 10+len(f.Name) {
@@ -96,14 +95,16 @@ func (h *Help) genModuleFields(
 	return fields
 }
 
-func (h *Help) genAliases(b *strings.Builder, cmd *plugin.ResolvedCommand, l *i18n.Localizer) *discord.EmbedField {
-	if len(cmd.Aliases) == 0 {
+func (h *Help) genAliasesField(
+	b *strings.Builder, ctx *plugin.Context, cmd plugin.ResolvedCommand,
+) *discord.EmbedField {
+	if len(cmd.Aliases()) == 0 {
 		return nil
 	}
 
 	b.Reset()
 
-	for i, alias := range cmd.Aliases {
+	for i, alias := range cmd.Aliases() {
 		if i > 0 {
 			b.WriteString(", ")
 		}
@@ -114,114 +115,100 @@ func (h *Help) genAliases(b *strings.Builder, cmd *plugin.ResolvedCommand, l *i1
 	}
 
 	return &discord.EmbedField{
-		Name:  l.MustLocalize(aliasesFieldName),
+		Name:  ctx.MustLocalize(aliasesFieldName),
 		Value: b.String(),
 	}
 }
 
-func (h *Help) genUsages(b *strings.Builder, ctx *plugin.Context, cmd *plugin.ResolvedCommand) []discord.EmbedField {
-	if cmd.Args == nil { // special case, command accepts no arguments
-		return []discord.EmbedField{
-			{
-				Name:  ctx.MustLocalize(usageFieldNameSingle),
-				Value: "```" + cmd.ID.AsInvoke() + "```",
-			},
-		}
-	}
-
-	infoer, ok := cmd.Args.(plugin.ArgsInfoer)
-	if !ok {
-		return nil
-	}
-
-	infos := infoer.Info(ctx.Localizer)
-	if len(infos) == 0 {
-		return nil
-	}
-
-	fields := make([]discord.EmbedField, 0, 3*len(infos)+1)
-
-	for i, info := range infos {
-		var n int
-		if len(infos) > 1 {
-			n = i + 1
-		}
-
-		fields = append(fields, h.genUsage(b, cmd, info, n, ctx.Localizer))
-
-		if args := h.genArguments(b, info, ctx.Localizer); args != nil {
-			fields = append(fields, *args)
-		}
-
-		if flags := h.genFlags(b, info, ctx.Localizer); flags != nil {
-			fields = append(fields, *flags)
-		}
-	}
-
-	return fields
-}
-
 func (h *Help) genUsage(
-	b *strings.Builder, cmd *plugin.ResolvedCommand, info plugin.ArgsInfo, n int, l *i18n.Localizer,
+	b *strings.Builder, ctx *plugin.Context, cmd plugin.ResolvedCommand,
 ) (usage discord.EmbedField) {
-	if n == 0 {
-		usage.Name = l.MustLocalize(usageFieldNameSingle)
-	} else {
-		usage.Name = l.MustLocalize(usageFieldNameMulti.
-			WithPlaceholders(usageFieldNameMultiPlaceholders{
-				Num: n,
-			}))
-	}
+	usage.Name = ctx.MustLocalize(usageFieldNameSingle)
 
 	b.Reset()
 
 	b.WriteString("```")
-	b.WriteString(cmd.ID.AsInvoke())
+	b.WriteString(cmd.ID().AsInvoke())
 
-	if len(info.Prefix) > 0 {
-		b.WriteRune(' ')
-		b.WriteString(info.Prefix)
+	if cmd.Args() == nil {
+		b.WriteString("```")
+		usage.Value = b.String()
+		return usage
 	}
 
-	if info.ArgsFormatter != nil {
-		if argUsage := info.ArgsFormatter(h.ArgFormatter); len(argUsage) > 0 {
-			b.WriteRune(' ')
-			b.WriteString(argUsage)
-		}
+	b.WriteRune(' ')
+
+	var (
+		requiredArgs = cmd.Args().GetRequiredArgs()
+		optionalArgs = cmd.Args().GetOptionalArgs()
+
+		usageArgs = make([]string, 0, len(requiredArgs)+len(optionalArgs))
+	)
+
+	for i, arg := range requiredArgs {
+		name := arg.GetName(ctx.Localizer)
+		typeName := arg.GetType().GetName(ctx.Localizer)
+		variadic := cmd.Args().IsVariadic() && i == len(requiredArgs)-1 && len(optionalArgs) == 0
+
+		usageArgs = append(usageArgs, h.ArgFormatter(name, typeName, false, variadic))
 	}
 
+	for i, arg := range optionalArgs {
+		name := arg.GetName(ctx.Localizer)
+		typeName := arg.GetType().GetName(ctx.Localizer)
+		variadic := cmd.Args().IsVariadic() && i == len(optionalArgs)-1
+
+		usageArgs = append(usageArgs, h.ArgFormatter(name, typeName, true, variadic))
+	}
+
+	b.WriteString(cmd.ArgParser().FormatUsage(cmd.Args(), usageArgs))
 	b.WriteString("```")
 
 	usage.Value = b.String()
 	return usage
 }
 
-func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Localizer) *discord.EmbedField { //nolint:gocognit
-	if len(info.Required) == 0 && len(info.Optional) == 0 {
+//nolint:funlen,gocognit
+func (h *Help) genArguments(
+	b *strings.Builder, ctx *plugin.Context, cmd plugin.ResolvedCommand,
+) *discord.EmbedField {
+	if cmd.Args() == nil {
+		return nil
+	}
+
+	requiredArgs := cmd.Args().GetRequiredArgs()
+	optionalArgs := cmd.Args().GetOptionalArgs()
+	if len(requiredArgs) == 0 && len(optionalArgs) == 0 {
 		return nil
 	}
 
 	b.Reset()
 
-	for i, arg := range info.Required {
-		if len(arg.Description) == 0 {
+	for i, arg := range requiredArgs {
+		desc := arg.GetDescription(ctx.Localizer)
+
+		if len(desc) == 0 {
 			continue
 		}
+
+		name := arg.GetName(ctx.Localizer)
+		typeName := arg.GetType().GetName(ctx.Localizer)
 
 		if b.Len() > 0 {
 			b.WriteRune('\n')
 		}
 
 		b.WriteRune('`')
-		b.WriteString(arg.Name)
 
-		variadic := info.Variadic && len(info.Optional) == 0 && i == len(info.Required)-1
+		b.WriteString(name)
 
-		if (!strings.EqualFold(arg.Name, arg.Type.Name) || variadic) && len(arg.Type.Name) > 0 {
+		variadic := cmd.Args().IsVariadic() && i == len(requiredArgs)-1 && len(optionalArgs) == 0
+
+		if (!strings.EqualFold(name, typeName) || variadic) && len(typeName) > 0 {
 			b.WriteString(" (")
-			b.WriteString(arg.Type.Name)
+			b.WriteString(typeName)
 
-			if info.Variadic && len(info.Optional) == 0 && i == len(info.Required)-1 {
+			if variadic {
 				b.WriteRune('+')
 			}
 
@@ -229,28 +216,33 @@ func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Lo
 		}
 
 		b.WriteString("` - ")
-		b.WriteString(arg.Description)
+		b.WriteString(desc)
 	}
 
-	for i, arg := range info.Optional {
-		if len(arg.Description) == 0 {
+	for i, arg := range optionalArgs {
+		desc := arg.GetDescription(ctx.Localizer)
+
+		if len(desc) == 0 {
 			continue
 		}
+
+		name := arg.GetName(ctx.Localizer)
+		typeName := arg.GetType().GetName(ctx.Localizer)
 
 		if b.Len() > 0 {
 			b.WriteRune('\n')
 		}
 
 		b.WriteRune('`')
-		b.WriteString(arg.Name)
+		b.WriteString(name)
 
-		variadic := info.Variadic && i == len(info.Optional)-1
+		variadic := cmd.Args().IsVariadic() && i == len(optionalArgs)-1
 
-		if (!strings.EqualFold(arg.Name, arg.Type.Name) || variadic) && len(arg.Type.Name) > 0 {
+		if (!strings.EqualFold(name, typeName) || variadic) && len(typeName) > 0 {
 			b.WriteString(" (")
-			b.WriteString(arg.Type.Name)
+			b.WriteString(typeName)
 
-			if info.Variadic && i == len(info.Optional)-1 {
+			if variadic {
 				b.WriteRune('+')
 			}
 
@@ -258,7 +250,7 @@ func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Lo
 		}
 
 		b.WriteString("` - ")
-		b.WriteString(arg.Description)
+		b.WriteString(desc)
 	}
 
 	if len(b.String()) == 0 {
@@ -266,56 +258,63 @@ func (h *Help) genArguments(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Lo
 	}
 
 	return &discord.EmbedField{
-		Name:  l.MustLocalize(argumentsFieldName),
+		Name:  ctx.MustLocalize(argumentsFieldName),
 		Value: b.String(),
 	}
 }
 
-func (h *Help) genFlags(b *strings.Builder, info plugin.ArgsInfo, l *i18n.Localizer) *discord.EmbedField {
-	if len(info.Flags) == 0 {
+func (h *Help) genFlags(b *strings.Builder, ctx *plugin.Context, cmd plugin.ResolvedCommand) *discord.EmbedField {
+	if cmd.Args() == nil {
+		return nil
+	}
+
+	flags := cmd.Args().GetFlags()
+	if len(flags) == 0 {
 		return nil
 	}
 
 	b.Reset()
 
-	for i, flag := range info.Flags {
+	for i, flag := range flags {
 		if i > 0 {
 			b.WriteRune('\n')
 		}
 
 		b.WriteRune('`')
-		b.WriteString(info.FlagFormatter(flag.Name))
+		b.WriteString(cmd.ArgParser().FormatFlag(flag.GetName()))
 
-		for _, alias := range flag.Aliases {
+		for _, alias := range flag.GetAliases() {
 			b.WriteString(", ")
-			b.WriteString(info.FlagFormatter(alias))
+			b.WriteString(cmd.ArgParser().FormatFlag(alias))
 		}
 
-		if len(flag.Type.Name) > 0 {
+		typeName := flag.GetType().GetName(ctx.Localizer)
+		if len(typeName) > 0 {
 			b.WriteString(" (")
-			b.WriteString(flag.Type.Name)
+			b.WriteString(typeName)
 
-			if flag.Multi {
+			if flag.IsMulti() {
 				b.WriteRune('+')
 			}
 
 			b.WriteString(")`")
 		}
 
-		if len(flag.Description) > 0 {
+		desc := flag.GetDescription(ctx.Localizer)
+		if len(desc) > 0 {
 			b.WriteString(" - ")
-			b.WriteString(flag.Description)
+			b.WriteString(desc)
 		}
 	}
 
 	return &discord.EmbedField{
-		Name:  l.MustLocalize(flagsFieldName),
+		Name:  ctx.MustLocalize(flagsFieldName),
 		Value: b.String(),
 	}
 }
 
-func (h *Help) genExamples(b *strings.Builder, cmd *plugin.ResolvedCommand, l *i18n.Localizer) *discord.EmbedField {
-	examples := cmd.Examples(l)
+func (h *Help) genExamples(b *strings.Builder, ctx *plugin.Context, cmd plugin.ResolvedCommand) *discord.EmbedField {
+	examples := cmd.Examples(ctx.Localizer)
 	if len(examples) == 0 {
 		return nil
 	}
@@ -329,7 +328,7 @@ func (h *Help) genExamples(b *strings.Builder, cmd *plugin.ResolvedCommand, l *i
 	}
 
 	return &discord.EmbedField{
-		Name:  l.MustLocalize(examplesFieldName),
+		Name:  ctx.MustLocalize(examplesFieldName),
 		Value: b.String(),
 	}
 }
@@ -342,7 +341,7 @@ func (h *Help) genExamples(b *strings.Builder, cmd *plugin.ResolvedCommand, l *i
 // HiddenLevel to the passed *capbuilder.CappedBuilder, until there are no more
 // commands, or the capbuilder.CappedBuilder's chunk size is reached.
 func (h *Help) formatCommands(
-	b *capbuilder.CappedBuilder, cmds []*plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
+	b *capbuilder.CappedBuilder, cmds []plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
 ) {
 	cmds = filterCommands(cmds, s, ctx, lvl, h.HideFuncs...)
 
@@ -351,7 +350,14 @@ func (h *Help) formatCommands(
 			b.WriteRune('\n')
 		}
 
-		h.formatCommand(b, cmd, ctx.Localizer)
+		b.WriteRune('`')
+		b.WriteString(cmd.ID().AsInvoke())
+		b.WriteRune('`')
+
+		if desc := cmd.ShortDescription(ctx.Localizer); len(desc) > 0 {
+			b.WriteString(" - ")
+			b.WriteString(desc)
+		}
 
 		if b.Rem() == 0 {
 			return
@@ -359,27 +365,16 @@ func (h *Help) formatCommands(
 	}
 }
 
-func (h *Help) formatCommand(b *capbuilder.CappedBuilder, cmd *plugin.ResolvedCommand, l *i18n.Localizer) {
-	b.WriteRune('`')
-	b.WriteString(cmd.ID.AsInvoke())
-	b.WriteRune('`')
-
-	if desc := cmd.ShortDescription(l); len(desc) > 0 {
-		b.WriteString(" - ")
-		b.WriteString(desc)
-	}
-}
-
 func (h *Help) formatModule(
-	b *capbuilder.CappedBuilder, mod *plugin.ResolvedModule, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
+	b *capbuilder.CappedBuilder, mod plugin.ResolvedModule, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
 ) {
 	if b.ChunkLen() > 0 {
 		b.WriteRune('\n')
 	}
 
-	h.formatCommands(b, mod.Commands, s, ctx, lvl)
+	h.formatCommands(b, mod.Commands(), s, ctx, lvl)
 
-	for _, smod := range mod.Modules {
+	for _, smod := range mod.Modules() {
 		h.formatModule(b, smod, s, ctx, lvl)
 	}
 }

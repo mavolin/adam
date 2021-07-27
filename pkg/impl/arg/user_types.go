@@ -25,23 +25,23 @@ var MemberAllowIDs = true
 // A User can either be a mention, or an id.
 //
 // Gp type: *discord.User
-var User Type = new(user)
+var User plugin.ArgType = new(user)
 
 type user struct{}
 
-func (u user) Name(l *i18n.Localizer) string {
+func (u user) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(userName) // we have a fallback
 	return name
 }
 
-func (u user) Description(l *i18n.Localizer) string {
+func (u user) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(userDescription) // we have a fallback
 	return desc
 }
 
 var userMentionRegexp = regexp.MustCompile(`^<@!?(?P<id>\d+)>$`)
 
-func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
+func (u user) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	if matches := userMentionRegexp.FindStringSubmatch(ctx.Raw); len(matches) >= 2 {
 		rawID := matches[1]
 
@@ -77,7 +77,7 @@ func (u user) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	return user, nil
 }
 
-func (u user) Default() interface{} {
+func (u user) GetDefault() interface{} {
 	return (*discord.User)(nil)
 }
 
@@ -86,23 +86,24 @@ func (u user) Default() interface{} {
 // =====================================================================================
 
 // Member is the Type used for members of a guild.
-// It will always return an error, if the command is called in a direct
+// It will always return an error, if the Command is called in a direct
 // message.
 //
 // A Member can either be a mention of a member, or, if enabled, an id of a
 // guild member.
 //
 // Go type: *discord.Member
-var Member Type = new(member)
+var Member plugin.ArgType = new(member)
 
 type member struct{}
 
-func (m member) Name(l *i18n.Localizer) string {
+func (m member) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(memberName) // we have a fallback
 	return name
 }
 
-func (m member) Description(l *i18n.Localizer) string {
+func (m member) GetDescription(l *i18n.Localizer) string {
+	//goland:noinspection GoBoolExpressions
 	if MemberAllowIDs {
 		desc, err := l.Localize(memberDescriptionWithIDs)
 		if err == nil {
@@ -114,7 +115,7 @@ func (m member) Description(l *i18n.Localizer) string {
 	return desc
 }
 
-func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
+func (m member) Parse(s *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	err := restriction.ChannelTypes(plugin.GuildChannels)(s, ctx.Context)
 	if err != nil {
 		return nil, err
@@ -143,6 +144,7 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 		return member, nil
 	}
 
+	//goland:noinspection GoBoolExpressions
 	if !MemberAllowIDs {
 		return nil, newArgumentError(userInvalidMentionWithRawError, ctx, nil)
 	}
@@ -160,6 +162,6 @@ func (m member) Parse(s *state.State, ctx *Context) (interface{}, error) {
 	return member, nil
 }
 
-func (m member) Default() interface{} {
+func (m member) GetDefault() interface{} {
 	return (*discord.Member)(nil)
 }

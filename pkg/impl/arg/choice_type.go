@@ -7,6 +7,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
 // ChoiceCaseSensitive is a global flag that defines whether choices should be
@@ -29,20 +30,21 @@ type (
 	}
 )
 
-var _ Type = Choice{}
+var _ plugin.ArgType = Choice{}
 
-func (c Choice) Name(l *i18n.Localizer) string {
+func (c Choice) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(choiceName) // we have a fallback
 	return name
 }
 
-func (c Choice) Description(l *i18n.Localizer) string {
+func (c Choice) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(choiceDescription)
 	return desc
 }
 
-func (c Choice) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (c Choice) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	for _, e := range c {
+		//goland:noinspection GoBoolExpressions
 		if (ChoiceCaseSensitive && e.Name == ctx.Raw) || strings.EqualFold(e.Name, ctx.Raw) {
 			if e.Value == nil {
 				return e.Name, nil
@@ -52,6 +54,7 @@ func (c Choice) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 		}
 
 		for _, alias := range e.Aliases {
+			//goland:noinspection GoBoolExpressions
 			if (ChoiceCaseSensitive && alias == ctx.Raw) || strings.EqualFold(alias, ctx.Raw) {
 				if e.Value == nil {
 					return e.Name, nil
@@ -65,9 +68,10 @@ func (c Choice) Parse(_ *state.State, ctx *Context) (interface{}, error) {
 	return nil, newArgumentError(choiceInvalidError, ctx, nil)
 }
 
-// Default tries to derive the default type from the value of the first choice.
+// GetDefault tries to derive the default type from the value of the first
+// choice.
 // If the choice is empty, Default returns nil.
-func (c Choice) Default() interface{} {
+func (c Choice) GetDefault() interface{} {
 	if len(c) > 0 {
 		if c[0].Value == nil {
 			return "" // fallback to Name's value, which is of type string
@@ -93,17 +97,17 @@ type (
 	}
 )
 
-func (c LocalizedChoice) Name(l *i18n.Localizer) string {
+func (c LocalizedChoice) GetName(l *i18n.Localizer) string {
 	name, _ := l.Localize(choiceName) // we have a fallback
 	return name
 }
 
-func (c LocalizedChoice) Description(l *i18n.Localizer) string {
+func (c LocalizedChoice) GetDescription(l *i18n.Localizer) string {
 	desc, _ := l.Localize(choiceDescription)
 	return desc
 }
 
-func (c LocalizedChoice) Parse(_ *state.State, ctx *Context) (interface{}, error) {
+func (c LocalizedChoice) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
 	for _, e := range c {
 		for _, nameConfig := range e.Names {
 			name, err := ctx.Localizer.Localize(nameConfig)
@@ -111,6 +115,7 @@ func (c LocalizedChoice) Parse(_ *state.State, ctx *Context) (interface{}, error
 				return nil, err
 			}
 
+			//goland:noinspection GoBoolExpressions
 			if (ChoiceCaseSensitive && name == ctx.Raw) || strings.EqualFold(name, ctx.Raw) {
 				return e.Value, nil
 			}
@@ -120,9 +125,10 @@ func (c LocalizedChoice) Parse(_ *state.State, ctx *Context) (interface{}, error
 	return nil, newArgumentError(choiceInvalidError, ctx, nil)
 }
 
-// Default tries to derive the default type from the value of the first choice.
+// GetDefault tries to derive the default type from the value of the first
+// choice.
 // If the choice is empty, Default returns nil.
-func (c LocalizedChoice) Default() interface{} {
+func (c LocalizedChoice) GetDefault() interface{} {
 	if len(c) > 0 && c[0].Value != nil {
 		t := reflect.TypeOf(c[0].Value)
 		return reflect.Zero(t).Interface()
