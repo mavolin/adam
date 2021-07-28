@@ -88,8 +88,9 @@ func (m moduleType) GetDefault() interface{} {
 // =====================================================================================
 
 // Plugin is the type used for plugins, i.e. commands and Modules.
-// The generated data is guaranteed to be of one of the two go types.
-// Fallback for default will be interface{} nil.
+// The generated data is guaranteed to be of one of the two go types, unless
+// falling back to default, i.e. if using Plugin as type for an optional arg or
+// a flag without a custom default value.
 //
 // Go types: plugin.ResolvedCommand or plugin.ResolvedModule
 var Plugin plugin.ArgType = new(pluginType)
