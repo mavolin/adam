@@ -32,7 +32,7 @@ func NewSilent(text string) error {
 	return Silent(New(text))
 }
 
-// NewSilentf returns a new *SilentError with no description and an error that
+// NewSilentf returns a new *InternalError with no description and an error that
 // formats as the passed text as cause.
 // Each call to NewSilentf returns a distinct error value even if the text
 // is identical.

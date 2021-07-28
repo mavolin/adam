@@ -3,6 +3,7 @@ package errors
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/mavolin/disstate/v3/pkg/state"
 
@@ -13,6 +14,11 @@ import (
 )
 
 type StackTrace = errorutil.StackTrace
+
+// Log is the logger used to log InternalErrors
+var Log = func(err *InternalError, ctx *plugin.Context) {
+	log.Printf("internal error in command %s: %+v\n", ctx.InvokedCommand.ID(), err)
+}
 
 // InternalError represents a non-user triggered error.
 //
