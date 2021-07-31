@@ -180,6 +180,13 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 }
 
 func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedModule) (discord.Embed, error) {
+	if checkModuleHidden(mod, s, ctx, HideList, h.HideFuncs...) {
+		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
+			WithPlaceholders(pluginNotFoundErrorPlaceholder{
+				Invoke: ctx.RawArgs(),
+			}))
+	}
+
 	eb := BaseEmbed.Clone().
 		WithTitlel(moduleTitle.
 			WithPlaceholders(moduleTitlePlaceholders{
@@ -217,7 +224,7 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedMo
 }
 
 func (h *Help) command(s *state.State, ctx *plugin.Context, cmd plugin.ResolvedCommand) (discord.Embed, error) {
-	if len(filterCommands([]plugin.ResolvedCommand{cmd}, s, ctx, Show, h.Options.HideFuncs...)) == 0 {
+	if len(filterCommands([]plugin.ResolvedCommand{cmd}, s, ctx, HideList, h.Options.HideFuncs...)) == 0 {
 		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
 			WithPlaceholders(pluginNotFoundErrorPlaceholder{
 				Invoke: ctx.RawArgs(),

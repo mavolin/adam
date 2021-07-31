@@ -224,7 +224,7 @@ func Test_checkHideFuncs(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := checkHideFuncs(nil, nil, nil, c.funcs...)
+			actual := checkHiddenLevel(nil, nil, nil, c.funcs...)
 			assert.Equal(t, c.expect, actual)
 		})
 	}

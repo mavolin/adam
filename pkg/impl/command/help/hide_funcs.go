@@ -19,7 +19,7 @@ const (
 	// It will still be shown, if directly requesting it.
 	HideList
 	// Hide is the HiddenLevel used if the command should not be shown at all,
-	// i.e. neither through command lists nor if asking direct for it.
+	// i.e. neither through command lists nor if asking directly for it.
 	Hide
 )
 
@@ -85,9 +85,9 @@ func CheckRestrictions(lvl HiddenLevel) HideFunc {
 // Utilities
 // =====================================================================================
 
-// checkHideFuncs checks the passed HideFuncs and returns the highest
+// checkHiddenLevel checks the passed HideFuncs and returns the highest
 // HiddenLevel found.
-func checkHideFuncs(cmd plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, f ...HideFunc) HiddenLevel {
+func checkHiddenLevel(cmd plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, f ...HideFunc) HiddenLevel {
 	var lvl HiddenLevel
 
 	for _, f := range f {
@@ -108,10 +108,28 @@ func filterCommands(
 	filtered := make([]plugin.ResolvedCommand, 0, len(cmds))
 
 	for _, cmd := range cmds {
-		if checkHideFuncs(cmd, s, ctx, f...) <= lvl {
+		if checkHiddenLevel(cmd, s, ctx, f...) <= lvl {
 			filtered = append(filtered, cmd)
 		}
 	}
 
 	return filtered
+}
+
+func checkModuleHidden(
+	mod plugin.ResolvedModule, s *state.State, ctx *plugin.Context, lvl HiddenLevel, f ...HideFunc,
+) bool {
+	for _, scmd := range mod.Commands() {
+		if checkHiddenLevel(scmd, s, ctx, f...) <= lvl {
+			return true
+		}
+	}
+
+	for _, smod := range mod.Modules() {
+		if checkModuleHidden(smod, s, ctx, lvl, f...) {
+			return true
+		}
+	}
+
+	return false
 }
