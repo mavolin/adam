@@ -42,12 +42,10 @@ var (
 	NeutralFace                 Emoji = "\U0001f610"
 	ExpressionlessFace          Emoji = "\U0001f611"
 	FaceWithoutMouth            Emoji = "\U0001f636"
-	FaceInClouds                Emoji = "\U0001f636\u200d\U0001f32b\ufe0f"
 	SmirkingFace                Emoji = "\U0001f60f"
 	UnamusedFace                Emoji = "\U0001f612"
 	FaceWithRollingEyes         Emoji = "\U0001f644"
 	GrimacingFace               Emoji = "\U0001f62c"
-	FaceExhaling                Emoji = "\U0001f62e\u200d\U0001f4a8"
 	LyingFace                   Emoji = "\U0001f925"
 	RelievedFace                Emoji = "\U0001f60c"
 	PensiveFace                 Emoji = "\U0001f614"
@@ -64,7 +62,6 @@ var (
 	ColdFace                    Emoji = "\U0001f976"
 	WoozyFace                   Emoji = "\U0001f974"
 	KnockedOutFace              Emoji = "\U0001f635"
-	FaceWithSpiralEyes          Emoji = "\U0001f635\u200d\U0001f4ab"
 	ExplodingHead               Emoji = "\U0001f92f"
 	CowboyHatFace               Emoji = "\U0001f920"
 	PartyingFace                Emoji = "\U0001f973"
@@ -136,8 +133,6 @@ var (
 	HeartDecoration             Emoji = "\U0001f49f"
 	HeartExclamation            Emoji = "\u2763\ufe0f"
 	BrokenHeart                 Emoji = "\U0001f494"
-	HeartOnFire                 Emoji = "\u2764\ufe0f\u200d\U0001f525"
-	MendingHeart                Emoji = "\u2764\ufe0f\u200d\U0001fa79"
 	RedHeart                    Emoji = "\u2764\ufe0f"
 	OrangeHeart                 Emoji = "\U0001f9e1"
 	YellowHeart                 Emoji = "\U0001f49b"
@@ -551,22 +546,6 @@ var (
 		MediumSkin:      "\U0001f9d4\U0001f3fd",
 		MediumDarkSkin:  "\U0001f9d4\U0001f3fe",
 		DarkSkin:        "\U0001f9d4\U0001f3ff",
-	}
-	ManBeard = SkinToneEmoji{
-		NeutralSkin:     "\U0001f9d4\u200d\u2642\ufe0f",
-		LightSkin:       "\U0001f9d4\U0001f3fb\u200d\u2642\ufe0f",
-		MediumLightSkin: "\U0001f9d4\U0001f3fc\u200d\u2642\ufe0f",
-		MediumSkin:      "\U0001f9d4\U0001f3fd\u200d\u2642\ufe0f",
-		MediumDarkSkin:  "\U0001f9d4\U0001f3fe\u200d\u2642\ufe0f",
-		DarkSkin:        "\U0001f9d4\U0001f3ff\u200d\u2642\ufe0f",
-	}
-	WomanBeard = SkinToneEmoji{
-		NeutralSkin:     "\U0001f9d4\u200d\u2640\ufe0f",
-		LightSkin:       "\U0001f9d4\U0001f3fb\u200d\u2640\ufe0f",
-		MediumLightSkin: "\U0001f9d4\U0001f3fc\u200d\u2640\ufe0f",
-		MediumSkin:      "\U0001f9d4\U0001f3fd\u200d\u2640\ufe0f",
-		MediumDarkSkin:  "\U0001f9d4\U0001f3fe\u200d\u2640\ufe0f",
-		DarkSkin:        "\U0001f9d4\U0001f3ff\u200d\u2640\ufe0f",
 	}
 	ManRedHair = SkinToneEmoji{
 		NeutralSkin:     "\U0001f468\u200d\U0001f9b0",

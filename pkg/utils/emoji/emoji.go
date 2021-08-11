@@ -7,7 +7,7 @@ package emoji
 import "strings"
 
 // discord uses Unicode Emoji version 13.0
-//go:generate go run ../../../tools/codegen/emoji/fetch.go ../../../tools/codegen/emoji/stringutil.go ../../../tools/codegen/emoji/main.go 13.0
+//go:generate go run ../../../tools/codegen/emoji/fetch.go ../../../tools/codegen/emoji/stringutil.go ../../../tools/codegen/emoji/main.go 13.1
 
 type (
 	// Emoji is an emoji.
