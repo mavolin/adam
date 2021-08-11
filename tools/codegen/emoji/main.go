@@ -2,35 +2,46 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"strconv"
 )
 
 func main() {
-	emojis, err := fetchEmojis()
-	if err != nil {
-		panic(err)
-	}
-
-	version := 13
-	// version, err := strconv.ParseFloat(os.Args[1], 32)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	emojis = filterVersion(emojis, float32(version))
-
-	err = generateConstants(emojis)
-	if err != nil {
-		panic(err)
-	}
-
-	err = generateSet(emojis)
-	if err != nil {
-		panic(err)
+	if err := run(); err != nil {
+		log.Fatalln(err)
 	}
 }
 
+func run() error {
+	emojis, err := fetchEmojis()
+	if err != nil {
+		return err
+	}
+
+	version, err := strconv.ParseFloat(os.Args[1], 32)
+	if err != nil {
+		return err
+	}
+
+	emojis = filterVersion(emojis, float32(version))
+
+	if err := generateConstants(emojis); err != nil {
+		return err
+	}
+
+	if err := generateSet(emojis); err != nil {
+		return err
+	}
+
+	log.Println("done")
+
+	return nil
+}
+
 func generateConstants(emojis []gemoji) error {
+	log.Println("generating emojis.go")
+
 	file, err := os.Create("emojis.go")
 	if err != nil {
 		return err
@@ -96,6 +107,8 @@ func generateConstants(emojis []gemoji) error {
 }
 
 func generateSet(emojis []gemoji) error {
+	log.Println("generating emoji_set.go")
+
 	file, err := os.Create("emoji_set.go")
 	if err != nil {
 		return err

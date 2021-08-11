@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -10,7 +11,7 @@ type gemoji struct {
 	Emoji          string  `json:"emoji"`
 	Description    string  `json:"description"`
 	Category       string  `json:"category"`
-	UnicodeVersion float32 `json:"-"`
+	UnicodeVersion float32 `json:"unicode_version"`
 	SkinTones      bool    `json:"skin_tones,omitempty"`
 }
 
@@ -19,7 +20,7 @@ func (g *gemoji) UnmarshalJSON(bytes []byte) error {
 
 	emoji := struct {
 		rawGemoji
-		UnicodeVersion string
+		UnicodeVersion string `json:"unicode_version"`
 	}{}
 
 	err := json.Unmarshal(bytes, &emoji)
@@ -44,6 +45,8 @@ func (g *gemoji) UnmarshalJSON(bytes []byte) error {
 }
 
 func fetchEmojis() ([]gemoji, error) {
+	log.Println("fetching emojis")
+
 	resp, err := http.Get("https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json")
 	if err != nil {
 		return nil, err
@@ -56,10 +59,14 @@ func fetchEmojis() ([]gemoji, error) {
 		return nil, err
 	}
 
+	log.Printf("fetched %d emojis\n", len(emojis))
+
 	return emojis, resp.Body.Close()
 }
 
 func filterVersion(g []gemoji, maxVersion float32) []gemoji {
+	log.Printf("filtering to only include emojis with version <= %.1f\n", maxVersion)
+
 	for i := 0; i < len(g); i++ {
 		e := g[i]
 
@@ -68,6 +75,8 @@ func filterVersion(g []gemoji, maxVersion float32) []gemoji {
 			i--
 		}
 	}
+
+	log.Printf("%d emojis remain\n", len(g))
 
 	return g
 }
