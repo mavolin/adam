@@ -2,6 +2,7 @@ package bot
 
 import (
 	"log"
+	"runtime/debug"
 	"syscall"
 	"time"
 
@@ -139,7 +140,7 @@ type Options struct {
 	//
 	// Default:
 	// 	func(rec interface{}) {
-	// 		log.Printf("recovered from panic: %+v\n%s\n", rec)
+	// 		log.Printf("panic: %+v\n%s\n", rec)
 	//	}
 	StatePanicHandler func(recovered interface{})
 
@@ -169,25 +170,45 @@ type Options struct {
 	// NoDefaultMiddlewares, if true, prevents the default middlewares from
 	// being added on creation.
 	// These middlewares are responsible for validating the user is allowed
-	// to run a command and the bot is able to.
+	// to run a command and the bot is able to, as well as filling some of the
+	// context's fields.
 	//
-	// If you set this to true, you are responsible for adding those checks,
-	// or equivalents of them.
+	// If setting this to true, those checks, or equivalents of them, should be
+	// manually added.
 	// Although possible, it is highly discouraged to disable certain checks,
-	// unless the resulting behavior is explicitly desired.
-	// Default or third-party plugins may rely on these checks to perform as
+	// unless the resulting behavior is explicitly desired, as default or
+	// third-party plugins may rely on these checks in order to perform as
 	// intended.
+	//
+	// When the first middleware is called, not all fields of the context will
+	// be set.
+	// Instead, they are set by the middlewares.
+	// If you want to swap out a default middleware for a custom
+	// implementation, refer to its doc to see which fields it sets.
+	// Also keep in mind that middlewares added after a middleware setting
+	// fields may rely on these fields.
+	// Fully removing a default middleware that sets some fields, without
+	// filling them otherwise is highly discouraged, as plugins will assume
+	// all fields to be filled.
+	//
+	// To see which fields are always filled, i.e. which fields are available
+	// to all middlewares, refer to the source of Bot.Route.
 	//
 	// By default, the following middlewares are added upon creation of the
 	// bot.
 	//
-	//	Bot.AddMiddleware(CheckChannelTypes)
-	//	Bot.AddMiddleware(CheckBotPermissions)
-	//	Bot.AddMiddleware(NewThrottlerChecker(Bot.ThrottlerCancelChecker))
+	//  Bot.TryAddMiddleware(CheckMessageType)
+	//  Bot.TryAddMiddleware(CheckHuman) // if Options.AllowBot is true
+	//	Bot.TryAddMiddleware(NewSettingsRetriever(Bot.SettingsProvider))
+	//  Bot.TryAddMiddleware(CheckPrefix)
+	//	Bot.TryAddMiddleware(FindCommand)
+	//	Bot.TryAddMiddleware(CheckChannelTypes)
+	//	Bot.TryAddMiddleware(CheckBotPermissions)
+	//	Bot.TryAddMiddleware(NewThrottlerChecker(Bot.ThrottlerCancelChecker))
 	//
-	//	Bot.AddPostMiddleware(CheckRestrictions)
-	//	Bot.AddPostMiddleware(ParseArgs)
-	//	Bot.AddPostMiddleware(InvokeCommand)
+	//	Bot.TryAddPostMiddleware(CheckRestrictions)
+	//	Bot.TryAddPostMiddleware(ParseArgs)
+	//	Bot.TryAddPostMiddleware(InvokeCommand)
 	NoDefaultMiddlewares bool
 }
 
@@ -236,7 +257,8 @@ func (o *Options) SetDefaults() (err error) {
 
 	if o.StatePanicHandler == nil {
 		o.StatePanicHandler = func(rec interface{}) {
-			log.Printf("recovered from panic: %+v\n", rec)
+			log.Printf("panic: %+v\n", rec)
+			debug.PrintStack()
 		}
 	}
 
@@ -311,11 +333,7 @@ func (o *Options) setCabinetDefaults() {
 // If prefixes is empty, the only valid prefix will be a mention of the bot.
 //
 // Prefix matching is lazy, meaning the first matching prefix will be used and
-// the bot will not look for longer prefix matching as well (first come, first
-// served principle).
-// For example if the prefixes are "a", and "ab" message will never match the
-// second prefix, because all message matching "ab" also match "a", and "a"
-// appears before "ab" in the prefix list.
+// the bot will not look for longer prefix that matches as well.
 //
 // Second Return Value
 //

@@ -24,7 +24,7 @@ func TestMiddlewareManager_AddMiddleware(t *testing.T) {
 		func(next CommandFunc) CommandFunc {
 			return func(*state.State, *plugin.Context) error { return nil }
 		},
-		MiddlewareFunc(func(next CommandFunc) CommandFunc {
+		Middleware(func(next CommandFunc) CommandFunc {
 			return func(*state.State, *plugin.Context) error { return nil }
 		}),
 	}
@@ -36,7 +36,7 @@ func TestMiddlewareManager_AddMiddleware(t *testing.T) {
 			t.Run(funcType.String(), func(t *testing.T) {
 				var m MiddlewareManager
 
-				err := m.AddMiddleware(c)
+				err := m.TryAddMiddleware(c)
 				assert.NoError(t, err)
 			})
 		}
@@ -45,7 +45,7 @@ func TestMiddlewareManager_AddMiddleware(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		var m MiddlewareManager
 
-		err := m.AddMiddleware("invalid")
+		err := m.TryAddMiddleware("invalid")
 		assert.True(t, errors.Is(err, ErrMiddleware))
 	})
 }

@@ -90,12 +90,12 @@ func (w *ReactionWaiter) NoAutoDelete() *ReactionWaiter {
 // All middlewares of invalid type will be discarded.
 //
 // The following types are permitted:
-//		• func(*state.State, interface{})
-//		• func(*state.State, interface{}) error
-//		• func(*state.State, *state.Base)
-//		• func(*state.State, *state.Base) error
-//		• func(*state.State, *state.MessageReactionAddEvent)
-//		• func(*state.State, *state.MessageReactionAddEvent) error
+// 	• func(*state.State, interface{})
+//	• func(*state.State, interface{}) error
+//	• func(*state.State, *state.Base)
+//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *state.MessageReactionAddEvent)
+//	• func(*state.State, *state.MessageReactionAddEvent) error
 func (w *ReactionWaiter) WithMiddlewares(middlewares ...interface{}) *ReactionWaiter {
 	if len(w.middlewares) == 0 {
 		w.middlewares = make([]interface{}, 0, len(middlewares))
@@ -137,26 +137,27 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 	return
 }
 
-// Await is the same as AwaitWithContext, but uses a context.Background() as
-// context.Context.
+// Await creates a context.Context with the given timeout and calls
+// AwaitContext with it.
 func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) {
-	return w.AwaitWithContext(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	return w.AwaitContext(ctx)
 }
 
-// AwaitWithContext awaits a reaction of the user until they signal
-// cancellation, the timeout expires or the context expires.
+// AwaitContext awaits a reaction of the user until they signal cancellation, the
+// timeout expires or the context expires.
 //
-// If the timeout is reached, a *TimeoutError will be returned.
 // If the user cancels the wait or deletes the message, errors.Abort will be
 // returned.
 // Furthermore, if the guild, channel or message becomes unavailable while
 // adding reactions, errors.Abort will be returned as well.
 // If the context expires, a *TimeoutError with Cause set to ctx.Err() will be
 // returned.
-// This error is also available through .Unwrap(), so errors.Is is safe to use.
 //
 // Besides that, the wait can also be canceled through a middleware.
-func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Duration) (discord.APIEmoji, error) {
+func (w *ReactionWaiter) AwaitContext(ctx context.Context) (discord.APIEmoji, error) {
 	perms, err := w.ctx.SelfPermissions()
 	if err != nil {
 		return "", err
@@ -181,8 +182,6 @@ func (w *ReactionWaiter) AwaitWithContext(ctx context.Context, timeout time.Dura
 	select {
 	case <-ctx.Done():
 		return "", &TimeoutError{UserID: w.userID, Cause: ctx.Err()}
-	case <-time.After(timeout):
-		return "", &TimeoutError{UserID: w.userID}
 	case r := <-result:
 		switch r := r.(type) {
 		case discord.APIEmoji:

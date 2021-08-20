@@ -44,7 +44,7 @@ var _ plugin.Replier = new(Tracker)
 // 	// Make sure that the middleware replacing the default replier is executed
 // 	// before any middlewares that could send replies.
 //
-// 	b.MustAddMiddleware(func(next bot.CommandFunc) bot.CommandFunc {
+// 	b.AddMiddleware(func(next bot.CommandFunc) bot.CommandFunc {
 // 		return func(s *state.State, ctx *plugin.Context) error {
 // 			t := NewTracker(s, false)
 // 			ctx.Replier = t // replace the default replier

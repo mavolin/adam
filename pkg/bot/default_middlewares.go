@@ -1,6 +1,9 @@
 package bot
 
 import (
+	"regexp"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -8,6 +11,8 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 
+	"github.com/mavolin/adam/internal/shared"
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
@@ -47,6 +52,128 @@ func SendTyping(next CommandFunc) CommandFunc {
 				}
 			}
 		}()
+
+		return next(s, ctx)
+	}
+}
+
+// CheckMessageType checks if the invoking message is of type
+// discord.DefaultMessage.
+// If so it calls the next middleware, otherwise it aborts with an
+// *errors.InformationalError.
+func CheckMessageType(next CommandFunc) CommandFunc {
+	return func(s *state.State, ctx *plugin.Context) error {
+		if ctx.Type != discord.DefaultMessage {
+			return errors.NewInformationalError("bot: router: message is not of type default message")
+		}
+
+		return next(s, ctx)
+	}
+}
+
+// CheckHuman checks if the invoking message was written by a human.
+// If so it calls the next middleware, otherwise it aborts with an
+// *errors.InformationalError.
+func CheckHuman(next CommandFunc) CommandFunc {
+	return func(s *state.State, ctx *plugin.Context) error {
+		if ctx.Author.Bot {
+			return errors.NewInformationalError("bot: router: message was written by a bot")
+		}
+
+		return next(s, ctx)
+	}
+}
+
+// NewSettingsRetriever creates a new settings retriever middleware that
+// retrieves the settings from the passed SettingsProvider.
+// If the settings provider returns !ok, the returned middleware will abort
+// by returning an *errors.InformationalError.
+//
+// The returned middleware will set the Prefixes and Localizer context fields.
+func NewSettingsRetriever(settingsProvider SettingsProvider) Middleware {
+	return func(next CommandFunc) CommandFunc {
+		return func(s *state.State, ctx *plugin.Context) error {
+			var ok bool
+
+			ctx.Prefixes, ctx.Localizer, ok = settingsProvider(ctx.Base, &ctx.Message)
+			if !ok {
+				return errors.NewInformationalError("bot: router: settings provider returned not ok")
+			}
+
+			if ctx.Localizer == nil {
+				ctx.Localizer = i18n.NewFallbackLocalizer()
+			}
+
+			return next(s, ctx)
+		}
+	}
+}
+
+// CheckPrefix checks if the message starts with the prefix.
+// The prefix must either be the mention of the bot, or one of the prefixes
+// found in the context.
+//
+// Direct message don't require prefixes, however, if a message starts with a
+// prefix, it will still be stripped from the invoke.
+//
+// If the prefix doesn't match, an *errors.InformationalError will be returned.
+//
+// The middleware sets the ctx.InvokeIndex context field.
+func CheckPrefix(next CommandFunc) CommandFunc {
+	var selfMentionRegexp *regexp.Regexp
+	var once sync.Once
+
+	return func(s *state.State, ctx *plugin.Context) (err error) {
+		once.Do(func() {
+			var self *discord.User
+
+			self, err = s.Me()
+			if err != nil {
+				err = errors.WithStack(err)
+				return
+			}
+
+			selfMentionRegexp = regexp.MustCompile("^<@!?" + self.ID.String() + ">")
+		})
+		if err != nil {
+			return err
+		}
+
+		indexes := selfMentionRegexp.FindStringIndex(ctx.Content)
+		if indexes != nil { // invoked by mention
+			ctx.InvokeIndex = len(ctx.Content) - len(strings.TrimLeft(ctx.Content[indexes[1]:], shared.Whitespace))
+			return next(s, ctx)
+		}
+
+		for _, p := range ctx.Prefixes {
+			if strings.HasPrefix(ctx.Content, p) {
+				ctx.InvokeIndex = len(ctx.Content) - len(strings.TrimLeft(ctx.Content[len(p):], shared.Whitespace))
+				return next(s, ctx)
+			}
+		}
+
+		// prefixes aren't required in direct messages, so DM's always "match"
+		if ctx.GuildID == 0 {
+			return next(s, ctx)
+		}
+
+		return errors.NewInformationalError("bot: router: prefix does not match")
+	}
+}
+
+// FindCommand attempts to find the command being invoked by the message.
+// If no matching command is found, the middleware returns ErrUnknownCommand.
+//
+// The middleware sets the InvokedCommand and ArgsIndex context fields.
+func FindCommand(next CommandFunc) CommandFunc {
+	return func(s *state.State, ctx *plugin.Context) error {
+		cmd, rawArgs := ctx.FindCommandWithArgs(ctx.Content[ctx.InvokeIndex:])
+		if cmd == nil {
+			return ErrUnknownCommand
+		}
+
+		ctx.InvokedCommand = cmd
+		ctx.ArgsIndex = len(ctx.Content) - len(rawArgs)
 
 		return next(s, ctx)
 	}
@@ -93,10 +220,10 @@ func CheckBotPermissions(next CommandFunc) CommandFunc {
 	}
 }
 
-// NewThrottlerChecker creates a new bot.MiddlewareFunc that checks if a
+// NewThrottlerChecker creates a new bot.Middleware that checks if a
 // command is being throttled.
 // Additionally, it signals cancellation to the throttler
-func NewThrottlerChecker(cancelChecker func(err error) bool) MiddlewareFunc {
+func NewThrottlerChecker(cancelChecker func(err error) bool) Middleware {
 	return func(next CommandFunc) CommandFunc {
 		return func(s *state.State, ctx *plugin.Context) error {
 			if ctx.InvokedCommand.Throttler() == nil {

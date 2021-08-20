@@ -14,6 +14,5 @@ import (
 func AwaitReply(
 	s *state.State, ctx *plugin.Context, initialTimeout, typingTimeout time.Duration,
 ) (*discord.Message, error) {
-	return NewReplyWaiterFromDefault(s, ctx).
-		Await(initialTimeout, typingTimeout)
+	return NewReplyWaiterFromDefault(s, ctx).Await(initialTimeout, typingTimeout)
 }

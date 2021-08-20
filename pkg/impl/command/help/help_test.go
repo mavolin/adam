@@ -277,6 +277,7 @@ func TestHelp_Invoke(t *testing.T) {
 		actual, err := New(Options{
 			HideFuncs: []HideFunc{CheckHidden(HideList)},
 		}).Invoke(nil, ctx)
+
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)

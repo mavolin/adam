@@ -9,15 +9,15 @@ import (
 )
 
 // ErrMiddleware is the error returned if a middleware given to
-// MiddlewareManager.AddMiddleware is not a valid middleware type.
+// MiddlewareManager.TryAddMiddleware is not a valid middleware type.
 var ErrMiddleware = errors.New("the passed function does not resemble a valid middleware")
 
 type (
 	// CommandFunc is the signature of the Invoke function of a plugin.Command,
 	// without the reply (interface{}) return.
 	CommandFunc func(s *state.State, ctx *plugin.Context) error
-	// MiddlewareFunc is the function of a middleware.
-	MiddlewareFunc func(next CommandFunc) CommandFunc
+	// Middleware is a middleware function.
+	Middleware func(next CommandFunc) CommandFunc
 )
 
 // Middlewarer is an abstraction of a plugin that provides middlewares.
@@ -25,7 +25,7 @@ type (
 // plugin does not provide any middlewares.
 type Middlewarer interface {
 	// Middlewares returns the MiddlewareFuncs of the plugin.
-	Middlewares() []MiddlewareFunc
+	Middlewares() []Middleware
 }
 
 // MiddlewareManager is a struct that can be embedded in commands and modules
@@ -34,11 +34,11 @@ type Middlewarer interface {
 //
 // MiddlewareManagers zero value is an empty MiddlewareManager.
 type MiddlewareManager struct {
-	middlewares []MiddlewareFunc
+	middlewares []Middleware
 }
 
-// AddMiddleware adds the passed middleware to the MiddlewareManager.
-// If the middleware's type is invalid, AddMiddleware will return
+// TryAddMiddleware adds the passed middleware to the MiddlewareManager.
+// If the middleware's type is invalid, TryAddMiddleware will return
 // ErrMiddleware.
 //
 // Valid middleware types are:
@@ -52,8 +52,8 @@ type MiddlewareManager struct {
 //	• func(*state.State, *state.MessageUpdateEvent) error
 //	• func(next CommandFunc) CommandFunc
 //nolint:funlen,gocognit
-func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
-	var mf MiddlewareFunc
+func (m *MiddlewareManager) TryAddMiddleware(f interface{}) error {
+	var mf Middleware
 
 	switch f := f.(type) {
 	case func(*state.State, interface{}):
@@ -148,7 +148,7 @@ func (m *MiddlewareManager) AddMiddleware(f interface{}) error {
 		}
 	case func(next CommandFunc) CommandFunc:
 		mf = f
-	case MiddlewareFunc:
+	case Middleware:
 		mf = f
 	default:
 		return errors.WithStack(ErrMiddleware)
@@ -182,17 +182,17 @@ func newMessageUpdateEvent(ctx *plugin.Context) *state.MessageUpdateEvent {
 	}
 }
 
-// MustAddMiddleware is the same as AddMiddleware, but panics if AddMiddleware
+// AddMiddleware is the same as TryAddMiddleware, but panics if TryAddMiddleware
 // returns an error.
-func (m *MiddlewareManager) MustAddMiddleware(f interface{}) {
-	err := m.AddMiddleware(f)
+func (m *MiddlewareManager) AddMiddleware(f interface{}) {
+	err := m.TryAddMiddleware(f)
 	if err != nil {
 		panic(err)
 	}
 }
 
 // Middlewares returns the middlewares of the MiddlewareManager.
-func (m *MiddlewareManager) Middlewares() []MiddlewareFunc {
+func (m *MiddlewareManager) Middlewares() []Middleware {
 	if m == nil {
 		return nil
 	}

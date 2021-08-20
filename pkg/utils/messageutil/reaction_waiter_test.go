@@ -1,6 +1,7 @@
 package messageutil
 
 import (
+	"context"
 	"testing"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -40,10 +41,13 @@ func TestReactionWaiter_Await(t *testing.T) {
 			},
 		}
 
-		expect := &TimeoutError{UserID: ctx.Author.ID}
+		expect := &TimeoutError{UserID: ctx.Author.ID, Cause: context.DeadlineExceeded}
+
+		rctx, cancel := context.WithTimeout(context.Background(), 1)
+		defer cancel()
 
 		_, actual := NewReactionWaiter(s, ctx, 123).
-			Await(1)
+			AwaitContext(rctx)
 		assert.Equal(t, expect, actual)
 	})
 }

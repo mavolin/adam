@@ -17,7 +17,7 @@ type StackTrace = errorutil.StackTrace
 
 // Log is the logger used to log InternalErrors
 var Log = func(err *InternalError, ctx *plugin.Context) {
-	log.Printf("internal error in command %s: %+v\n", ctx.InvokedCommand.ID(), err)
+	log.Printf("internal error in command %s: %+v\n%+v", ctx.InvokedCommand.ID(), err, err.StackTrace())
 }
 
 // InternalError represents a non-user triggered error.
@@ -185,13 +185,12 @@ func MustInternal(err error) error {
 // If the internal error has no description, the description will be set to the
 // default description.
 //
-// In any other case, unlike WithStack, the error is wrapped in an
-// *InternalError.
+// In any other case, unlike Silent, the error is wrapped in an *InternalError.
 // If the passed error already provides a stack trace via a
-// err.StackTrace() []uintptr method, MustInternal will use that stack trace
+// err.StackTrace() []uintptr method, MustSilent will use that stack trace
 // when wrapping, instead of creating one from the caller chain.
-// MustInternal is therefore considered more forceful than WithStack, and cases
-// that don't explicitly require this, should use WithStack.
+// MustSilent is therefore considered more forceful than Silent, and cases
+// that don't explicitly require this, should use Silent.
 func MustSilent(err error) error {
 	if err == nil {
 		return nil
@@ -219,8 +218,8 @@ func MustSilent(err error) error {
 // The returned error will be an *InternalError using the default description,
 // unless one of the below exceptions says otherwise.
 //
-// The returned error will print as
-// fmt.Sptrinf("%s: %s", message, err.Error()).
+// The returned error will print as:
+// 	fmt.Sptrinf("%s: %s", message, err.Error())
 //
 // Exceptions
 //
@@ -245,8 +244,8 @@ func Wrap(err error, message string) error {
 // The returned error will be an *InternalError with no description, unless
 // one of the below exceptions says applies.
 //
-// The returned error will print as
-// fmt.Sprintf("%s: %s, fmt.Sprintf(format, a...), err.Error()).
+// The returned error will print as:
+// 	fmt.Sprintf("%s: %s, fmt.Sprintf(format, a...), err.Error())
 //
 // Exceptions
 //
@@ -268,8 +267,8 @@ func WrapSilent(err error, message string) error {
 // The returned error will be an *InternalError using the default description,
 // unless one of the below exceptions says otherwise.
 //
-// The returned error will print as
-// fmt.Sprintf("%s: %s, fmt.Sprintf(format, a...), err.Error()).
+// The returned error will print as:
+// 	fmt.Sprintf("%s: %s, fmt.Sprintf(format, a...), err.Error())
 //
 // Exceptions
 //
@@ -294,8 +293,8 @@ func Wrapf(err error, format string, a ...interface{}) error {
 // The returned error will be an *InternalError using the default description,
 // unless one of the below exceptions says otherwise.
 //
-// The returned error will print as
-// fmt.Sprintf("%s: %s, fmt.Sprintf(format, a...), err.Error()).
+// The returned error will print as:
+// 	fmt.Sprintf("%s: %s, fmt.Sprintf(format, a...), err.Error())
 //
 // Exceptions
 //
@@ -509,7 +508,7 @@ func (e *InternalError) Format(s fmt.State, verb rune) { //goland:noinspection G
 }
 
 // Handle handles the InternalError.
-// By default it logs the error and sends out an internal error Embed.
+// By default, it logs the error and sends out an internal error embed.
 func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) error {
 	// prevent infinite error cycle, by not allowing error returns
 	HandleInternalError(e, s, ctx)

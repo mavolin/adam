@@ -1,6 +1,7 @@
 package help
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/impl/command"
+	"github.com/mavolin/adam/pkg/impl/module"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -203,7 +205,7 @@ func TestCheckRestrictions(t *testing.T) {
 // Utilities
 // =====================================================================================
 
-func Test_checkHideFuncs(t *testing.T) {
+func TestHelp_calcCommandHiddenLevel(t *testing.T) {
 	testCases := []struct {
 		name  string
 		funcs []HideFunc
@@ -224,7 +226,55 @@ func Test_checkHideFuncs(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := checkHiddenLevel(nil, nil, nil, c.funcs...)
+			h := &Help{Options: Options{HideFuncs: c.funcs}}
+
+			actual := h.calcCommandHiddenLevel(nil, nil, nil)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func TestHelp_calcModuleHiddenLevel(t *testing.T) {
+	testCases := []struct {
+		name string
+		lvls []HiddenLevel
+
+		expect HiddenLevel
+	}{
+		{
+			name:   "success",
+			lvls:   []HiddenLevel{Hide, HideList, Hide},
+			expect: HideList,
+		},
+		{
+			name:   "hide is max",
+			lvls:   []HiddenLevel{Hide + 1},
+			expect: Hide,
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			h := &Help{Options: Options{HideFuncs: make([]HideFunc, len(c.lvls))}}
+
+			mod := module.New(module.Meta{})
+
+			for i, lvl := range c.lvls {
+				lvl := lvl
+				istr := strconv.Itoa(i)
+
+				h.HideFuncs[i] = func(cmd plugin.ResolvedCommand, _ *state.State, _ *plugin.Context) HiddenLevel {
+					if cmd.Name() == istr {
+						return lvl
+					}
+
+					return Show
+				}
+
+				mod.AddCommand(mock.Command{CommandMeta: command.Meta{Name: istr}})
+			}
+
+			actual := h.calcModuleHiddenLevel(nil, nil, mock.ResolveModule(plugin.BuiltInSource, mod))
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -306,7 +356,9 @@ func Test_filterCommands(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := filterCommands(c.cmds, nil, nil, c.lvl, c.funcs...)
+			h := &Help{Options: Options{HideFuncs: c.funcs}}
+
+			actual := h.filterCommands(nil, nil, c.lvl, c.cmds...)
 			assert.Len(t, actual, len(c.expect))
 
 			for i, expect := range c.expect {

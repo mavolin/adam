@@ -21,9 +21,9 @@ var (
 		cancelKeywords: []*i18n.Config{defaultCancelKeyword},
 	}
 
-	// ReplyMaxTimeout is the default maximum mount of time ReplyWaiter.Await
-	// will wait, even if a user is still typing.
-	// This does not affect ReplyWaiter.AwaitWithContext.
+	// ReplyMaxTimeout is the maximum amount of time ReplyWaiter.Await will
+	// wait, even if a user is still typing.
+	// This does not affect ReplyWaiter.AwaitContext.
 	ReplyMaxTimeout = 30 * time.Minute
 
 	// ReplyMiddlewaresKey is the key used to retrieve middlewares used for
@@ -153,12 +153,12 @@ func (w *ReplyWaiter) NoAutoReact() *ReplyWaiter {
 // All middlewares of invalid type will be discarded.
 //
 // The following types are permitted:
-//		• func(*state.State, interface{})
-//		• func(*state.State, interface{}) error
-//		• func(*state.State, *state.Base)
-//		• func(*state.State, *state.Base) error
-//		• func(*state.State, *state.MessageCreateEvent)
-//		• func(*state.State, *state.MessageCreateEvent) error
+// 	• func(*state.State, interface{})
+//	• func(*state.State, interface{}) error
+//	• func(*state.State, *state.Base)
+//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *state.MessageCreateEvent)
+//	• func(*state.State, *state.MessageCreateEvent) error
 func (w *ReplyWaiter) WithMiddlewares(middlewares ...interface{}) *ReplyWaiter {
 	if len(w.middlewares) == 0 {
 		w.middlewares = make([]interface{}, 0, len(middlewares))
@@ -245,25 +245,24 @@ func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 	return
 }
 
-// Await is the same as AwaitWithContext, but uses a
+// Await is the same as AwaitContext, but uses a
 // context.WithTimeout(context.Background(), ReplyMaxTimeout) as context.
 func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*discord.Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ReplyMaxTimeout)
 	defer cancel()
 
-	return w.AwaitWithContext(ctx, initialTimeout, typingTimeout)
+	return w.AwaitContext(ctx, initialTimeout, typingTimeout)
 }
 
-// AwaitWithContext awaits a reply of the user until the user signals
-// cancellation, the initial timeout expires and the user is not typing or the
-// user stops typing and the typing timeout is reached.
+// AwaitContext awaits a reply of the user until the user signals cancellation,
+// the initial timeout expires and the user is not typing or the user stops
+// typing and the typing timeout is reached.
 // Note that you need the typing intent to monitor typing.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.
 // If the user cancels the reply, errors.Abort will be returned.
 // If the context expires, a *TimeoutError with Cause set to ctx.Err() will be
 // returned.
-// This error is also available through .Unwrap(), so errors.Is is safe to use.
 //
 // The typing timeout will start after the user first starts typing.
 // Because Discord sends the typing event in an interval of about 10 seconds,
@@ -271,7 +270,7 @@ func (w *ReplyWaiter) Await(initialTimeout, typingTimeout time.Duration) (*disco
 // status was not updated.
 //
 // Besides that, a reply can also be canceled through a middleware.
-func (w *ReplyWaiter) AwaitWithContext(
+func (w *ReplyWaiter) AwaitContext(
 	ctx context.Context, initialTimeout, typingTimeout time.Duration,
 ) (*discord.Message, error) {
 	perms, err := w.ctx.SelfPermissions()

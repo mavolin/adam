@@ -341,9 +341,10 @@ func (h *Help) genExamples(b *strings.Builder, ctx *plugin.Context, cmd plugin.R
 // HiddenLevel to the passed *capbuilder.CappedBuilder, until there are no more
 // commands, or the capbuilder.CappedBuilder's chunk size is reached.
 func (h *Help) formatCommands(
-	b *capbuilder.CappedBuilder, cmds []plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel,
+	b *capbuilder.CappedBuilder, cmds []plugin.ResolvedCommand, s *state.State, ctx *plugin.Context,
+	maxLvl HiddenLevel,
 ) {
-	cmds = filterCommands(cmds, s, ctx, lvl, h.HideFuncs...)
+	cmds = h.filterCommands(s, ctx, maxLvl, cmds...)
 
 	for i, cmd := range cmds {
 		if i > 0 {

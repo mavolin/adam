@@ -180,7 +180,7 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 }
 
 func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedModule) (discord.Embed, error) {
-	if checkModuleHidden(mod, s, ctx, HideList, h.HideFuncs...) {
+	if !HideList.Allows(h.calcModuleHiddenLevel(s, ctx, mod)) {
 		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
 			WithPlaceholders(pluginNotFoundErrorPlaceholder{
 				Invoke: ctx.RawArgs(),
@@ -224,7 +224,7 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedMo
 }
 
 func (h *Help) command(s *state.State, ctx *plugin.Context, cmd plugin.ResolvedCommand) (discord.Embed, error) {
-	if len(filterCommands([]plugin.ResolvedCommand{cmd}, s, ctx, HideList, h.Options.HideFuncs...)) == 0 {
+	if !HideList.Allows(h.calcCommandHiddenLevel(s, ctx, cmd)) {
 		return discord.Embed{}, plugin.NewArgumentErrorl(pluginNotFoundError.
 			WithPlaceholders(pluginNotFoundErrorPlaceholder{
 				Invoke: ctx.RawArgs(),

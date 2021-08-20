@@ -23,6 +23,12 @@ const (
 	Hide
 )
 
+// Allows checks if this HiddenLevel would allow a plugin with the given
+// HiddenLevel to be shown.
+func (a HiddenLevel) Allows(b HiddenLevel) bool {
+	return a >= b
+}
+
 type HideFunc func(plugin.ResolvedCommand, *state.State, *plugin.Context) HiddenLevel
 
 // CheckHidden returns a HideFunc that returns the passed HiddenLevel, if the
@@ -85,51 +91,61 @@ func CheckRestrictions(lvl HiddenLevel) HideFunc {
 // Utilities
 // =====================================================================================
 
-// checkHiddenLevel checks the passed HideFuncs and returns the highest
+// calcCommandHiddenLevel checks the Help's HideFuncs and returns the highest
 // HiddenLevel found.
-func checkHiddenLevel(cmd plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, f ...HideFunc) HiddenLevel {
+func (h *Help) calcCommandHiddenLevel(s *state.State, ctx *plugin.Context, cmd plugin.ResolvedCommand) HiddenLevel {
 	var lvl HiddenLevel
 
-	for _, f := range f {
-		lvl2 := f(cmd, s, ctx)
-		if lvl2 >= Hide {
+	for _, f := range h.HideFuncs {
+		fLvl := f(cmd, s, ctx)
+		if fLvl >= Hide {
 			return Hide
-		} else if lvl2 > lvl {
-			lvl = lvl2
+		} else if fLvl > lvl && fLvl <= Hide {
+			lvl = fLvl
 		}
 	}
 
 	return lvl
 }
 
-func filterCommands(
-	cmds []plugin.ResolvedCommand, s *state.State, ctx *plugin.Context, lvl HiddenLevel, f ...HideFunc,
+// calcModuleHiddenLevel checks the Help's HideFuncs and returns the lowest
+// HiddenLevel for all of mod's commands and subcommands.
+func (h *Help) calcModuleHiddenLevel(s *state.State, ctx *plugin.Context, mod plugin.ResolvedModule) HiddenLevel {
+	lvl := Hide
+
+	for _, cmd := range mod.Commands() {
+		cmdLvl := h.calcCommandHiddenLevel(s, ctx, cmd)
+		if cmdLvl == Show {
+			return Show
+		} else if cmdLvl < lvl {
+			lvl = cmdLvl
+		}
+	}
+
+	for _, mod := range mod.Modules() {
+		modLvl := h.calcModuleHiddenLevel(s, ctx, mod)
+		if modLvl == Show {
+			return Show
+		} else if modLvl < lvl {
+			lvl = modLvl
+		}
+	}
+
+	return lvl
+}
+
+// filterCommands filters the passed commands and returns only those that have
+// HiddenLevel smaller than max.
+func (h *Help) filterCommands(
+	s *state.State, ctx *plugin.Context, max HiddenLevel, cmds ...plugin.ResolvedCommand,
 ) []plugin.ResolvedCommand {
 	filtered := make([]plugin.ResolvedCommand, 0, len(cmds))
 
 	for _, cmd := range cmds {
-		if checkHiddenLevel(cmd, s, ctx, f...) <= lvl {
+		if max.Allows(h.calcCommandHiddenLevel(s, ctx, cmd)) {
 			filtered = append(filtered, cmd)
 		}
 	}
 
 	return filtered
-}
-
-func checkModuleHidden(
-	mod plugin.ResolvedModule, s *state.State, ctx *plugin.Context, lvl HiddenLevel, f ...HideFunc,
-) bool {
-	for _, scmd := range mod.Commands() {
-		if checkHiddenLevel(scmd, s, ctx, f...) <= lvl {
-			return true
-		}
-	}
-
-	for _, smod := range mod.Modules() {
-		if checkModuleHidden(smod, s, ctx, lvl, f...) {
-			return true
-		}
-	}
-
-	return false
 }

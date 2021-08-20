@@ -2,7 +2,6 @@
 package bot
 
 import (
-	"regexp"
 	"time"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -25,17 +24,14 @@ type Bot struct {
 
 	pluginResolver *resolved.PluginResolver
 
-	selfID            discord.UserID
-	selfMentionRegexp *regexp.Regexp
+	selfID discord.UserID
 
 	// ----- Settings -----
 
-	SettingsProvider SettingsProvider
-	Owners           []discord.UserID
+	Owners []discord.UserID
 
 	EditAge time.Duration
 
-	AllowBot bool
 	autoOpen bool
 
 	autoAddHandlers bool
@@ -98,12 +94,9 @@ func New(o Options) (*Bot, error) {
 	}
 
 	b.selfID = self.ID
-	b.selfMentionRegexp = regexp.MustCompile("^<@!?" + self.ID.String() + ">")
 
-	b.SettingsProvider = o.SettingsProvider
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
-	b.AllowBot = o.AllowBot
 	b.autoOpen = !o.NoAutoOpen
 	b.autoAddHandlers = o.AutoAddHandlers
 	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
@@ -113,13 +106,22 @@ func New(o Options) (*Bot, error) {
 	b.pluginResolver = resolved.NewPluginResolver(o.ArgParser)
 
 	if !o.NoDefaultMiddlewares {
-		b.MustAddMiddleware(CheckChannelTypes)
-		b.MustAddMiddleware(CheckBotPermissions)
-		b.MustAddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+		b.AddMiddleware(CheckMessageType)
 
-		b.MustAddPostMiddleware(CheckRestrictions)
-		b.MustAddPostMiddleware(ParseArgs)
-		b.MustAddPostMiddleware(InvokeCommand)
+		if o.AllowBot {
+			b.AddMiddleware(CheckHuman)
+		}
+
+		b.AddMiddleware(NewSettingsRetriever(o.SettingsProvider))
+		b.AddMiddleware(CheckPrefix)
+		b.AddMiddleware(FindCommand)
+		b.AddMiddleware(CheckChannelTypes)
+		b.AddMiddleware(CheckBotPermissions)
+		b.AddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+
+		b.AddPostMiddleware(CheckRestrictions)
+		b.AddPostMiddleware(ParseArgs)
+		b.AddPostMiddleware(InvokeCommand)
 	}
 
 	return b, nil
@@ -322,12 +324,12 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 	}
 }
 
-// AddPostMiddleware adds a middleware to the Bot, that is invoked after all
+// TryAddPostMiddleware adds a middleware to the Bot that is invoked after all
 // command and module middlewares were called.
 // The order of invocation of post middlewares is the same as the order they
 // were added in.
 //
-// If the middleware's type is invalid, AddMiddleware will return
+// If the middleware's type is invalid, TryAddMiddleware will return
 // ErrMiddleware.
 //
 // Valid middleware types are:
@@ -340,14 +342,14 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 //	• func(*state.State, *state.MessageUpdateEvent)
 //	• func(*state.State, *state.MessageUpdateEvent) error
 //	• func(next CommandFunc) CommandFunc
-func (b *Bot) AddPostMiddleware(f interface{}) error {
-	return b.postMiddlewares.AddMiddleware(f)
+func (b *Bot) TryAddPostMiddleware(f interface{}) error {
+	return b.postMiddlewares.TryAddMiddleware(f)
 }
 
-// MustAddPostMiddleware is the same as AddPostMiddleware, but panics if
-// AddPostMiddleware returns an error.
-func (b *Bot) MustAddPostMiddleware(f interface{}) {
-	b.postMiddlewares.MustAddMiddleware(f)
+// AddPostMiddleware is the same as TryAddPostMiddleware, but panics if
+// TryAddPostMiddleware returns an error.
+func (b *Bot) AddPostMiddleware(f interface{}) {
+	b.postMiddlewares.AddMiddleware(f)
 }
 
 // AddPluginSource adds the passed PluginSourceFunc under the passed name.
