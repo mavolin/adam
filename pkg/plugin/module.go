@@ -11,10 +11,10 @@ type (
 	Module interface {
 		ModuleMeta
 
-		// Commands returns the subcommands of the module.
-		Commands() []Command
-		// Modules returns the submodules of the module.
-		Modules() []Module
+		// GetCommands returns the subcommands of the module.
+		GetCommands() []Command
+		// GetModules returns the submodules of the module.
+		GetModules() []Module
 	}
 
 	// ModuleMeta is the abstraction of the Module's meta data.

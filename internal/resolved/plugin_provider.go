@@ -71,7 +71,7 @@ type PluginProvider struct {
 	commands []plugin.ResolvedCommand
 	modules  []plugin.ResolvedModule
 
-	unavailableSources []plugin.UnavailablePluginSource
+	unavailableSources []plugin.UnavailableSource
 	usedNames          map[string]struct{}
 }
 
@@ -205,7 +205,7 @@ func (p *PluginProvider) FindModule(invoke string) plugin.ResolvedModule {
 	return p.Module(plugin.NewIDFromInvoke(invoke))
 }
 
-func (p *PluginProvider) UnavailablePluginSources() []plugin.UnavailablePluginSource {
+func (p *PluginProvider) UnavailablePluginSources() []plugin.UnavailableSource {
 	p.Resolve()
 	return p.unavailableSources
 }
@@ -251,7 +251,7 @@ func (p *PluginProvider) Resolve() {
 		sourceName := p.resolver.Sources[i].Name
 
 		if r.err != nil {
-			p.unavailableSources = append(p.unavailableSources, plugin.UnavailablePluginSource{
+			p.unavailableSources = append(p.unavailableSources, plugin.UnavailableSource{
 				Name:  sourceName,
 				Error: r.err,
 			})

@@ -54,7 +54,7 @@ type Bot struct {
 // If there are no plugins to return, all return values should be nil.
 // If there is an error the returned plugins will be discarded, and the error
 // will be noted in the Context of the command, available via
-// Context.UnavailablePluginSource().
+// Context.UnavailablePluginSources().
 type PluginSourceFunc = resolved.PluginSourceFunc
 
 // New creates a new Bot from the passed options.
@@ -184,13 +184,13 @@ func (b *Bot) Open() error {
 }
 
 func (b *Bot) openModule(mod plugin.Module) error {
-	for _, cmd := range mod.Commands() {
+	for _, cmd := range mod.GetCommands() {
 		if err := b.callOpen(cmd); err != nil {
 			return err
 		}
 	}
 
-	for _, mod = range mod.Modules() {
+	for _, mod = range mod.GetModules() {
 		if err := b.openModule(mod); err != nil {
 			return err
 		}
@@ -248,13 +248,13 @@ func (b *Bot) Close() error {
 }
 
 func (b *Bot) closeModule(mod plugin.Module) error {
-	for _, cmd := range mod.Commands() {
+	for _, cmd := range mod.GetCommands() {
 		if err := b.callClose(cmd); err != nil {
 			return err
 		}
 	}
 
-	for _, mod = range mod.Modules() {
+	for _, mod = range mod.GetModules() {
 		if err := b.closeModule(mod); err != nil {
 			return err
 		}
@@ -315,11 +315,11 @@ func (b *Bot) AddModule(mod plugin.Module) {
 }
 
 func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
-	for _, cmd := range mod.Commands() {
+	for _, cmd := range mod.GetCommands() {
 		b.State.AutoAddHandlers(cmd)
 	}
 
-	for _, mod := range mod.Modules() {
+	for _, mod := range mod.GetModules() {
 		b.autoAddModuleHandlers(mod)
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/require"
 
+	mockplugin "github.com/mavolin/adam/internal/mock/plugin"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -21,7 +22,7 @@ func TestUserError_Handle(t *testing.T) {
 		ctx := &plugin.Context{
 			Message:   discord.Message{ChannelID: 123},
 			Localizer: i18n.NewFallbackLocalizer(),
-			Replier:   replierFromState(s, 123, 0),
+			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
 		embed := NewErrorEmbed().
@@ -52,7 +53,7 @@ func TestUserError_Handle(t *testing.T) {
 		ctx := &plugin.Context{
 			Message:   discord.Message{ChannelID: 123},
 			Localizer: i18n.NewFallbackLocalizer(),
-			Replier:   replierFromState(s, 123, 0),
+			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
 		embed := NewErrorEmbed().

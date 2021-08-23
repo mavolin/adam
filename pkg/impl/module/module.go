@@ -36,10 +36,10 @@ func (m *Module) AddModule(mod plugin.Module) {
 	m.modules = append(m.modules, mod)
 }
 
-func (m *Module) Commands() []plugin.Command {
+func (m *Module) GetCommands() []plugin.Command {
 	return m.commands
 }
 
-func (m *Module) Modules() []plugin.Module {
+func (m *Module) GetModules() []plugin.Module {
 	return m.modules
 }

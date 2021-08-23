@@ -9,8 +9,6 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/arg"
-	"github.com/mavolin/adam/pkg/impl/command"
-	"github.com/mavolin/adam/pkg/impl/module"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -23,52 +21,37 @@ func TestHelp_Invoke(t *testing.T) {
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args:      plugin.Args{nil},
 				Prefixes:  []string{"my_cool_prefix"},
-				Provider: mock.NewPluginProvider([]plugin.Source{
-					{
-						Name: plugin.BuiltInSource,
-						Commands: []plugin.Command{
-							mock.Command{
-								CommandMeta: command.Meta{
+				Provider: &mock.PluginProvider{
+					Sources: []plugin.Source{
+						{
+							Name: plugin.BuiltInSource,
+							Commands: []plugin.Command{
+								mock.Command{
 									Name:             "abc",
 									ShortDescription: "abc desc",
 									Hidden:           true,
 								},
-							},
-							mock.Command{
-								CommandMeta: command.Meta{
+								mock.Command{
 									Name:             "def",
 									ShortDescription: "def desc",
 								},
+								mock.Command{Name: "ghi"},
 							},
-							mock.Command{
-								CommandMeta: command.Meta{Name: "ghi"},
-							},
-						},
-						Modules: []plugin.Module{
-							mock.Module{
-								ModuleMeta: module.Meta{Name: "jkl"},
-								CommandsReturn: []plugin.Command{
-									mock.Command{
-										CommandMeta: command.Meta{
-											Name:   "abc",
-											Hidden: true,
-										},
-									},
-									mock.Command{
-										CommandMeta: command.Meta{
+							Modules: []plugin.Module{
+								mock.Module{
+									Name: "jkl",
+									Commands: []plugin.Command{
+										mock.Command{Name: "abc", Hidden: true},
+										mock.Command{
 											Name:             "def",
 											ShortDescription: "def desc",
 										},
 									},
-								},
-								ModulesReturn: []plugin.Module{
-									mock.Module{
-										ModuleMeta: module.Meta{
+									Modules: []plugin.Module{
+										mock.Module{
 											Name: "ghi",
-										},
-										CommandsReturn: []plugin.Command{
-											mock.Command{
-												CommandMeta: command.Meta{
+											Commands: []plugin.Command{
+												mock.Command{
 													Name:             "abc",
 													ShortDescription: "abc desc",
 												},
@@ -76,38 +59,29 @@ func TestHelp_Invoke(t *testing.T) {
 										},
 									},
 								},
-							},
-							mock.Module{
-								ModuleMeta: module.Meta{Name: "mno"},
-								CommandsReturn: []plugin.Command{
-									mock.Command{
-										CommandMeta: command.Meta{
+								mock.Module{
+									Name: "mno",
+									Commands: []plugin.Command{
+										mock.Command{
 											Name:             "abc",
 											ShortDescription: "abc desc",
 										},
-									},
-									mock.Command{
-										CommandMeta: command.Meta{
+										mock.Command{
 											Name:             "def",
 											ShortDescription: "def desc",
 										},
 									},
 								},
-							},
-							mock.Module{
-								ModuleMeta: module.Meta{Name: "pqr"},
-								CommandsReturn: []plugin.Command{
-									mock.Command{
-										CommandMeta: command.Meta{
-											Name:   "stu,abc",
-											Hidden: true,
-										},
+								mock.Module{
+									Name: "pqr",
+									Commands: []plugin.Command{
+										mock.Command{Name: "stu,abc", Hidden: true},
 									},
 								},
 							},
 						},
 					},
-				}, nil),
+				},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					SelfReturn: &discord.Member{
 						User: discord.User{Username: "NotTesty"},
@@ -141,19 +115,17 @@ func TestHelp_Invoke(t *testing.T) {
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args:      plugin.Args{nil},
-				Provider: mock.NewPluginProvider([]plugin.Source{
-					{
-						Name: plugin.BuiltInSource,
-						Commands: []plugin.Command{
-							mock.Command{
-								CommandMeta: command.Meta{Name: "abc"},
-							},
-							mock.Command{
-								CommandMeta: command.Meta{Name: "def"},
+				Provider: &mock.PluginProvider{
+					Sources: []plugin.Source{
+						{
+							Name: plugin.BuiltInSource,
+							Commands: []plugin.Command{
+								mock.Command{Name: "abc"},
+								mock.Command{Name: "def"},
 							},
 						},
 					},
-				}, nil),
+				},
 			}
 
 			expect := BaseEmbed.Clone().
@@ -171,83 +143,59 @@ func TestHelp_Invoke(t *testing.T) {
 
 	t.Run("module", func(t *testing.T) {
 		mod := mock.Module{
-			ModuleMeta: module.Meta{
-				Name:            "abc",
-				LongDescription: "abc desc",
-			},
-			CommandsReturn: []plugin.Command{
+			Name:            "abc",
+			LongDescription: "abc desc",
+			Commands: []plugin.Command{
 				mock.Command{
-					CommandMeta: command.Meta{
-						Name:             "def",
-						ShortDescription: "def desc",
-						Hidden:           true,
-					},
+					Name:             "def",
+					ShortDescription: "def desc",
+					Hidden:           true,
 				},
 				mock.Command{
-					CommandMeta: command.Meta{
-						Name:             "ghi",
-						ShortDescription: "ghi desc",
-					},
+					Name:             "ghi",
+					ShortDescription: "ghi desc",
 				},
-				mock.Command{CommandMeta: command.Meta{Name: "jkl"}},
+				mock.Command{Name: "jkl"},
 			},
-			ModulesReturn: []plugin.Module{
+			Modules: []plugin.Module{
 				mock.Module{
-					ModuleMeta: module.Meta{Name: "mno"},
-					CommandsReturn: []plugin.Command{
+					Name: "mno",
+					Commands: []plugin.Command{
+						mock.Command{Name: "abc", Hidden: true},
 						mock.Command{
-							CommandMeta: command.Meta{
-								Name:   "abc",
-								Hidden: true,
-							},
-						},
-						mock.Command{
-							CommandMeta: command.Meta{
-								Name:             "def",
-								ShortDescription: "def desc",
-							},
+							Name:             "def",
+							ShortDescription: "def desc",
 						},
 					},
-					ModulesReturn: []plugin.Module{
+					Modules: []plugin.Module{
 						mock.Module{
-							ModuleMeta: module.Meta{Name: "ghi"},
-							CommandsReturn: []plugin.Command{
+							Name: "ghi",
+							Commands: []plugin.Command{
 								mock.Command{
-									CommandMeta: command.Meta{
-										Name:             "abc",
-										ShortDescription: "abc desc",
-									},
+									Name:             "abc",
+									ShortDescription: "abc desc",
 								},
 							},
 						},
 					},
 				},
 				mock.Module{
-					ModuleMeta: module.Meta{Name: "pqr"},
-					CommandsReturn: []plugin.Command{
+					Name: "pqr",
+					Commands: []plugin.Command{
 						mock.Command{
-							CommandMeta: command.Meta{
-								Name:             "abc",
-								ShortDescription: "abc desc",
-							},
+							Name:             "abc",
+							ShortDescription: "abc desc",
 						},
 						mock.Command{
-							CommandMeta: command.Meta{
-								Name:             "def",
-								ShortDescription: "def desc",
-							},
+							Name:             "def",
+							ShortDescription: "def desc",
 						},
 					},
 				},
 				mock.Module{
-					ModuleMeta: module.Meta{Name: "stu"},
-					CommandsReturn: []plugin.Command{
-						mock.Command{
-							CommandMeta: command.Meta{
-								Name:   "stu,abc",
-								Hidden: true,
-							},
-						},
+					Name: "stu",
+					Commands: []plugin.Command{
+						mock.Command{Name: "stu,abc", Hidden: true},
 					},
 				},
 			},
@@ -286,55 +234,53 @@ func TestHelp_Invoke(t *testing.T) {
 	t.Run("command", func(t *testing.T) {
 		t.Run("single option", func(t *testing.T) {
 			cmd := mock.Command{
-				CommandMeta: command.Meta{
-					Name:            "abc",
-					Aliases:         []string{"cba"},
-					LongDescription: "long description",
-					ArgParser:       &arg.DelimiterParser{Delimiter: ','},
-					Args: &arg.Config{
-						RequiredArgs: []arg.RequiredArg{
-							{
-								Name:        "my arg",
-								Type:        arg.SimpleText,
-								Description: "my arg description",
-							},
-							{
-								Name:        "date",
-								Type:        arg.SimpleDate,
-								Description: "date description",
-							},
+				Name:            "abc",
+				Aliases:         []string{"cba"},
+				LongDescription: "long description",
+				ArgParser:       &arg.DelimiterParser{Delimiter: ','},
+				Args: &arg.Config{
+					RequiredArgs: []arg.RequiredArg{
+						{
+							Name:        "my arg",
+							Type:        arg.SimpleText,
+							Description: "my arg description",
 						},
-						OptionalArgs: []arg.OptionalArg{
-							{
-								Name: "optional arg",
-								Type: arg.SimpleInteger,
-							},
-							{
-								Name:        "decimal",
-								Type:        arg.SimpleDecimal,
-								Description: "decimal description",
-							},
+						{
+							Name:        "date",
+							Type:        arg.SimpleDate,
+							Description: "date description",
 						},
-						Flags: []arg.Flag{
-							{
-								Name:        "flag",
-								Type:        arg.User,
-								Description: "flag description",
-								Multi:       false,
-							},
-							{
-								Name:    "multi",
-								Aliases: []string{"m"},
-								Type:    arg.SimpleAlphanumericID,
-								Multi:   true,
-							},
-						},
-						Variadic: true,
 					},
-					ExampleArgs: plugin.ExampleArgs{
-						{Args: []string{"example one", "2021-06-24"}},
-						{Args: []string{"example two", "2003-05-09"}},
+					OptionalArgs: []arg.OptionalArg{
+						{
+							Name: "optional arg",
+							Type: arg.SimpleInteger,
+						},
+						{
+							Name:        "decimal",
+							Type:        arg.SimpleDecimal,
+							Description: "decimal description",
+						},
 					},
+					Flags: []arg.Flag{
+						{
+							Name:        "flag",
+							Type:        arg.User,
+							Description: "flag description",
+							Multi:       false,
+						},
+						{
+							Name:    "multi",
+							Aliases: []string{"m"},
+							Type:    arg.SimpleAlphanumericID,
+							Multi:   true,
+						},
+					},
+					Variadic: true,
+				},
+				ExampleArgs: plugin.ExampleArgs{
+					{Args: []string{"example one", "2021-06-24"}},
+					{Args: []string{"example two", "2003-05-09"}},
 				},
 			}
 
@@ -350,7 +296,8 @@ func TestHelp_Invoke(t *testing.T) {
 					})).
 				WithDescription("long description").
 				WithField(ctx.MustLocalize(aliasesFieldName), "`cba`").
-				WithField(ctx.MustLocalize(usageFieldNameSingle), "```abc <my arg>, <date>, [optional arg], [decimal+]```").
+				WithField(ctx.MustLocalize(usageFieldNameSingle),
+					"```abc <my arg>, <date>, [optional arg], [decimal+]```").
 				WithField(ctx.MustLocalize(argumentsFieldName),
 					"`my arg (Text)` - my arg description\n`date` - date description\n"+
 						"`decimal (Decimal+)` - decimal description").
@@ -367,12 +314,10 @@ func TestHelp_Invoke(t *testing.T) {
 
 		t.Run("no args", func(t *testing.T) {
 			cmd := mock.Command{
-				CommandMeta: command.Meta{
-					Name:            "abc",
-					Aliases:         []string{"cba"},
-					LongDescription: "long description",
-					Args:            nil,
-				},
+				Name:            "abc",
+				Aliases:         []string{"cba"},
+				LongDescription: "long description",
+				Args:            nil,
 			}
 
 			ctx := &plugin.Context{

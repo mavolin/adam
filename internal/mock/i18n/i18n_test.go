@@ -1,4 +1,4 @@
-package mock
+package i18n
 
 import (
 	"testing"

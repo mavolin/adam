@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/errors"
-	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/impl/module"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -27,7 +26,7 @@ func TestCheckHidden(t *testing.T) {
 			name:      "hidden",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{Hidden: true},
+				Hidden: true,
 			}),
 			expect: HideList,
 		},
@@ -35,7 +34,7 @@ func TestCheckHidden(t *testing.T) {
 			name:      "not hidden",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{Hidden: false},
+				Hidden: false,
 			}),
 			expect: Show,
 		},
@@ -43,7 +42,7 @@ func TestCheckHidden(t *testing.T) {
 			name:      "level",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{Hidden: true},
+				Hidden: true,
 			}),
 			expect: HideList,
 		},
@@ -51,7 +50,7 @@ func TestCheckHidden(t *testing.T) {
 			name:      "level",
 			hiddenLvl: Hide,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{Hidden: true},
+				Hidden: true,
 			}),
 			expect: Hide,
 		},
@@ -78,7 +77,7 @@ func TestCheckChannelTypes(t *testing.T) {
 			name:      "matching",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
+				ChannelTypes: plugin.DirectMessages,
 			}),
 			ctx:    &plugin.Context{Message: discord.Message{GuildID: 0}},
 			expect: Show,
@@ -87,7 +86,7 @@ func TestCheckChannelTypes(t *testing.T) {
 			name:      "not matching",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
+				ChannelTypes: plugin.DirectMessages,
 			}),
 			ctx:    &plugin.Context{Message: discord.Message{GuildID: 123}},
 			expect: HideList,
@@ -96,7 +95,7 @@ func TestCheckChannelTypes(t *testing.T) {
 			name:      "level",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
+				ChannelTypes: plugin.DirectMessages,
 			}),
 			ctx:    &plugin.Context{Message: discord.Message{GuildID: 123}},
 			expect: HideList,
@@ -105,7 +104,7 @@ func TestCheckChannelTypes(t *testing.T) {
 			name:      "level",
 			hiddenLvl: Hide,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
+				ChannelTypes: plugin.DirectMessages,
 			}),
 			ctx:    &plugin.Context{Message: discord.Message{GuildID: 123}},
 			expect: Hide,
@@ -125,7 +124,7 @@ func TestCheckChannelTypes(t *testing.T) {
 		expect := Show
 
 		cmd := mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-			CommandMeta: command.Meta{ChannelTypes: plugin.GuildTextChannels},
+			ChannelTypes: plugin.GuildTextChannels,
 		})
 
 		channelError := errors.New("abc")
@@ -158,26 +157,21 @@ func TestCheckRestrictions(t *testing.T) {
 			name:      "restricted",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{
-					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
-				},
+				Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
 			}),
 			expect: HideList,
 		},
 		{
 			name:      "not restricted",
 			hiddenLvl: HideList,
-			cmd: mock.ResolveCommand(plugin.BuiltInSource,
-				mock.Command{CommandMeta: command.Meta{}}),
-			expect: Show,
+			cmd:       mock.ResolveCommand(plugin.BuiltInSource, mock.Command{}),
+			expect:    Show,
 		},
 		{
 			name:      "level",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{
-					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
-				},
+				Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
 			}),
 			expect: HideList,
 		},
@@ -185,9 +179,7 @@ func TestCheckRestrictions(t *testing.T) {
 			name:      "level",
 			hiddenLvl: Hide,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				CommandMeta: command.Meta{
-					Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
-				},
+				Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
 			}),
 			expect: Hide,
 		},
@@ -271,7 +263,7 @@ func TestHelp_calcModuleHiddenLevel(t *testing.T) {
 					return Show
 				}
 
-				mod.AddCommand(mock.Command{CommandMeta: command.Meta{Name: istr}})
+				mod.AddCommand(mock.Command{Name: istr})
 			}
 
 			actual := h.calcModuleHiddenLevel(nil, nil, mock.ResolveModule(plugin.BuiltInSource, mod))
@@ -293,13 +285,13 @@ func Test_filterCommands(t *testing.T) {
 			name: "HiddenList",
 			cmds: []plugin.ResolvedCommand{
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "abc", Hidden: true},
+					Name: "abc", Hidden: true,
 				}),
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "def", Hidden: false},
+					Name: "def", Hidden: false,
 				}),
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "ghi", Hidden: false},
+					Name: "ghi", Hidden: false,
 				}),
 			},
 			lvl: HideList,
@@ -315,10 +307,10 @@ func Test_filterCommands(t *testing.T) {
 			},
 			expect: []plugin.ResolvedCommand{
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "abc", Hidden: true},
+					Name: "abc", Hidden: true,
 				}),
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "ghi", Hidden: false},
+					Name: "ghi", Hidden: false,
 				}),
 			},
 		},
@@ -326,13 +318,13 @@ func Test_filterCommands(t *testing.T) {
 			name: "Show",
 			cmds: []plugin.ResolvedCommand{
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "abc", Hidden: true},
+					Name: "abc", Hidden: true,
 				}),
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "def", Hidden: false},
+					Name: "def", Hidden: false,
 				}),
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "ghi", Hidden: false},
+					Name: "ghi", Hidden: false,
 				}),
 			},
 			lvl: Show,
@@ -348,7 +340,7 @@ func Test_filterCommands(t *testing.T) {
 			},
 			expect: []plugin.ResolvedCommand{
 				mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{Name: "ghi", Hidden: false},
+					Name: "ghi", Hidden: false,
 				}),
 			},
 		},

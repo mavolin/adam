@@ -1,4 +1,4 @@
-package errors
+package plugin
 
 import (
 	"testing"
@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_wrappedReplier_Reply(t *testing.T) {
+func Test_WrappedReplier_Reply(t *testing.T) {
 	m, s := state.NewMocker(t)
 	defer m.Eval()
 
-	r := replierFromState(s, 123, 456)
+	r := NewWrappedReplier(s, 123, 456)
 
 	data := api.SendMessageData{Content: "abc"}
 
@@ -38,7 +38,7 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		m, s := state.NewMocker(t)
 		defer m.Eval()
 
-		r := replierFromState(s, 123, 456)
+		r := NewWrappedReplier(s, 123, 456)
 
 		var dmID discord.ChannelID = 789
 
@@ -66,7 +66,7 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		m, s := state.NewMocker(t)
 		defer m.Eval()
 
-		r := replierFromState(s, 123, 456)
+		r := NewWrappedReplier(s, 123, 456)
 		r.dmID = 789
 
 		data := api.SendMessageData{Content: "abc"}
@@ -90,7 +90,7 @@ func Test_wrappedReplier_Edit(t *testing.T) {
 	m, s := state.NewMocker(t)
 	defer m.Eval()
 
-	r := replierFromState(s, 123, 456)
+	r := NewWrappedReplier(s, 123, 456)
 
 	data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
@@ -113,7 +113,7 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 		m, s := state.NewMocker(t)
 		defer m.Eval()
 
-		r := replierFromState(s, 123, 456)
+		r := NewWrappedReplier(s, 123, 456)
 
 		var dmID discord.ChannelID = 789
 
@@ -141,7 +141,7 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 		m, s := state.NewMocker(t)
 		defer m.Eval()
 
-		r := replierFromState(s, 123, 456)
+		r := NewWrappedReplier(s, 123, 456)
 		r.dmID = 789
 
 		data := api.EditMessageData{Content: option.NewNullableString("abc")}

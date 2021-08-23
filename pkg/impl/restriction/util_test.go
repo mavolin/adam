@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
@@ -24,7 +23,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{ChannelTypes: plugin.GuildChannels},
+					ChannelTypes: plugin.GuildChannels,
 				}),
 			},
 			allowed: plugin.GuildChannels,
@@ -36,7 +35,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{ChannelTypes: plugin.GuildTextChannels},
+					ChannelTypes: plugin.GuildTextChannels,
 				}),
 			},
 			allowed: plugin.GuildChannels,
@@ -47,7 +46,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 0},
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
+					ChannelTypes: plugin.DirectMessages,
 				}),
 			},
 			allowed: plugin.DirectMessages,
@@ -59,7 +58,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				Message:   discord.Message{GuildID: 123},
 				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{ChannelTypes: plugin.AllChannels},
+					ChannelTypes: plugin.AllChannels,
 				}),
 			},
 			allowed: plugin.DirectMessages,
@@ -70,7 +69,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 0},
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{ChannelTypes: plugin.DirectMessages},
+					ChannelTypes: plugin.DirectMessages,
 				}),
 			},
 			allowed: plugin.AllChannels,
@@ -81,9 +80,7 @@ func Test_assertChannelTypes(t *testing.T) {
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 123},
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{
-						ChannelTypes: plugin.AllChannels,
-					},
+					ChannelTypes: plugin.AllChannels,
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{Type: discord.GuildText},
@@ -98,7 +95,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				Message:   discord.Message{GuildID: 0},
 				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{ChannelTypes: plugin.GuildChannels},
+					ChannelTypes: plugin.GuildChannels,
 				}),
 			},
 			allowed: plugin.GuildTextChannels,
@@ -110,7 +107,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				Message:   discord.Message{GuildID: 123},
 				Localizer: i18n.NewFallbackLocalizer(),
 				InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-					CommandMeta: command.Meta{ChannelTypes: plugin.GuildChannels},
+					ChannelTypes: plugin.GuildChannels,
 				}),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					ChannelReturn: &discord.Channel{Type: discord.GuildNews},

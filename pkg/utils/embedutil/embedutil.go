@@ -11,18 +11,18 @@ const MaxChars = 6000
 
 // CountChars returns the number of characters in the embed.
 func CountChars(e discord.Embed) int {
-	sum := len(e.Title) + len(e.Description)
+	sum := len([]rune(e.Title)) + len([]rune(e.Description))
 
 	if e.Footer != nil {
-		sum += len(e.Footer.Text)
+		sum += len([]rune(e.Footer.Text))
 	}
 
 	if e.Author != nil {
-		sum += len(e.Author.Name)
+		sum += len([]rune(e.Author.Name))
 	}
 
 	for _, f := range e.Fields {
-		sum += len(f.Name) + len(f.Value)
+		sum += len([]rune(f.Name)) + len([]rune(f.Value))
 	}
 
 	return sum

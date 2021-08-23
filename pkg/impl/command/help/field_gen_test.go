@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/internal/capbuilder"
-	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/impl/module"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/mock"
@@ -22,20 +21,14 @@ func Test_formatCommands(t *testing.T) {
 		"`mod kick` - kicks someone"
 
 	mod := module.New(&module.Meta{Name: "mod"})
+	mod.AddCommand(mock.Command{Name: "abc"})
 	mod.AddCommand(mock.Command{
-		CommandMeta: command.Meta{Name: "abc"},
+		Name:             "ban",
+		ShortDescription: "bans someone",
 	})
 	mod.AddCommand(mock.Command{
-		CommandMeta: command.Meta{
-			Name:             "ban",
-			ShortDescription: "bans someone",
-		},
-	})
-	mod.AddCommand(mock.Command{
-		CommandMeta: command.Meta{
-			Name:             "kick",
-			ShortDescription: "kicks someone",
-		},
+		Name:             "kick",
+		ShortDescription: "kicks someone",
 	})
 
 	cmds := mock.ResolveModule(plugin.BuiltInSource, mod).Commands()
@@ -57,47 +50,33 @@ func Test_formatModule(t *testing.T) {
 		"`mod invite toggle` - turns the invite module on or off"
 
 	mod := module.New(&module.Meta{Name: "mod"})
+	mod.AddCommand(mock.Command{Name: "abc"})
 	mod.AddCommand(mock.Command{
-		CommandMeta: command.Meta{Name: "abc"},
+		Name:             "ban",
+		ShortDescription: "bans someone",
 	})
 	mod.AddCommand(mock.Command{
-		CommandMeta: command.Meta{
-			Name:             "ban",
-			ShortDescription: "bans someone",
-		},
-	})
-	mod.AddCommand(mock.Command{
-		CommandMeta: command.Meta{
-			Name:             "kick",
-			ShortDescription: "kicks someone",
-		},
+		Name:             "kick",
+		ShortDescription: "kicks someone",
 	})
 
 	infr := module.New(module.Meta{Name: "infr"})
 	infr.AddCommand(mock.Command{
-		CommandMeta: command.Meta{
-			Name:             "edit",
-			ShortDescription: "edits an infraction",
-		},
+		Name:             "edit",
+		ShortDescription: "edits an infraction",
 	})
 	infr.AddCommand(mock.Command{
-		CommandMeta: command.Meta{
-			Name:             "list",
-			ShortDescription: "lists all infractions",
-		},
+		Name:             "list",
+		ShortDescription: "lists all infractions",
 	})
-	infr.AddCommand(mock.Command{
-		CommandMeta: command.Meta{Name: "rm"},
-	})
+	infr.AddCommand(mock.Command{Name: "rm"})
 
 	mod.AddModule(infr)
 
 	invite := module.New(module.Meta{Name: "invite"})
 	invite.AddCommand(mock.Command{
-		CommandMeta: command.Meta{
-			Name:             "toggle",
-			ShortDescription: "turns the invite module on or off",
-		},
+		Name:             "toggle",
+		ShortDescription: "turns the invite module on or off",
 	})
 
 	mod.AddModule(invite)

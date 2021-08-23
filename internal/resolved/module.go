@@ -38,12 +38,12 @@ func newModule(parent *Module, provider *PluginProvider, sourceName string, smod
 		commands: nil,
 	}
 
-	if len(smod.Commands()) > 0 {
-		rmod.commands = make([]plugin.ResolvedCommand, len(smod.Commands()))
+	if len(smod.GetCommands()) > 0 {
+		rmod.commands = make([]plugin.ResolvedCommand, len(smod.GetCommands()))
 	}
 
-	if len(smod.Modules()) > 0 {
-		rmod.modules = make([]plugin.ResolvedModule, len(smod.Modules()))
+	if len(smod.GetModules()) > 0 {
+		rmod.modules = make([]plugin.ResolvedModule, len(smod.GetModules()))
 	}
 
 	if parent != nil {
@@ -64,7 +64,7 @@ func newModule(parent *Module, provider *PluginProvider, sourceName string, smod
 
 	parentInvoke += rmod.Name() + " "
 
-	for i, subScmd := range smod.Commands() {
+	for i, subScmd := range smod.GetCommands() {
 		provider.usedNames[parentInvoke+subScmd.GetName()] = struct{}{}
 
 		aliases := subScmd.GetAliases()
@@ -87,7 +87,7 @@ func newModule(parent *Module, provider *PluginProvider, sourceName string, smod
 		}
 	}
 
-	for i, subSmod := range smod.Modules() {
+	for i, subSmod := range smod.GetModules() {
 		rmod.modules[i] = newModule(rmod, provider, sourceName, subSmod)
 		if !rmod.modules[i].IsHidden() {
 			rmod.hidden = false
@@ -119,7 +119,7 @@ func updateModule(rmod *Module, provider *PluginProvider, sourceName string, smo
 
 	parentInvoke := rmod.id.AsInvoke() + " "
 
-	for i, subScmd := range smod.Commands() {
+	for i, subScmd := range smod.GetCommands() {
 		if _, ok := provider.usedNames[parentInvoke+subScmd.GetName()]; ok {
 			continue
 		}
@@ -153,7 +153,7 @@ func updateModule(rmod *Module, provider *PluginProvider, sourceName string, smo
 		rmod.commands = insertCommand(rmod.commands, subRcmd, -1)
 	}
 
-	for _, subSmod := range smod.Modules() {
+	for _, subSmod := range smod.GetModules() {
 		i := searchModule(rmod.modules, smod.GetName())
 		if i < len(rmod.modules) && rmod.modules[i].Name() == smod.GetName() {
 			updateModule(rmod.modules[i].(*Module), provider, sourceName, subSmod)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	mockplugin "github.com/mavolin/adam/internal/mock/plugin"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -14,7 +15,7 @@ func TestModule_ShortDescription(t *testing.T) {
 
 		rmod := &Module{
 			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockModule{shortDesc: expect}}},
+				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: expect}}},
 			},
 		}
 
@@ -27,8 +28,8 @@ func TestModule_ShortDescription(t *testing.T) {
 
 		rmod := &Module{
 			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockModule{shortDesc: ""}}},
-				{Modules: []plugin.Module{mockModule{shortDesc: expect}}},
+				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: ""}}},
+				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: expect}}},
 			},
 		}
 
@@ -39,8 +40,8 @@ func TestModule_ShortDescription(t *testing.T) {
 	t.Run("none", func(t *testing.T) {
 		rmod := &Module{
 			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockModule{shortDesc: ""}}},
-				{Modules: []plugin.Module{mockModule{shortDesc: ""}}},
+				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: ""}}},
+				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: ""}}},
 			},
 		}
 
@@ -55,7 +56,7 @@ func TestModule_LongDescription(t *testing.T) {
 
 		rmod := &Module{
 			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockModule{longDesc: expect}}},
+				{Modules: []plugin.Module{mockplugin.Module{LongDescription: expect}}},
 			},
 		}
 
@@ -68,8 +69,8 @@ func TestModule_LongDescription(t *testing.T) {
 
 		rmod := &Module{
 			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockModule{}}},
-				{Modules: []plugin.Module{mockModule{longDesc: expect}}},
+				{Modules: []plugin.Module{mockplugin.Module{}}},
+				{Modules: []plugin.Module{mockplugin.Module{LongDescription: expect}}},
 			},
 		}
 
@@ -82,8 +83,8 @@ func TestModule_LongDescription(t *testing.T) {
 
 		rmod := &Module{
 			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockModule{}}},
-				{Modules: []plugin.Module{mockModule{shortDesc: expect}}},
+				{Modules: []plugin.Module{mockplugin.Module{}}},
+				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: expect}}},
 			},
 		}
 
@@ -94,8 +95,8 @@ func TestModule_LongDescription(t *testing.T) {
 	t.Run("none", func(t *testing.T) {
 		rmod := &Module{
 			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockModule{}}},
-				{Modules: []plugin.Module{mockModule{longDesc: ""}}},
+				{Modules: []plugin.Module{mockplugin.Module{}}},
+				{Modules: []plugin.Module{mockplugin.Module{LongDescription: ""}}},
 			},
 		}
 
@@ -105,14 +106,14 @@ func TestModule_LongDescription(t *testing.T) {
 }
 
 func TestModule_FindCommand(t *testing.T) {
-	t.Run("name", func(t *testing.T) {
-		expect := &Command{source: mockCommand{name: "def"}}
+	t.Run("Name", func(t *testing.T) {
+		expect := &Command{source: mockplugin.Command{Name: "def"}}
 
 		rmod := &Module{
 			commands: []plugin.ResolvedCommand{
-				&Command{source: mockCommand{name: "abc"}},
+				&Command{source: mockplugin.Command{Name: "abc"}},
 				expect,
-				&Command{source: mockCommand{name: "ghi"}},
+				&Command{source: mockplugin.Command{Name: "ghi"}},
 			},
 		}
 
@@ -122,17 +123,17 @@ func TestModule_FindCommand(t *testing.T) {
 
 	t.Run("alias", func(t *testing.T) {
 		expect := &Command{
-			source:  mockCommand{name: "def", aliases: []string{"mno"}},
+			source:  mockplugin.Command{Name: "def", Aliases: []string{"mno"}},
 			aliases: []string{"mno"},
 		}
 
 		rmod := &Module{
 			commands: []plugin.ResolvedCommand{
 				&Command{
-					source: mockCommand{name: "abc", aliases: []string{"jkl"}},
+					source: mockplugin.Command{Name: "abc", Aliases: []string{"jkl"}},
 				},
 				expect,
-				&Command{source: mockCommand{name: "ghi"}},
+				&Command{source: mockplugin.Command{Name: "ghi"}},
 			},
 		}
 
@@ -153,7 +154,7 @@ func TestResolvedModule_FindModule(t *testing.T) {
 				{
 					SourceName: plugin.BuiltInSource,
 					Modules: []plugin.Module{
-						mockModule{name: "def"},
+						mockplugin.Module{Name: "def"},
 					},
 				},
 			},
@@ -166,7 +167,7 @@ func TestResolvedModule_FindModule(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{name: "abc"},
+								mockplugin.Module{Name: "abc"},
 							},
 						},
 					},
@@ -177,7 +178,7 @@ func TestResolvedModule_FindModule(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{name: "ghi"},
+								mockplugin.Module{Name: "ghi"},
 							},
 						},
 					},

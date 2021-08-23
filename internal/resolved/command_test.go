@@ -6,6 +6,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 
+	mockplugin "github.com/mavolin/adam/internal/mock/plugin"
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -15,8 +16,8 @@ func TestCommand_LongDescription(t *testing.T) {
 		expect := "abc"
 
 		rcmd := &Command{
-			source: mockCommand{
-				longDesc: expect,
+			source: mockplugin.Command{
+				LongDescription: expect,
 			},
 		}
 
@@ -28,8 +29,8 @@ func TestCommand_LongDescription(t *testing.T) {
 		expect := "abc"
 
 		rcmd := &Command{
-			source: mockCommand{
-				shortDesc: expect,
+			source: mockplugin.Command{
+				ShortDescription: expect,
 			},
 		}
 
@@ -43,8 +44,8 @@ func TestResolvedCommand_IsRestricted(t *testing.T) {
 		expect := errors.New("abc")
 
 		rcmd := &Command{
-			source: mockCommand{
-				restrictionFunc: func(*state.State, *plugin.Context) error {
+			source: mockplugin.Command{
+				Restrictions: func(*state.State, *plugin.Context) error {
 					return expect
 				},
 			},
@@ -58,9 +59,9 @@ func TestResolvedCommand_IsRestricted(t *testing.T) {
 		expect := errors.New("abc")
 
 		rcmd := &Command{
-			source: mockCommand{
-				restrictionFunc: func(*state.State, *plugin.Context) error {
-					return &mockRestrictionErrorWrapper{WrapReturn: expect}
+			source: mockplugin.Command{
+				Restrictions: func(*state.State, *plugin.Context) error {
+					return &mockplugin.RestrictionErrorWrapper{Return: expect}
 				},
 			},
 		}

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	mocki18n "github.com/mavolin/adam/internal/mock/i18n"
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
 )
@@ -23,7 +24,7 @@ func TestArgumentParsingError_Description(t *testing.T) {
 
 		e := NewArgumentError(expect)
 
-		actual, err := e.Description(newMockedLocalizer(t).build())
+		actual, err := e.Description(mocki18n.NewLocalizer(t).Build())
 		assert.NoError(t, err)
 		assert.Equal(t, expect, actual)
 	})
@@ -33,9 +34,9 @@ func TestArgumentParsingError_Description(t *testing.T) {
 
 		expect := "def"
 
-		l := newMockedLocalizer(t).
-			on(term, expect).
-			build()
+		l := mocki18n.NewLocalizer(t).
+			On(term, expect).
+			Build()
 
 		e := NewArgumentErrorlt(term)
 
@@ -56,7 +57,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: channelID},
 		Localizer: i18n.NewFallbackLocalizer(),
-		Replier:   replierFromState(s, 123, 0),
+		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
 	m.SendEmbed(discord.Message{
@@ -120,7 +121,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		ctx := &Context{
 			Message:   discord.Message{ChannelID: 123},
 			Localizer: i18n.NewFallbackLocalizer(),
-			Replier:   replierFromState(s, 123, 0),
+			Replier:   newMockedWrappedReplier(s, 123, 0),
 		}
 
 		embed := shared.ErrorEmbed.Clone().
@@ -148,7 +149,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		ctx := &Context{
 			Message:   discord.Message{ChannelID: 123},
 			Localizer: i18n.NewFallbackLocalizer(),
-			Replier:   replierFromState(s, 123, 0),
+			Replier:   newMockedWrappedReplier(s, 123, 0),
 		}
 
 		embed := shared.ErrorEmbed.Clone().
@@ -203,11 +204,11 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Localizer: newMockedLocalizer(t).
-			on("error.title", "title").
-			on(channelTypeErrorGuild.Term, "guild").
-			build(),
-		Replier: replierFromState(s, 123, 0),
+		Localizer: mocki18n.NewLocalizer(t).
+			On("error.title", "title").
+			On(channelTypeErrorGuild.Term, "guild").
+			Build(),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	embed := shared.ErrorEmbed.Clone().
@@ -245,9 +246,9 @@ func TestRestrictionError_Description(t *testing.T) {
 
 		expect := "def"
 
-		l := newMockedLocalizer(t).
-			on(term, expect).
-			build()
+		l := mocki18n.NewLocalizer(t).
+			On(term, expect).
+			Build()
 
 		e := NewRestrictionErrorlt(term)
 
@@ -266,7 +267,7 @@ func TestRestrictionError_Handle(t *testing.T) {
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
 		Localizer: i18n.NewFallbackLocalizer(),
-		Replier:   replierFromState(s, 123, 0),
+		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
 	embed := shared.ErrorEmbed.Clone().
@@ -304,9 +305,9 @@ func TestThrottlingError_Description(t *testing.T) {
 
 		expect := "def"
 
-		l := newMockedLocalizer(t).
-			on(term, expect).
-			build()
+		l := mocki18n.NewLocalizer(t).
+			On(term, expect).
+			Build()
 
 		e := NewThrottlingErrorlt(term)
 
@@ -325,7 +326,7 @@ func TestThrottlingError_Handle(t *testing.T) {
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
 		Localizer: i18n.NewFallbackLocalizer(),
-		Replier:   replierFromState(s, 123, 0),
+		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
 	embed := shared.InfoEmbed.Clone().

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	mocki18n "github.com/mavolin/adam/internal/mock/i18n"
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
@@ -18,7 +19,7 @@ func TestEmbedBuilder_WithTitle(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithTitle(title).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -29,9 +30,9 @@ func TestEmbedBuilder_WithTitlelt(t *testing.T) {
 
 	expect := discord.Embed{Title: title}
 
-	l := newMockedLocalizer(t).
-		on("a", title).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", title).
+		Build()
 
 	actual, err := NewBuilder().
 		WithTitlelt("a").
@@ -46,9 +47,9 @@ func TestEmbedBuilder_WithTitlel(t *testing.T) {
 
 	expect := discord.Embed{Title: title}
 
-	l := newMockedLocalizer(t).
-		on("a", title).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", title).
+		Build()
 
 	actual, err := NewBuilder().
 		WithTitlel(i18n.NewTermConfig("a")).
@@ -65,7 +66,7 @@ func TestEmbedBuilder_WithTitleURL(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithTitleURL(url).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -78,7 +79,7 @@ func TestEmbedBuilder_WithDescription(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithDescription(description).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -89,9 +90,9 @@ func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 
 	expect := discord.Embed{Description: description}
 
-	l := newMockedLocalizer(t).
-		on("a", description).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", description).
+		Build()
 
 	actual, err := NewBuilder().
 		WithDescriptionl(i18n.NewTermConfig("a")).
@@ -106,9 +107,9 @@ func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
 
 	expect := discord.Embed{Description: description}
 
-	l := newMockedLocalizer(t).
-		on("a", description).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", description).
+		Build()
 
 	actual, err := NewBuilder().
 		WithDescriptionlt("a").
@@ -125,7 +126,7 @@ func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithTimestamp(timestamp).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -138,7 +139,7 @@ func TestEmbedBuilder_WithColor(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithColor(color).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -151,7 +152,7 @@ func TestEmbedBuilder_WithFooter(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithFooter(text).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -162,9 +163,9 @@ func TestEmbedBuilder_WithFooterlt(t *testing.T) {
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Text: text}}
 
-	l := newMockedLocalizer(t).
-		on("a", text).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", text).
+		Build()
 
 	actual, err := NewBuilder().
 		WithFooterlt("a").
@@ -179,9 +180,9 @@ func TestEmbedBuilder_WithFooterl(t *testing.T) {
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Text: text}}
 
-	l := newMockedLocalizer(t).
-		on("a", text).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", text).
+		Build()
 
 	actual, err := NewBuilder().
 		WithFooterl(i18n.NewTermConfig("a")).
@@ -198,7 +199,7 @@ func TestEmbedBuilder_WithFooterIcon(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithFooterIcon(icon).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -213,7 +214,7 @@ func TestEmbedBuilder_WithImage(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithImage(image).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -228,7 +229,7 @@ func TestEmbedBuilder_WithThumbnail(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithThumbnail(thumbnail).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -243,7 +244,7 @@ func TestEmbedBuilder_WithAuthor(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithAuthor(name).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -256,9 +257,9 @@ func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
 		Author: &discord.EmbedAuthor{Name: name},
 	}
 
-	l := newMockedLocalizer(t).
-		on("a", name).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", name).
+		Build()
 
 	actual, err := NewBuilder().
 		WithAuthorlt("a").
@@ -275,9 +276,9 @@ func TestEmbedBuilder_WithAuthorl(t *testing.T) {
 		Author: &discord.EmbedAuthor{Name: name},
 	}
 
-	l := newMockedLocalizer(t).
-		on("a", name).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", name).
+		Build()
 
 	actual, err := NewBuilder().
 		WithAuthorl(i18n.NewTermConfig("a")).
@@ -298,7 +299,7 @@ func TestEmbedBuilder_WithAuthorURL(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithAuthorURL(url).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -315,7 +316,7 @@ func TestEmbedBuilder_WithAuthorIcon(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithAuthorIcon(icon).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -332,7 +333,7 @@ func TestEmbedBuilder_WithField(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithField(field.Name, field.Value).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -347,10 +348,10 @@ func TestEmbedBuilder_WithFieldlt(t *testing.T) {
 
 	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
-	l := newMockedLocalizer(t).
-		on("a", field.Name).
-		on("b", field.Value).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", field.Name).
+		On("b", field.Value).
+		Build()
 
 	actual, err := NewBuilder().
 		WithFieldlt("a", "b").
@@ -369,10 +370,10 @@ func TestEmbedBuilder_WithFieldl(t *testing.T) {
 
 	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
-	l := newMockedLocalizer(t).
-		on("a", field.Name).
-		on("b", field.Value).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", field.Name).
+		On("b", field.Value).
+		Build()
 
 	actual, err := NewBuilder().
 		WithFieldl(i18n.NewTermConfig("a"), i18n.NewTermConfig("b")).
@@ -393,7 +394,7 @@ func TestEmbedBuilder_WithInlinedField(t *testing.T) {
 
 	actual, err := NewBuilder().
 		WithInlinedField(field.Name, field.Value).
-		Build(newMockedLocalizer(t).build())
+		Build(mocki18n.NewLocalizer(t).Build())
 
 	assert.NoError(t, err)
 	assert.Equal(t, expect, actual)
@@ -408,10 +409,10 @@ func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
 
 	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
-	l := newMockedLocalizer(t).
-		on("a", field.Name).
-		on("b", field.Value).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", field.Name).
+		On("b", field.Value).
+		Build()
 
 	actual, err := NewBuilder().
 		WithInlinedFieldlt("a", "b").
@@ -430,10 +431,10 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 
 	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
-	l := newMockedLocalizer(t).
-		on("a", field.Name).
-		on("b", field.Value).
-		build()
+	l := mocki18n.NewLocalizer(t).
+		On("a", field.Name).
+		On("b", field.Value).
+		Build()
 
 	actual, err := NewBuilder().
 		WithInlinedFieldl(i18n.NewTermConfig("a"), i18n.NewTermConfig("b")).

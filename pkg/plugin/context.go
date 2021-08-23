@@ -83,7 +83,7 @@ type Context struct {
 
 	// DiscordDataProvider is an embedded interface that gives direct access to
 	// common data types needed during execution.
-	// It's asynchronous methods are supplemented by blocking methods provided
+	// Its asynchronous methods are supplemented by blocking methods provided
 	// by the context.
 	DiscordDataProvider
 }
@@ -544,7 +544,7 @@ type (
 		//
 		// If the length of the returned slice is 0, all plugin sources are
 		// available.
-		UnavailablePluginSources() []UnavailablePluginSource
+		UnavailablePluginSources() []UnavailableSource
 	}
 
 	// Source is the struct returned by Provider.PluginSources.
@@ -558,9 +558,9 @@ type (
 		Modules []Module
 	}
 
-	// UnavailablePluginSource contains information about an unavailable
-	// plugin sources.
-	UnavailablePluginSource struct {
+	// UnavailableSource contains information about an unavailable plugin
+	// source.
+	UnavailableSource struct {
 		// Name is the name of the plugin source.
 		Name string
 		// Error is the error returned by the plugin source.

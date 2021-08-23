@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	mocki18n "github.com/mavolin/adam/internal/mock/i18n"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 	"github.com/mavolin/adam/pkg/utils/permutil"
@@ -44,7 +45,7 @@ func TestContext_Reply(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -67,7 +68,7 @@ func TestContext_Replyf(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -95,10 +96,10 @@ func TestContext_Replyl(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 123, 0),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -126,10 +127,10 @@ func TestContext_Replylt(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 123, 0),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -152,7 +153,7 @@ func TestContext_ReplyEmbed(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -181,8 +182,8 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
-		Replier:   replierFromState(s, 123, 0),
-		Localizer: newMockedLocalizer(t).build(),
+		Replier:   newMockedWrappedReplier(s, 123, 0),
+		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
 	builder := embedutil.
@@ -215,7 +216,7 @@ func TestContext_ReplyMessage(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -243,7 +244,7 @@ func TestContext_ReplyDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -275,7 +276,7 @@ func TestContext_ReplyfDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -313,10 +314,10 @@ func TestContext_ReplylDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 0, 123),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -353,10 +354,10 @@ func TestContext_ReplyltDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 0, 123),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -388,7 +389,7 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -426,8 +427,8 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier:   replierFromState(s, 0, 123),
-		Localizer: newMockedLocalizer(t).build(),
+		Replier:   newMockedWrappedReplier(s, 0, 123),
+		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
 	builder := embedutil.
@@ -470,7 +471,7 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -501,7 +502,7 @@ func TestContext_Edit(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -524,7 +525,7 @@ func TestContext_Editf(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -552,10 +553,10 @@ func TestContext_Editl(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 123, 0),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -583,10 +584,10 @@ func TestContext_Editlt(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 123, 0),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -609,7 +610,7 @@ func TestContext_EditEmbed(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -638,8 +639,8 @@ func TestContext_EditEmbedBuilder(t *testing.T) {
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
-		Replier:   replierFromState(s, 123, 0),
-		Localizer: newMockedLocalizer(t).build(),
+		Replier:   newMockedWrappedReplier(s, 123, 0),
+		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
 	builder := embedutil.
@@ -672,7 +673,7 @@ func TestContext_EditMessage(t *testing.T) {
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
-		Replier: replierFromState(s, 123, 0),
+		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
 	expect := &discord.Message{
@@ -700,7 +701,7 @@ func TestContext_EditDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -732,7 +733,7 @@ func TestContext_EditfDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -770,10 +771,10 @@ func TestContext_EditlDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 0, 123),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -810,10 +811,10 @@ func TestContext_EditltDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Localizer: newMockedLocalizer(t).
-			on(term, content).
-			build(),
-		Replier: replierFromState(s, 0, 123),
+		Localizer: mocki18n.NewLocalizer(t).
+			On(term, content).
+			Build(),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -845,7 +846,7 @@ func TestContext_EditEmbedDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456
@@ -883,8 +884,8 @@ func TestContext_EditEmbedBuilderDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier:   replierFromState(s, 0, 123),
-		Localizer: newMockedLocalizer(t).build(),
+		Replier:   newMockedWrappedReplier(s, 0, 123),
+		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
 	builder := embedutil.
@@ -927,7 +928,7 @@ func TestContext_EditMessageDM(t *testing.T) {
 			GuildID: 1,
 			Author:  discord.User{ID: 123},
 		},
-		Replier: replierFromState(s, 0, 123),
+		Replier: newMockedWrappedReplier(s, 0, 123),
 	}
 
 	var channelID discord.ChannelID = 456

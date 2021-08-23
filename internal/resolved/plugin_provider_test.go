@@ -8,6 +8,7 @@ import (
 	"github.com/mavolin/disstate/v3/pkg/state"
 	"github.com/stretchr/testify/assert"
 
+	mockplugin "github.com/mavolin/adam/internal/mock/plugin"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -16,7 +17,7 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
-				return []plugin.Command{mockCommand{name: "def"}}, []plugin.Module{mockModule{name: "ghi"}}, nil
+				return []plugin.Command{mockplugin.Command{Name: "def"}}, []plugin.Module{mockplugin.Module{Name: "ghi"}}, nil
 			})
 
 		p := &PluginProvider{
@@ -26,7 +27,7 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 				{
 					Name: plugin.BuiltInSource,
 					Commands: []plugin.Command{
-						mockCommand{name: "abc"},
+						mockplugin.Command{Name: "abc"},
 					},
 				},
 			},
@@ -37,16 +38,16 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 			{
 				Name: plugin.BuiltInSource,
 				Commands: []plugin.Command{
-					mockCommand{name: "abc"},
+					mockplugin.Command{Name: "abc"},
 				},
 			},
 			{
 				Name: "another",
 				Commands: []plugin.Command{
-					mockCommand{name: "def"},
+					mockplugin.Command{Name: "def"},
 				},
 				Modules: []plugin.Module{
-					mockModule{name: "ghi"},
+					mockplugin.Module{Name: "ghi"},
 				},
 			},
 		}
@@ -63,16 +64,16 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 				{
 					Name: plugin.BuiltInSource,
 					Commands: []plugin.Command{
-						mockCommand{name: "abc"},
+						mockplugin.Command{Name: "abc"},
 					},
 				},
 				{
 					Name: "another",
 					Commands: []plugin.Command{
-						mockCommand{name: "def"},
+						mockplugin.Command{Name: "def"},
 					},
 					Modules: []plugin.Module{
-						mockModule{name: "ghi"},
+						mockplugin.Module{Name: "ghi"},
 					},
 				},
 			},
@@ -91,9 +92,9 @@ func TestPluginProvider_Commands(t *testing.T) {
 		r.AddSource("another",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return []plugin.Command{
-					mockCommand{
-						name:         "def",
-						channelTypes: plugin.GuildChannels,
+					mockplugin.Command{
+						Name:         "def",
+						ChannelTypes: plugin.GuildChannels,
 					},
 				}, nil, nil
 			})
@@ -104,9 +105,9 @@ func TestPluginProvider_Commands(t *testing.T) {
 				{
 					Name: plugin.BuiltInSource,
 					Commands: []plugin.Command{
-						mockCommand{
-							name:         "abc",
-							channelTypes: plugin.GuildChannels,
+						mockplugin.Command{
+							Name:         "abc",
+							ChannelTypes: plugin.GuildChannels,
 						},
 					},
 				},
@@ -117,9 +118,9 @@ func TestPluginProvider_Commands(t *testing.T) {
 		p.commands = append(p.commands, &Command{
 			provider:   p,
 			sourceName: plugin.BuiltInSource,
-			source: mockCommand{
-				name:         "abc",
-				channelTypes: plugin.GuildChannels,
+			source: mockplugin.Command{
+				Name:         "abc",
+				ChannelTypes: plugin.GuildChannels,
 			},
 			id: ".abc",
 		})
@@ -128,18 +129,18 @@ func TestPluginProvider_Commands(t *testing.T) {
 			&Command{
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source: mockCommand{
-					name:         "abc",
-					channelTypes: plugin.GuildChannels,
+				source: mockplugin.Command{
+					Name:         "abc",
+					ChannelTypes: plugin.GuildChannels,
 				},
 				id: ".abc",
 			},
 			&Command{
 				provider:   p,
 				sourceName: "another",
-				source: mockCommand{
-					name:         "def",
-					channelTypes: plugin.GuildChannels,
+				source: mockplugin.Command{
+					Name:         "def",
+					ChannelTypes: plugin.GuildChannels,
 				},
 				id: ".def",
 			},
@@ -155,24 +156,24 @@ func TestPluginProvider_Commands(t *testing.T) {
 		p.sources = []plugin.Source{
 			{
 				Name:     plugin.BuiltInSource,
-				Commands: []plugin.Command{mockCommand{name: "abc"}},
+				Commands: []plugin.Command{mockplugin.Command{Name: "abc"}},
 			},
 			{
 				Name:     "another",
-				Commands: []plugin.Command{mockCommand{name: "def"}},
+				Commands: []plugin.Command{mockplugin.Command{Name: "def"}},
 			},
 		}
 		p.commands = []plugin.ResolvedCommand{
 			&Command{
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source:     mockCommand{name: "abc"},
+				source:     mockplugin.Command{Name: "abc"},
 				id:         ".abc",
 			},
 			&Command{
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "def"},
+				source:     mockplugin.Command{Name: "def"},
 				id:         ".def",
 			},
 		}
@@ -183,17 +184,19 @@ func TestPluginProvider_Commands(t *testing.T) {
 		assert.Equal(t, expect, actual)
 	})
 
-	t.Run("resolver", func(t *testing.T) {
+	t.Run("provider", func(t *testing.T) {
 		t.Run("single", func(t *testing.T) {
+			throttler := mockplugin.NewThrottler(errors.New("abc"))
+
 			sources := []plugin.Source{
 				{
 					Name: plugin.BuiltInSource,
 					Commands: []plugin.Command{
-						mockCommand{
-							name:         "abc",
-							hidden:       true,
-							throttler:    mockThrottler{cmp: "bcd"},
-							channelTypes: plugin.AllChannels,
+						mockplugin.Command{
+							Name:         "abc",
+							Hidden:       true,
+							Throttler:    throttler,
+							ChannelTypes: plugin.AllChannels,
 						},
 					},
 				},
@@ -205,11 +208,11 @@ func TestPluginProvider_Commands(t *testing.T) {
 				&Command{
 					provider:   p,
 					sourceName: plugin.BuiltInSource,
-					source: mockCommand{
-						name:         "abc",
-						hidden:       true,
-						throttler:    mockThrottler{cmp: "bcd"},
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "abc",
+						Hidden:       true,
+						Throttler:    throttler,
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: nil,
 					id:            ".abc",
@@ -224,13 +227,13 @@ func TestPluginProvider_Commands(t *testing.T) {
 				{
 					Name: "abc",
 					Commands: []plugin.Command{
-						mockCommand{name: "def", channelTypes: plugin.AllChannels},
+						mockplugin.Command{Name: "def", ChannelTypes: plugin.AllChannels},
 					},
 				},
 				{
 					Name: "ghi",
 					Commands: []plugin.Command{
-						mockCommand{name: "def", channelTypes: plugin.AllChannels},
+						mockplugin.Command{Name: "def", ChannelTypes: plugin.AllChannels},
 					},
 				},
 			}
@@ -241,9 +244,9 @@ func TestPluginProvider_Commands(t *testing.T) {
 				&Command{
 					provider:   p,
 					sourceName: "abc",
-					source: mockCommand{
-						name:         "def",
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "def",
+						ChannelTypes: plugin.AllChannels,
 					},
 					id: ".def",
 				},
@@ -257,13 +260,13 @@ func TestPluginProvider_Commands(t *testing.T) {
 				{
 					Name: "ghi",
 					Commands: []plugin.Command{
-						mockCommand{name: "jkl", channelTypes: plugin.AllChannels},
+						mockplugin.Command{Name: "jkl", ChannelTypes: plugin.AllChannels},
 					},
 				},
 				{
 					Name: "abc",
 					Commands: []plugin.Command{
-						mockCommand{name: "def", channelTypes: plugin.AllChannels},
+						mockplugin.Command{Name: "def", ChannelTypes: plugin.AllChannels},
 					},
 				},
 			}
@@ -274,13 +277,13 @@ func TestPluginProvider_Commands(t *testing.T) {
 				&Command{
 					provider:   p,
 					sourceName: "abc",
-					source:     mockCommand{name: "def", channelTypes: plugin.AllChannels},
+					source:     mockplugin.Command{Name: "def", ChannelTypes: plugin.AllChannels},
 					id:         ".def",
 				},
 				&Command{
 					provider:   p,
 					sourceName: "ghi",
-					source:     mockCommand{name: "jkl", channelTypes: plugin.AllChannels},
+					source:     mockplugin.Command{Name: "jkl", ChannelTypes: plugin.AllChannels},
 					id:         ".jkl",
 				},
 			}
@@ -293,13 +296,13 @@ func TestPluginProvider_Commands(t *testing.T) {
 				{
 					Name: "abc",
 					Commands: []plugin.Command{
-						mockCommand{name: "def", channelTypes: plugin.AllChannels},
+						mockplugin.Command{Name: "def", ChannelTypes: plugin.AllChannels},
 					},
 				},
 				{
 					Name: "ghi",
 					Commands: []plugin.Command{
-						mockCommand{name: "def", channelTypes: plugin.AllChannels}, // duplicate
+						mockplugin.Command{Name: "def", ChannelTypes: plugin.AllChannels}, // duplicate
 					},
 				},
 			}
@@ -310,7 +313,7 @@ func TestPluginProvider_Commands(t *testing.T) {
 				&Command{
 					provider:   p,
 					sourceName: "abc",
-					source:     mockCommand{name: "def", channelTypes: plugin.AllChannels},
+					source:     mockplugin.Command{Name: "def", ChannelTypes: plugin.AllChannels},
 					id:         ".def",
 				},
 			}
@@ -323,20 +326,20 @@ func TestPluginProvider_Commands(t *testing.T) {
 				{
 					Name: "abc",
 					Commands: []plugin.Command{
-						mockCommand{
-							name:         "def",
-							aliases:      []string{"ghi", "jkl"},
-							channelTypes: plugin.AllChannels,
+						mockplugin.Command{
+							Name:         "def",
+							Aliases:      []string{"ghi", "jkl"},
+							ChannelTypes: plugin.AllChannels,
 						},
 					},
 				},
 				{
 					Name: "mno",
 					Commands: []plugin.Command{
-						mockCommand{
-							name:         "pqr",
-							aliases:      []string{"jkl", "stu"}, // duplicate alias
-							channelTypes: plugin.AllChannels,
+						mockplugin.Command{
+							Name:         "pqr",
+							Aliases:      []string{"jkl", "stu"}, // duplicate alias
+							ChannelTypes: plugin.AllChannels,
 						},
 					},
 				},
@@ -348,10 +351,10 @@ func TestPluginProvider_Commands(t *testing.T) {
 				&Command{
 					provider:   p,
 					sourceName: "abc",
-					source: mockCommand{
-						name:         "def",
-						aliases:      []string{"ghi", "jkl"},
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "def",
+						Aliases:      []string{"ghi", "jkl"},
+						ChannelTypes: plugin.AllChannels,
 					},
 					id:      ".def",
 					aliases: []string{"ghi", "jkl"},
@@ -359,10 +362,10 @@ func TestPluginProvider_Commands(t *testing.T) {
 				&Command{
 					provider:   p,
 					sourceName: "mno",
-					source: mockCommand{
-						name:         "pqr",
-						aliases:      []string{"jkl", "stu"},
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "pqr",
+						Aliases:      []string{"jkl", "stu"},
+						ChannelTypes: plugin.AllChannels,
 					},
 					id:      ".pqr",
 					aliases: []string{"stu"},
@@ -380,12 +383,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 		r.AddSource("another",
 			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{
-								name:         "jkl",
-								channelTypes: plugin.GuildChannels,
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{
+								Name:         "jkl",
+								ChannelTypes: plugin.GuildChannels,
 							},
 						},
 					},
@@ -398,12 +401,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 				{
 					Name: plugin.BuiltInSource,
 					Modules: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "def",
-									channelTypes: plugin.GuildChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "def",
+									ChannelTypes: plugin.GuildChannels,
 								},
 							},
 						},
@@ -419,12 +422,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						SourceName: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{
-										name:         "def",
-										channelTypes: plugin.GuildChannels,
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{
+										Name:         "def",
+										ChannelTypes: plugin.GuildChannels,
 									},
 								},
 							},
@@ -441,17 +444,17 @@ func TestPluginProvider_Modules(t *testing.T) {
 				parent:     p.modules[0],
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source: mockCommand{
-					name:         "def",
-					channelTypes: plugin.GuildChannels,
+				source: mockplugin.Command{
+					Name:         "def",
+					ChannelTypes: plugin.GuildChannels,
 				},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "abc",
-						commands: []plugin.Command{
-							mockCommand{
-								name:         "def",
-								channelTypes: plugin.GuildChannels,
+					mockplugin.Module{
+						Name: "abc",
+						Commands: []plugin.Command{
+							mockplugin.Command{
+								Name:         "def",
+								ChannelTypes: plugin.GuildChannels,
 							},
 						},
 					},
@@ -470,12 +473,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 				{
 					SourceName: "another",
 					Modules: []plugin.Module{
-						mockModule{
-							name: "ghi",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "jkl",
-									channelTypes: plugin.GuildChannels,
+						mockplugin.Module{
+							Name: "ghi",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "jkl",
+									ChannelTypes: plugin.GuildChannels,
 								},
 							},
 						},
@@ -491,17 +494,17 @@ func TestPluginProvider_Modules(t *testing.T) {
 				parent:     expect[1],
 				provider:   p,
 				sourceName: "another",
-				source: mockCommand{
-					name:         "jkl",
-					channelTypes: plugin.GuildChannels,
+				source: mockplugin.Command{
+					Name:         "jkl",
+					ChannelTypes: plugin.GuildChannels,
 				},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{
-								name:         "jkl",
-								channelTypes: plugin.GuildChannels,
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{
+								Name:         "jkl",
+								ChannelTypes: plugin.GuildChannels,
 							},
 						},
 					},
@@ -524,10 +527,10 @@ func TestPluginProvider_Modules(t *testing.T) {
 			{
 				Name: plugin.BuiltInSource,
 				Modules: []plugin.Module{
-					mockModule{
-						name: "abc",
-						commands: []plugin.Command{
-							mockCommand{name: "def"},
+					mockplugin.Module{
+						Name: "abc",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "def"},
 						},
 					},
 				},
@@ -535,10 +538,10 @@ func TestPluginProvider_Modules(t *testing.T) {
 			{
 				Name: "another",
 				Modules: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
 						},
 					},
 				},
@@ -552,10 +555,10 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						SourceName: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{name: "def"},
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "def"},
 								},
 							},
 						},
@@ -569,10 +572,10 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						SourceName: "another",
 						Modules: []plugin.Module{
-							mockModule{
-								name: "ghi",
-								commands: []plugin.Command{
-									mockCommand{name: "jkl"},
+							mockplugin.Module{
+								Name: "ghi",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "jkl"},
 								},
 							},
 						},
@@ -587,12 +590,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 				parent:     p.modules[0],
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source:     mockCommand{name: "def"},
+				source:     mockplugin.Command{Name: "def"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "abc",
-						commands: []plugin.Command{
-							mockCommand{name: "def"},
+					mockplugin.Module{
+						Name: "abc",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "def"},
 						},
 					},
 				},
@@ -605,12 +608,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 				parent:     p.modules[1],
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "jkl"},
+				source:     mockplugin.Command{Name: "jkl"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
 						},
 					},
 				},
@@ -624,23 +627,23 @@ func TestPluginProvider_Modules(t *testing.T) {
 		assert.Equal(t, expect, actual)
 	})
 
-	t.Run("resolver", func(t *testing.T) {
+	t.Run("provider", func(t *testing.T) {
 		t.Run("generate", func(t *testing.T) {
 			t.Run("", func(t *testing.T) {
 				sources := []plugin.Source{
 					{
 						Name: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{name: "zyx", channelTypes: plugin.AllChannels},
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "zyx", ChannelTypes: plugin.AllChannels},
 								},
 							},
-							mockModule{
-								name: "def",
-								commands: []plugin.Command{
-									mockCommand{name: "wvu", channelTypes: plugin.AllChannels},
+							mockplugin.Module{
+								Name: "def",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "wvu", ChannelTypes: plugin.AllChannels},
 								},
 							},
 						},
@@ -648,22 +651,22 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						Name: "custom_commands",
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{name: "zyx", channelTypes: plugin.AllChannels},
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "zyx", ChannelTypes: plugin.AllChannels},
 								},
 							},
-							mockModule{
-								name: "def",
-								commands: []plugin.Command{
-									mockCommand{name: "tsr", channelTypes: plugin.AllChannels},
+							mockplugin.Module{
+								Name: "def",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "tsr", ChannelTypes: plugin.AllChannels},
 								},
 							},
-							mockModule{
-								name: "ghi",
-								commands: []plugin.Command{
-									mockCommand{name: "qpo", channelTypes: plugin.AllChannels},
+							mockplugin.Module{
+								Name: "ghi",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "qpo", ChannelTypes: plugin.AllChannels},
 								},
 							},
 						},
@@ -677,10 +680,10 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									commands: []plugin.Command{
-										mockCommand{name: "zyx", channelTypes: plugin.AllChannels},
+								mockplugin.Module{
+									Name: "abc",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "zyx", ChannelTypes: plugin.AllChannels},
 									},
 								},
 							},
@@ -688,10 +691,10 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: "custom_commands",
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									commands: []plugin.Command{
-										mockCommand{name: "zyx", channelTypes: plugin.AllChannels},
+								mockplugin.Module{
+									Name: "abc",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "zyx", ChannelTypes: plugin.AllChannels},
 									},
 								},
 							},
@@ -703,17 +706,17 @@ func TestPluginProvider_Modules(t *testing.T) {
 				abc.commands = append(abc.commands, &Command{
 					provider: p,
 					parent:   abc,
-					source: mockCommand{
-						name:         "zyx",
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "zyx",
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "zyx",
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "zyx",
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -727,12 +730,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "wvu",
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "wvu",
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -741,12 +744,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: "custom_commands",
 							Modules: []plugin.Module{
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "tsr",
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "tsr",
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -759,17 +762,17 @@ func TestPluginProvider_Modules(t *testing.T) {
 				def.commands = append(def.commands, &Command{
 					provider: p,
 					parent:   def,
-					source: mockCommand{
-						name:         "tsr",
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "tsr",
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "tsr",
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "tsr",
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -781,17 +784,17 @@ func TestPluginProvider_Modules(t *testing.T) {
 				def.commands = append(def.commands, &Command{
 					provider: p,
 					parent:   def,
-					source: mockCommand{
-						name:         "wvu",
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "wvu",
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "wvu",
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "wvu",
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -805,12 +808,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: "custom_commands",
 							Modules: []plugin.Module{
-								mockModule{
-									name: "ghi",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "qpo",
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "ghi",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "qpo",
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -823,17 +826,17 @@ func TestPluginProvider_Modules(t *testing.T) {
 				ghi.commands = append(ghi.commands, &Command{
 					provider: p,
 					parent:   ghi,
-					source: mockCommand{
-						name:         "qpo",
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "qpo",
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "ghi",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "qpo",
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "ghi",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "qpo",
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -851,12 +854,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						Name: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{
-										name:         "def",
-										channelTypes: plugin.AllChannels,
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{
+										Name:         "def",
+										ChannelTypes: plugin.AllChannels,
 									},
 								},
 							},
@@ -871,12 +874,12 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "def",
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "abc",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "def",
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -889,17 +892,17 @@ func TestPluginProvider_Modules(t *testing.T) {
 				expect.commands = append(expect.commands, &Command{
 					provider: p,
 					parent:   expect,
-					source: mockCommand{
-						name:         "def",
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "def",
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "def",
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "def",
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -916,15 +919,15 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						Name: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								modules: []plugin.Module{
-									mockModule{
-										name: "def",
-										commands: []plugin.Command{
-											mockCommand{
-												name:         "ghi",
-												channelTypes: plugin.AllChannels,
+							mockplugin.Module{
+								Name: "abc",
+								Modules: []plugin.Module{
+									mockplugin.Module{
+										Name: "def",
+										Commands: []plugin.Command{
+											mockplugin.Command{
+												Name:         "ghi",
+												ChannelTypes: plugin.AllChannels,
 											},
 										},
 									},
@@ -941,15 +944,15 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									modules: []plugin.Module{
-										mockModule{
-											name: "def",
-											commands: []plugin.Command{
-												mockCommand{
-													name:         "ghi",
-													channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "abc",
+									Modules: []plugin.Module{
+										mockplugin.Module{
+											Name: "def",
+											Commands: []plugin.Command{
+												mockplugin.Command{
+													Name:         "ghi",
+													ChannelTypes: plugin.AllChannels,
 												},
 											},
 										},
@@ -967,26 +970,26 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									modules: []plugin.Module{
-										mockModule{
-											name: "def",
-											commands: []plugin.Command{
-												mockCommand{
-													name:         "ghi",
-													channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "abc",
+									Modules: []plugin.Module{
+										mockplugin.Module{
+											Name: "def",
+											Commands: []plugin.Command{
+												mockplugin.Command{
+													Name:         "ghi",
+													ChannelTypes: plugin.AllChannels,
 												},
 											},
 										},
 									},
 								},
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "ghi",
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "ghi",
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -1001,25 +1004,25 @@ func TestPluginProvider_Modules(t *testing.T) {
 				expect.commands = append(expect.commands, &Command{
 					provider: p,
 					parent:   expect,
-					source:   mockCommand{name: "ghi", channelTypes: plugin.AllChannels},
+					source:   mockplugin.Command{Name: "ghi", ChannelTypes: plugin.AllChannels},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							modules: []plugin.Module{
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{name: "ghi", channelTypes: plugin.AllChannels},
+						mockplugin.Module{
+							Name: "abc",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "ghi", ChannelTypes: plugin.AllChannels},
 									},
 								},
 							},
 						},
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "ghi",
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "ghi",
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -1031,18 +1034,18 @@ func TestPluginProvider_Modules(t *testing.T) {
 				assert.Equal(t, expect, p.Command(".abc.def.ghi").Parent())
 			})
 
-			t.Run("children hidden", func(t *testing.T) {
+			t.Run("children Hidden", func(t *testing.T) {
 				sources := []plugin.Source{
 					{
 						Name: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{
-										name:         "def",
-										hidden:       true,
-										channelTypes: plugin.AllChannels,
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{
+										Name:         "def",
+										Hidden:       true,
+										ChannelTypes: plugin.AllChannels,
 									},
 								},
 							},
@@ -1051,13 +1054,13 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						Name: "other",
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{
-										name:         "ghi",
-										hidden:       true,
-										channelTypes: plugin.AllChannels,
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{
+										Name:         "ghi",
+										Hidden:       true,
+										ChannelTypes: plugin.AllChannels,
 									},
 								},
 							},
@@ -1072,13 +1075,13 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "def",
-											hidden:       true,
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "abc",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "def",
+											Hidden:       true,
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -1087,13 +1090,13 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: "other",
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "ghi",
-											hidden:       true,
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "abc",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "ghi",
+											Hidden:       true,
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -1107,19 +1110,19 @@ func TestPluginProvider_Modules(t *testing.T) {
 				expect.commands = append(expect.commands, &Command{
 					provider: p,
 					parent:   expect,
-					source: mockCommand{
-						name:         "def",
-						hidden:       true,
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "def",
+						Hidden:       true,
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "def",
-									hidden:       true,
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "def",
+									Hidden:       true,
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -1131,19 +1134,19 @@ func TestPluginProvider_Modules(t *testing.T) {
 				expect.commands = append(expect.commands, &Command{
 					provider: p,
 					parent:   expect,
-					source: mockCommand{
-						name:         "ghi",
-						hidden:       true,
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "ghi",
+						Hidden:       true,
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "ghi",
-									hidden:       true,
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "ghi",
+									Hidden:       true,
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -1155,23 +1158,23 @@ func TestPluginProvider_Modules(t *testing.T) {
 				assert.Equal(t, expect, p.Modules()[0])
 			})
 
-			t.Run("not hidden", func(t *testing.T) {
+			t.Run("not Hidden", func(t *testing.T) {
 				sources := []plugin.Source{
 					{
 						Name: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{
-										name:         "def",
-										hidden:       true,
-										channelTypes: plugin.AllChannels,
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{
+										Name:         "def",
+										Hidden:       true,
+										ChannelTypes: plugin.AllChannels,
 									},
-									mockCommand{
-										name:         "ghi",
-										hidden:       false,
-										channelTypes: plugin.AllChannels,
+									mockplugin.Command{
+										Name:         "ghi",
+										Hidden:       false,
+										ChannelTypes: plugin.AllChannels,
 									},
 								},
 							},
@@ -1180,13 +1183,13 @@ func TestPluginProvider_Modules(t *testing.T) {
 					{
 						Name: "other",
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{
-										name:         "jkl",
-										hidden:       false,
-										channelTypes: plugin.AllChannels,
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{
+										Name:         "jkl",
+										Hidden:       false,
+										ChannelTypes: plugin.AllChannels,
 									},
 								},
 							},
@@ -1201,18 +1204,18 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: plugin.BuiltInSource,
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "def",
-											hidden:       true,
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "abc",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "def",
+											Hidden:       true,
+											ChannelTypes: plugin.AllChannels,
 										},
-										mockCommand{
-											name:         "ghi",
-											hidden:       false,
-											channelTypes: plugin.AllChannels,
+										mockplugin.Command{
+											Name:         "ghi",
+											Hidden:       false,
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -1221,13 +1224,13 @@ func TestPluginProvider_Modules(t *testing.T) {
 						{
 							SourceName: "other",
 							Modules: []plugin.Module{
-								mockModule{
-									name: "abc",
-									commands: []plugin.Command{
-										mockCommand{
-											name:         "jkl",
-											hidden:       false,
-											channelTypes: plugin.AllChannels,
+								mockplugin.Module{
+									Name: "abc",
+									Commands: []plugin.Command{
+										mockplugin.Command{
+											Name:         "jkl",
+											Hidden:       false,
+											ChannelTypes: plugin.AllChannels,
 										},
 									},
 								},
@@ -1241,24 +1244,24 @@ func TestPluginProvider_Modules(t *testing.T) {
 				expect.commands = append(expect.commands, &Command{
 					provider: p,
 					parent:   expect,
-					source: mockCommand{
-						name:         "def",
-						hidden:       true,
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "def",
+						Hidden:       true,
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "def",
-									hidden:       true,
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "def",
+									Hidden:       true,
+									ChannelTypes: plugin.AllChannels,
 								},
-								mockCommand{
-									name:         "ghi",
-									hidden:       false,
-									channelTypes: plugin.AllChannels,
+								mockplugin.Command{
+									Name:         "ghi",
+									Hidden:       false,
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -1270,24 +1273,24 @@ func TestPluginProvider_Modules(t *testing.T) {
 				expect.commands = append(expect.commands, &Command{
 					provider: p,
 					parent:   expect,
-					source: mockCommand{
-						name:         "ghi",
-						hidden:       false,
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "ghi",
+						Hidden:       false,
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "def",
-									hidden:       true,
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "def",
+									Hidden:       true,
+									ChannelTypes: plugin.AllChannels,
 								},
-								mockCommand{
-									name:         "ghi",
-									hidden:       false,
-									channelTypes: plugin.AllChannels,
+								mockplugin.Command{
+									Name:         "ghi",
+									Hidden:       false,
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -1299,19 +1302,19 @@ func TestPluginProvider_Modules(t *testing.T) {
 				expect.commands = append(expect.commands, &Command{
 					provider: p,
 					parent:   expect,
-					source: mockCommand{
-						name:         "jkl",
-						hidden:       false,
-						channelTypes: plugin.AllChannels,
+					source: mockplugin.Command{
+						Name:         "jkl",
+						Hidden:       false,
+						ChannelTypes: plugin.AllChannels,
 					},
 					sourceParents: []plugin.Module{
-						mockModule{
-							name: "abc",
-							commands: []plugin.Command{
-								mockCommand{
-									name:         "jkl",
-									hidden:       false,
-									channelTypes: plugin.AllChannels,
+						mockplugin.Module{
+							Name: "abc",
+							Commands: []plugin.Command{
+								mockplugin.Command{
+									Name:         "jkl",
+									Hidden:       false,
+									ChannelTypes: plugin.AllChannels,
 								},
 							},
 						},
@@ -1333,13 +1336,13 @@ func TestPluginProvider_Command(t *testing.T) {
 			&Command{
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source:     mockCommand{name: "abc"},
+				source:     mockplugin.Command{Name: "abc"},
 				id:         ".abc",
 			},
 			&Command{
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "def"},
+				source:     mockplugin.Command{Name: "def"},
 				id:         ".def",
 			},
 		}
@@ -1357,10 +1360,10 @@ func TestPluginProvider_Command(t *testing.T) {
 			{
 				Name: plugin.BuiltInSource,
 				Modules: []plugin.Module{
-					mockModule{
-						name: "abc",
-						commands: []plugin.Command{
-							mockCommand{name: "def"},
+					mockplugin.Module{
+						Name: "abc",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "def"},
 						},
 					},
 				},
@@ -1368,11 +1371,11 @@ func TestPluginProvider_Command(t *testing.T) {
 			{
 				Name: "another",
 				Modules: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
-							mockCommand{name: "mno"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
+							mockplugin.Command{Name: "mno"},
 						},
 					},
 				},
@@ -1385,10 +1388,10 @@ func TestPluginProvider_Command(t *testing.T) {
 					{
 						SourceName: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{name: "def"},
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "def"},
 								},
 							},
 						},
@@ -1401,11 +1404,11 @@ func TestPluginProvider_Command(t *testing.T) {
 					{
 						SourceName: "another",
 						Modules: []plugin.Module{
-							mockModule{
-								name: "ghi",
-								commands: []plugin.Command{
-									mockCommand{name: "jkl"},
-									mockCommand{name: "mno"},
+							mockplugin.Module{
+								Name: "ghi",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "jkl"},
+									mockplugin.Command{Name: "mno"},
 								},
 							},
 						},
@@ -1420,12 +1423,12 @@ func TestPluginProvider_Command(t *testing.T) {
 				parent:     p.modules[0],
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source:     mockCommand{name: "def"},
+				source:     mockplugin.Command{Name: "def"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "abc",
-						commands: []plugin.Command{
-							mockCommand{name: "def"},
+					mockplugin.Module{
+						Name: "abc",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "def"},
 						},
 					},
 				},
@@ -1438,13 +1441,13 @@ func TestPluginProvider_Command(t *testing.T) {
 				parent:     p.modules[1],
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "jkl"},
+				source:     mockplugin.Command{Name: "jkl"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
-							mockCommand{name: "mno"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
+							mockplugin.Command{Name: "mno"},
 						},
 					},
 				},
@@ -1454,13 +1457,13 @@ func TestPluginProvider_Command(t *testing.T) {
 				parent:     p.modules[1],
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "mno"},
+				source:     mockplugin.Command{Name: "mno"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
-							mockCommand{name: "mno"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
+							mockplugin.Command{Name: "mno"},
 						},
 					},
 				},
@@ -1482,13 +1485,13 @@ func TestPluginProvider_Module(t *testing.T) {
 		{
 			Name: plugin.BuiltInSource,
 			Modules: []plugin.Module{
-				mockModule{
-					name: "abc",
-					modules: []plugin.Module{
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{name: "ghi"},
+				mockplugin.Module{
+					Name: "abc",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "ghi"},
 							},
 						},
 					},
@@ -1498,13 +1501,13 @@ func TestPluginProvider_Module(t *testing.T) {
 		{
 			Name: "another",
 			Modules: []plugin.Module{
-				mockModule{
-					name: "jkl",
-					modules: []plugin.Module{
-						mockModule{
-							name: "mno",
-							commands: []plugin.Command{
-								mockCommand{name: "pqr"},
+				mockplugin.Module{
+					Name: "jkl",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "mno",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "pqr"},
 							},
 						},
 					},
@@ -1519,13 +1522,13 @@ func TestPluginProvider_Module(t *testing.T) {
 				{
 					SourceName: plugin.BuiltInSource,
 					Modules: []plugin.Module{
-						mockModule{
-							name: "abc",
-							modules: []plugin.Module{
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{name: "ghi"},
+						mockplugin.Module{
+							Name: "abc",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "ghi"},
 									},
 								},
 							},
@@ -1540,13 +1543,13 @@ func TestPluginProvider_Module(t *testing.T) {
 				{
 					SourceName: "another",
 					Modules: []plugin.Module{
-						mockModule{
-							name: "jkl",
-							modules: []plugin.Module{
-								mockModule{
-									name: "mno",
-									commands: []plugin.Command{
-										mockCommand{name: "pqr"},
+						mockplugin.Module{
+							Name: "jkl",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "mno",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "pqr"},
 									},
 								},
 							},
@@ -1565,21 +1568,21 @@ func TestPluginProvider_Module(t *testing.T) {
 				{
 					SourceName: plugin.BuiltInSource,
 					Modules: []plugin.Module{
-						mockModule{
-							name: "abc",
-							modules: []plugin.Module{
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{name: "ghi"},
+						mockplugin.Module{
+							Name: "abc",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "ghi"},
 									},
 								},
 							},
 						},
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{name: "ghi"},
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "ghi"},
 							},
 						},
 					},
@@ -1594,23 +1597,23 @@ func TestPluginProvider_Module(t *testing.T) {
 			parent:     p.modules[0].Modules()[0],
 			provider:   p,
 			sourceName: plugin.BuiltInSource,
-			source:     mockCommand{name: "ghi"},
+			source:     mockplugin.Command{Name: "ghi"},
 			sourceParents: []plugin.Module{
-				mockModule{
-					name: "abc",
-					modules: []plugin.Module{
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{name: "ghi"},
+				mockplugin.Module{
+					Name: "abc",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "ghi"},
 							},
 						},
 					},
 				},
-				mockModule{
-					name: "def",
-					commands: []plugin.Command{
-						mockCommand{name: "ghi"},
+				mockplugin.Module{
+					Name: "def",
+					Commands: []plugin.Command{
+						mockplugin.Command{Name: "ghi"},
 					},
 				},
 			},
@@ -1625,21 +1628,21 @@ func TestPluginProvider_Module(t *testing.T) {
 				{
 					SourceName: "another",
 					Modules: []plugin.Module{
-						mockModule{
-							name: "jkl",
-							modules: []plugin.Module{
-								mockModule{
-									name: "mno",
-									commands: []plugin.Command{
-										mockCommand{name: "pqr"},
+						mockplugin.Module{
+							Name: "jkl",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "mno",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "pqr"},
 									},
 								},
 							},
 						},
-						mockModule{
-							name: "mno",
-							commands: []plugin.Command{
-								mockCommand{name: "pqr"},
+						mockplugin.Module{
+							Name: "mno",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "pqr"},
 							},
 						},
 					},
@@ -1654,23 +1657,23 @@ func TestPluginProvider_Module(t *testing.T) {
 			parent:     p.modules[1].Modules()[0],
 			provider:   p,
 			sourceName: "another",
-			source:     mockCommand{name: "pqr"},
+			source:     mockplugin.Command{Name: "pqr"},
 			sourceParents: []plugin.Module{
-				mockModule{
-					name: "jkl",
-					modules: []plugin.Module{
-						mockModule{
-							name: "mno",
-							commands: []plugin.Command{
-								mockCommand{name: "pqr"},
+				mockplugin.Module{
+					Name: "jkl",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "mno",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "pqr"},
 							},
 						},
 					},
 				},
-				mockModule{
-					name: "mno",
-					commands: []plugin.Command{
-						mockCommand{name: "pqr"},
+				mockplugin.Module{
+					Name: "mno",
+					Commands: []plugin.Command{
+						mockplugin.Command{Name: "pqr"},
 					},
 				},
 			},
@@ -1690,13 +1693,13 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 			&Command{
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source:     mockCommand{name: "abc"},
+				source:     mockplugin.Command{Name: "abc"},
 				id:         ".abc",
 			},
 			&Command{
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "def"},
+				source:     mockplugin.Command{Name: "def"},
 				id:         ".def",
 			},
 		}
@@ -1714,10 +1717,10 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 			{
 				Name: plugin.BuiltInSource,
 				Modules: []plugin.Module{
-					mockModule{
-						name: "abc",
-						commands: []plugin.Command{
-							mockCommand{name: "def"},
+					mockplugin.Module{
+						Name: "abc",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "def"},
 						},
 					},
 				},
@@ -1725,11 +1728,11 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 			{
 				Name: "another",
 				Modules: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
-							mockCommand{name: "mno"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
+							mockplugin.Command{Name: "mno"},
 						},
 					},
 				},
@@ -1743,10 +1746,10 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 					{
 						SourceName: plugin.BuiltInSource,
 						Modules: []plugin.Module{
-							mockModule{
-								name: "abc",
-								commands: []plugin.Command{
-									mockCommand{name: "def"},
+							mockplugin.Module{
+								Name: "abc",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "def"},
 								},
 							},
 						},
@@ -1760,11 +1763,11 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 					{
 						SourceName: "another",
 						Modules: []plugin.Module{
-							mockModule{
-								name: "ghi",
-								commands: []plugin.Command{
-									mockCommand{name: "jkl"},
-									mockCommand{name: "mno"},
+							mockplugin.Module{
+								Name: "ghi",
+								Commands: []plugin.Command{
+									mockplugin.Command{Name: "jkl"},
+									mockplugin.Command{Name: "mno"},
 								},
 							},
 						},
@@ -1779,12 +1782,12 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 				parent:     p.modules[0],
 				provider:   p,
 				sourceName: plugin.BuiltInSource,
-				source:     mockCommand{name: "def"},
+				source:     mockplugin.Command{Name: "def"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "abc",
-						commands: []plugin.Command{
-							mockCommand{name: "def"},
+					mockplugin.Module{
+						Name: "abc",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "def"},
 						},
 					},
 				},
@@ -1797,13 +1800,13 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 				parent:     p.modules[1],
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "jkl"},
+				source:     mockplugin.Command{Name: "jkl"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
-							mockCommand{name: "mno"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
+							mockplugin.Command{Name: "mno"},
 						},
 					},
 				},
@@ -1813,13 +1816,13 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 				parent:     p.modules[1],
 				provider:   p,
 				sourceName: "another",
-				source:     mockCommand{name: "mno"},
+				source:     mockplugin.Command{Name: "mno"},
 				sourceParents: []plugin.Module{
-					mockModule{
-						name: "ghi",
-						commands: []plugin.Command{
-							mockCommand{name: "jkl"},
-							mockCommand{name: "mno"},
+					mockplugin.Module{
+						Name: "ghi",
+						Commands: []plugin.Command{
+							mockplugin.Command{Name: "jkl"},
+							mockplugin.Command{Name: "mno"},
 						},
 					},
 				},
@@ -1841,13 +1844,13 @@ func TestPluginProvider_FindModule(t *testing.T) {
 		{
 			Name: plugin.BuiltInSource,
 			Modules: []plugin.Module{
-				mockModule{
-					name: "abc",
-					modules: []plugin.Module{
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{name: "ghi"},
+				mockplugin.Module{
+					Name: "abc",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "ghi"},
 							},
 						},
 					},
@@ -1857,13 +1860,13 @@ func TestPluginProvider_FindModule(t *testing.T) {
 		{
 			Name: "another",
 			Modules: []plugin.Module{
-				mockModule{
-					name: "jkl",
-					modules: []plugin.Module{
-						mockModule{
-							name: "mno",
-							commands: []plugin.Command{
-								mockCommand{name: "pqr"},
+				mockplugin.Module{
+					Name: "jkl",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "mno",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "pqr"},
 							},
 						},
 					},
@@ -1878,13 +1881,13 @@ func TestPluginProvider_FindModule(t *testing.T) {
 				{
 					SourceName: plugin.BuiltInSource,
 					Modules: []plugin.Module{
-						mockModule{
-							name: "abc",
-							modules: []plugin.Module{
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{name: "ghi"},
+						mockplugin.Module{
+							Name: "abc",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "ghi"},
 									},
 								},
 							},
@@ -1899,13 +1902,13 @@ func TestPluginProvider_FindModule(t *testing.T) {
 				{
 					SourceName: "another",
 					Modules: []plugin.Module{
-						mockModule{
-							name: "jkl",
-							modules: []plugin.Module{
-								mockModule{
-									name: "mno",
-									commands: []plugin.Command{
-										mockCommand{name: "pqr"},
+						mockplugin.Module{
+							Name: "jkl",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "mno",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "pqr"},
 									},
 								},
 							},
@@ -1924,21 +1927,21 @@ func TestPluginProvider_FindModule(t *testing.T) {
 				{
 					SourceName: plugin.BuiltInSource,
 					Modules: []plugin.Module{
-						mockModule{
-							name: "abc",
-							modules: []plugin.Module{
-								mockModule{
-									name: "def",
-									commands: []plugin.Command{
-										mockCommand{name: "ghi"},
+						mockplugin.Module{
+							Name: "abc",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "def",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "ghi"},
 									},
 								},
 							},
 						},
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{name: "ghi"},
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "ghi"},
 							},
 						},
 					},
@@ -1953,23 +1956,23 @@ func TestPluginProvider_FindModule(t *testing.T) {
 			parent:     p.modules[0].Modules()[0],
 			provider:   p,
 			sourceName: plugin.BuiltInSource,
-			source:     mockCommand{name: "ghi"},
+			source:     mockplugin.Command{Name: "ghi"},
 			sourceParents: []plugin.Module{
-				mockModule{
-					name: "abc",
-					modules: []plugin.Module{
-						mockModule{
-							name: "def",
-							commands: []plugin.Command{
-								mockCommand{name: "ghi"},
+				mockplugin.Module{
+					Name: "abc",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "def",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "ghi"},
 							},
 						},
 					},
 				},
-				mockModule{
-					name: "def",
-					commands: []plugin.Command{
-						mockCommand{name: "ghi"},
+				mockplugin.Module{
+					Name: "def",
+					Commands: []plugin.Command{
+						mockplugin.Command{Name: "ghi"},
 					},
 				},
 			},
@@ -1984,21 +1987,21 @@ func TestPluginProvider_FindModule(t *testing.T) {
 				{
 					SourceName: "another",
 					Modules: []plugin.Module{
-						mockModule{
-							name: "jkl",
-							modules: []plugin.Module{
-								mockModule{
-									name: "mno",
-									commands: []plugin.Command{
-										mockCommand{name: "pqr"},
+						mockplugin.Module{
+							Name: "jkl",
+							Modules: []plugin.Module{
+								mockplugin.Module{
+									Name: "mno",
+									Commands: []plugin.Command{
+										mockplugin.Command{Name: "pqr"},
 									},
 								},
 							},
 						},
-						mockModule{
-							name: "mno",
-							commands: []plugin.Command{
-								mockCommand{name: "pqr"},
+						mockplugin.Module{
+							Name: "mno",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "pqr"},
 							},
 						},
 					},
@@ -2013,23 +2016,23 @@ func TestPluginProvider_FindModule(t *testing.T) {
 			parent:     p.modules[1].Modules()[0],
 			provider:   p,
 			sourceName: "another",
-			source:     mockCommand{name: "pqr"},
+			source:     mockplugin.Command{Name: "pqr"},
 			sourceParents: []plugin.Module{
-				mockModule{
-					name: "jkl",
-					modules: []plugin.Module{
-						mockModule{
-							name: "mno",
-							commands: []plugin.Command{
-								mockCommand{name: "pqr"},
+				mockplugin.Module{
+					Name: "jkl",
+					Modules: []plugin.Module{
+						mockplugin.Module{
+							Name: "mno",
+							Commands: []plugin.Command{
+								mockplugin.Command{Name: "pqr"},
 							},
 						},
 					},
 				},
-				mockModule{
-					name: "mno",
-					commands: []plugin.Command{
-						mockCommand{name: "pqr"},
+				mockplugin.Module{
+					Name: "mno",
+					Commands: []plugin.Command{
+						mockplugin.Command{Name: "pqr"},
 					},
 				},
 			},
@@ -2057,16 +2060,16 @@ func TestPluginProvider_UnavailablePluginSources(t *testing.T) {
 				{
 					Name: plugin.BuiltInSource,
 					Commands: []plugin.Command{
-						mockCommand{
-							name:         "abc",
-							channelTypes: plugin.GuildChannels,
+						mockplugin.Command{
+							Name:         "abc",
+							ChannelTypes: plugin.GuildChannels,
 						},
 					},
 				},
 			},
 		}
 
-		expect := []plugin.UnavailablePluginSource{
+		expect := []plugin.UnavailableSource{
 			{
 				Name:  "another",
 				Error: errors.New("abc"),
@@ -2085,14 +2088,14 @@ func TestPluginProvider_UnavailablePluginSources(t *testing.T) {
 				{
 					Name: plugin.BuiltInSource,
 					Commands: []plugin.Command{
-						mockCommand{
-							name:         "abc",
-							channelTypes: plugin.GuildChannels,
+						mockplugin.Command{
+							Name:         "abc",
+							ChannelTypes: plugin.GuildChannels,
 						},
 					},
 				},
 			},
-			unavailableSources: []plugin.UnavailablePluginSource{
+			unavailableSources: []plugin.UnavailableSource{
 				{
 					Name:  "another",
 					Error: errors.New("abc"),
