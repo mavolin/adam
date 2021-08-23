@@ -130,7 +130,11 @@ func TestLocalizer_Localize(t *testing.T) {
 		{
 			name: "lang func",
 			langFunc: func(t *testing.T) Func {
+				t.Helper()
+
 				return func(term Term, placeholders map[string]interface{}, plural interface{}) (string, error) {
+					t.Helper()
+
 					var (
 						expectTerm         Term = "abc"
 						expectPlaceholders      = map[string]interface{}{"def": "ghi"}
@@ -183,7 +187,7 @@ func TestLocalizer_Localize(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				if c.langFunc == nil {
-					c.langFunc = func(t *testing.T) Func { return nil }
+					c.langFunc = func(t *testing.T) Func { return nil } //nolint:thelper
 				}
 
 				l := &Localizer{

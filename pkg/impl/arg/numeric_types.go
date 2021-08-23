@@ -113,7 +113,7 @@ type Decimal struct {
 }
 
 var (
-	// SimpleDecimal is a decimal with no bounds
+	// SimpleDecimal is a decimal with no bounds.
 	SimpleDecimal plugin.ArgType = new(Decimal)
 	// PositiveDecimal is an Decimal with inclusive minimum 0.
 	PositiveDecimal plugin.ArgType = DecimalWithMin(0)

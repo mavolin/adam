@@ -34,7 +34,7 @@ func TestCtxErrorHandler_HandleError(t *testing.T) {
 
 	var h ctxErrorHandler = func(err error) { actual = err }
 
-	expect := errors.New("Abort. Retry. Fail.") //nolint:golint
+	expect := errors.New("boom")
 
 	h.HandleError(expect)
 

@@ -26,7 +26,7 @@ func TestLocalizer_Build(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
 		expect := "abc"
 
-		l := NewLocalizerWithDefault(expect).
+		l := NewLocalizerWithDefault(t, expect).
 			Build()
 
 		actual, err := l.LocalizeTerm("def")

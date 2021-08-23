@@ -3,7 +3,7 @@ package bot
 import "fmt"
 
 // ReplyTypeError is the error used if a reply returned by
-// plugin.Command.Invoke is not of a supported types
+// plugin.Command.Invoke is not of a supported types.
 type ReplyTypeError struct {
 	Reply interface{}
 }

@@ -12,7 +12,7 @@ import (
 // UserInfo is less severe error on the user-side.
 // The error will reported to the user via a message containing a detailed
 // description of the problem.
-// It won't be logged
+// It won't be logged.
 type UserInfo struct {
 	Embed *embedutil.Builder
 }

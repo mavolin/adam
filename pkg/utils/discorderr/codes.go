@@ -76,7 +76,7 @@ const (
 	DMActionUnavailable httputil.ErrorCode = 50003
 	GuildWidgetDisabled httputil.ErrorCode = 50004
 	// SystemMessageActionUnavailable signals that you cannot execute the
-	// action on a system message
+	// action on a system message.
 	SystemMessageActionUnavailable httputil.ErrorCode = 50021
 	// ChannelTypeActionUnavailable signals that you cannot execute the action
 	// on the channel type.

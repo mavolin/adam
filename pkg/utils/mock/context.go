@@ -53,7 +53,7 @@ type ErrorHandler struct {
 
 var _ plugin.ErrorHandler = new(ErrorHandler)
 
-func NewErrorHandler(t *testing.T) *ErrorHandler {
+func NewErrorHandler(t *testing.T) *ErrorHandler { //nolint:thelper
 	h := &ErrorHandler{t: t}
 	t.Cleanup(h.eval)
 
@@ -71,6 +71,8 @@ func (h *ErrorHandler) ExpectSilentError(err error) *ErrorHandler {
 }
 
 func (h *ErrorHandler) HandleError(err error) {
+	h.t.Helper()
+
 	h.mut.Lock()
 	defer h.mut.Unlock()
 
@@ -99,6 +101,8 @@ func (h *ErrorHandler) HandleError(err error) {
 }
 
 func (h *ErrorHandler) HandleErrorSilently(err error) {
+	h.t.Helper()
+
 	h.mut.Lock()
 	defer h.mut.Unlock()
 

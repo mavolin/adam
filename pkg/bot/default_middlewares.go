@@ -222,7 +222,7 @@ func CheckBotPermissions(next CommandFunc) CommandFunc {
 
 // NewThrottlerChecker creates a new bot.Middleware that checks if a
 // command is being throttled.
-// Additionally, it signals cancellation to the throttler
+// Additionally, it signals cancellation to the throttler.
 func NewThrottlerChecker(cancelChecker func(err error) bool) Middleware {
 	return func(next CommandFunc) CommandFunc {
 		return func(s *state.State, ctx *plugin.Context) error {

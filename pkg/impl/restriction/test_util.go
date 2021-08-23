@@ -27,7 +27,7 @@ var (
 		DefaultVersion:    errors.New("yza"),
 	}
 
-	unexpectedErrorFuncReturn = errors.New("bcd") //nolint:golint // just for testing
+	errUnexpectedErrorFuncReturn = errors.New("bcd")
 )
 
 func errorFunc1(*state.State, *plugin.Context) error          { return errorFuncReturn1 }
@@ -41,7 +41,7 @@ func fatalEmbeddableErrorFunc(*state.State, *plugin.Context) error {
 	return fatalEmbeddableErrorFuncReturn
 }
 
-func unexpectedErrorFunc(*state.State, *plugin.Context) error { return unexpectedErrorFuncReturn }
+func unexpectedErrorFunc(*state.State, *plugin.Context) error { return errUnexpectedErrorFuncReturn }
 
 func defaultRestrictionErrorFunc(*state.State, *plugin.Context) error {
 	return plugin.DefaultRestrictionError

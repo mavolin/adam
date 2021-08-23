@@ -1,40 +1,37 @@
 linters:
   disable-all: true
   enable:
-    - asciicheck
     - bodyclose
     - deadcode
-    - dogsled
-    - dupl
+    - durationcheck
     - errcheck
     - errorlint
-    - exhaustive
+    - exportloopref
+    - forbidigo
     - funlen
-    - gochecknoinits
     - gocognit
     - gocritic
-    - gocyclo
-    - gofmt
+    - godot
     - gofumpt
     - goimports
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
     - lll
-    - maligned
     - misspell
     - nakedret
     - prealloc
+    - predeclared
+    - revive
     - rowserrcheck
     - staticcheck
     - structcheck
-    - stylecheck
+    - thelper
+    - tparallel
     - typecheck
     - unconvert
     - unparam
-    - unconvert
     - unused
     - varcheck
     - whitespace
@@ -45,14 +42,13 @@ linters-settings:
     statements: 55
   gocognit:
     min-complexity: 37
+  godot:
+    exclude:
+      - ^\s*.+:.+$
+      - ^\s*(?:=+|/+|-+|\++)
 
 issues:
   exclude-rules:
-    # prevent errors on //noinspection tags
-    - linters:
-        - gocritic
-        - gofumpt
-      source: "^\\s*//noinspection(?:[^\n]+)?$"
     # prevent errors on type assertions with field access
     - linters:
         - errorlint
@@ -60,7 +56,7 @@ issues:
     - linters:
         - lll
       source: //(?:nolint|go|goland)
-    # io.EOF and sql.ErrNoRows should, by doc, never be wrapped
+    # io.EOF and sql.ErrNoRows should, according to the doc, never be wrapped
     - linters:
         - errorlint
       source: "\\w+\\s*==\\s*(io.EOF|sql.ErrNoRows)"
@@ -75,5 +71,4 @@ issues:
         - goconst
         - gocyclo
         - gosec
-        - maligned
         - unparam

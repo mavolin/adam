@@ -2,7 +2,6 @@ package resolved
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/diamondburned/arikawa/v2/discord"
@@ -1320,9 +1319,6 @@ func TestPluginProvider_Modules(t *testing.T) {
 					sourceName: "other",
 					id:         ".abc.jkl",
 				})
-
-				fmt.Printf("%#v\n\n", expect)
-				fmt.Printf("%#v\n\n", p.Modules()[0])
 
 				assert.Equal(t, expect, p.Modules()[0])
 			})

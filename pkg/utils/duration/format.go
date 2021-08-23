@@ -9,7 +9,7 @@ import (
 // Format formats the passed duration rounded to milliseconds.
 // Individual Values are separated.
 //
-// For example: '1h 10s'
+// For example: '1h 10s'.
 func Format(d time.Duration) string {
 	if d == 0 {
 		return "0s"

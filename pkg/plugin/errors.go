@@ -88,7 +88,7 @@ type BotPermissionsError struct {
 // permissions.
 var DefaultBotPermissionsError = new(BotPermissionsError)
 
-// allPermissions except admin
+// allPerms contains all discord.Permissions except admin.
 var allPerms = discord.PermissionAll ^ discord.PermissionAdministrator
 
 // NewBotPermissionsError creates a new *BotPermissionsError with the passed

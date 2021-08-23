@@ -27,7 +27,7 @@ var LocationKey interface{}
 // corresponding value.
 // If both LocationKey and DefaultLocation are nil, UTC offsets will be
 // enforced.
-var DefaultLocation *time.Location = nil
+var DefaultLocation *time.Location
 
 // =============================================================================
 // Duration
@@ -323,7 +323,7 @@ type DateTime struct {
 	Max time.Time
 }
 
-// SimpleDateTime is a DateTime with no bounds
+// SimpleDateTime is a DateTime with no bounds.
 var SimpleDateTime plugin.ArgType = new(DateTime)
 
 func (t DateTime) GetName(l *i18n.Localizer) string {

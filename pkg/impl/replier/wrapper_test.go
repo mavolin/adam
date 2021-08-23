@@ -161,7 +161,7 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
-			ID:        012,
+			ID:        12,
 			ChannelID: dmID,
 			Author:    ctx.Author,
 			Content:   data.Content,
@@ -205,7 +205,7 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
-			ID:        012,
+			ID:        12,
 			ChannelID: dmID,
 			Author:    ctx.Author,
 			Content:   data.Content,
@@ -244,7 +244,7 @@ func Test_wrappedReplier_Edit(t *testing.T) {
 	data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
 	expect := discord.Message{
-		ID:        012,
+		ID:        12,
 		ChannelID: ctx.ChannelID,
 		Author:    ctx.Author,
 		Content:   data.Content.Val,
@@ -282,7 +282,7 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 		data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
 		expect := discord.Message{
-			ID:        012,
+			ID:        12,
 			ChannelID: dmID,
 			Author:    ctx.Author,
 			Content:   data.Content.Val,
@@ -326,7 +326,7 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 		data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
 		expect := discord.Message{
-			ID:        012,
+			ID:        12,
 			ChannelID: dmID,
 			Author:    ctx.Author,
 			Content:   data.Content.Val,

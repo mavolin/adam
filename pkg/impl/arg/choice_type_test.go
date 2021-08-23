@@ -85,7 +85,7 @@ func TestChoice_Default(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		choice := Choice{}
 
-		var expect interface{} = nil
+		var expect interface{}
 
 		actual := choice.GetDefault()
 		assert.Equal(t, expect, actual)
@@ -153,7 +153,7 @@ func TestLocalizedChoice_Default(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		choice := Choice{}
 
-		var expect interface{} = nil
+		var expect interface{}
 
 		actual := choice.GetDefault()
 		assert.Equal(t, expect, actual)

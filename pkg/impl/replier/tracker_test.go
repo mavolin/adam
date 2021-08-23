@@ -39,7 +39,7 @@ func TestTracker_GuildMessages(t *testing.T) {
 	data := api.SendMessageData{Content: "abc"}
 
 	expectMessage := discord.Message{
-		ID:        012,
+		ID:        12,
 		ChannelID: ctx.ChannelID,
 		Author:    ctx.Author,
 		Content:   data.Content,
@@ -82,7 +82,7 @@ func TestTracker_DMs(t *testing.T) {
 	data := api.SendMessageData{Content: "abc"}
 
 	expectMessage := discord.Message{
-		ID:        012,
+		ID:        12,
 		ChannelID: r.dmID,
 		Author:    ctx.Author,
 		Content:   data.Content,
@@ -125,7 +125,7 @@ func TestTracker_EditedGuildMessages(t *testing.T) {
 	data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
 	expectMessage := discord.Message{
-		ID:        012,
+		ID:        12,
 		ChannelID: ctx.ChannelID,
 		Author:    ctx.Author,
 		Content:   data.Content.Val,
@@ -168,7 +168,7 @@ func TestTracker_EditedDMs(t *testing.T) {
 	data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
 	expectMessage := discord.Message{
-		ID:        012,
+		ID:        12,
 		ChannelID: r.dmID,
 		Author:    ctx.Author,
 		Content:   data.Content.Val,
@@ -333,7 +333,7 @@ func TestTracker_ReplyDM(t *testing.T) {
 		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
-			ID:        012,
+			ID:        12,
 			ChannelID: dmID,
 			Author:    ctx.Author,
 			Content:   data.Content,
@@ -378,7 +378,7 @@ func TestTracker_ReplyDM(t *testing.T) {
 		data := api.SendMessageData{Content: "abc"}
 
 		expect := discord.Message{
-			ID:        012,
+			ID:        12,
 			ChannelID: ctx.ChannelID,
 			Author:    ctx.Author,
 			Content:   data.Content,

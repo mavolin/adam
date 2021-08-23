@@ -19,7 +19,7 @@ const (
 	// DirectMessages is the ChannelTypes of a private chat (1).
 	DirectMessages
 
-	// Combinations
+	// ================================ Combinations ================================
 
 	// AllChannels is a combination of all ChannelTypes.
 	AllChannels = DirectMessages | GuildChannels

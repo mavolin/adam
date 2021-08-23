@@ -601,8 +601,7 @@ func TestTimeZone_Parse(t *testing.T) {
 
 		expect, err := time.LoadLocation("America/New_York")
 		if err != nil {
-			fmt.Println("aborting TestTimeZone_Parse: no timezone data available")
-			return // test os doesn't have timezone data
+			t.Skip("aborting TestTimeZone_Parse: no timezone data available")
 		}
 
 		actual, err := TimeZone.Parse(nil, ctx)

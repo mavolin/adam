@@ -241,7 +241,7 @@ func TestAllRoles(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 789},
-				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{12}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{},
@@ -255,12 +255,12 @@ func TestAllRoles(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message:   discord.Message{GuildID: 789},
-				Member:    &discord.Member{RoleIDs: []discord.RoleID{012}},
+				Member:    &discord.Member{RoleIDs: []discord.RoleID{12}},
 				Localizer: i18n.NewFallbackLocalizer(),
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						OwnerID: 345,
-						Roles:   []discord.Role{{ID: 012}, {ID: 456}},
+						Roles:   []discord.Role{{ID: 12}, {ID: 456}},
 					},
 				},
 			},
@@ -271,27 +271,14 @@ func TestAllRoles(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 789},
-				Member:  &discord.Member{RoleIDs: []discord.RoleID{012, 345}},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{12, 345}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
-							{
-								ID:       123,
-								Position: 3,
-							},
-							{
-								ID:       456,
-								Position: 5,
-							},
-							{
-								ID:       012,
-								Position: 6,
-							},
-							{
-								ID:          345,
-								Position:    2,
-								Permissions: discord.PermissionManageRoles,
-							},
+							{ID: 123, Position: 3},
+							{ID: 456, Position: 5},
+							{ID: 12, Position: 6},
+							{ID: 345, Position: 2, Permissions: discord.PermissionManageRoles},
 						},
 					},
 				},
@@ -348,7 +335,7 @@ func TestMustAllRoles(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 789},
-				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{12}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{Roles: []discord.Role{}},
 				},
@@ -360,7 +347,7 @@ func TestMustAllRoles(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 789},
-				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{12}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 456}}},
 				},
@@ -429,15 +416,10 @@ func TestAnyRole(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 789},
-				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{12}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
-						Roles: []discord.Role{
-							{
-								ID:       456,
-								Position: 1,
-							},
-						},
+						Roles:   []discord.Role{{ID: 456, Position: 1}},
 						OwnerID: 345,
 					},
 				},
@@ -449,27 +431,14 @@ func TestAnyRole(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 789},
-				Member:  &discord.Member{RoleIDs: []discord.RoleID{012, 345}},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{12, 345}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
-							{
-								ID:       123,
-								Position: 3,
-							},
-							{
-								ID:       456,
-								Position: 5,
-							},
-							{
-								ID:       012,
-								Position: 4,
-							},
-							{
-								ID:          345,
-								Position:    2,
-								Permissions: discord.PermissionManageRoles,
-							},
+							{ID: 123, Position: 3},
+							{ID: 456, Position: 5},
+							{ID: 12, Position: 4},
+							{ID: 345, Position: 2, Permissions: discord.PermissionManageRoles},
 						},
 					},
 				},
@@ -538,18 +507,12 @@ func TestMustAnyRole(t *testing.T) {
 			allowed: []discord.RoleID{123, 456},
 			ctx: &plugin.Context{
 				Message: discord.Message{GuildID: 789},
-				Member:  &discord.Member{RoleIDs: []discord.RoleID{012}},
+				Member:  &discord.Member{RoleIDs: []discord.RoleID{12}},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
 						Roles: []discord.Role{
-							{
-								ID:       456,
-								Position: 2,
-							},
-							{
-								ID:       012,
-								Position: 1,
-							},
+							{ID: 456, Position: 2},
+							{ID: 12, Position: 1},
 						},
 					},
 				},
@@ -615,10 +578,7 @@ func TestChannels(t *testing.T) {
 				},
 			},
 			ctx: &plugin.Context{
-				Message: discord.Message{
-					ChannelID: 012,
-					GuildID:   345,
-				},
+				Message:   discord.Message{ChannelID: 12, GuildID: 345},
 				Member:    &discord.Member{User: discord.User{ID: 678}},
 				Localizer: i18n.NewFallbackLocalizer(),
 				DiscordDataProvider: mock.DiscordDataProvider{
@@ -640,17 +600,14 @@ func TestChannels(t *testing.T) {
 			channelIDs:     []discord.ChannelID{123, 456},
 			channelsReturn: []discord.Channel{{ID: 789}},
 			ctx: &plugin.Context{
-				Message: discord.Message{
-					ChannelID: 789,
-					GuildID:   012,
-				},
-				Member: &discord.Member{},
+				Message: discord.Message{ChannelID: 789, GuildID: 12},
+				Member:  &discord.Member{},
 				DiscordDataProvider: mock.DiscordDataProvider{
 					GuildReturn: &discord.Guild{
-						ID: 012,
+						ID: 12,
 						Roles: []discord.Role{
 							{
-								ID:          012,
+								ID:          12,
 								Permissions: discord.PermissionViewChannel | discord.PermissionSendMessages,
 							},
 						},

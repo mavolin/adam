@@ -100,7 +100,7 @@ func TestAll(t *testing.T) {
 		{
 			name:   "multiple restriction funcs - unexpected error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, unexpectedErrorFunc},
-			expect: unexpectedErrorFuncReturn,
+			expect: errUnexpectedErrorFuncReturn,
 		},
 		{
 			name:   "nested all - single error",
@@ -263,7 +263,7 @@ func TestAny(t *testing.T) {
 		{
 			name:   "multiple restriction funcs - unexpected error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, unexpectedErrorFunc},
-			expect: unexpectedErrorFuncReturn,
+			expect: errUnexpectedErrorFuncReturn,
 		},
 		{
 			name:   "nested all - single error",

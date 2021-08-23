@@ -15,7 +15,7 @@ import (
 
 type StackTrace = errorutil.StackTrace
 
-// Log is the logger used to log InternalErrors
+// Log is the logger used to log InternalErrors.
 var Log = func(err *InternalError, ctx *plugin.Context) {
 	log.Printf("internal error in command %s: %+v\n%+v", ctx.InvokedCommand.ID(), err, err.StackTrace())
 }

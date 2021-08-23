@@ -28,16 +28,11 @@ func TestReactionWaiter_Await(t *testing.T) {
 				ChannelError:  nil,
 				GuildReturn: &discord.Guild{
 					Roles: []discord.Role{
-						{
-							ID:          012,
-							Permissions: discord.PermissionSendMessages,
-						},
+						{ID: 12, Permissions: discord.PermissionSendMessages},
 					},
 				},
 				GuildError: nil,
-				SelfReturn: &discord.Member{
-					RoleIDs: []discord.RoleID{012},
-				},
+				SelfReturn: &discord.Member{RoleIDs: []discord.RoleID{12}},
 			},
 		}
 

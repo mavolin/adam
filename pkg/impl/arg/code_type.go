@@ -40,9 +40,9 @@ func (c code) GetDescription(l *i18n.Localizer) string {
 	return desc
 }
 
+// These regexps aren't perfect (e.g. they allow ```a``), but they should
+// cover most cases.
 var (
-	// these regexps aren't perfect (e.g. they allow ```a``), but they should cover
-	// most cases
 	singleBacktickRegexp = regexp.MustCompile(`^\x60(?P<code>[^\x60]+)\x60$`)
 	doubleBacktickRegexp = regexp.MustCompile(`^\x60\x60(?P<code>(?:\x60[^\x60]|[^\x60])+)\x60\x60$`)
 	tripleBacktickRegexp = regexp.MustCompile(

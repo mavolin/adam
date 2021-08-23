@@ -18,7 +18,7 @@ type mockLocalizer struct {
 	errOn    map[i18n.Term]struct{}
 }
 
-func newMockedLocalizer(t *testing.T) *mockLocalizer {
+func newMockedLocalizer(t *testing.T) *mockLocalizer { //nolint:thelper
 	return &mockLocalizer{
 		t:        t,
 		onReturn: make(map[i18n.Term]string),
@@ -33,6 +33,8 @@ func (l *mockLocalizer) on(term i18n.Term, response string) *mockLocalizer {
 
 func (l *mockLocalizer) build() *i18n.Localizer {
 	return i18n.NewLocalizer("dev", func(term i18n.Term, _ map[string]interface{}, _ interface{}) (string, error) {
+		l.t.Helper()
+
 		r, ok := l.onReturn[term]
 		if ok {
 			return r, nil
