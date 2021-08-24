@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -544,7 +544,7 @@ var HandleInternalError = func(ierr *InternalError, s *state.State, ctx *plugin.
 		WithTitlel(internalErrorTitle).
 		WithDescription(desc)
 
-	_, _ = ctx.ReplyEmbedBuilder(embed)
+	_, _ = ctx.ReplyEmbedBuilders(embed)
 }
 
 // stackTrace attempts to extract the stacktrace from the error.

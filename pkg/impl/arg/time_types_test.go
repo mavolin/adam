@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -147,7 +147,7 @@ func TestTime_Parse(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
 				ctx := &plugin.ParseContext{
-					Context: &plugin.Context{Base: state.NewBase()},
+					Context: &plugin.Context{Base: event.NewBase()},
 					Raw:     c.raw,
 				}
 
@@ -234,7 +234,7 @@ func TestTime_Parse(t *testing.T) {
 				}
 
 				ctx := &plugin.ParseContext{
-					Context: &plugin.Context{Base: state.NewBase()},
+					Context: &plugin.Context{Base: event.NewBase()},
 					Raw:     c.raw,
 					Kind:    plugin.KindArg,
 				}
@@ -316,7 +316,7 @@ func TestDate_Parse(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
 				ctx := &plugin.ParseContext{
-					Context: &plugin.Context{Base: state.NewBase()},
+					Context: &plugin.Context{Base: event.NewBase()},
 					Raw:     c.raw,
 				}
 
@@ -414,7 +414,7 @@ func TestDate_Parse(t *testing.T) {
 
 				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{
-						Base: state.NewBase(),
+						Base: event.NewBase(),
 					},
 					Raw:  c.raw,
 					Kind: plugin.KindArg,
@@ -483,7 +483,7 @@ func TestDateTime_Parse(t *testing.T) {
 				DefaultLocation = c.defaultLocation
 
 				ctx := &plugin.ParseContext{
-					Context: &plugin.Context{Base: state.NewBase()},
+					Context: &plugin.Context{Base: event.NewBase()},
 					Raw:     c.raw,
 				}
 
@@ -568,7 +568,7 @@ func TestDateTime_Parse(t *testing.T) {
 				}
 
 				ctx := &plugin.ParseContext{
-					Context: &plugin.Context{Base: state.NewBase()},
+					Context: &plugin.Context{Base: event.NewBase()},
 					Raw:     c.raw,
 					Kind:    plugin.KindArg,
 				}

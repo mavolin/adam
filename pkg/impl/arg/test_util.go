@@ -3,7 +3,7 @@ package arg
 import (
 	"strconv"
 
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"

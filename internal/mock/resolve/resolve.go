@@ -1,8 +1,8 @@
 package resolve
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
 
 	"github.com/mavolin/adam/internal/resolved"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -13,7 +13,7 @@ import (
 func Command(sourceName string, cmd plugin.Command) plugin.ResolvedCommand {
 	r := resolved.NewPluginResolver(nil)
 	r.AddSource(sourceName,
-		func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+		func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return []plugin.Command{cmd}, nil, nil
 		})
 
@@ -25,7 +25,7 @@ func Command(sourceName string, cmd plugin.Command) plugin.ResolvedCommand {
 func Module(sourceName string, mod plugin.Module) plugin.ResolvedModule {
 	r := resolved.NewPluginResolver(nil)
 	r.AddSource(sourceName,
-		func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+		func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return nil, []plugin.Module{mod}, nil
 		})
 

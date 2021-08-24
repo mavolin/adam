@@ -1,14 +1,14 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v3/discord"
 
 	"github.com/mavolin/adam/_examples/localized_bot/plugins/mod"
 	"github.com/mavolin/adam/_examples/localized_bot/plugins/ping"
@@ -28,8 +28,6 @@ func main() {
 		SettingsProvider: bot.NewStaticSettingsProvider(parsePrefixes()...),
 		Owners:           parseOwners(),
 		EditAge:          45 * time.Second,
-		Status:           gateway.OnlineStatus,
-		ActivityType:     discord.GameActivity,
 		ActivityName:     "with the adam 🤖 framework",
 	})
 	if err != nil {
@@ -40,7 +38,7 @@ func main() {
 
 	log.Println("starting up")
 
-	if err = b.Open(); err != nil {
+	if err = b.Open(context.Background()); err != nil {
 		log.Fatal(err)
 	}
 

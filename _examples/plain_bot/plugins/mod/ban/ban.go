@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/impl/arg"
@@ -78,10 +78,8 @@ func (b *Ban) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
 	}
 
 	banData := api.BanData{
-		DeleteDays: option.NewUint(uint(ctx.Flags.Int("days"))),
-	}
-	if reason := ctx.Args.String(1); len(reason) > 0 {
-		banData.Reason = option.NewString(reason)
+		DeleteDays:     option.NewUint(uint(ctx.Flags.Int("days"))),
+		AuditLogReason: api.AuditLogReason(ctx.Args.String(1)),
 	}
 
 	if err := s.Ban(ctx.GuildID, m.User.ID, banData); err != nil {

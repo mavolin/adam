@@ -3,17 +3,16 @@ package plugin
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_WrappedReplier_Reply(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	r := NewWrappedReplier(s, 123, 456)
 
@@ -36,7 +35,6 @@ func Test_WrappedReplier_Reply(t *testing.T) {
 func Test_wrappedReplier_ReplyDM(t *testing.T) {
 	t.Run("unknown dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		r := NewWrappedReplier(s, 123, 456)
 
@@ -64,7 +62,6 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 
 	t.Run("known dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		r := NewWrappedReplier(s, 123, 456)
 		r.dmID = 789
@@ -88,7 +85,6 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 
 func Test_wrappedReplier_Edit(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	r := NewWrappedReplier(s, 123, 456)
 
@@ -111,7 +107,6 @@ func Test_wrappedReplier_Edit(t *testing.T) {
 func Test_wrappedReplier_EditDM(t *testing.T) {
 	t.Run("unknown dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		r := NewWrappedReplier(s, 123, 456)
 
@@ -139,7 +134,6 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 
 	t.Run("known dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		r := NewWrappedReplier(s, 123, 456)
 		r.dmID = 789

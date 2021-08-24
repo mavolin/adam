@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
-	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v3/api"
 
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/errors"
@@ -343,20 +343,20 @@ func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err erro
 			_, err = ctx.Reply(reply)
 		}
 	case discord.Embed:
-		_, err = ctx.ReplyEmbed(reply)
+		_, err = ctx.ReplyEmbeds(reply)
 		if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
 			err = nil
 		}
 	case *discord.Embed:
 		if reply != nil {
-			_, err = ctx.ReplyEmbed(*reply)
+			_, err = ctx.ReplyEmbeds(*reply)
 			if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
 				err = nil
 			}
 		}
 	case *embedutil.Builder:
 		if reply != nil {
-			_, err = ctx.ReplyEmbedBuilder(reply)
+			_, err = ctx.ReplyEmbedBuilders(reply)
 			if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
 				err = nil
 			}

@@ -1,6 +1,6 @@
 package discorderr
 
-import "github.com/diamondburned/arikawa/v2/utils/httputil"
+import "github.com/diamondburned/arikawa/v3/utils/httputil"
 
 var (
 	UnknownResource = []httputil.ErrorCode{

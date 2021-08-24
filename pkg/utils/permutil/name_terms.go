@@ -1,7 +1,7 @@
 package permutil
 
 import (
-	. "github.com/diamondburned/arikawa/v2/discord" //nolint:revive // make this file readable
+	. "github.com/diamondburned/arikawa/v3/discord" //nolint:revive // make this file readable
 
 	. "github.com/mavolin/adam/pkg/i18n" //nolint:revive // make this file readable
 )
@@ -38,5 +38,12 @@ var permissionConfigs = map[Permissions]*Config{
 	PermissionManageNicknames: NewFallbackConfig("permission.manage_nicknames", "Manage Nicknames"),
 	PermissionManageRoles:     NewFallbackConfig("permission.manage_roles", "Manage Roles"),
 	PermissionManageWebhooks:  NewFallbackConfig("permission.manage_webhooks", "Manage Webhooks"),
-	PermissionManageEmojis:    NewFallbackConfig("permission.manage_emojis", "Manage Emojis"),
+	PermissionManageEmojisAndStickers: NewFallbackConfig("permission.manage_emojis_and_stickers",
+		"Manage Emojis and Stickers"),
+	PermissionUseSlashCommands:    NewFallbackConfig("permission.use_slash_commands", "Use Slash Commands"),
+	PermissionRequestToSpeak:      NewFallbackConfig("permission.request_to_speak", "Request to Speak"),
+	PermissionManageThreads:       NewFallbackConfig("permission.manage_threads", "Manage Threads"),
+	PermissionUsePublicThreads:    NewFallbackConfig("permission.use_public_threads", "Use Public Threads"),
+	PermissionUsePrivateThreads:   NewFallbackConfig("permission.use_private_threads", "Use Private Threads"),
+	PermissionUseExternalStickers: NewFallbackConfig("permission.use_external_stickers", "Use External Stickers"),
 }

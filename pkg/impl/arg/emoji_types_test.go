@@ -5,8 +5,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -49,7 +49,6 @@ func TestEmoji_Parse(t *testing.T) {
 		for _, c := range apiSuccessCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
-				defer m.Eval()
 
 				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{
@@ -222,23 +221,19 @@ func TestEmoji_Parse(t *testing.T) {
 
 				expect := newArgumentError(c.expectArg, ctx, nil)
 
-				m, s := state.CloneMocker(srcMocker, t)
+				_, s := state.CloneMocker(srcMocker, t)
 
 				_, actual := Emoji.Parse(s, ctx)
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 
 				ctx.Kind = plugin.KindFlag
 
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
-				m, s = state.CloneMocker(srcMocker, t)
+				_, s = state.CloneMocker(srcMocker, t)
 
 				_, actual = Emoji.Parse(s, ctx)
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})

@@ -3,7 +3,7 @@ package embedutil
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/stretchr/testify/assert"
 )
 

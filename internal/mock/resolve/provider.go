@@ -3,8 +3,8 @@ package resolve
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
 
 	"github.com/mavolin/adam/internal/resolved"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -53,7 +53,7 @@ func (p *Provider) lazyInit() {
 			}
 		} else {
 			r.AddSource(source.Name,
-				func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+				func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 					return source.Commands, source.Modules, nil
 				})
 		}
@@ -62,7 +62,7 @@ func (p *Provider) lazyInit() {
 	for _, usrc := range p.UnavailableSources {
 		unavailableSource := usrc
 		r.AddSource(unavailableSource.Name,
-			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, nil, unavailableSource.Error
 			})
 	}

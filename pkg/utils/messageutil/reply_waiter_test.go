@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -20,11 +21,10 @@ import (
 
 func TestWaiter_Await(t *testing.T) {
 	t.Run("initial timeout", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-		defer m.Eval()
+		_, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
-			Base: state.NewBase(),
+			Base: event.NewBase(),
 			Message: discord.Message{
 				ChannelID: 123,
 				GuildID:   456,
@@ -60,17 +60,17 @@ func TestWaiter_handleMessages(t *testing.T) {
 	testCases := []struct {
 		name   string
 		waiter *ReplyWaiter
-		e      *state.MessageCreateEvent
+		e      *event.MessageCreate
 		expect interface{}
 	}{
 		{
 			name: "middleware block",
-			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
-				WithMiddlewares(func(*state.State, *state.MessageCreateEvent) error {
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: event.NewBase()}).
+				WithMiddlewares(func(*state.State, *event.MessageCreate) error {
 					return testError
 				}),
-			e: &state.MessageCreateEvent{
-				Base:               state.NewBase(),
+			e: &event.MessageCreate{
+				Base:               event.NewBase(),
 				MessageCreateEvent: new(gateway.MessageCreateEvent),
 			},
 			expect: nil,
@@ -78,11 +78,11 @@ func TestWaiter_handleMessages(t *testing.T) {
 		{
 			name: "channel not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
-				Base:    state.NewBase(),
+				Base:    event.NewBase(),
 				Message: discord.Message{ChannelID: 123},
 			}),
-			e: &state.MessageCreateEvent{
-				Base: state.NewBase(),
+			e: &event.MessageCreate{
+				Base: event.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
 					Message: discord.Message{ChannelID: 321},
 				},
@@ -92,13 +92,13 @@ func TestWaiter_handleMessages(t *testing.T) {
 		{
 			name: "author not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
-				Base: state.NewBase(),
+				Base: event.NewBase(),
 				Message: discord.Message{
 					Author: discord.User{ID: 123},
 				},
 			}),
-			e: &state.MessageCreateEvent{
-				Base: state.NewBase(),
+			e: &event.MessageCreate{
+				Base: event.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
 					Message: discord.Message{Author: discord.User{ID: 321}},
 				},
@@ -107,11 +107,11 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "canceled - case sensitive",
-			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: event.NewBase()}).
 				WithCancelKeywords("aBc").
 				CaseSensitive(),
-			e: &state.MessageCreateEvent{
-				Base: state.NewBase(),
+			e: &event.MessageCreate{
+				Base: event.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
 					Message: discord.Message{Content: "aBc"},
 				},
@@ -120,11 +120,11 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "not canceled - case sensitive",
-			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: event.NewBase()}).
 				WithCancelKeywords("aBc").
 				CaseSensitive(),
-			e: &state.MessageCreateEvent{
-				Base: state.NewBase(),
+			e: &event.MessageCreate{
+				Base: event.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
 					Message: discord.Message{Content: "AbC"},
 				},
@@ -133,10 +133,10 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name: "canceled - case insensitive",
-			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}).
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: event.NewBase()}).
 				WithCancelKeywords("aBc"),
-			e: &state.MessageCreateEvent{
-				Base: state.NewBase(),
+			e: &event.MessageCreate{
+				Base: event.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
 					Message: discord.Message{Content: "AbC"},
 				},
@@ -145,9 +145,9 @@ func TestWaiter_handleMessages(t *testing.T) {
 		},
 		{
 			name:   "success",
-			waiter: NewReplyWaiter(nil, &plugin.Context{Base: state.NewBase()}),
-			e: &state.MessageCreateEvent{
-				Base: state.NewBase(),
+			waiter: NewReplyWaiter(nil, &plugin.Context{Base: event.NewBase()}),
+			e: &event.MessageCreate{
+				Base: event.NewBase(),
 				MessageCreateEvent: &gateway.MessageCreateEvent{
 					Message: discord.Message{Content: "abc"},
 				},
@@ -158,8 +158,7 @@ func TestWaiter_handleMessages(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			m, s := state.NewMocker(t)
-			defer m.Eval()
+			_, s := state.NewMocker(t)
 
 			c.waiter.state = s
 			c.waiter.ctx = &plugin.Context{
@@ -199,17 +198,17 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 	testCases := []struct {
 		name   string
 		waiter *ReplyWaiter
-		e      *state.MessageReactionAddEvent
+		e      *event.MessageReactionAdd
 		expect interface{}
 	}{
 		{
 			name: "message id not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
-				Base:    state.NewBase(),
+				Base:    event.NewBase(),
 				Message: discord.Message{ChannelID: 456},
 			}),
-			e: &state.MessageReactionAddEvent{
-				Base: state.NewBase(),
+			e: &event.MessageReactionAdd{
+				Base: event.NewBase(),
 				MessageReactionAddEvent: &gateway.MessageReactionAddEvent{
 					MessageID: 321,
 				},
@@ -219,11 +218,11 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		{
 			name: "emoji not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
-				Base:    state.NewBase(),
+				Base:    event.NewBase(),
 				Message: discord.Message{ChannelID: 456},
 			}),
-			e: &state.MessageReactionAddEvent{
-				Base: state.NewBase(),
+			e: &event.MessageReactionAdd{
+				Base: event.NewBase(),
 				MessageReactionAddEvent: &gateway.MessageReactionAddEvent{
 					MessageID: 123,
 					Emoji:     discord.Emoji{Name: "🍑"},
@@ -234,14 +233,14 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		{
 			name: "user id not matching",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
-				Base: state.NewBase(),
+				Base: event.NewBase(),
 				Message: discord.Message{
 					ChannelID: 456,
 					Author:    discord.User{ID: 789},
 				},
 			}),
-			e: &state.MessageReactionAddEvent{
-				Base: state.NewBase(),
+			e: &event.MessageReactionAdd{
+				Base: event.NewBase(),
 				MessageReactionAddEvent: &gateway.MessageReactionAddEvent{
 					UserID: 987,
 				},
@@ -251,14 +250,14 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 		{
 			name: "success",
 			waiter: NewReplyWaiter(nil, &plugin.Context{
-				Base: state.NewBase(),
+				Base: event.NewBase(),
 				Message: discord.Message{
 					ChannelID: 456,
 					Author:    discord.User{ID: 789},
 				},
 			}),
-			e: &state.MessageReactionAddEvent{
-				Base: state.NewBase(),
+			e: &event.MessageReactionAdd{
+				Base: event.NewBase(),
 				MessageReactionAddEvent: &gateway.MessageReactionAddEvent{
 					MessageID: 123,
 					UserID:    789,
@@ -272,7 +271,6 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
 			m, s := state.NewMocker(t)
-			defer m.Eval()
 
 			c.waiter.state = s
 

@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/httputil"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/mavolin/disstate/v4/pkg/event"
 
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/discorderr"
 	"github.com/mavolin/adam/pkg/utils/embedutil"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
@@ -26,9 +24,9 @@ type Context struct {
 	// direct message.
 	*discord.Member
 
-	// Base is the *state.Base of the MessageCreateEvent or MessageUpdateEvent
+	// Base is the *event.Base of the MessageCreateEvent or MessageUpdateEvent
 	// that triggered the invoke.
-	*state.Base
+	*event.Base
 
 	// Localizer is the localizer set to the guild's or user's language.
 	*i18n.Localizer
@@ -146,39 +144,37 @@ func (ctx *Context) Replylt(term i18n.Term) (*discord.Message, error) {
 	return ctx.Replyl(term.AsConfig())
 }
 
-// ReplyEmbed replies with the passed discord.Embed in the channel the command
-// was originally sent in.
-func (ctx *Context) ReplyEmbed(e discord.Embed) (*discord.Message, error) {
-	return ctx.ReplyMessage(api.SendMessageData{Embed: &e})
+// ReplyEmbeds replies with the passed discord.Embeds in the channel the
+// command was originally sent in.
+func (ctx *Context) ReplyEmbeds(embeds ...discord.Embed) (*discord.Message, error) {
+	return ctx.ReplyMessage(api.SendMessageData{Embeds: embeds})
 }
 
-// ReplyEmbedBuilder builds the discord.Embed from the passed
-// *embedutil.Builder and sends it in the channel the command was sent in.
-func (ctx *Context) ReplyEmbedBuilder(e *embedutil.Builder) (*discord.Message, error) {
-	embed, err := e.Build(ctx.Localizer)
-	if err != nil {
-		return nil, err
+// ReplyEmbedBuilders builds the discord.Embeds from the passed
+// *embedutil.Builders and sends it in the channel the command was sent in.
+func (ctx *Context) ReplyEmbedBuilders(builders ...*embedutil.Builder) (*discord.Message, error) {
+	embeds := make([]discord.Embed, len(builders))
+
+	for i, builder := range builders {
+		embed, err := builder.Build(ctx.Localizer)
+		if err != nil {
+			return nil, err
+		}
+
+		embeds[i] = embed
 	}
 
-	return ctx.ReplyEmbed(embed)
+	return ctx.ReplyEmbeds(embeds...)
 }
 
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
 // was originally sent in.
 func (ctx *Context) ReplyMessage(data api.SendMessageData) (*discord.Message, error) {
-	if len(data.Content) > 0 || (data.Embed != nil && !embedEmpty(*data.Embed)) ||
-		len(data.Files) > 0 {
-		return ctx.Replier.Reply(ctx, data)
-	}
-
-	return nil, &httputil.HTTPError{
-		Code:    discorderr.CannotSendEmptyMessage,
-		Message: "cannot send empty message",
-	}
+	return ctx.Replier.Reply(ctx, data)
 }
 
-// ReplyDM replies with the passed message in in a direct message to the
-// invoking user.
+// ReplyDM replies with the passed message in a direct message to the invoking
+// user.
 // The message will be formatted as fmt.Sprint(content...).
 func (ctx *Context) ReplyDM(content ...interface{}) (*discord.Message, error) {
 	return ctx.ReplyMessageDM(api.SendMessageData{Content: fmt.Sprint(content...)})
@@ -208,35 +204,33 @@ func (ctx *Context) ReplyltDM(term i18n.Term) (*discord.Message, error) {
 	return ctx.ReplylDM(term.AsConfig())
 }
 
-// ReplyEmbedDM replies with the passed discord.Embed in a direct message
+// ReplyEmbedsDM replies with the passed discord.Embeds in a direct message
 // to the invoking user.
-func (ctx *Context) ReplyEmbedDM(e discord.Embed) (*discord.Message, error) {
-	return ctx.ReplyMessageDM(api.SendMessageData{Embed: &e})
+func (ctx *Context) ReplyEmbedsDM(embeds ...discord.Embed) (*discord.Message, error) {
+	return ctx.ReplyMessageDM(api.SendMessageData{Embeds: embeds})
 }
 
-// ReplyEmbedBuilderDM builds the discord.Embed from the passed
-// *embedutil.Builder and sends it in a direct message to the invoking user.
-func (ctx *Context) ReplyEmbedBuilderDM(e *embedutil.Builder) (*discord.Message, error) {
-	embed, err := e.Build(ctx.Localizer)
-	if err != nil {
-		return nil, err
+// ReplyEmbedBuildersDM builds the discord.Embeds from the passed
+// *embedutil.Builders and sends it in a direct message to the invoking user.
+func (ctx *Context) ReplyEmbedBuildersDM(builders ...*embedutil.Builder) (*discord.Message, error) {
+	embeds := make([]discord.Embed, len(builders))
+
+	for i, builder := range builders {
+		embed, err := builder.Build(ctx.Localizer)
+		if err != nil {
+			return nil, err
+		}
+
+		embeds[i] = embed
 	}
 
-	return ctx.ReplyEmbedDM(embed)
+	return ctx.ReplyEmbedsDM(embeds...)
 }
 
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
 // the invoking user.
 func (ctx *Context) ReplyMessageDM(data api.SendMessageData) (msg *discord.Message, err error) {
-	if len(data.Content) > 0 || (data.Embed != nil && !embedEmpty(*data.Embed)) ||
-		len(data.Files) > 0 {
-		return ctx.Replier.ReplyDM(ctx, data)
-	}
-
-	return nil, &httputil.HTTPError{
-		Code:    discorderr.CannotSendEmptyMessage,
-		Message: "cannot send empty message",
-	}
+	return ctx.Replier.ReplyDM(ctx, data)
 }
 
 // Edit edits the message with the passed id in the invoking channel.
@@ -270,22 +264,30 @@ func (ctx *Context) Editlt(messageID discord.MessageID, term i18n.Term) (*discor
 	return ctx.Editl(messageID, term.AsConfig())
 }
 
-// EditEmbed replaces the embed of the message with the passed id in the
+// EditEmbeds replaces the embeds of the message with the passed id in the
 // invoking channel.
-func (ctx *Context) EditEmbed(messageID discord.MessageID, e discord.Embed) (*discord.Message, error) {
-	return ctx.EditMessage(messageID, api.EditMessageData{Embed: &e})
+func (ctx *Context) EditEmbeds(messageID discord.MessageID, embeds ...discord.Embed) (*discord.Message, error) {
+	return ctx.EditMessage(messageID, api.EditMessageData{Embeds: &embeds})
 }
 
-// EditEmbedBuilder builds the discord.Embed from the passed
-// *embedutil.Builder, and replaces the embed of the message with the passed
+// EditEmbedBuilders builds the discord.Embeds from the passed
+// *embedutil.Builders, and replaces the embeds of the message with the passed
 // id in the invoking channel.
-func (ctx *Context) EditEmbedBuilder(messageID discord.MessageID, e *embedutil.Builder) (*discord.Message, error) {
-	embed, err := e.Build(ctx.Localizer)
-	if err != nil {
-		return nil, err
+func (ctx *Context) EditEmbedBuilders(
+	messageID discord.MessageID, builders ...*embedutil.Builder,
+) (*discord.Message, error) {
+	embeds := make([]discord.Embed, len(builders))
+
+	for i, builder := range builders {
+		embed, err := builder.Build(ctx.Localizer)
+		if err != nil {
+			return nil, err
+		}
+
+		embeds[i] = embed
 	}
 
-	return ctx.EditEmbed(messageID, embed)
+	return ctx.EditEmbeds(messageID, embeds...)
 }
 
 // EditMessage sends the passed api.EditMessageData to the channel the command
@@ -330,22 +332,30 @@ func (ctx *Context) EditltDM(messageID discord.MessageID, term i18n.Term) (*disc
 	return ctx.EditlDM(messageID, term.AsConfig())
 }
 
-// EditEmbedDM replaces the embed of the message with the passed id in the
+// EditEmbedsDM replaces the embeds of the message with the passed id in the
 // invoking channel.
-func (ctx *Context) EditEmbedDM(messageID discord.MessageID, e discord.Embed) (*discord.Message, error) {
-	return ctx.EditMessageDM(messageID, api.EditMessageData{Embed: &e})
+func (ctx *Context) EditEmbedsDM(messageID discord.MessageID, embeds ...discord.Embed) (*discord.Message, error) {
+	return ctx.EditMessageDM(messageID, api.EditMessageData{Embeds: &embeds})
 }
 
-// EditEmbedBuilderDM builds the discord.Embed from the passed
-// *embedutil.Builder, and replaces the embed of the message with the passed
+// EditEmbedBuildersDM builds the discord.Embeds from the passed
+// *embedutil.Builders, and replaces the embeds of the message with the passed
 // id in the direct message channel with the invoking user.
-func (ctx *Context) EditEmbedBuilderDM(messageID discord.MessageID, e *embedutil.Builder) (*discord.Message, error) {
-	embed, err := e.Build(ctx.Localizer)
-	if err != nil {
-		return nil, err
+func (ctx *Context) EditEmbedBuildersDM(
+	messageID discord.MessageID, builders ...*embedutil.Builder,
+) (*discord.Message, error) {
+	embeds := make([]discord.Embed, len(builders))
+
+	for i, builder := range builders {
+		embed, err := builder.Build(ctx.Localizer)
+		if err != nil {
+			return nil, err
+		}
+
+		embeds[i] = embed
 	}
 
-	return ctx.EditEmbedDM(messageID, embed)
+	return ctx.EditEmbedsDM(messageID, embeds...)
 }
 
 // EditMessageDM sends the passed api.EditMessageData to the direct message

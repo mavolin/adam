@@ -4,8 +4,8 @@ package kick
 import (
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/impl/arg"
@@ -53,7 +53,7 @@ func (k *Kick) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) 
 		return nil, errors.NewUserErrorl(selfKickError)
 	}
 
-	if err := s.Kick(ctx.GuildID, m.User.ID); err != nil {
+	if err := s.Kick(ctx.GuildID, m.User.ID, ""); err != nil {
 		return nil, err
 	}
 

@@ -3,10 +3,10 @@ package replier
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -16,7 +16,6 @@ import (
 
 func TestTracker_GuildMessages(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &plugin.Context{
 		Message: discord.Message{
@@ -59,7 +58,6 @@ func TestTracker_GuildMessages(t *testing.T) {
 
 func TestTracker_DMs(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &plugin.Context{
 		Message: discord.Message{Author: discord.User{ID: 123}},
@@ -102,7 +100,6 @@ func TestTracker_DMs(t *testing.T) {
 
 func TestTracker_EditedGuildMessages(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &plugin.Context{
 		Message: discord.Message{
@@ -145,7 +142,6 @@ func TestTracker_EditedGuildMessages(t *testing.T) {
 
 func TestTracker_EditedDMs(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &plugin.Context{
 		Message: discord.Message{Author: discord.User{ID: 123}},
@@ -295,7 +291,6 @@ func TestTracker_ReplyMessage(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
 			m, s := state.NewMocker(t)
-			defer m.Eval()
 
 			r := NewTracker(s, c.inlineReply)
 
@@ -311,7 +306,6 @@ func TestTracker_ReplyMessage(t *testing.T) {
 func TestTracker_ReplyDM(t *testing.T) {
 	t.Run("unknown dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		ctx := &plugin.Context{
 			Message: discord.Message{Author: discord.User{ID: 123}},
@@ -352,7 +346,6 @@ func TestTracker_ReplyDM(t *testing.T) {
 
 	t.Run("known dm id", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		ctx := &plugin.Context{
 			Message: discord.Message{

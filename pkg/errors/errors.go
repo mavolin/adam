@@ -8,7 +8,7 @@ package errors
 import (
 	"errors"
 
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )

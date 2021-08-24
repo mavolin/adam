@@ -1,8 +1,9 @@
 package bot
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/impl/replier"
@@ -16,7 +17,7 @@ var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
 // Route attempts to route the passed message.
 // It aborts if the message is not a valid invoke.
 //nolint:funlen
-func (b *Bot) Route(base *state.Base, msg *discord.Message, member *discord.Member) {
+func (b *Bot) Route(base *event.Base, msg *discord.Message, member *discord.Member) {
 	// discard the message if THIS bot wrote it, even if b.AllowBot
 	if msg.Author.ID == b.selfID {
 		return

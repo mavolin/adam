@@ -2,7 +2,7 @@
 // permissions.
 package permutil
 
-import "github.com/diamondburned/arikawa/v2/discord"
+import "github.com/diamondburned/arikawa/v3/discord"
 
 // DMPermissions are the permissions that are granted in a private channel.
 var DMPermissions = discord.PermissionAddReactions | discord.PermissionViewChannel | discord.PermissionSendMessages |

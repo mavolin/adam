@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/stretchr/testify/assert"
 
 	mockplugin "github.com/mavolin/adam/internal/mock/plugin"
@@ -16,7 +16,7 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
-			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return []plugin.Command{mockplugin.Command{Name: "def"}}, []plugin.Module{mockplugin.Module{Name: "ghi"}}, nil
 			})
 
@@ -90,7 +90,7 @@ func TestPluginProvider_Commands(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
-			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return []plugin.Command{
 					mockplugin.Command{
 						Name:         "def",
@@ -381,7 +381,7 @@ func TestPluginProvider_Modules(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
-			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, []plugin.Module{
 					mockplugin.Module{
 						Name: "ghi",
@@ -2049,7 +2049,7 @@ func TestPluginProvider_UnavailablePluginSources(t *testing.T) {
 	t.Run("not loaded", func(t *testing.T) {
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
-			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, nil, errors.New("abc")
 			})
 

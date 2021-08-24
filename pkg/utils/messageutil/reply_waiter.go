@@ -5,8 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -83,8 +84,8 @@ type (
 //
 //	• func(*state.State, interface{})
 //  • func(*state.State, interface{}) error
-//  • func(*state.State, *state.Base)
-//  • func(*state.State, *state.Base) error
+//  • func(*state.State, *event.Base)
+//  • func(*state.State, *event.Base) error
 //  • func(*state.State, *state.MessageCreateEvent)
 //  • func(*state.State, *state.MessageCreateEvent) error
 //
@@ -155,8 +156,8 @@ func (w *ReplyWaiter) NoAutoReact() *ReplyWaiter {
 // The following types are permitted:
 // 	• func(*state.State, interface{})
 //	• func(*state.State, interface{}) error
-//	• func(*state.State, *state.Base)
-//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *event.Base)
+//	• func(*state.State, *event.Base) error
 //	• func(*state.State, *state.MessageCreateEvent)
 //	• func(*state.State, *state.MessageCreateEvent) error
 func (w *ReplyWaiter) WithMiddlewares(middlewares ...interface{}) *ReplyWaiter {
@@ -168,10 +169,10 @@ func (w *ReplyWaiter) WithMiddlewares(middlewares ...interface{}) *ReplyWaiter {
 		switch m.(type) { // check that the middleware is of a valid type
 		case func(*state.State, interface{}):
 		case func(*state.State, interface{}) error:
-		case func(*state.State, *state.Base):
-		case func(*state.State, *state.Base) error:
-		case func(*state.State, *state.MessageCreateEvent):
-		case func(*state.State, *state.MessageCreateEvent) error:
+		case func(*state.State, *event.Base):
+		case func(*state.State, *event.Base) error:
+		case func(*state.State, *event.MessageCreate):
+		case func(*state.State, *event.MessageCreate) error:
 		default:
 			continue
 		}
@@ -318,7 +319,7 @@ func (w *ReplyWaiter) AwaitContext(
 }
 
 func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interface{}) func() {
-	rm := w.state.MustAddHandler(func(s *state.State, e *state.MessageCreateEvent) {
+	rm := w.state.AddHandler(func(s *state.State, e *event.MessageCreate) {
 		if e.ChannelID != w.channelID || e.Author.ID != w.userID { // not the message we are waiting for
 			return
 		}
@@ -349,7 +350,7 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 }
 
 func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) func() {
-	rm := w.state.MustAddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
+	rm := w.state.AddHandler(func(s *state.State, e *event.MessageReactionAdd) {
 		if e.UserID != w.userID {
 			return
 		}
@@ -403,7 +404,7 @@ func (w *ReplyWaiter) watchTimeout(
 
 	t := time.NewTimer(initialTimeout)
 
-	rm := w.state.MustAddHandler(func(s *state.State, e *state.TypingStartEvent) {
+	rm := w.state.AddHandler(func(s *state.State, e *event.TypingStart) {
 		if e.ChannelID != w.channelID || e.UserID != w.userID {
 			return
 		}

@@ -3,11 +3,12 @@ package messageutil
 import (
 	"context"
 
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 )
 
 //nolint:dupl
-func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middlewares []interface{}) error {
+func invokeMessageMiddlewares(s *state.State, e *event.MessageCreate, middlewares []interface{}) error {
 	for _, m := range middlewares {
 		switch m := m.(type) {
 		case func(*state.State, interface{}):
@@ -16,15 +17,15 @@ func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middl
 			if err := m(s, e); err != nil {
 				return err
 			}
-		case func(*state.State, *state.Base):
+		case func(*state.State, *event.Base):
 			m(s, e.Base)
-		case func(*state.State, *state.Base) error:
+		case func(*state.State, *event.Base) error:
 			if err := m(s, e.Base); err != nil {
 				return err
 			}
-		case func(*state.State, *state.MessageCreateEvent):
+		case func(*state.State, *event.MessageCreate):
 			m(s, e)
-		case func(*state.State, *state.MessageCreateEvent) error:
+		case func(*state.State, *event.MessageCreate) error:
 			if err := m(s, e); err != nil {
 				return err
 			}
@@ -35,7 +36,7 @@ func invokeMessageMiddlewares(s *state.State, e *state.MessageCreateEvent, middl
 }
 
 //nolint:dupl
-func invokeReactionAddMiddlewares(s *state.State, e *state.MessageReactionAddEvent, middlewares []interface{}) error {
+func invokeReactionAddMiddlewares(s *state.State, e *event.MessageReactionAdd, middlewares []interface{}) error {
 	for _, m := range middlewares {
 		switch m := m.(type) {
 		case func(*state.State, interface{}):
@@ -44,15 +45,15 @@ func invokeReactionAddMiddlewares(s *state.State, e *state.MessageReactionAddEve
 			if err := m(s, e); err != nil {
 				return err
 			}
-		case func(*state.State, *state.Base):
+		case func(*state.State, *event.Base):
 			m(s, e.Base)
-		case func(*state.State, *state.Base) error:
+		case func(*state.State, *event.Base) error:
 			if err := m(s, e.Base); err != nil {
 				return err
 			}
-		case func(*state.State, *state.MessageReactionAddEvent):
+		case func(*state.State, *event.MessageReactionAdd):
 			m(s, e)
-		case func(*state.State, *state.MessageReactionAddEvent) error:
+		case func(*state.State, *event.MessageReactionAdd) error:
 			if err := m(s, e); err != nil {
 				return err
 			}

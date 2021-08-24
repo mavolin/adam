@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -52,7 +52,6 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 	var channelID discord.ChannelID = 123
 
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: channelID},
@@ -60,7 +59,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
-	m.SendEmbed(discord.Message{
+	m.SendEmbeds(discord.Message{
 		ChannelID: channelID,
 		Embeds: []discord.Embed{
 			shared.ErrorEmbed.Clone().
@@ -80,7 +79,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 // =====================================================================================
 
 func TestNewInsufficientBotPermissionsError(t *testing.T) {
-	perms := discord.PermissionViewChannel | discord.PermissionManageEmojis
+	perms := discord.PermissionViewChannel | discord.PermissionManageEmojisAndStickers
 
 	expect := &BotPermissionsError{Missing: perms}
 	actual := NewBotPermissionsError(perms)
@@ -116,7 +115,6 @@ func TestInsufficientBotPermissionsError_Is(t *testing.T) {
 func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 	t.Run("single permission", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		ctx := &Context{
 			Message:   discord.Message{ChannelID: 123},
@@ -131,7 +129,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 				})).
 			MustBuild(ctx.Localizer)
 
-		m.SendEmbed(discord.Message{
+		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
 			Embeds:    []discord.Embed{embed},
 		})
@@ -144,7 +142,6 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 
 	t.Run("multiple permissions", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		ctx := &Context{
 			Message:   discord.Message{ChannelID: 123},
@@ -157,7 +154,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 			WithField("Missing Permissions", "• Video\n• View Audit Log").
 			MustBuild(ctx.Localizer)
 
-		m.SendEmbed(discord.Message{
+		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
 			Embeds:    []discord.Embed{embed},
 		})
@@ -200,7 +197,6 @@ func TestInvalidChannelError_Is(t *testing.T) {
 
 func TestInvalidChannelTypeError_Handle(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -215,7 +211,7 @@ func TestInvalidChannelTypeError_Handle(t *testing.T) {
 		WithDescriptionl(channelTypeErrorGuild).
 		MustBuild(ctx.Localizer)
 
-	m.SendEmbed(discord.Message{
+	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
 		Embeds:    []discord.Embed{embed},
 	})
@@ -262,7 +258,6 @@ func TestRestrictionError_Handle(t *testing.T) {
 	expectDesc := "abc"
 
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
@@ -274,7 +269,7 @@ func TestRestrictionError_Handle(t *testing.T) {
 		WithDescription(expectDesc).
 		MustBuild(ctx.Localizer)
 
-	m.SendEmbed(discord.Message{
+	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
 		Embeds:    []discord.Embed{embed},
 	})
@@ -321,7 +316,6 @@ func TestThrottlingError_Handle(t *testing.T) {
 	expectDesc := "abc"
 
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
@@ -333,7 +327,7 @@ func TestThrottlingError_Handle(t *testing.T) {
 		WithDescription(expectDesc).
 		MustBuild(ctx.Localizer)
 
-	m.SendEmbed(discord.Message{
+	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
 		Embeds:    []discord.Embed{embed},
 	})

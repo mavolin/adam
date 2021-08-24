@@ -3,10 +3,10 @@ package bot
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/state/store"
-	"github.com/diamondburned/arikawa/v2/state/store/defaultstore"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/state/store"
+	"github.com/diamondburned/arikawa/v3/state/store/defaultstore"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -47,14 +47,13 @@ func TestCtxErrorHandler_HandleError(t *testing.T) {
 
 func TestDiscordDataProvider_GuildAsync(t *testing.T) {
 	t.Run("cached", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-		defer m.Eval()
+		_, s := state.NewMocker(t)
 
 		expect := &discord.Guild{ID: 123}
 
-		s.Cabinet = store.Cabinet{GuildStore: defaultstore.NewGuild()}
+		s.Cabinet = &store.Cabinet{GuildStore: defaultstore.NewGuild()}
 
-		err := s.Cabinet.GuildSet(*expect)
+		err := s.Cabinet.GuildSet(*expect, false)
 		require.NoError(t, err)
 
 		p := &discordDataProvider{
@@ -69,13 +68,13 @@ func TestDiscordDataProvider_GuildAsync(t *testing.T) {
 
 	t.Run("fetch", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		expect := &discord.Guild{
 			ID:                     123,
 			OwnerID:                1,
 			RulesChannelID:         1,
 			PublicUpdatesChannelID: 1,
+			AFKTimeout:             discord.NullSecond,
 		}
 
 		m.Guild(*expect)
@@ -93,14 +92,13 @@ func TestDiscordDataProvider_GuildAsync(t *testing.T) {
 
 func TestDiscordDataProvider_ChannelAsync(t *testing.T) {
 	t.Run("cached", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-		defer m.Eval()
+		_, s := state.NewMocker(t)
 
 		expect := &discord.Channel{ID: 123, GuildID: 456}
 
-		s.Cabinet = store.Cabinet{ChannelStore: defaultstore.NewChannel()}
+		s.Cabinet = &store.Cabinet{ChannelStore: defaultstore.NewChannel()}
 
-		err := s.Cabinet.ChannelSet(*expect)
+		err := s.Cabinet.ChannelSet(*expect, false)
 		require.NoError(t, err)
 
 		p := &discordDataProvider{
@@ -115,10 +113,10 @@ func TestDiscordDataProvider_ChannelAsync(t *testing.T) {
 
 	t.Run("fetch", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		expect := &discord.Channel{
-			ID: 123,
+			ID:               123,
+			VideoQualityMode: discord.AutoVideoQuality,
 		}
 
 		m.Channel(*expect)
@@ -136,8 +134,7 @@ func TestDiscordDataProvider_ChannelAsync(t *testing.T) {
 
 func TestDiscordDataProvider_MemberAsync(t *testing.T) {
 	t.Run("cached", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-		defer m.Eval()
+		_, s := state.NewMocker(t)
 
 		var guildID discord.GuildID = 123
 
@@ -145,9 +142,9 @@ func TestDiscordDataProvider_MemberAsync(t *testing.T) {
 			User: discord.User{ID: 456},
 		}
 
-		s.Cabinet = store.Cabinet{MemberStore: defaultstore.NewMember()}
+		s.Cabinet = &store.Cabinet{MemberStore: defaultstore.NewMember()}
 
-		err := s.Cabinet.MemberSet(guildID, *expect)
+		err := s.Cabinet.MemberSet(guildID, *expect, false)
 		require.NoError(t, err)
 
 		p := &discordDataProvider{
@@ -163,7 +160,6 @@ func TestDiscordDataProvider_MemberAsync(t *testing.T) {
 
 	t.Run("fetch", func(t *testing.T) {
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 

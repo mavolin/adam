@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/httputil"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/httputil"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -29,9 +29,10 @@ func TestTextChannel_Parse(t *testing.T) {
 			name: "mention",
 			raw:  "<#123>",
 			expect: &discord.Channel{
-				ID:      123,
-				GuildID: 456,
-				Type:    discord.GuildText,
+				ID:               123,
+				GuildID:          456,
+				Type:             discord.GuildText,
+				VideoQualityMode: discord.AutoVideoQuality,
 			},
 		},
 		{
@@ -39,9 +40,10 @@ func TestTextChannel_Parse(t *testing.T) {
 			raw:             "123",
 			allowChannelIDs: true,
 			expect: &discord.Channel{
-				ID:      123,
-				GuildID: 456,
-				Type:    discord.GuildText,
+				ID:               123,
+				GuildID:          456,
+				Type:             discord.GuildText,
+				VideoQualityMode: discord.AutoVideoQuality,
 			},
 		},
 	}
@@ -52,7 +54,6 @@ func TestTextChannel_Parse(t *testing.T) {
 				TextChannelAllowIDs = c.allowChannelIDs
 
 				m, s := state.NewMocker(t)
-				defer m.Eval()
 
 				ctx := &plugin.ParseContext{
 					Context: &plugin.Context{
@@ -209,7 +210,7 @@ func TestTextChannel_Parse(t *testing.T) {
 				TextChannelAllowIDs = c.allowIDs
 
 				srcMocker, _ := state.NewMocker(t)
-				srcMocker.Error(http.MethodGet, "/channels/123", httputil.HTTPError{
+				srcMocker.Error(http.MethodGet, "channels/123", httputil.HTTPError{
 					Status:  http.StatusNotFound,
 					Code:    10003,
 					Message: "Unknown channel",
@@ -223,22 +224,18 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				expect := newArgumentError(c.expectArg, ctx, nil)
 
-				m, s := state.CloneMocker(srcMocker, t)
+				_, s := state.CloneMocker(srcMocker, t)
 
 				_, actual := TextChannel.Parse(s, ctx)
 				assert.Equal(t, expect, actual)
 
-				m.Eval()
-
 				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
-				m, s = state.CloneMocker(srcMocker, t)
+				_, s = state.CloneMocker(srcMocker, t)
 
 				_, actual = TextChannel.Parse(s, ctx)
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 
@@ -257,22 +254,18 @@ func TestTextChannel_Parse(t *testing.T) {
 
 				expect := newArgumentError(c.expectArg, ctx, nil)
 
-				m, s := state.CloneMocker(srcMocker, t)
+				_, s := state.CloneMocker(srcMocker, t)
 
 				_, actual := TextChannel.Parse(s, ctx)
 				assert.Equal(t, expect, actual)
 
-				m.Eval()
-
 				ctx.Kind = plugin.KindFlag
 				expect = newArgumentError(c.expectFlag, ctx, nil)
 
-				m, s = state.CloneMocker(srcMocker, t)
+				_, s = state.CloneMocker(srcMocker, t)
 
 				_, actual = TextChannel.Parse(s, ctx)
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})

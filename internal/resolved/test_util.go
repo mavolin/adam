@@ -1,8 +1,8 @@
 package resolved
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -23,7 +23,7 @@ func newProviderFromSources(sources []plugin.Source) *PluginProvider {
 			}
 		} else {
 			r.AddSource(source.Name,
-				func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+				func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 					return source.Commands, source.Modules, nil
 				})
 		}

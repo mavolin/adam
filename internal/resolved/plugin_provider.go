@@ -3,8 +3,8 @@ package resolved
 import (
 	"sync"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
 
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -25,7 +25,7 @@ type (
 		Func PluginSourceFunc
 	}
 
-	PluginSourceFunc func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error)
+	PluginSourceFunc func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error)
 )
 
 func NewPluginResolver(defaultArgParser plugin.ArgParser) *PluginResolver {
@@ -63,7 +63,7 @@ func (r *PluginResolver) AddBuiltInModule(smod plugin.Module) {
 type PluginProvider struct {
 	resolver *PluginResolver
 
-	base *state.Base
+	base *event.Base
 	msg  *discord.Message
 
 	sources []plugin.Source
@@ -77,7 +77,7 @@ type PluginProvider struct {
 
 var _ plugin.Provider = new(PluginProvider)
 
-func (r *PluginResolver) NewProvider(base *state.Base, msg *discord.Message) *PluginProvider {
+func (r *PluginResolver) NewProvider(base *event.Base, msg *discord.Message) *PluginProvider {
 	p := &PluginProvider{
 		resolver:  r,
 		base:      base,

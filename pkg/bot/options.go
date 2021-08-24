@@ -6,13 +6,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/diamondburned/arikawa/v2/state/store"
-	"github.com/diamondburned/arikawa/v2/state/store/defaultstore"
-	"github.com/diamondburned/arikawa/v2/utils/wsutil"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state/store"
+	"github.com/diamondburned/arikawa/v3/utils/httputil"
 	"github.com/gorilla/websocket"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -23,7 +23,7 @@ import (
 // Options contains different configurations for a Bot.
 //nolint:maligned // only one-time use anyway, ordered by importance, we can take the (temporary) few bytes
 type Options struct {
-	// Token is the bot token without the 'Bot' prefix.
+	// Token is the bot token without the 'Bot ' prefix.
 	//
 	// This field is required.
 	Token string
@@ -49,7 +49,7 @@ type Options struct {
 	// Status is the status of the bot.
 	//
 	// Default: gateway.OnlineStatus
-	Status gateway.Status
+	Status discord.Status
 	// ActivityType is the type of activity.
 	// ActivityName must be set for this to take effect.
 	//
@@ -110,21 +110,8 @@ type Options struct {
 	// Use store.NoopCabinet to deactivate caching.
 	//
 	// Default: defaultstore.New()
-	Cabinet store.Cabinet
+	Cabinet *store.Cabinet
 
-	// Shard is the shard of the bot.
-	//
-	// Default: gateway.Shard[0, 1]
-	Shard gateway.Shard
-	// GatewayURL is the url of the gateway to use.
-	//
-	// Default: gateway.URL()
-	GatewayURL string
-	// GatewayTimeout is the timeout for connecting and writing to the gateway
-	// before failing and exiting.
-	//
-	// Default: wsutil.WSTimeout
-	GatewayTimeout time.Duration
 	// GatewayErrorHandler is the error handler of the gateway.
 	//
 	// Default: DefaultGatewayErrorHandler
@@ -133,14 +120,14 @@ type Options struct {
 	// StateErrorHandler is the error handler of the *state.State, called if an
 	// event handler returns with an error.
 	//
-	// Default: func(err error) { log.Println(err.String()) }
+	// Default: func(err error) { log.Println("event handler:", err.String()) }
 	StateErrorHandler func(error)
 	// StatePanicHandler is the panic handler of the *state.State, called if an
 	// event handler panics.
 	//
 	// Default:
 	// 	func(rec interface{}) {
-	// 		log.Printf("panic: %+v\n%s\n", rec)
+	// 		log.Printf("event handler: panic: %+v\n%s\n", rec)
 	//	}
 	StatePanicHandler func(recovered interface{})
 
@@ -154,6 +141,11 @@ type Options struct {
 	// Default: DefaultPanicHandler
 	PanicHandler func(recovered interface{}, s *state.State, ctx *plugin.Context)
 
+	// HTTPClient is the http client that will be used to make requests.
+	//
+	// Default: httputil.NewClient()
+	HTTPClient *httputil.Client
+
 	// MessageCreateMiddlewares are the middlewares invoked before routing the
 	// command, if the command was received through a message create event.
 	//
@@ -166,6 +158,63 @@ type Options struct {
 	// The signature of the middleware funcs must satisfy the requirements
 	// of state middlewares.
 	MessageUpdateMiddlewares []interface{}
+
+	// TotalShards is the total number of shards.
+	// If it is <= 0, the recommended number of shards will be used.
+	TotalShards int
+	// ShardIDs are the custom shard ids this Bot instance will use.
+	//
+	// If setting this, you also need to set TotalShards.
+	//
+	// Default: 0..TotalShards
+	ShardIDs []int
+
+	// Gateways are the initial gateways to use.
+	// It is an alternative to TotalShards and ShardIDs, and you shouldn't set
+	// both.
+	Gateways []*gateway.Gateway
+
+	// Rescale is the function called, if Discord closes any of the gateways
+	// with a 4011 close code aka. 'Sharding Required'.
+	//
+	// Usage
+	//
+	// To update the state's shard manager, you must call update.
+	// All zero-value options in the Options you give to update, will be set to
+	// the options you used when initially creating the state.
+	// This does not apply to TotalShards, ShardIDs, and Gateways, which will
+	// assume the defaults described in their respective documentation.
+	// Furthermore, setting ErrorHandler or PanicHandler will have no effect.
+	//
+	// After calling update, you should reopen the state, by calling Open.
+	// Alternatively, you can call open individually for State.Gateways().
+	// Note, however, that you should call Sate.Handler.Open(State.Events) once
+	// before calling Gateway.Open, should you choose to open individually.
+	//
+	// During update, the state's State field will be replaced, as well as the
+	// gateways and the rescale function. The event handler will remain
+	// untouched which is why you don't need to readd your handlers.
+	//
+	// Default
+	//
+	// If you set neither TotalShards nor Gateways, this will default to the
+	// below unless you define a custom Rescale function.
+	//
+	// 	func(update func(Options) *State) {
+	//		s, err := update(Options{})
+	//		if err != nil {
+	//			log.Println("could not update state during rescale:", err.Error())
+	//			return
+	//		}
+	//
+	//		err = s.Open(context.Background())
+	//		if err != nil {
+	//			log.Println("could not open state during rescale:", err.Error())
+	//		}
+	//	}
+	//
+	// Otherwise, you are required to set this function yourself.
+	Rescale func(update func(state.Options) (*state.State, error))
 
 	// NoDefaultMiddlewares, if true, prevents the default middlewares from
 	// being added on creation.
@@ -218,10 +267,6 @@ func (o *Options) SetDefaults() (err error) {
 		o.SettingsProvider = NewStaticSettingsProvider()
 	}
 
-	if len(o.Status) == 0 {
-		o.Status = gateway.OnlineStatus
-	}
-
 	if o.ArgParser == nil {
 		o.ArgParser = &arg.DelimiterParser{Delimiter: ','}
 	}
@@ -230,35 +275,17 @@ func (o *Options) SetDefaults() (err error) {
 		o.ThrottlerCancelChecker = DefaultThrottlerErrorCheck
 	}
 
-	o.setCabinetDefaults()
-
-	if o.Shard[1] == 0 {
-		o.Shard = gateway.Shard{0, 1}
-	}
-
-	if len(o.GatewayURL) == 0 {
-		o.GatewayURL, err = gateway.URL()
-		if err != nil {
-			return err
-		}
-	}
-
-	if o.GatewayTimeout <= 0 {
-		o.GatewayTimeout = wsutil.WSTimeout
-	}
-
 	if o.GatewayErrorHandler == nil {
 		o.GatewayErrorHandler = DefaultGatewayErrorHandler
 	}
 
 	if o.StateErrorHandler == nil {
-		o.StateErrorHandler = func(err error) { log.Println(err) }
+		o.StateErrorHandler = func(err error) { log.Println("event handler:", err.Error()) }
 	}
 
 	if o.StatePanicHandler == nil {
 		o.StatePanicHandler = func(rec interface{}) {
-			log.Printf("panic: %+v\n", rec)
-			debug.PrintStack()
+			log.Printf("event handler: panic: %+v\n%s\n", rec, debug.Stack())
 		}
 	}
 
@@ -273,48 +300,10 @@ func (o *Options) SetDefaults() (err error) {
 	return nil
 }
 
-func (o *Options) setCabinetDefaults() {
-	if o.Cabinet.MeStore == nil {
-		o.Cabinet.MeStore = defaultstore.NewMe()
-	}
-
-	if o.Cabinet.ChannelStore == nil {
-		o.Cabinet.ChannelStore = defaultstore.NewChannel()
-	}
-
-	if o.Cabinet.EmojiStore == nil {
-		o.Cabinet.EmojiStore = defaultstore.NewEmoji()
-	}
-
-	if o.Cabinet.GuildStore == nil {
-		o.Cabinet.GuildStore = defaultstore.NewGuild()
-	}
-
-	if o.Cabinet.MemberStore == nil {
-		o.Cabinet.MemberStore = defaultstore.NewMember()
-	}
-
-	if o.Cabinet.MessageStore == nil {
-		o.Cabinet.MessageStore = defaultstore.NewMessage(100)
-	}
-
-	if o.Cabinet.PresenceStore == nil {
-		o.Cabinet.PresenceStore = defaultstore.NewPresence()
-	}
-
-	if o.Cabinet.RoleStore == nil {
-		o.Cabinet.RoleStore = defaultstore.NewRole()
-	}
-
-	if o.Cabinet.VoiceStateStore == nil {
-		o.Cabinet.VoiceStateStore = defaultstore.NewVoiceState()
-	}
-}
-
 // SettingsProvider is the function used to retrieve the settings for the guild
 // or direct message.
 //
-// The passed *state.Base is the base of the event triggering settings check.
+// The passed *event.Base is the base of the event triggering settings check.
 // This will either stem from either message create event, or a message update
 // event, if Options.EditAge is greater than 0.
 //
@@ -368,13 +357,13 @@ func (o *Options) setCabinetDefaults() {
 //
 // For those reasons, error handling is left implementation-specific, and you
 // are responsible for ensuring that error are properly captured.
-type SettingsProvider func(b *state.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer, ok bool)
+type SettingsProvider func(b *event.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer, ok bool)
 
 // NewStaticSettingsProvider creates a new SettingsProvider that returns the
 // same prefixes for all guilds and users.
 // The returned localizer will always be a fallback localizer.
 func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
-	return func(*state.Base, *discord.Message) ([]string, *i18n.Localizer, bool) {
+	return func(*event.Base, *discord.Message) ([]string, *i18n.Localizer, bool) {
 		return prefixes, nil, true
 	}
 }

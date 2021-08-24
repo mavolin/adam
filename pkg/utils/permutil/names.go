@@ -4,7 +4,7 @@ import (
 	"math/bits"
 	"sort"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 
 	"github.com/mavolin/adam/pkg/i18n"
 )

@@ -3,8 +3,8 @@ package errors
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -610,8 +610,7 @@ func TestInternalError_Description(t *testing.T) {
 
 func TestInternalError_Handle(t *testing.T) {
 	t.Run("silent", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-		defer m.Eval()
+		_, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
 			Message: discord.Message{ChannelID: 123},
@@ -632,7 +631,6 @@ func TestInternalError_Handle(t *testing.T) {
 		expectDesc := "abc"
 
 		m, s := state.NewMocker(t)
-		defer m.Eval()
 
 		ctx := &plugin.Context{
 			Message: discord.Message{ChannelID: 123},
@@ -648,7 +646,7 @@ func TestInternalError_Handle(t *testing.T) {
 			WithDescription(expectDesc).
 			MustBuild(ctx.Localizer)
 
-		m.SendEmbed(discord.Message{
+		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
 			Embeds:    []discord.Embed{embed},
 		})

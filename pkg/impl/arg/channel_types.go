@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -314,13 +314,13 @@ func (c category) sendChooser(
 		return nil, err
 	}
 
-	msg, err := ctx.ReplyEmbedBuilder(chooser)
+	msg, err := ctx.ReplyEmbedBuilders(chooser)
 	if err != nil {
 		return nil, err
 	}
 
 	defer func() {
-		err := s.DeleteMessage(msg.ChannelID, msg.ID)
+		err := s.DeleteMessage(msg.ChannelID, msg.ID, "")
 		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 			ctx.HandleErrorSilently(err)
 		}
@@ -592,13 +592,13 @@ func (c voiceChannel) sendChooser(
 		return nil, err
 	}
 
-	msg, err := ctx.ReplyEmbedBuilder(chooser)
+	msg, err := ctx.ReplyEmbedBuilders(chooser)
 	if err != nil {
 		return nil, err
 	}
 
 	defer func() {
-		err := s.DeleteMessage(msg.ChannelID, msg.ID)
+		err := s.DeleteMessage(msg.ChannelID, msg.ID, "")
 		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
 			ctx.HandleErrorSilently(err)
 		}

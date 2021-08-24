@@ -3,9 +3,10 @@ package messageutil
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -15,8 +16,8 @@ import (
 func Test_invokeMiddlewares(t *testing.T) {
 	_, s := state.NewMocker(t)
 
-	e := &state.MessageCreateEvent{
-		Base: state.NewBase(),
+	e := &event.MessageCreate{
+		Base: event.NewBase(),
 		MessageCreateEvent: &gateway.MessageCreateEvent{
 			Message: discord.Message{Content: "abc"},
 		},
@@ -83,7 +84,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 	t.Run("state, base", func(t *testing.T) {
 		m := mock.Mock{}
 
-		middleware := func(s *state.State, e *state.Base) {
+		middleware := func(s *state.State, e *event.Base) {
 			m.Called(s, e)
 		}
 
@@ -99,7 +100,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 		t.Run("no error", func(t *testing.T) {
 			m := mock.Mock{}
 
-			middleware := func(s *state.State, b *state.Base) error {
+			middleware := func(s *state.State, b *event.Base) error {
 				return m.
 					Called(s, b).
 					Error(0)
@@ -118,7 +119,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 		t.Run("error", func(t *testing.T) {
 			m := mock.Mock{}
 
-			middleware := func(s *state.State, b *state.Base) error {
+			middleware := func(s *state.State, b *event.Base) error {
 				return m.
 					Called(s, b).
 					Error(0)
@@ -138,7 +139,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 	t.Run("state, message create event", func(t *testing.T) {
 		m := mock.Mock{}
 
-		middleware := func(s *state.State, e *state.MessageCreateEvent) {
+		middleware := func(s *state.State, e *event.MessageCreate) {
 			m.Called(s, e)
 		}
 
@@ -154,7 +155,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 		t.Run("no error", func(t *testing.T) {
 			m := mock.Mock{}
 
-			middleware := func(s *state.State, e *state.MessageCreateEvent) error {
+			middleware := func(s *state.State, e *event.MessageCreate) error {
 				return m.
 					Called(s, e).
 					Error(0)
@@ -173,7 +174,7 @@ func Test_invokeMiddlewares(t *testing.T) {
 		t.Run("error", func(t *testing.T) {
 			m := mock.Mock{}
 
-			middleware := func(s *state.State, e *state.MessageCreateEvent) error {
+			middleware := func(s *state.State, e *event.MessageCreate) error {
 				return m.
 					Called(s, e).
 					Error(0)

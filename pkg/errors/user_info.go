@@ -1,8 +1,8 @@
 package errors //nolint:dupl
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -223,6 +223,6 @@ func (i *UserInfo) Handle(s *state.State, ctx *plugin.Context) error {
 }
 
 var HandleUserInfo = func(info *UserInfo, s *state.State, ctx *plugin.Context) error {
-	_, err := ctx.ReplyEmbedBuilder(info.Embed)
+	_, err := ctx.ReplyEmbedBuilders(info.Embed)
 	return err
 }

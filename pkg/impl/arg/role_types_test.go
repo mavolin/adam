@@ -5,8 +5,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -43,7 +43,6 @@ func TestRole_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
-				defer m.Eval()
 
 				m.Roles(c.ctx.GuildID, []discord.Role{*c.expect})
 
@@ -89,22 +88,18 @@ func TestRole_Parse(t *testing.T) {
 
 			expect := newArgumentError(roleInvalidMentionErrorArg, ctx, nil)
 
-			m, s := state.CloneMocker(srcMocker, t)
+			_, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := Role.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
 
-			m.Eval()
-
 			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(roleInvalidMentionErrorFlag, ctx, nil)
 
-			m, s = state.CloneMocker(srcMocker, t)
+			_, s = state.CloneMocker(srcMocker, t)
 
 			_, actual = Role.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 
 		t.Run("not id", func(t *testing.T) {
@@ -121,7 +116,6 @@ func TestRole_Parse(t *testing.T) {
 
 		t.Run("role id not found", func(t *testing.T) {
 			m, s := state.NewMocker(t)
-			defer m.Eval()
 
 			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},

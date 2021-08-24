@@ -1,8 +1,9 @@
 package bot
 
 import (
-	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -44,8 +45,8 @@ type MiddlewareManager struct {
 // Valid middleware types are:
 //	• func(*state.State, interface{})
 //	• func(*state.State, interface{}) error
-//	• func(*state.State, *state.Base)
-//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *event.Base)
+//	• func(*state.State, *event.Base) error
 //	• func(*state.State, *state.MessageCreateEvent)
 //	• func(*state.State, *state.MessageCreateEvent) error
 //	• func(*state.State, *state.MessageUpdateEvent)
@@ -84,14 +85,14 @@ func (m *MiddlewareManager) TryAddMiddleware(f interface{}) error {
 				return next(s, ctx)
 			}
 		}
-	case func(*state.State, *state.Base):
+	case func(*state.State, *event.Base):
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				f(s, ctx.Base)
 				return next(s, ctx)
 			}
 		}
-	case func(*state.State, *state.Base) error:
+	case func(*state.State, *event.Base) error:
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				err := f(s, ctx.Base)
@@ -102,7 +103,7 @@ func (m *MiddlewareManager) TryAddMiddleware(f interface{}) error {
 				return next(s, ctx)
 			}
 		}
-	case func(*state.State, *state.MessageCreateEvent):
+	case func(*state.State, *event.MessageCreate):
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if !ctx.Message.EditedTimestamp.IsValid() {
@@ -112,7 +113,7 @@ func (m *MiddlewareManager) TryAddMiddleware(f interface{}) error {
 				return next(s, ctx)
 			}
 		}
-	case func(*state.State, *state.MessageCreateEvent) error:
+	case func(*state.State, *event.MessageCreate) error:
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if !ctx.Message.EditedTimestamp.IsValid() {
@@ -124,7 +125,7 @@ func (m *MiddlewareManager) TryAddMiddleware(f interface{}) error {
 				return next(s, ctx)
 			}
 		}
-	case func(*state.State, *state.MessageUpdateEvent):
+	case func(*state.State, *event.MessageUpdate):
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if ctx.Message.EditedTimestamp.IsValid() {
@@ -134,7 +135,7 @@ func (m *MiddlewareManager) TryAddMiddleware(f interface{}) error {
 				return next(s, ctx)
 			}
 		}
-	case func(*state.State, *state.MessageUpdateEvent) error:
+	case func(*state.State, *event.MessageUpdate) error:
 		mf = func(next CommandFunc) CommandFunc {
 			return func(s *state.State, ctx *plugin.Context) error {
 				if ctx.Message.EditedTimestamp.IsValid() {
@@ -160,8 +161,8 @@ func (m *MiddlewareManager) TryAddMiddleware(f interface{}) error {
 
 // newMessageCreateEvent creates a new state.MessageCreateEvent from the passed
 // *plugin.Context.
-func newMessageCreateEvent(ctx *plugin.Context) *state.MessageCreateEvent {
-	return &state.MessageCreateEvent{
+func newMessageCreateEvent(ctx *plugin.Context) *event.MessageCreate {
+	return &event.MessageCreate{
 		MessageCreateEvent: &gateway.MessageCreateEvent{
 			Message: ctx.Message,
 			Member:  ctx.Member,
@@ -172,8 +173,8 @@ func newMessageCreateEvent(ctx *plugin.Context) *state.MessageCreateEvent {
 
 // newMessageUpdateEvent creates a new state.MessageUpdateEvent from the passed
 // *plugin.Context.
-func newMessageUpdateEvent(ctx *plugin.Context) *state.MessageUpdateEvent {
-	return &state.MessageUpdateEvent{
+func newMessageUpdateEvent(ctx *plugin.Context) *event.MessageUpdate {
+	return &event.MessageUpdate{
 		MessageUpdateEvent: &gateway.MessageUpdateEvent{
 			Message: ctx.Message,
 			Member:  ctx.Member,

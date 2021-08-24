@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -68,7 +68,7 @@ var HandleArgumentError = func(aerr *ArgumentError, _ *state.State, ctx *Context
 	embed := shared.ErrorEmbed.Clone().
 		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
+	_, err = ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -191,7 +191,7 @@ var HandleBotPermissionsError = func(perr *BotPermissionsError, _ *state.State, 
 		embed.WithField(perms, perr.PermissionList(ctx.Localizer))
 	}
 
-	_, err := ctx.ReplyEmbedBuilder(embed)
+	_, err := ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -260,7 +260,7 @@ var HandleChannelTypeError = func(cerr *ChannelTypeError, s *state.State, ctx *C
 	embed := shared.ErrorEmbed.Clone().
 		WithDescription(cerr.Description(ctx.Localizer))
 
-	_, err := ctx.ReplyEmbedBuilder(embed)
+	_, err := ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -362,7 +362,7 @@ var HandleRestrictionError = func(rerr *RestrictionError, s *state.State, ctx *C
 	embed := shared.ErrorEmbed.Clone().
 		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
+	_, err = ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -420,6 +420,6 @@ var HandleThrottlingError = func(terr *ThrottlingError, s *state.State, ctx *Con
 	embed := shared.InfoEmbed.Clone().
 		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbedBuilder(embed)
+	_, err = ctx.ReplyEmbedBuilders(embed)
 	return err
 }

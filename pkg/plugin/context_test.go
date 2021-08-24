@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/api"
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -41,7 +41,6 @@ func TestContext_IsBotOwner(t *testing.T) {
 
 func TestContext_Reply(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -55,7 +54,7 @@ func TestContext_Reply(t *testing.T) {
 		Content:   fmt.Sprint("abc", "def"),
 	}
 
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.Reply("abc", "def")
 	require.NoError(t, err)
@@ -64,7 +63,6 @@ func TestContext_Reply(t *testing.T) {
 
 func TestContext_Replyf(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -78,7 +76,7 @@ func TestContext_Replyf(t *testing.T) {
 		Content:   fmt.Sprintf("abc %s", "def"),
 	}
 
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.Replyf("abc %s", "def")
 	require.NoError(t, err)
@@ -87,7 +85,6 @@ func TestContext_Replyf(t *testing.T) {
 
 func TestContext_Replyl(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -109,7 +106,7 @@ func TestContext_Replyl(t *testing.T) {
 		Content:   content,
 	}
 
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.Replyl(term.AsConfig())
 	require.NoError(t, err)
@@ -118,7 +115,6 @@ func TestContext_Replyl(t *testing.T) {
 
 func TestContext_Replylt(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -140,7 +136,7 @@ func TestContext_Replylt(t *testing.T) {
 		Content:   content,
 	}
 
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.Replylt(term)
 	require.NoError(t, err)
@@ -149,7 +145,6 @@ func TestContext_Replylt(t *testing.T) {
 
 func TestContext_ReplyEmbed(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -169,16 +164,15 @@ func TestContext_ReplyEmbed(t *testing.T) {
 		},
 	}
 
-	m.SendEmbed(*expect)
+	m.SendEmbeds(*expect)
 
-	actual, err := ctx.ReplyEmbed(expect.Embeds[0])
+	actual, err := ctx.ReplyEmbeds(expect.Embeds[0])
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_ReplyEmbedBuilder(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
@@ -203,16 +197,15 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 		Embeds:    []discord.Embed{embed},
 	}
 
-	m.SendEmbed(*expect)
+	m.SendEmbeds(*expect)
 
-	actual, err := ctx.ReplyEmbedBuilder(builder)
+	actual, err := ctx.ReplyEmbedBuilders(builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_ReplyMessage(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -226,7 +219,7 @@ func TestContext_ReplyMessage(t *testing.T) {
 		Content:   "abc",
 	}
 
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.ReplyMessage(api.SendMessageData{
 		Content: expect.Content,
@@ -237,7 +230,6 @@ func TestContext_ReplyMessage(t *testing.T) {
 
 func TestContext_ReplyDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -260,7 +252,7 @@ func TestContext_ReplyDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.ReplyDM("abc", "def")
 	require.NoError(t, err)
@@ -269,7 +261,6 @@ func TestContext_ReplyDM(t *testing.T) {
 
 func TestContext_ReplyfDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -292,7 +283,7 @@ func TestContext_ReplyfDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.ReplyfDM("abc %s", "def")
 	require.NoError(t, err)
@@ -301,7 +292,6 @@ func TestContext_ReplyfDM(t *testing.T) {
 
 func TestContext_ReplylDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -333,7 +323,7 @@ func TestContext_ReplylDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.ReplylDM(term.AsConfig())
 	require.NoError(t, err)
@@ -342,7 +332,6 @@ func TestContext_ReplylDM(t *testing.T) {
 
 func TestContext_ReplyltDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -373,7 +362,7 @@ func TestContext_ReplyltDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.ReplyltDM(term)
 	require.NoError(t, err)
@@ -382,7 +371,6 @@ func TestContext_ReplyltDM(t *testing.T) {
 
 func TestContext_ReplyEmbedDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -411,16 +399,15 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.SendEmbed(*expect)
+	m.SendEmbeds(*expect)
 
-	actual, err := ctx.ReplyEmbedDM(expect.Embeds[0])
+	actual, err := ctx.ReplyEmbedsDM(expect.Embeds[0])
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -454,16 +441,15 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.SendEmbed(*expect)
+	m.SendEmbeds(*expect)
 
-	actual, err := ctx.ReplyEmbedBuilderDM(builder)
+	actual, err := ctx.ReplyEmbedBuildersDM(builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_ReplyMessageDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 
@@ -487,7 +473,7 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.SendText(*expect)
+	m.SendMessage(*expect)
 
 	actual, err := ctx.ReplyMessageDM(api.SendMessageData{
 		Content: expect.Content,
@@ -498,7 +484,6 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 
 func TestContext_Edit(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -521,7 +506,6 @@ func TestContext_Edit(t *testing.T) {
 
 func TestContext_Editf(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -544,7 +528,6 @@ func TestContext_Editf(t *testing.T) {
 
 func TestContext_Editl(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -575,7 +558,6 @@ func TestContext_Editl(t *testing.T) {
 
 func TestContext_Editlt(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -606,7 +588,6 @@ func TestContext_Editlt(t *testing.T) {
 
 func TestContext_EditEmbed(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -626,16 +607,15 @@ func TestContext_EditEmbed(t *testing.T) {
 		},
 	}
 
-	m.EditEmbed(*expect)
+	m.EditEmbeds(*expect)
 
-	actual, err := ctx.EditEmbed(expect.ID, expect.Embeds[0])
+	actual, err := ctx.EditEmbeds(expect.ID, expect.Embeds[0])
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_EditEmbedBuilder(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message:   discord.Message{ChannelID: 123},
@@ -660,16 +640,15 @@ func TestContext_EditEmbedBuilder(t *testing.T) {
 		Embeds:    []discord.Embed{embed},
 	}
 
-	m.EditEmbed(*expect)
+	m.EditEmbeds(*expect)
 
-	actual, err := ctx.EditEmbedBuilder(expect.ID, builder)
+	actual, err := ctx.EditEmbedBuilders(expect.ID, builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_EditMessage(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{ChannelID: 123},
@@ -694,7 +673,6 @@ func TestContext_EditMessage(t *testing.T) {
 
 func TestContext_EditDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -726,7 +704,6 @@ func TestContext_EditDM(t *testing.T) {
 
 func TestContext_EditfDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -758,7 +735,6 @@ func TestContext_EditfDM(t *testing.T) {
 
 func TestContext_EditlDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -799,7 +775,6 @@ func TestContext_EditlDM(t *testing.T) {
 
 func TestContext_EditltDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	var (
 		term    i18n.Term = "abc"
@@ -839,7 +814,6 @@ func TestContext_EditltDM(t *testing.T) {
 
 func TestContext_EditEmbedDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -868,16 +842,15 @@ func TestContext_EditEmbedDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.EditEmbed(*expect)
+	m.EditEmbeds(*expect)
 
-	actual, err := ctx.EditEmbedDM(expect.ID, expect.Embeds[0])
+	actual, err := ctx.EditEmbedsDM(expect.ID, expect.Embeds[0])
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_EditEmbedBuilderDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 		Message: discord.Message{
@@ -911,16 +884,15 @@ func TestContext_EditEmbedBuilderDM(t *testing.T) {
 		ID:           channelID,
 		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
 	})
-	m.EditEmbed(*expect)
+	m.EditEmbeds(*expect)
 
-	actual, err := ctx.EditEmbedBuilderDM(expect.ID, builder)
+	actual, err := ctx.EditEmbedBuildersDM(expect.ID, builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
 
 func TestContext_EditMessageDM(t *testing.T) {
 	m, s := state.NewMocker(t)
-	defer m.Eval()
 
 	ctx := &Context{
 

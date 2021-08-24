@@ -3,8 +3,8 @@ package bot
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/internal/resolved"
@@ -16,7 +16,7 @@ func TestBot_AddPluginSource(t *testing.T) {
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		assert.Panics(t, func() {
-			pfunc := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			pfunc := func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, nil, nil
 			}
 
@@ -34,7 +34,7 @@ func TestBot_AddPluginSource(t *testing.T) {
 	t.Run("replace", func(t *testing.T) {
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
-		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+		p := func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return nil, nil, nil
 		}
 
@@ -46,7 +46,7 @@ func TestBot_AddPluginSource(t *testing.T) {
 		var called bool
 
 		b.AddPluginSource("abc",
-			func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				called = true
 				return nil, nil, nil
 			})
@@ -62,7 +62,7 @@ func TestBot_AddPluginSource(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
-		p := func(*state.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+		p := func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 			return nil, nil, nil
 		}
 

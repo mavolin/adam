@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/adam/pkg/plugin"
@@ -14,8 +14,7 @@ import (
 
 func TestReactionWaiter_Await(t *testing.T) {
 	t.Run("timeout", func(t *testing.T) {
-		m, s := state.NewMocker(t)
-		defer m.Eval()
+		_, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
 			Message: discord.Message{

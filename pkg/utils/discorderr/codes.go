@@ -1,6 +1,6 @@
 package discorderr
 
-import "github.com/diamondburned/arikawa/v2/utils/httputil"
+import "github.com/diamondburned/arikawa/v3/utils/httputil"
 
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#json
 const (

@@ -3,7 +3,7 @@ package permutil
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/stretchr/testify/assert"
 
 	mocki18n "github.com/mavolin/adam/internal/mock/i18n"

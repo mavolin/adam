@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/httputil"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/httputil"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -42,7 +42,6 @@ func TestUser_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
-				defer m.Eval()
 
 				m.User(*c.expect)
 
@@ -100,7 +99,7 @@ func TestUser_Parse(t *testing.T) {
 				Kind:    plugin.KindArg,
 			}
 
-			srcMocker.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
+			srcMocker.Error(http.MethodGet, "users/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
@@ -108,22 +107,18 @@ func TestUser_Parse(t *testing.T) {
 
 			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
 
-			m, s := state.CloneMocker(srcMocker, t)
+			_, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := User.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
 
-			m.Eval()
-
 			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
-			m, s = state.CloneMocker(srcMocker, t)
+			_, s = state.CloneMocker(srcMocker, t)
 
 			_, actual = User.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 
 		t.Run("not id", func(t *testing.T) {
@@ -137,13 +132,12 @@ func TestUser_Parse(t *testing.T) {
 
 		t.Run("id user not found", func(t *testing.T) {
 			m, s := state.NewMocker(t)
-			defer m.Eval()
 
 			var userID discord.UserID = 123
 
 			ctx := &plugin.ParseContext{Raw: "123"}
 
-			m.Error(http.MethodGet, "/users/"+userID.String(), httputil.HTTPError{
+			m.Error(http.MethodGet, "users/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",
@@ -191,7 +185,6 @@ func TestMember_Parse(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := state.NewMocker(t)
-				defer m.Eval()
 
 				m.Member(c.ctx.GuildID, *c.expect)
 
@@ -259,30 +252,27 @@ func TestMember_Parse(t *testing.T) {
 				Kind:    plugin.KindArg,
 			}
 
-			srcMocker.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
-				Status:  http.StatusNotFound,
-				Code:    10013, // unknown user
-				Message: "Unknown user",
-			})
+			srcMocker.Error(http.MethodGet, "guilds/"+ctx.GuildID.String()+"/members/"+userID.String(),
+				httputil.HTTPError{
+					Status:  http.StatusNotFound,
+					Code:    10013, // unknown user
+					Message: "Unknown user",
+				})
 
 			expect := newArgumentError(userInvalidMentionErrorArg, ctx, nil)
 
-			m, s := state.CloneMocker(srcMocker, t)
+			_, s := state.CloneMocker(srcMocker, t)
 
 			_, actual := Member.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
 
-			m.Eval()
-
 			ctx.Kind = plugin.KindFlag
 			expect = newArgumentError(userInvalidMentionErrorFlag, ctx, nil)
 
-			m, s = state.CloneMocker(srcMocker, t)
+			_, s = state.CloneMocker(srcMocker, t)
 
 			_, actual = Member.Parse(s, ctx)
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 
 		t.Run("not id", func(t *testing.T) {
@@ -299,7 +289,6 @@ func TestMember_Parse(t *testing.T) {
 
 		t.Run("id user not found", func(t *testing.T) {
 			m, s := state.NewMocker(t)
-			defer m.Eval()
 
 			var userID discord.UserID = 456
 
@@ -308,7 +297,7 @@ func TestMember_Parse(t *testing.T) {
 				Raw:     userID.String(),
 			}
 
-			m.Error(http.MethodGet, "/guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
+			m.Error(http.MethodGet, "guilds/"+ctx.GuildID.String()+"/members/"+userID.String(), httputil.HTTPError{
 				Status:  http.StatusNotFound,
 				Code:    10013, // unknown user
 				Message: "Unknown user",

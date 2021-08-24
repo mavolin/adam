@@ -2,7 +2,7 @@
 package embedutil
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 )
 
 // MaxChars is the maximum amount of characters Discord allows an embed to

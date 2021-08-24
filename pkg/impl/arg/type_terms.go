@@ -1,7 +1,7 @@
 package arg
 
 import (
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 
 	"github.com/mavolin/adam/pkg/i18n"
 	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"

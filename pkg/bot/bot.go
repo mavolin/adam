@@ -2,16 +2,16 @@
 package bot
 
 import (
+	"context"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/diamondburned/arikawa/v2/session"
-	"github.com/diamondburned/arikawa/v2/state/store"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state/store"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/internal/resolved"
-	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -59,34 +59,39 @@ type PluginSourceFunc = resolved.PluginSourceFunc
 
 // New creates a new Bot from the passed options.
 // The Options.Token field must be set.
-func New(o Options) (*Bot, error) {
-	b := new(Bot)
+func New(o Options) (b *Bot, err error) {
+	b = new(Bot)
 
-	if err := o.SetDefaults(); err != nil {
+	if err = o.SetDefaults(); err != nil {
 		return nil, err
 	}
 
-	gw := gateway.NewCustomGateway(o.GatewayURL, "Bot "+o.Token)
-
-	gw.WSTimeout = o.GatewayTimeout
-	gw.WS.Timeout = o.GatewayTimeout
-	gw.ErrorLog = o.GatewayErrorHandler
-	gw.Identifier.IdentifyData.Shard = &o.Shard
-	gw.Identifier.IdentifyData.Presence = &gateway.UpdateStatusData{Status: o.Status}
+	var activity *discord.Activity
 
 	if len(o.ActivityName) > 0 {
-		gw.Identifier.Presence.Activities = &[]discord.Activity{
-			{
-				Name: o.ActivityName,
-				Type: o.ActivityType,
-				URL:  o.ActivityURL,
-			},
+		activity = &discord.Activity{
+			Name: o.ActivityName,
+			Type: o.ActivityType,
+			URL:  o.ActivityURL,
 		}
 	}
 
-	b.State = state.NewFromSession(session.NewWithGateway(gw), o.Cabinet)
-	b.State.ErrorHandler = o.StateErrorHandler
-	b.State.PanicHandler = o.StatePanicHandler
+	b.State, err = state.New(state.Options{
+		Token:        o.Token,
+		Status:       o.Status,
+		Activity:     activity,
+		Cabinet:      o.Cabinet,
+		TotalShards:  o.TotalShards,
+		ShardIDs:     o.ShardIDs,
+		Gateways:     o.Gateways,
+		HTTPClient:   o.HTTPClient,
+		Rescale:      o.Rescale,
+		ErrorHandler: o.StateErrorHandler,
+		PanicHandler: o.StatePanicHandler,
+	})
+	if err != nil {
+		return nil, err
+	}
 
 	self, err := b.State.Me()
 	if err != nil {
@@ -133,7 +138,7 @@ func New(o Options) (*Bot, error) {
 // derive intents from the registered handlers.
 // Additionally, gateway.IntentGuilds will be added, if guild caching is
 // enabled.
-func (b *Bot) Open() error {
+func (b *Bot) Open(ctx context.Context) error {
 	if b.State.Gateway.Identifier.Intents == 0 {
 		b.AddIntents(b.State.DeriveIntents())
 		b.AddIntents(gateway.IntentGuildMessages)
@@ -158,25 +163,19 @@ func (b *Bot) Open() error {
 		}
 	}
 
-	_, err := b.State.AddHandler(func(_ *state.State, e *state.MessageCreateEvent) {
+	b.State.AddHandler(func(_ *state.State, e *event.MessageCreate) {
 		b.Route(e.Base, &e.Message, e.Member)
 	}, b.MessageCreateMiddlewares...)
-	if err != nil {
-		return errors.Wrap(err, "could not add message create handler")
-	}
 
 	if b.EditAge > 0 {
-		_, err := b.State.AddHandler(func(_ *state.State, e *state.MessageUpdateEvent) {
+		b.State.AddHandler(func(_ *state.State, e *event.MessageUpdate) {
 			if time.Since(e.Timestamp.Time()) <= b.EditAge {
 				b.Route(e.Base, &e.Message, e.Member)
 			}
 		}, b.MessageUpdateMiddlewares...)
-		if err != nil {
-			return errors.Wrap(err, "could not add message update handler")
-		}
 	}
 
-	if err = b.State.Open(); err != nil {
+	if err := b.State.Open(ctx); err != nil {
 		return err
 	}
 
@@ -224,7 +223,7 @@ func (b *Bot) callOpen(i interface{}) error {
 // Afterwards, if AutoOpen is enabled, it calls Close on all commands.
 // Close may take in an optional *Bot argument, and may return an error.
 func (b *Bot) Close() error {
-	if err := b.State.CloseGracefully(); err != nil {
+	if err := b.State.Close(); err != nil {
 		return err
 	}
 
@@ -335,8 +334,8 @@ func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
 // Valid middleware types are:
 //	• func(*state.State, interface{})
 //	• func(*state.State, interface{}) error
-//	• func(*state.State, *state.Base)
-//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *event.Base)
+//	• func(*state.State, *event.Base) error
 //	• func(*state.State, *state.MessageCreateEvent)
 //	• func(*state.State, *state.MessageCreateEvent) error
 //	• func(*state.State, *state.MessageUpdateEvent)

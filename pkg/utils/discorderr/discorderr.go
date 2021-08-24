@@ -4,7 +4,7 @@ package discorderr
 import (
 	"errors"
 
-	"github.com/diamondburned/arikawa/v2/utils/httputil"
+	"github.com/diamondburned/arikawa/v3/utils/httputil"
 )
 
 // As calls errors.As(*httputil.HTTPError) on the passed error.

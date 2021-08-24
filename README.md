@@ -12,9 +12,10 @@
 
 ## About
 
-Adam is a bot framework for Discord, built on top of [arikawa](https://github.com/diamondburned).
-I originally started working on this because I needed a simple command router with support for localization, but along the way of building it, it turned into a fully-featured bot framework.
-You can do everything from a simple `ping` bot to a localized bot with custom commands.
+Adam is a bot framework for Discord, built on top of [arikawa](https://github.com/diamondburned). I originally started
+working on this because I needed a simple command router with support for localization, but along the way of building
+it, it turned into a fully-featured bot framework. You can do everything from a simple `ping` bot to a localized bot
+with custom commands.
 
 ## Main Features
 
@@ -32,16 +33,16 @@ You can do everything from a simple `ping` bot to a localized bot with custom co
 
 ## Getting Started
 
-Have a look at the [example bots](./_examples) or use the official [guide](https://go-adam.gitbook.io/adam/) and get your first bot up and running!
+Have a look at the [example bots](./_examples) or use the official [guide](https://go-adam.gitbook.io/adam/) and get
+your first bot up and running!
 
 ## Contributing
 
-Contributions through both pull requests and issues are much appreciated. 
-Check out the [contributing guidelines](./CONTRIBUTING.md) for more information.
+Contributions through both pull requests and issues are much appreciated. Check out
+the [contributing guidelines](./CONTRIBUTING.md) for more information.
 
 You can also help to localize adam on our [POEditor page](https://poeditor.com/join/project?hash=yLTbnUFjXW).
 
 ## License
 
-Built with ❤️ by [Maximilian von Lindern](https://github.com/mavolin).
-Available under the [MIT License](./LICENSE).
+Built with ❤️ by [Maximilian von Lindern](https://github.com/mavolin). Available under the [MIT License](./LICENSE).

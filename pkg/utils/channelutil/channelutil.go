@@ -4,7 +4,7 @@ package channelutil
 import (
 	"sort"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/discord"
 )
 
 // ResolvePositions resolves the position of the channels, as displayed in the
@@ -76,12 +76,12 @@ func sortChannels(c []discord.Channel) (topLevel []discord.Channel, categories [
 			} else {
 				categoriesMap[c.ID] = &category{parent: c}
 			}
-		case c.CategoryID.IsValid():
-			if v, ok := categoriesMap[c.CategoryID]; ok {
+		case c.ParentID.IsValid():
+			if v, ok := categoriesMap[c.ParentID]; ok {
 				i := sort.Search(len(v.children), channelSearchFunc(c, v.children))
 				v.children = insertChannel(c, i, v.children)
 			} else {
-				categoriesMap[c.CategoryID] = &category{children: []discord.Channel{c}}
+				categoriesMap[c.ParentID] = &category{children: []discord.Channel{c}}
 			}
 		default:
 			i := sort.Search(len(topLevel), channelSearchFunc(c, topLevel))

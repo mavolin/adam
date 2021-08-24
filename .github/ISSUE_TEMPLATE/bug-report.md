@@ -1,9 +1,6 @@
 ---
-name: Bug Report
-about: Create a report to help us improve
-title: 'fix(AFFECTED PACKAGE HERE): '
-labels: bug
-assignees: mavolin
+name: Bug Report about: Create a report to help us improve title: 'fix(AFFECTED PACKAGE HERE): '
+labels: bug assignees: mavolin
 
 ---
 

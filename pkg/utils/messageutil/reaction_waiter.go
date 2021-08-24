@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
+	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -92,8 +93,8 @@ func (w *ReactionWaiter) NoAutoDelete() *ReactionWaiter {
 // The following types are permitted:
 // 	• func(*state.State, interface{})
 //	• func(*state.State, interface{}) error
-//	• func(*state.State, *state.Base)
-//	• func(*state.State, *state.Base) error
+//	• func(*state.State, *event.Base)
+//	• func(*state.State, *event.Base) error
 //	• func(*state.State, *state.MessageReactionAddEvent)
 //	• func(*state.State, *state.MessageReactionAddEvent) error
 func (w *ReactionWaiter) WithMiddlewares(middlewares ...interface{}) *ReactionWaiter {
@@ -105,10 +106,10 @@ func (w *ReactionWaiter) WithMiddlewares(middlewares ...interface{}) *ReactionWa
 		switch m.(type) { // check that the middleware is of a valid type
 		case func(*state.State, interface{}):
 		case func(*state.State, interface{}) error:
-		case func(*state.State, *state.Base):
-		case func(*state.State, *state.Base) error:
-		case func(*state.State, *state.MessageReactionAddEvent):
-		case func(*state.State, *state.MessageReactionAddEvent) error:
+		case func(*state.State, *event.Base):
+		case func(*state.State, *event.Base) error:
+		case func(*state.State, *event.MessageReactionAdd):
+		case func(*state.State, *event.MessageReactionAdd) error:
 		default:
 			continue
 		}
@@ -196,7 +197,7 @@ func (w *ReactionWaiter) AwaitContext(ctx context.Context) (discord.APIEmoji, er
 
 //nolint:gocognit,funlen
 func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
-	rmReact := w.state.MustAddHandler(func(s *state.State, e *state.MessageReactionAddEvent) {
+	rmReact := w.state.AddHandler(func(s *state.State, e *event.MessageReactionAdd) {
 		if e.UserID != w.userID || e.MessageID != w.messageID {
 			return
 		}
@@ -221,7 +222,7 @@ func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- inte
 		}
 	})
 
-	rmMsgDel := w.state.MustAddHandler(func(s *state.State, e *state.MessageDeleteEvent) {
+	rmMsgDel := w.state.AddHandler(func(s *state.State, e *event.MessageDelete) {
 		if e.ID == w.messageID {
 			sendResult(ctx, result, errors.Abort)
 		}

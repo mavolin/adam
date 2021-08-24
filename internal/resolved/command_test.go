@@ -3,7 +3,7 @@ package resolved
 import (
 	"testing"
 
-	"github.com/mavolin/disstate/v3/pkg/state"
+	"github.com/mavolin/disstate/v4/pkg/state"
 	"github.com/stretchr/testify/assert"
 
 	mockplugin "github.com/mavolin/adam/internal/mock/plugin"
