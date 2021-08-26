@@ -5,26 +5,26 @@ import "github.com/mavolin/adam/pkg/i18n"
 // ================================ BotPermissionsError ================================
 
 var (
-	insufficientPermissionsDefault = i18n.NewFallbackConfig(
-		"plugin.error.insufficient_permissions.default",
+	botPermissionsDefault = i18n.NewFallbackConfig(
+		"plugin.error.bot_permissions.default",
 		"I don't have sufficient permission to execute this command.")
 
-	insufficientPermissionsDescSingle = i18n.NewFallbackConfig(
-		"plugin.error.insufficient_permissions.description.single",
+	botPermissionsDescSingle = i18n.NewFallbackConfig(
+		"plugin.error.bot_permissions.description.single",
 		"I don't have sufficient permissions to run this command. Please give me the "+
 			`"{{.missing_permission}}" permission and try again.`)
 
-	insufficientPermissionsDescMulti = i18n.NewFallbackConfig(
-		"plugin.error.insufficient_permissions.description.multi",
+	botPermissionsDescMulti = i18n.NewFallbackConfig(
+		"plugin.error.bot_permissions.description.multi",
 		"I don't have sufficient permissions to run this command. Please give me the "+
 			"following permissions and try again:")
 
-	insufficientPermissionsMissingPermissionsFieldName = i18n.NewFallbackConfig(
-		"plugin.error.insufficient_permissions.fields.missing_permissions.name",
+	botPermissionsMissingPermissionsFieldName = i18n.NewFallbackConfig(
+		"plugin.error.bot_permissions.fields.missing_permissions.name",
 		"Missing Permissions")
 )
 
-type insufficientBotPermissionsDescSinglePlaceholders struct {
+type botPermissionsDescSinglePlaceholders struct {
 	MissingPermission string
 }
 
