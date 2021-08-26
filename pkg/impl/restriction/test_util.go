@@ -10,35 +10,50 @@ import (
 // plugin.RestrictionFuncs useful in testing
 
 var (
-	errorFuncReturn1 = plugin.NewRestrictionError("abc")
-	errorFuncReturn2 = plugin.NewRestrictionError("def")
-	errorFuncReturn3 = plugin.NewRestrictionError("ghi")
-	errorFuncReturn4 = plugin.NewRestrictionError("jkl")
+	errorFunc1Description = "abc"
+	errorFunc2Description = "def"
+	errorFunc3Description = "ghi"
+	errorFunc4Description = "jkl"
 
-	fatalErrorFuncReturn = plugin.NewFatalRestrictionError("mno")
+	fatalErrorFuncDescription = "mno"
 
-	embeddableErrorFuncReturn = &EmbeddableError{
-		EmbeddableVersion: plugin.NewRestrictionError("pqr"),
-		DefaultVersion:    errors.New("stu"),
-	}
+	embeddableErrorFuncEmbeddableDescription = "pqr"
+	embeddableErrorFuncDefaultDescription    = "stu"
 
-	fatalEmbeddableErrorFuncReturn = &EmbeddableError{
-		EmbeddableVersion: plugin.NewFatalRestrictionError("vwx"),
-		DefaultVersion:    errors.New("yza"),
-	}
+	fatalEmbeddableErrorFuncEmbeddableDescription = "vwx"
+	fatalEmbeddableErrorFuncDefaultDescription    = "yza"
 
 	errUnexpectedErrorFuncReturn = errors.New("bcd")
 )
 
-func errorFunc1(*state.State, *plugin.Context) error          { return errorFuncReturn1 }
-func errorFunc2(*state.State, *plugin.Context) error          { return errorFuncReturn2 }
-func errorFunc3(*state.State, *plugin.Context) error          { return errorFuncReturn3 }
-func errorFunc4(*state.State, *plugin.Context) error          { return errorFuncReturn4 }
-func fatalErrorFunc(*state.State, *plugin.Context) error      { return fatalErrorFuncReturn }
-func embeddableErrorFunc(*state.State, *plugin.Context) error { return embeddableErrorFuncReturn }
+func errorFunc1(*state.State, *plugin.Context) error {
+	return plugin.NewRestrictionError(errorFunc1Description)
+}
+func errorFunc2(*state.State, *plugin.Context) error {
+	return plugin.NewRestrictionError(errorFunc2Description)
+}
+func errorFunc3(*state.State, *plugin.Context) error {
+	return plugin.NewRestrictionError(errorFunc3Description)
+}
+func errorFunc4(*state.State, *plugin.Context) error {
+	return plugin.NewRestrictionError(errorFunc4Description)
+}
+func fatalErrorFunc(*state.State, *plugin.Context) error {
+	return plugin.NewFatalRestrictionError(
+		fatalErrorFuncDescription)
+}
+func embeddableErrorFunc(*state.State, *plugin.Context) error {
+	return &EmbeddableError{
+		EmbeddableVersion: plugin.NewRestrictionError(embeddableErrorFuncEmbeddableDescription),
+		DefaultVersion:    plugin.NewRestrictionError(embeddableErrorFuncDefaultDescription),
+	}
+}
 
 func fatalEmbeddableErrorFunc(*state.State, *plugin.Context) error {
-	return fatalEmbeddableErrorFuncReturn
+	return &EmbeddableError{
+		EmbeddableVersion: plugin.NewFatalRestrictionError(fatalEmbeddableErrorFuncEmbeddableDescription),
+		DefaultVersion:    plugin.NewFatalRestrictionError(fatalEmbeddableErrorFuncDefaultDescription),
+	}
 }
 
 func unexpectedErrorFunc(*state.State, *plugin.Context) error { return errUnexpectedErrorFuncReturn }

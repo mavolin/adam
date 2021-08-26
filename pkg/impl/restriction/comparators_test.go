@@ -25,37 +25,43 @@ func TestAll(t *testing.T) {
 		{
 			name:   "single func",
 			funcs:  []plugin.RestrictionFunc{errorFunc1},
-			expect: errorFuncReturn1,
+			expect: errorFunc1(nil, nil),
 		},
 		{
 			name:   "restriction error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1},
-			expect: errorFuncReturn1,
+			expect: errorFunc1(nil, nil),
 		},
 		{
 			name:   "fatal restriction error",
 			funcs:  []plugin.RestrictionFunc{fatalErrorFunc},
-			expect: fatalErrorFuncReturn,
+			expect: fatalErrorFunc(nil, nil),
 		},
 		{
-			name:   "single any func",
-			funcs:  []plugin.RestrictionFunc{Any(errorFunc1, errorFunc1), nilFunc},
-			expect: Any(errorFunc1, errorFunc1)(nil, nil),
+			name:  "single any func",
+			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), nilFunc},
+			expect: &anyError{
+				restrictions: []string{errorFunc1Description, errorFunc2Description},
+			},
 		},
 		{
-			name:   "single embeddable error",
-			funcs:  []plugin.RestrictionFunc{embeddableErrorFunc},
-			expect: embeddableErrorFuncReturn,
+			name:  "single embeddable error - not fatal",
+			funcs: []plugin.RestrictionFunc{embeddableErrorFunc},
+			expect: &EmbeddableError{
+				EmbeddableVersion: plugin.NewRestrictionError(embeddableErrorFuncEmbeddableDescription),
+				DefaultVersion:    plugin.NewRestrictionError(embeddableErrorFuncDefaultDescription),
+			},
 		},
 		{
 
-			name:  "multiple fatal embeddable errors",
+			name:  "multiple embeddable errors - fatal",
 			funcs: []plugin.RestrictionFunc{fatalEmbeddableErrorFunc, embeddableErrorFunc},
 			expect: &allError{
-				restrictions: []*plugin.RestrictionError{
-					fatalEmbeddableErrorFuncReturn.EmbeddableVersion,
-					embeddableErrorFuncReturn.EmbeddableVersion,
+				restrictions: []string{
+					fatalEmbeddableErrorFuncEmbeddableDescription,
+					embeddableErrorFuncEmbeddableDescription,
 				},
+				fatal: true,
 			},
 		},
 		{
@@ -66,25 +72,29 @@ func TestAll(t *testing.T) {
 		{
 			name:   "multiple restriction funcs - single error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1, nilFunc},
-			expect: errorFuncReturn1,
+			expect: errorFunc1(nil, nil),
 		},
 		{
-			name:   "multiple restriction funcs - single embeddable error",
-			funcs:  []plugin.RestrictionFunc{embeddableErrorFunc, nilFunc},
-			expect: embeddableErrorFuncReturn,
-		},
-		{
-			name:  "multiple restriction funcs - multiple errors",
-			funcs: []plugin.RestrictionFunc{errorFunc1, errorFunc2},
-			expect: &allError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+			name:  "multiple restriction funcs - single embeddable error",
+			funcs: []plugin.RestrictionFunc{embeddableErrorFunc, nilFunc},
+			expect: &EmbeddableError{
+				EmbeddableVersion: plugin.NewRestrictionError(embeddableErrorFuncEmbeddableDescription),
+				DefaultVersion:    plugin.NewRestrictionError(embeddableErrorFuncDefaultDescription),
 			},
 		},
 		{
-			name:  "multiple restriction funcs - multiple fatal errors",
+			name:  "multiple restriction funcs - multiple errors - not fatal",
+			funcs: []plugin.RestrictionFunc{errorFunc1, errorFunc2},
+			expect: &allError{
+				restrictions: []string{errorFunc1Description, errorFunc2Description},
+			},
+		},
+		{
+			name:  "multiple restriction funcs - multiple errors - fatal",
 			funcs: []plugin.RestrictionFunc{errorFunc1, fatalErrorFunc},
 			expect: &allError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
+				restrictions: []string{errorFunc1Description, fatalErrorFuncDescription},
+				fatal:        true,
 			},
 		},
 		{
@@ -105,27 +115,27 @@ func TestAll(t *testing.T) {
 		{
 			name:   "nested all - single error",
 			funcs:  []plugin.RestrictionFunc{All(errorFunc1, nilFunc)},
-			expect: errorFuncReturn1,
+			expect: errorFunc1(nil, nil),
 		},
 		{
 			name:  "nested all - multiple errors",
 			funcs: []plugin.RestrictionFunc{All(errorFunc1, errorFunc2)},
 			expect: &allError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []string{errorFunc1Description, errorFunc2Description},
 			},
 		},
 		{
 			name:  "restriction func and nested all",
 			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3)},
 			expect: &allError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2, errorFuncReturn3},
+				restrictions: []string{errorFunc1Description, errorFunc2Description, errorFunc3Description},
 			},
 		},
 		{
 			name:  "nested any",
 			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2)},
 			expect: &anyError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []string{errorFunc1Description, errorFunc2Description},
 			},
 		},
 		{
@@ -133,8 +143,8 @@ func TestAll(t *testing.T) {
 			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), Any(errorFunc3, errorFunc4)},
 			expect: &allError{
 				anys: []*anyError{
-					{restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2}},
-					{restrictions: []*plugin.RestrictionError{errorFuncReturn3, errorFuncReturn4}},
+					{restrictions: []string{errorFunc1Description, errorFunc2Description}},
+					{restrictions: []string{errorFunc3Description, errorFunc4Description}},
 				},
 			},
 		},
@@ -142,9 +152,9 @@ func TestAll(t *testing.T) {
 			name:  "restriction func and nested any",
 			funcs: []plugin.RestrictionFunc{errorFunc1, Any(errorFunc2, errorFunc3)},
 			expect: &allError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1},
+				restrictions: []string{errorFunc1Description},
 				anys: []*anyError{
-					{restrictions: []*plugin.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
+					{restrictions: []string{errorFunc2Description, errorFunc3Description}},
 				},
 			},
 		},
@@ -152,9 +162,13 @@ func TestAll(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
+			ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
+
+			fillHeaderAndInline(c.expect, ctx.Localizer)
+
 			f := All(c.funcs...)
 
-			actual := f(nil, &plugin.Context{Localizer: i18n.NewFallbackLocalizer()})
+			actual := f(nil, ctx)
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -193,36 +207,41 @@ func TestAny(t *testing.T) {
 		{
 			name:   "single func",
 			funcs:  []plugin.RestrictionFunc{errorFunc1},
-			expect: errorFuncReturn1,
+			expect: errorFunc1(nil, nil),
 		},
 		{
 			name:   "restriction error",
 			funcs:  []plugin.RestrictionFunc{errorFunc1},
-			expect: errorFuncReturn1,
+			expect: errorFunc1(nil, nil),
 		},
 		{
 			name:   "fatal restriction error",
 			funcs:  []plugin.RestrictionFunc{fatalErrorFunc},
-			expect: fatalErrorFuncReturn,
+			expect: fatalErrorFunc(nil, nil),
 		},
 		{
-			name:   "single all func",
-			funcs:  []plugin.RestrictionFunc{All(errorFunc1, errorFunc1)},
-			expect: All(errorFunc1, errorFunc1)(nil, nil),
+			name:  "single all func",
+			funcs: []plugin.RestrictionFunc{All(errorFunc1, errorFunc2)},
+			expect: &allError{
+				restrictions: []string{errorFunc1Description, errorFunc2Description},
+			},
 		},
 		{
-			name:   "single embeddable error",
-			funcs:  []plugin.RestrictionFunc{embeddableErrorFunc},
-			expect: embeddableErrorFuncReturn,
+			name:  "single embeddable error",
+			funcs: []plugin.RestrictionFunc{embeddableErrorFunc},
+			expect: &EmbeddableError{
+				EmbeddableVersion: plugin.NewRestrictionError(embeddableErrorFuncEmbeddableDescription),
+				DefaultVersion:    plugin.NewRestrictionError(embeddableErrorFuncDefaultDescription),
+			},
 		},
 		{
 
 			name:  "multiple fatal embeddable errors",
 			funcs: []plugin.RestrictionFunc{fatalEmbeddableErrorFunc, embeddableErrorFunc},
 			expect: &anyError{
-				restrictions: []*plugin.RestrictionError{
-					fatalEmbeddableErrorFuncReturn.EmbeddableVersion,
-					embeddableErrorFuncReturn.EmbeddableVersion,
+				restrictions: []string{
+					fatalEmbeddableErrorFuncEmbeddableDescription,
+					embeddableErrorFuncEmbeddableDescription,
 				},
 			},
 		},
@@ -240,14 +259,14 @@ func TestAny(t *testing.T) {
 			name:  "multiple restriction funcs - multiple errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, errorFunc2},
 			expect: &anyError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []string{errorFunc1Description, errorFunc2Description},
 			},
 		},
 		{
 			name:  "multiple restriction funcs - multiple fatal errors",
 			funcs: []plugin.RestrictionFunc{errorFunc1, fatalErrorFunc},
 			expect: &anyError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, fatalErrorFuncReturn},
+				restrictions: []string{errorFunc1Description, fatalErrorFuncDescription},
 			},
 		},
 		{
@@ -268,22 +287,22 @@ func TestAny(t *testing.T) {
 		{
 			name:   "nested all - single error",
 			funcs:  []plugin.RestrictionFunc{All(errorFunc1, nilFunc)},
-			expect: errorFuncReturn1,
+			expect: errorFunc1(nil, nil),
 		},
 		{
 			name:  "nested all - multiple errors",
 			funcs: []plugin.RestrictionFunc{All(errorFunc1, errorFunc2)},
 			expect: &allError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1, errorFuncReturn2},
+				restrictions: []string{errorFunc1Description, errorFunc2Description},
 			},
 		},
 		{
 			name:  "restriction func and nested all",
 			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3)},
 			expect: &anyError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1},
+				restrictions: []string{errorFunc1Description},
 				alls: []*allError{
-					{restrictions: []*plugin.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
+					{restrictions: []string{errorFunc2Description, errorFunc3Description}},
 				},
 			},
 		},
@@ -291,18 +310,18 @@ func TestAny(t *testing.T) {
 			name:  "multiple nested anys",
 			funcs: []plugin.RestrictionFunc{Any(errorFunc1, errorFunc2), Any(errorFunc3, errorFunc4)},
 			expect: &anyError{
-				restrictions: []*plugin.RestrictionError{
-					errorFuncReturn1, errorFuncReturn2, errorFuncReturn3, errorFuncReturn4,
+				restrictions: []string{
+					errorFunc1Description, errorFunc2Description, errorFunc3Description, errorFunc4Description,
 				},
 			},
 		},
 		{
-			name:  "restriction func and nested any",
+			name:  "restriction func and nested all",
 			funcs: []plugin.RestrictionFunc{errorFunc1, All(errorFunc2, errorFunc3, nilFunc)},
 			expect: &anyError{
-				restrictions: []*plugin.RestrictionError{errorFuncReturn1},
+				restrictions: []string{errorFunc1Description},
 				alls: []*allError{
-					{restrictions: []*plugin.RestrictionError{errorFuncReturn2, errorFuncReturn3}},
+					{restrictions: []string{errorFunc2Description, errorFunc3Description}},
 				},
 			},
 		},
@@ -310,9 +329,13 @@ func TestAny(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
+			ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
+
+			fillHeaderAndInline(c.expect, ctx.Localizer)
+
 			f := Any(c.funcs...)
 
-			actual := f(nil, &plugin.Context{Localizer: i18n.NewFallbackLocalizer()})
+			actual := f(nil, ctx)
 			assert.Equal(t, c.expect, actual)
 		})
 	}
@@ -341,38 +364,21 @@ func TestAnyf(t *testing.T) {
 func Test_allError_format(t *testing.T) {
 	testCases := []struct {
 		name   string
-		err    allError
+		err    *allError
 		expect string
-		fatal  bool
 	}{
 		{
 			name: "only restrictions",
-			err: allError{
-				restrictions: []*plugin.RestrictionError{
-					plugin.NewRestrictionError("abc"),
-					plugin.NewRestrictionError("def"),
-				},
-			},
+			err:  &allError{restrictions: []string{"abc", "def"}},
 			expect: entryPrefix + "abc\n" +
 				entryPrefix + "def",
-			fatal: false,
 		},
 		{
 			name: "only anys",
-			err: allError{
+			err: &allError{
 				anys: []*anyError{
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("abc"),
-							plugin.NewRestrictionError("def"),
-						},
-					},
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("ghi"),
-							plugin.NewRestrictionError("jkl"),
-						},
-					},
+					{restrictions: []string{"abc", "def"}},
+					{restrictions: []string{"ghi", "jkl"}},
 				},
 			},
 			expect: entryPrefix + "You need to fulfill at least one of these requirements:\n" +
@@ -381,28 +387,14 @@ func Test_allError_format(t *testing.T) {
 				entryPrefix + "You need to fulfill at least one of these requirements:\n" +
 				"　　" + entryPrefix + "ghi\n" +
 				"　　" + entryPrefix + "jkl",
-			fatal: false,
 		},
 		{
 			name: "restrictions and anys",
-			err: allError{
-				restrictions: []*plugin.RestrictionError{
-					plugin.NewRestrictionError("abc"),
-					plugin.NewRestrictionError("def"),
-				},
+			err: &allError{
+				restrictions: []string{"abc", "def"},
 				anys: []*anyError{
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("ghi"),
-							plugin.NewRestrictionError("jkl"),
-						},
-					},
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("mno"),
-							plugin.NewRestrictionError("pqr"),
-						},
-					},
+					{restrictions: []string{"ghi", "jkl"}},
+					{restrictions: []string{"mno", "pqr"}},
 				},
 			},
 			expect: entryPrefix + "abc\n" +
@@ -413,69 +405,19 @@ func Test_allError_format(t *testing.T) {
 				entryPrefix + "You need to fulfill at least one of these requirements:\n" +
 				"　　" + entryPrefix + "mno\n" +
 				"　　" + entryPrefix + "pqr",
-			fatal: false,
-		},
-		{
-			name: "any with fatals",
-			err: allError{
-				restrictions: []*plugin.RestrictionError{
-					plugin.NewRestrictionError("abc"),
-					plugin.NewRestrictionError("def"),
-				},
-				anys: []*anyError{
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewFatalRestrictionError("ghi"),
-							plugin.NewFatalRestrictionError("jkl"),
-						},
-					},
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("mno"),
-							plugin.NewRestrictionError("pqr"),
-						},
-					},
-				},
-			},
-			expect: entryPrefix + "abc\n" +
-				entryPrefix + "def\n" +
-				entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"　　" + entryPrefix + "ghi\n" +
-				"　　" + entryPrefix + "jkl\n" +
-				entryPrefix + "You need to fulfill at least one of these requirements:\n" +
-				"　　" + entryPrefix + "mno\n" +
-				"　　" + entryPrefix + "pqr",
-			fatal: true,
 		},
 		{
 			name: "any with nested all",
-			err: allError{
+			err: &allError{
 				anys: []*anyError{
 					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("abc"),
-						},
+						restrictions: []string{"abc"},
 						alls: []*allError{
 							{
-								restrictions: []*plugin.RestrictionError{
-									plugin.NewRestrictionError("def"),
-									plugin.NewRestrictionError("ghi"),
-								},
-								anys: []*anyError{
-									{
-										restrictions: []*plugin.RestrictionError{
-											plugin.NewRestrictionError("jkl"),
-											plugin.NewRestrictionError("mno"),
-										},
-									},
-								},
+								restrictions: []string{"def", "ghi"},
+								anys:         []*anyError{{restrictions: []string{"jkl", "mno"}}},
 							},
-							{
-								restrictions: []*plugin.RestrictionError{
-									plugin.NewRestrictionError("pqr"),
-									plugin.NewRestrictionError("stu"),
-								},
-							},
+							{restrictions: []string{"pqr", "stu"}},
 						},
 					},
 				},
@@ -491,114 +433,118 @@ func Test_allError_format(t *testing.T) {
 				"　　" + entryPrefix + "You need to fulfill all of these requirements:\n" +
 				"　　　　" + entryPrefix + "pqr\n" +
 				"　　　　" + entryPrefix + "stu",
-			fatal: false,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual, fatal, err := c.err.format(0, i18n.NewFallbackLocalizer())
-			require.NoError(t, err)
-			assert.Equal(t, c.fatal, fatal)
+			fillHeaderAndInline(c.err, i18n.NewFallbackLocalizer())
+			c.expect = c.err.header + "\n\n" + c.expect
+
+			actual := c.err.format(0)
+
 			assert.Equal(t, c.expect, actual)
 		})
 	}
 }
 
-func Test_allError_Wrap(t *testing.T) {
-	t.Run("fatal", func(t *testing.T) {
-		expect := plugin.NewFatalRestrictionError("You need to fulfill all of these requirements to execute the " +
-			"command:\n\n" +
-			entryPrefix + "mno\n" +
-			entryPrefix + "mno")
+func Test_allError_As(t *testing.T) {
+	testCases := []struct {
+		name string
+		desc string
+		fun  plugin.RestrictionFunc
+	}{
+		{
+			name: "fatal",
+			desc: "You need to fulfill all of these requirements to execute the command:\n\n" +
+				entryPrefix + fatalErrorFuncDescription + "\n" +
+				entryPrefix + errorFunc1Description,
+			fun: All(fatalErrorFunc, errorFunc1),
+		},
+		{
+			name: "not fatal",
+			desc: "You need to fulfill all of these requirements to execute the command:\n\n" +
+				entryPrefix + errorFunc1Description + "\n" +
+				entryPrefix + errorFunc2Description,
+			fun: All(errorFunc1, errorFunc2),
+		},
+	}
 
-		ctx := &plugin.Context{
-			Localizer: mock.NewLocalizer(t).
-				On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
-				On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
-				Build(),
+	ctx := &plugin.Context{
+		Localizer: mock.NewLocalizer(t).
+			On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+			On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
+			On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+			Build(),
+	}
+
+	t.Run("errors.Error", func(t *testing.T) {
+		for _, c := range testCases {
+			t.Run(c.name, func(t *testing.T) {
+				err := c.fun(nil, ctx)
+				require.IsType(t, new(allError), err)
+
+				var expect *plugin.RestrictionError
+
+				if allErr := err.(*allError); allErr.fatal {
+					expect = plugin.NewFatalRestrictionError(c.desc)
+				} else {
+					expect = plugin.NewRestrictionError(c.desc)
+				}
+
+				var actual errors.Error
+				assert.ErrorAs(t, err, &actual)
+				assert.Equal(t, expect, actual)
+			})
 		}
-
-		err := All(fatalErrorFunc, fatalErrorFunc)(nil, ctx)
-
-		require.IsType(t, new(allError), err)
-
-		allErr := err.(*allError)
-
-		actual := allErr.Wrap(nil, ctx)
-		assert.Equal(t, expect, actual)
 	})
 
-	t.Run("not fatal", func(t *testing.T) {
-		expect := plugin.NewRestrictionError("You need to fulfill all of these requirements to execute the command:\n\n" +
-			entryPrefix + "abc\n" +
-			entryPrefix + "def")
+	t.Run("*plugin.RestrictionError", func(t *testing.T) {
+		for _, c := range testCases {
+			t.Run(c.name, func(t *testing.T) {
+				err := c.fun(nil, ctx)
+				require.IsType(t, new(allError), err)
 
-		ctx := &plugin.Context{
-			Localizer: mock.NewLocalizer(t).
-				On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
-				On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
-				Build(),
+				var expect *plugin.RestrictionError
+
+				if allErr := err.(*allError); allErr.fatal {
+					expect = plugin.NewFatalRestrictionError(c.desc)
+				} else {
+					expect = plugin.NewRestrictionError(c.desc)
+				}
+
+				actual := new(plugin.RestrictionError)
+				assert.ErrorAs(t, err, &actual)
+				assert.Equal(t, expect, actual)
+			})
 		}
-
-		err := All(errorFunc1, errorFunc2)(nil, ctx)
-
-		require.IsType(t, new(allError), err)
-
-		allErr := err.(*allError)
-
-		actual := allErr.Wrap(nil, ctx)
-		assert.Equal(t, expect, actual)
 	})
 }
 
 func Test_anyError_format(t *testing.T) {
 	testCases := []struct {
 		name   string
-		err    anyError
+		err    *anyError
 		expect string
-		fatal  bool
 	}{
 		{
 			name: "only restrictions",
-			err: anyError{
-				restrictions: []*plugin.RestrictionError{
-					plugin.NewRestrictionError("abc"),
-					plugin.NewRestrictionError("def"),
-				},
-			},
+			err:  &anyError{restrictions: []string{"abc", "def"}},
 			expect: entryPrefix + "abc\n" +
 				entryPrefix + "def",
-			fatal: false,
 		},
 		{
 			name: "fatal restrictions",
-			err: anyError{
-				restrictions: []*plugin.RestrictionError{
-					plugin.NewFatalRestrictionError("abc"),
-					plugin.NewFatalRestrictionError("def"),
-				},
-			},
+			err:  &anyError{restrictions: []string{"abc", "def"}},
 			expect: entryPrefix + "abc\n" +
 				entryPrefix + "def",
-			fatal: true,
 		},
 		{
 			name: "fatal alls",
-			err: anyError{
+			err: &anyError{
 				alls: []*allError{
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewFatalRestrictionError("abc"),
-							plugin.NewFatalRestrictionError("def"),
-						},
-					},
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewFatalRestrictionError("ghi"),
-							plugin.NewFatalRestrictionError("jkl"),
-						},
-					},
+					{restrictions: []string{"abc", "def"}},
+					{restrictions: []string{"ghi", "jkl"}},
 				},
 			},
 			expect: entryPrefix + "You need to fulfill all of these requirements:\n" +
@@ -607,24 +553,13 @@ func Test_anyError_format(t *testing.T) {
 				entryPrefix + "You need to fulfill all of these requirements:\n" +
 				"　　" + entryPrefix + "ghi\n" +
 				"　　" + entryPrefix + "jkl",
-			fatal: true,
 		},
 		{
 			name: "only alls",
-			err: anyError{
+			err: &anyError{
 				alls: []*allError{
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("abc"),
-							plugin.NewRestrictionError("def"),
-						},
-					},
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("ghi"),
-							plugin.NewRestrictionError("jkl"),
-						},
-					},
+					{restrictions: []string{"abc", "def"}},
+					{restrictions: []string{"ghi", "jkl"}},
 				},
 			},
 			expect: entryPrefix + "You need to fulfill all of these requirements:\n" +
@@ -633,28 +568,14 @@ func Test_anyError_format(t *testing.T) {
 				entryPrefix + "You need to fulfill all of these requirements:\n" +
 				"　　" + entryPrefix + "ghi\n" +
 				"　　" + entryPrefix + "jkl",
-			fatal: false,
 		},
 		{
 			name: "restrictions and alls",
-			err: anyError{
-				restrictions: []*plugin.RestrictionError{
-					plugin.NewRestrictionError("abc"),
-					plugin.NewRestrictionError("def"),
-				},
+			err: &anyError{
+				restrictions: []string{"abc", "def"},
 				alls: []*allError{
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("ghi"),
-							plugin.NewRestrictionError("jkl"),
-						},
-					},
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("mno"),
-							plugin.NewRestrictionError("pqr"),
-						},
-					},
+					{restrictions: []string{"ghi", "jkl"}},
+					{restrictions: []string{"mno", "pqr"}},
 				},
 			},
 			expect: entryPrefix + "abc\n" +
@@ -665,69 +586,19 @@ func Test_anyError_format(t *testing.T) {
 				entryPrefix + "You need to fulfill all of these requirements:\n" +
 				"　　" + entryPrefix + "mno\n" +
 				"　　" + entryPrefix + "pqr",
-			fatal: false,
-		},
-		{
-			name: "all with fatals",
-			err: anyError{
-				restrictions: []*plugin.RestrictionError{
-					plugin.NewRestrictionError("abc"),
-					plugin.NewRestrictionError("def"),
-				},
-				alls: []*allError{
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewFatalRestrictionError("ghi"),
-							plugin.NewFatalRestrictionError("jkl"),
-						},
-					},
-					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("mno"),
-							plugin.NewRestrictionError("pqr"),
-						},
-					},
-				},
-			},
-			expect: entryPrefix + "abc\n" +
-				entryPrefix + "def\n" +
-				entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"　　" + entryPrefix + "ghi\n" +
-				"　　" + entryPrefix + "jkl\n" +
-				entryPrefix + "You need to fulfill all of these requirements:\n" +
-				"　　" + entryPrefix + "mno\n" +
-				"　　" + entryPrefix + "pqr",
-			fatal: false,
 		},
 		{
 			name: "any with nested all",
-			err: anyError{
+			err: &anyError{
 				alls: []*allError{
 					{
-						restrictions: []*plugin.RestrictionError{
-							plugin.NewRestrictionError("abc"),
-						},
+						restrictions: []string{"abc"},
 						anys: []*anyError{
 							{
-								restrictions: []*plugin.RestrictionError{
-									plugin.NewRestrictionError("def"),
-									plugin.NewRestrictionError("ghi"),
-								},
-								alls: []*allError{
-									{
-										restrictions: []*plugin.RestrictionError{
-											plugin.NewRestrictionError("jkl"),
-											plugin.NewRestrictionError("mno"),
-										},
-									},
-								},
+								restrictions: []string{"def", "ghi"},
+								alls:         []*allError{{restrictions: []string{"jkl", "mno"}}},
 							},
-							{
-								restrictions: []*plugin.RestrictionError{
-									plugin.NewRestrictionError("pqr"),
-									plugin.NewRestrictionError("stu"),
-								},
-							},
+							{restrictions: []string{"pqr", "stu"}},
 						},
 					},
 				},
@@ -743,64 +614,114 @@ func Test_anyError_format(t *testing.T) {
 				"　　" + entryPrefix + "You need to fulfill at least one of these requirements:\n" +
 				"　　　　" + entryPrefix + "pqr\n" +
 				"　　　　" + entryPrefix + "stu",
-			fatal: false,
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual, fatal, err := c.err.format(0, i18n.NewFallbackLocalizer())
-			require.NoError(t, err)
-			assert.Equal(t, c.fatal, fatal)
+			fillHeaderAndInline(c.err, i18n.NewFallbackLocalizer())
+			c.expect = c.err.header + "\n\n" + c.expect
+
+			actual := c.err.format(0)
+
 			assert.Equal(t, c.expect, actual)
 		})
 	}
 }
 
-func Test_anyError_Wrap(t *testing.T) {
-	t.Run("fatal", func(t *testing.T) {
-		expect := plugin.NewFatalRestrictionError("You need to fulfill at least one of these requirements to " +
-			"execute the command:\n\n" +
-			entryPrefix + "mno\n" +
-			entryPrefix + "mno")
+func Test_anyError_As(t *testing.T) {
+	testCases := []struct {
+		name string
+		desc string
+		fun  plugin.RestrictionFunc
+	}{
+		{
+			name: "fatal",
+			desc: "You need to fulfill at least one of these requirements to execute the command:\n\n" +
+				entryPrefix + fatalErrorFuncDescription + "\n" +
+				entryPrefix + fatalErrorFuncDescription,
+			fun: Any(fatalErrorFunc, fatalErrorFunc),
+		},
+		{
+			name: "not fatal",
+			desc: "You need to fulfill at least one of these requirements to execute the command:\n\n" +
+				entryPrefix + errorFunc1Description + "\n" +
+				entryPrefix + errorFunc2Description,
+			fun: Any(errorFunc1, errorFunc2),
+		},
+	}
 
-		ctx := &plugin.Context{
-			Localizer: mock.NewLocalizer(t).
-				On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
-				On(allMessageInline.Term, allMessageInline.Fallback.Other).
-				Build(),
+	ctx := &plugin.Context{
+		Localizer: mock.NewLocalizer(t).
+			On(allMessageHeader.Term, allMessageHeader.Fallback.Other).
+			On(anyMessageInline.Term, anyMessageInline.Fallback.Other).
+			On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
+			Build(),
+	}
+
+	t.Run("errors.Error", func(t *testing.T) {
+		for _, c := range testCases {
+			t.Run(c.name, func(t *testing.T) {
+				err := c.fun(nil, ctx)
+				require.IsType(t, new(anyError), err)
+
+				var expect *plugin.RestrictionError
+
+				if allErr := err.(*anyError); allErr.fatal {
+					expect = plugin.NewFatalRestrictionError(c.desc)
+				} else {
+					expect = plugin.NewRestrictionError(c.desc)
+				}
+
+				var actual errors.Error
+				assert.ErrorAs(t, err, &actual)
+				assert.Equal(t, expect, actual)
+			})
 		}
-
-		err := Any(fatalErrorFunc, fatalErrorFunc)(nil, ctx)
-
-		require.IsType(t, new(anyError), err)
-
-		anyErr := err.(*anyError)
-
-		actual := anyErr.Wrap(nil, ctx)
-		assert.Equal(t, expect, actual)
 	})
 
-	t.Run("not fatal", func(t *testing.T) {
-		expect := plugin.NewRestrictionError("You need to fulfill at least one of these requirements to execute " +
-			"the command:\n\n" +
-			entryPrefix + "abc\n" +
-			entryPrefix + "def")
+	t.Run("*plugin.RestrictionError", func(t *testing.T) {
+		for _, c := range testCases {
+			t.Run(c.name, func(t *testing.T) {
+				err := c.fun(nil, ctx)
+				require.IsType(t, new(anyError), err)
 
-		ctx := &plugin.Context{
-			Localizer: mock.NewLocalizer(t).
-				On(anyMessageHeader.Term, anyMessageHeader.Fallback.Other).
-				On(allMessageInline.Term, allMessageInline.Fallback.Other).
-				Build(),
+				var expect *plugin.RestrictionError
+
+				if allErr := err.(*anyError); allErr.fatal {
+					expect = plugin.NewFatalRestrictionError(c.desc)
+				} else {
+					expect = plugin.NewRestrictionError(c.desc)
+				}
+
+				actual := new(plugin.RestrictionError)
+				assert.ErrorAs(t, err, &actual)
+				assert.Equal(t, expect, actual)
+			})
 		}
-
-		err := Any(errorFunc1, errorFunc2)(nil, ctx)
-
-		require.IsType(t, new(anyError), err)
-
-		anyErr := err.(*anyError)
-
-		actual := anyErr.Wrap(nil, ctx)
-		assert.Equal(t, expect, actual)
 	})
+}
+
+func fillHeaderAndInline(err error, l *i18n.Localizer) {
+	if allErr, ok := err.(*allError); ok {
+		allErr.header = l.MustLocalize(allMessageHeader)
+
+		if len(allErr.anys) > 0 {
+			allErr.anyMessage = l.MustLocalize(anyMessageInline)
+
+			for _, any := range allErr.anys {
+				fillHeaderAndInline(any, l)
+			}
+		}
+	} else if anyErr, ok := err.(*anyError); ok {
+		anyErr.header = l.MustLocalize(anyMessageHeader)
+
+		if len(anyErr.alls) > 0 {
+			anyErr.allMessage = l.MustLocalize(allMessageInline)
+
+			for _, all := range anyErr.alls {
+				fillHeaderAndInline(all, l)
+			}
+		}
+	}
 }
