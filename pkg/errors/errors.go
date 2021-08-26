@@ -31,17 +31,17 @@ type Error interface {
 }
 
 // Handle handles the passed error.
-// If the error does not implement interface Error, it will be wrapped using
-// WithStack.
+// If the error does not make itself available as an Error via As, it will be
+// wrapped using WithStack.
 //
 // Up to maxHandles errors returned by Error.Handle and subsequent calls will
 // be handled.
 // If maxHandles is negative, subsequent handles won't be limited.
-func Handle(err error, s *state.State, ctx *plugin.Context, maxHandles int) {
+func Handle(s *state.State, ctx *plugin.Context, err error, maxHandles int) {
 	for maxHandles != 0 && err != nil {
 		var Err Error
 		if !errors.As(err, &Err) {
-			Err = WithStack(err).(Error) //nolint:errorlint
+			Err = WithStack(err)
 		}
 
 		err = Err.Handle(s, ctx)

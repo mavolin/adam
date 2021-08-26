@@ -107,7 +107,7 @@ func (l *Localizer) Localize(c *Config) (string, error) {
 		return c.Fallback.genTranslation(placeholders, c.Plural)
 	}
 
-	return "", newNoTranslationGeneratedError(c.Term)
+	return "", newLocalizationError(c.Term)
 }
 
 // LocalizeTerm is short for

@@ -275,7 +275,7 @@ func TestLocalizer_LocalizeTerm(t *testing.T) {
 
 		actual, err := l.LocalizeTerm(term)
 		assert.Empty(t, actual)
-		assert.True(t, errors.Is(err, &NoTranslationGeneratedError{
+		assert.True(t, errors.Is(err, &LocalizationError{
 			Term: term,
 		}), "unexpected error")
 	})

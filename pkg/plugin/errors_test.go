@@ -78,7 +78,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 // BotPermissionsError
 // =====================================================================================
 
-func TestNewInsufficientBotPermissionsError(t *testing.T) {
+func TestNewBotPermissionsError(t *testing.T) {
 	perms := discord.PermissionViewChannel | discord.PermissionManageEmojisAndStickers
 
 	expect := &BotPermissionsError{Missing: perms}
@@ -87,7 +87,7 @@ func TestNewInsufficientBotPermissionsError(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func TestInsufficientBotPermissionsError_Is(t *testing.T) {
+func TestBotPermissionsError_Is(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		var perms discord.Permissions = 123
 
@@ -112,7 +112,7 @@ func TestInsufficientBotPermissionsError_Is(t *testing.T) {
 	})
 }
 
-func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
+func TestBotPermissionsError_Handle(t *testing.T) {
 	t.Run("single permission", func(t *testing.T) {
 		m, s := state.NewMocker(t)
 
@@ -123,8 +123,8 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		}
 
 		embed := shared.ErrorEmbed.Clone().
-			WithDescriptionl(insufficientPermissionsDescSingle.
-				WithPlaceholders(insufficientBotPermissionsDescSinglePlaceholders{
+			WithDescriptionl(botPermissionsDescSingle.
+				WithPlaceholders(botPermissionsDescSinglePlaceholders{
 					MissingPermission: "Video",
 				})).
 			MustBuild(ctx.Localizer)
@@ -150,7 +150,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 		}
 
 		embed := shared.ErrorEmbed.Clone().
-			WithDescriptionl(insufficientPermissionsDescMulti).
+			WithDescriptionl(botPermissionsDescMulti).
 			WithField("Missing Permissions", "• Video\n• View Audit Log").
 			MustBuild(ctx.Localizer)
 
@@ -170,7 +170,7 @@ func TestInsufficientBotPermissionsError_Handle(t *testing.T) {
 // ChannelTypeError
 // =====================================================================================
 
-func TestInvalidChannelError_Is(t *testing.T) {
+func TestChannelTypeError_Is(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		types := GuildChannels
 
@@ -195,7 +195,7 @@ func TestInvalidChannelError_Is(t *testing.T) {
 	})
 }
 
-func TestInvalidChannelTypeError_Handle(t *testing.T) {
+func TestChannelTypeError_Handle(t *testing.T) {
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{

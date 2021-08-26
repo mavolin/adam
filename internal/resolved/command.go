@@ -1,8 +1,6 @@
 package resolved
 
 import (
-	"errors"
-
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
@@ -126,14 +124,7 @@ func (cmd *Command) ChannelTypes() plugin.ChannelTypes   { return cmd.source.Get
 func (cmd *Command) BotPermissions() discord.Permissions { return cmd.source.GetBotPermissions() }
 
 func (cmd *Command) IsRestricted(s *state.State, ctx *plugin.Context) error {
-	err := cmd.source.IsRestricted(s, ctx)
-
-	var wrapper plugin.RestrictionErrorWrapper
-	if ok := errors.As(err, &wrapper); ok {
-		err = wrapper.Wrap(s, ctx)
-	}
-
-	return err
+	return cmd.source.IsRestricted(s, ctx)
 }
 
 func (cmd *Command) Throttler() plugin.Throttler { return cmd.source.GetThrottler() }

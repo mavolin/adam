@@ -54,19 +54,4 @@ func TestResolvedCommand_IsRestricted(t *testing.T) {
 		actual := rcmd.IsRestricted(nil, nil)
 		assert.Equal(t, expect, actual)
 	})
-
-	t.Run("plugin.RestrictionErrorWrapper", func(t *testing.T) {
-		expect := errors.New("abc")
-
-		rcmd := &Command{
-			source: mockplugin.Command{
-				Restrictions: func(*state.State, *plugin.Context) error {
-					return &mockplugin.RestrictionErrorWrapper{Return: expect}
-				},
-			},
-		}
-
-		actual := rcmd.IsRestricted(nil, nil)
-		assert.Equal(t, expect, actual)
-	})
 }

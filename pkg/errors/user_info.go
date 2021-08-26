@@ -219,10 +219,10 @@ func (i *UserInfo) Error() string { return "user info" }
 
 // Handle sends the info Embed.
 func (i *UserInfo) Handle(s *state.State, ctx *plugin.Context) error {
-	return HandleUserInfo(i, s, ctx)
+	return HandleUserInfo(s, ctx, i)
 }
 
-var HandleUserInfo = func(info *UserInfo, s *state.State, ctx *plugin.Context) error {
+var HandleUserInfo = func(s *state.State, ctx *plugin.Context, info *UserInfo) error {
 	_, err := ctx.ReplyEmbedBuilders(info.Embed)
 	return err
 }

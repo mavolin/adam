@@ -91,7 +91,7 @@ func TestSilent(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		cause := NewWithStack("abc").(*InternalError)
 
-		ierr := Silent(cause).(*InternalError)
+		ierr := Silent(cause)
 
 		require.NotSame(t, cause, ierr)
 		assert.Equal(t, cause.cause, ierr.cause)
@@ -107,7 +107,7 @@ func TestSilent(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		cause := New("abc")
 
-		ierr := Silent(cause).(*InternalError)
+		ierr := Silent(cause)
 
 		assert.Equal(t, cause, ierr.cause)
 		assert.Nil(t, ierr.desc)
@@ -123,7 +123,7 @@ func TestMustInternal(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		cause := NewSilent("abc").(*InternalError)
 
-		ierr := MustInternal(cause).(*InternalError)
+		ierr := MustInternal(cause)
 
 		require.NotSame(t, cause, ierr)
 		assert.Equal(t, cause.cause, ierr.cause)
@@ -134,7 +134,7 @@ func TestMustInternal(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		cause := NewWithStack("abc").(*InternalError)
 
-		ierr := MustInternal(cause).(*InternalError)
+		ierr := MustInternal(cause)
 
 		require.Same(t, cause, ierr)
 		assert.Equal(t, cause.cause, ierr.cause)
@@ -145,7 +145,7 @@ func TestMustInternal(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		cause := New("abc")
 
-		ierr := MustInternal(cause).(*InternalError)
+		ierr := MustInternal(cause)
 
 		assert.Equal(t, cause, ierr.cause)
 		assert.Equal(t, defaultInternalDesc, ierr.desc)
@@ -161,7 +161,7 @@ func TestMustSilent(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		cause := NewSilent("abc").(*InternalError)
 
-		ierr := MustSilent(cause).(*InternalError)
+		ierr := MustSilent(cause)
 
 		require.Same(t, cause, ierr)
 		assert.Equal(t, cause.cause, ierr.cause)
@@ -172,7 +172,7 @@ func TestMustSilent(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		cause := NewWithStack("abc").(*InternalError)
 
-		ierr := MustSilent(cause).(*InternalError)
+		ierr := MustSilent(cause)
 
 		require.NotSame(t, cause, ierr)
 		assert.Equal(t, cause.cause, ierr.cause)
@@ -183,7 +183,7 @@ func TestMustSilent(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		cause := New("abc")
 
-		ierr := MustSilent(cause).(*InternalError)
+		ierr := MustSilent(cause)
 
 		assert.Equal(t, cause, ierr.cause)
 		assert.Nil(t, ierr.desc)

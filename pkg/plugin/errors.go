@@ -53,13 +53,13 @@ func (e *ArgumentError) Error() string {
 }
 
 // Handle handles the ArgumentError.
-// By default it sends an error Embed containing a description of which
+// By default, it sends an error Embed containing a description of which
 // arg/flag was faulty in the channel the command was sent in.
 func (e *ArgumentError) Handle(s *state.State, ctx *Context) error {
-	return HandleArgumentError(e, s, ctx)
+	return HandleArgumentError(s, ctx, e)
 }
 
-var HandleArgumentError = func(aerr *ArgumentError, _ *state.State, ctx *Context) error {
+var HandleArgumentError = func(_ *state.State, ctx *Context, aerr *ArgumentError) error {
 	desc, err := aerr.Description(ctx.Localizer)
 	if err != nil {
 		return err
@@ -115,7 +115,7 @@ func (e *BotPermissionsError) IsSinglePermission() bool {
 func (e *BotPermissionsError) Description(l *i18n.Localizer) (desc string) {
 	if e.Missing == 0 {
 		// we can ignore this error, as there is a fallback
-		desc, _ = l.Localize(insufficientPermissionsDefault)
+		desc, _ = l.Localize(botPermissionsDefault)
 		return desc
 	}
 
@@ -134,13 +134,13 @@ func (e *BotPermissionsError) Description(l *i18n.Localizer) (desc string) {
 		}
 
 		// we can ignore this error, as there is a fallback
-		desc, _ = l.Localize(insufficientPermissionsDescSingle.
-			WithPlaceholders(&insufficientBotPermissionsDescSinglePlaceholders{
+		desc, _ = l.Localize(botPermissionsDescSingle.
+			WithPlaceholders(&botPermissionsDescSinglePlaceholders{
 				MissingPermission: missingNames[0],
 			}))
 	} else {
 		// we can ignore this error, as there is a fallback
-		desc, _ = l.Localize(insufficientPermissionsDescMulti)
+		desc, _ = l.Localize(botPermissionsDescMulti)
 	}
 
 	return desc
@@ -167,12 +167,12 @@ func (e *BotPermissionsError) Is(target error) bool {
 }
 
 // Handle handles the BotPermissionsError.
-// By default it sends an error Embed stating the missing permissions.
+// By default, it sends an error Embed stating the missing permissions.
 func (e *BotPermissionsError) Handle(s *state.State, ctx *Context) error {
-	return HandleBotPermissionsError(e, s, ctx)
+	return HandleBotPermissionsError(s, ctx, e)
 }
 
-var HandleBotPermissionsError = func(perr *BotPermissionsError, _ *state.State, ctx *Context) error {
+var HandleBotPermissionsError = func(_ *state.State, ctx *Context, perr *BotPermissionsError) error {
 	// if this error arose because of a missing send messages permission,
 	// do nothing, as we can't send an error message
 	if perr.Missing.Has(discord.PermissionSendMessages) {
@@ -183,7 +183,7 @@ var HandleBotPermissionsError = func(perr *BotPermissionsError, _ *state.State, 
 		WithDescription(perr.Description(ctx.Localizer))
 
 	if !perr.IsSinglePermission() {
-		perms, err := ctx.Localize(insufficientPermissionsMissingPermissionsFieldName)
+		perms, err := ctx.Localize(botPermissionsMissingPermissionsFieldName)
 		if err != nil {
 			return err
 		}
@@ -251,12 +251,12 @@ func (e *ChannelTypeError) Is(target error) bool {
 }
 
 // Handle handles the ChannelTypeError.
-// By default it sends an error message stating the allowed channel types.
+// By default, it sends an error message stating the allowed channel types.
 func (e *ChannelTypeError) Handle(s *state.State, ctx *Context) error {
-	return HandleChannelTypeError(e, s, ctx)
+	return HandleChannelTypeError(s, ctx, e)
 }
 
-var HandleChannelTypeError = func(cerr *ChannelTypeError, s *state.State, ctx *Context) error {
+var HandleChannelTypeError = func(s *state.State, ctx *Context, cerr *ChannelTypeError) error {
 	embed := shared.ErrorEmbed.Clone().
 		WithDescription(cerr.Description(ctx.Localizer))
 
@@ -350,10 +350,10 @@ func (e *RestrictionError) Error() string { return "restriction error" }
 // By default it sends an error Embed with the description of the
 // RestrictionError.
 func (e *RestrictionError) Handle(s *state.State, ctx *Context) error {
-	return HandleRestrictionError(e, s, ctx)
+	return HandleRestrictionError(s, ctx, e)
 }
 
-var HandleRestrictionError = func(rerr *RestrictionError, s *state.State, ctx *Context) error {
+var HandleRestrictionError = func(s *state.State, ctx *Context, rerr *RestrictionError) error {
 	desc, err := rerr.Description(ctx.Localizer)
 	if err != nil {
 		return err
@@ -408,10 +408,10 @@ func (e *ThrottlingError) Error() string { return "throttling error" }
 // By default it sends an info Embed with the description of the
 // ThrottlingError.
 func (e *ThrottlingError) Handle(s *state.State, ctx *Context) error {
-	return HandleThrottlingError(e, s, ctx)
+	return HandleThrottlingError(s, ctx, e)
 }
 
-var HandleThrottlingError = func(terr *ThrottlingError, s *state.State, ctx *Context) error {
+var HandleThrottlingError = func(s *state.State, ctx *Context, terr *ThrottlingError) error {
 	desc, err := terr.Description(ctx.Localizer)
 	if err != nil {
 		return err

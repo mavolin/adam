@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNoTranslationGeneratedError_Error(t *testing.T) {
+func TestLocalizationError_Error(t *testing.T) {
 	testCases := []struct {
 		name   string
 		term   Term
@@ -16,18 +16,18 @@ func TestNoTranslationGeneratedError_Error(t *testing.T) {
 		{
 			name:   "with term",
 			term:   "abc",
-			expect: "unable to generate a translation for term 'abc'",
+			expect: "i18n: unable to generate a translation for term 'abc'",
 		},
 		{
 			name:   "no term",
 			term:   "",
-			expect: "unable to generate a translation",
+			expect: "i18n: unable to generate a translation",
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			err := &NoTranslationGeneratedError{
+			err := &LocalizationError{
 				Term: c.term,
 			}
 
@@ -39,15 +39,15 @@ func TestNoTranslationGeneratedError_Error(t *testing.T) {
 
 func TestNoTranslationGeneratedError_Is(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		err := new(NoTranslationGeneratedError)
-		target := new(NoTranslationGeneratedError)
+		err := new(LocalizationError)
+		target := new(LocalizationError)
 
 		is := err.Is(target)
 		assert.True(t, is)
 	})
 
 	t.Run("different types", func(t *testing.T) {
-		err := new(NoTranslationGeneratedError)
+		err := new(LocalizationError)
 		target := io.EOF
 
 		is := err.Is(target)
@@ -55,11 +55,11 @@ func TestNoTranslationGeneratedError_Is(t *testing.T) {
 	})
 
 	t.Run("different terms", func(t *testing.T) {
-		err := &NoTranslationGeneratedError{
+		err := &LocalizationError{
 			Term: "abc",
 		}
 
-		target := &NoTranslationGeneratedError{
+		target := &LocalizationError{
 			Term: "def",
 		}
 

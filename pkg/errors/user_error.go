@@ -221,10 +221,10 @@ func (e *UserError) Error() string { return "user error" }
 // Handle handles the UserError.
 // By default it sends the error Embed.
 func (e *UserError) Handle(s *state.State, ctx *plugin.Context) error {
-	return HandleUserError(e, s, ctx)
+	return HandleUserError(s, ctx, e)
 }
 
-var HandleUserError = func(uerr *UserError, s *state.State, ctx *plugin.Context) error {
+var HandleUserError = func(s *state.State, ctx *plugin.Context, uerr *UserError) error {
 	_, err := ctx.ReplyEmbedBuilders(uerr.Embed)
 	return err
 }
