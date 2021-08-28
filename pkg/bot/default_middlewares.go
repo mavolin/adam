@@ -238,7 +238,7 @@ func NewThrottlerChecker(cancelChecker func(err error) bool) Middleware {
 			panicked := true
 
 			// hacky way to check if we panicked, without repanicking and
-			// losing stack
+			// losing part of the stack trace
 			defer func() {
 				if panicked {
 					rm()

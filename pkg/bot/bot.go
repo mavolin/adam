@@ -36,8 +36,7 @@ type Bot struct {
 
 	autoAddHandlers bool
 
-	ThrottlerCancelChecker func(error) bool
-	ErrorHandler           func(error, *state.State, *plugin.Context)
+	ErrorHandler func(error, *state.State, *plugin.Context)
 
 	PanicHandler             func(recovered interface{}, s *state.State, ctx *plugin.Context)
 	MessageCreateMiddlewares []interface{}
@@ -104,7 +103,6 @@ func New(o Options) (b *Bot, err error) {
 	b.EditAge = o.EditAge
 	b.autoOpen = !o.NoAutoOpen
 	b.autoAddHandlers = o.AutoAddHandlers
-	b.ThrottlerCancelChecker = o.ThrottlerCancelChecker
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
@@ -122,7 +120,7 @@ func New(o Options) (b *Bot, err error) {
 		b.AddMiddleware(FindCommand)
 		b.AddMiddleware(CheckChannelTypes)
 		b.AddMiddleware(CheckBotPermissions)
-		b.AddMiddleware(NewThrottlerChecker(b.ThrottlerCancelChecker))
+		b.AddMiddleware(NewThrottlerChecker(o.ThrottlerCancelChecker))
 
 		b.AddPostMiddleware(CheckRestrictions)
 		b.AddPostMiddleware(ParseArgs)

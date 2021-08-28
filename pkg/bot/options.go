@@ -83,7 +83,7 @@ type Options struct {
 	// return an error.
 	//
 	// The call to Open will be made before the gateway is opened.
-	// It is therefore safe to add ReadyEvent handlers.
+	// It is therefore safe to add Ready handlers.
 	//
 	// The call to Close will be made after the event listener is Closed.
 	//
@@ -248,12 +248,12 @@ type Options struct {
 	//
 	//  Bot.TryAddMiddleware(CheckMessageType)
 	//  Bot.TryAddMiddleware(CheckHuman) // if Options.AllowBot is true
-	//	Bot.TryAddMiddleware(NewSettingsRetriever(Bot.SettingsProvider))
+	//	Bot.TryAddMiddleware(NewSettingsRetriever(Options.SettingsProvider))
 	//  Bot.TryAddMiddleware(CheckPrefix)
 	//	Bot.TryAddMiddleware(FindCommand)
 	//	Bot.TryAddMiddleware(CheckChannelTypes)
 	//	Bot.TryAddMiddleware(CheckBotPermissions)
-	//	Bot.TryAddMiddleware(NewThrottlerChecker(Bot.ThrottlerCancelChecker))
+	//	Bot.TryAddMiddleware(NewThrottlerChecker(Options.ThrottlerCancelChecker))
 	//
 	//	Bot.TryAddPostMiddleware(CheckRestrictions)
 	//	Bot.TryAddPostMiddleware(ParseArgs)
