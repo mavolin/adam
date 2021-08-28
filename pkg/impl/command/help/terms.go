@@ -59,7 +59,8 @@ var (
 
 	moduleTitle = i18n.NewFallbackConfig("plugin.help.common.module_title", "`{{.module}}` Module")
 
-	// copy of var in arg package:
+	// pluginNotFoundError is a copy of the variable with the same name found
+	// in the arg package.
 	pluginNotFoundError = i18n.NewFallbackConfig(
 		"arg.types.plugin.error.not_found",
 		"I don't know any commands or modules with the name `{{.invoke}}`. Make sure you spelled it right.")

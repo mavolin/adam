@@ -29,19 +29,24 @@ var (
 func errorFunc1(*state.State, *plugin.Context) error {
 	return plugin.NewRestrictionError(errorFunc1Description)
 }
+
 func errorFunc2(*state.State, *plugin.Context) error {
 	return plugin.NewRestrictionError(errorFunc2Description)
 }
+
 func errorFunc3(*state.State, *plugin.Context) error {
 	return plugin.NewRestrictionError(errorFunc3Description)
 }
+
 func errorFunc4(*state.State, *plugin.Context) error {
 	return plugin.NewRestrictionError(errorFunc4Description)
 }
+
 func fatalErrorFunc(*state.State, *plugin.Context) error {
 	return plugin.NewFatalRestrictionError(
 		fatalErrorFuncDescription)
 }
+
 func embeddableErrorFunc(*state.State, *plugin.Context) error {
 	return &EmbeddableError{
 		EmbeddableVersion: plugin.NewRestrictionError(embeddableErrorFuncEmbeddableDescription),

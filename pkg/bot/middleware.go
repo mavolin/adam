@@ -186,8 +186,7 @@ func newMessageUpdateEvent(ctx *plugin.Context) *event.MessageUpdate {
 // AddMiddleware is the same as TryAddMiddleware, but panics if TryAddMiddleware
 // returns an error.
 func (m *MiddlewareManager) AddMiddleware(f interface{}) {
-	err := m.TryAddMiddleware(f)
-	if err != nil {
+	if err := m.TryAddMiddleware(f); err != nil {
 		panic(err)
 	}
 }

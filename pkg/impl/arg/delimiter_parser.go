@@ -156,8 +156,7 @@ func newDelimiterParser(
 }
 
 func (p *delimiterParser) parse() error {
-	err := p.startParse()
-	if err != nil {
+	if err := p.startParse(); err != nil {
 		return err
 	}
 

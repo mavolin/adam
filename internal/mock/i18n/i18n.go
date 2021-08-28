@@ -19,7 +19,8 @@ type Localizer struct {
 
 // NewLocalizer creates a new Localizer.
 // If a term is not found, Localizer will panic.
-func NewLocalizer(t *testing.T) *Localizer { //nolint:thelper
+//nolint:thelper
+func NewLocalizer(t *testing.T) *Localizer {
 	return &Localizer{
 		t:     t,
 		on:    make(map[i18n.Term]string),
@@ -29,7 +30,8 @@ func NewLocalizer(t *testing.T) *Localizer { //nolint:thelper
 
 // NewLocalizerWithDefault creates a new Localizer using the passed default.
 // If a term is not found, Localizer will return the default value.
-func NewLocalizerWithDefault(t *testing.T, def string) *Localizer { //nolint:thelper
+//nolint:thelper
+func NewLocalizerWithDefault(t *testing.T, def string) *Localizer {
 	return &Localizer{
 		t:     t,
 		def:   def,
@@ -51,7 +53,8 @@ func (l *Localizer) ErrorOn(term i18n.Term) *Localizer {
 }
 
 // Clone creates a clone of the localizer.
-func (l *Localizer) Clone(t *testing.T) *Localizer { //nolint:thelper
+//nolint:thelper
+func (l *Localizer) Clone(t *testing.T) *Localizer {
 	on := make(map[i18n.Term]string, len(l.on))
 	errOn := make(map[i18n.Term]struct{}, len(l.on))
 

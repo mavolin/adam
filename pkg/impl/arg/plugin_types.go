@@ -67,8 +67,7 @@ func (m moduleType) GetDescription(l *i18n.Localizer) string {
 }
 
 func (m moduleType) Parse(_ *state.State, ctx *plugin.ParseContext) (interface{}, error) {
-	mod := ctx.FindModule(ctx.Raw)
-	if mod != nil {
+	if mod := ctx.FindModule(ctx.Raw); mod != nil {
 		return mod, nil
 	}
 

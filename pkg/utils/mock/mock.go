@@ -18,6 +18,7 @@ type Localizer = i18n.Localizer
 
 // NewLocalizer creates a new Localizer.
 // If a term is not found, Localizer will panic.
+//nolint:thelper
 func NewLocalizer(t *testing.T) *Localizer {
 	return i18n.NewLocalizer(t)
 }
@@ -36,12 +37,15 @@ type DiscordDataProvider = mockplugin.DiscordDataProvider
 
 type ErrorHandler = mockplugin.ErrorHandler
 
+//nolint:thelper
 func NewErrorHandler(t *testing.T) *ErrorHandler {
 	return mockplugin.NewErrorHandler(t)
 }
 
-type Command = mockplugin.Command
-type Module = mockplugin.Module
+type (
+	Command = mockplugin.Command
+	Module  = mockplugin.Module
+)
 
 type Throttler = mockplugin.Throttler
 
