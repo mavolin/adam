@@ -5,7 +5,7 @@
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/mavolin/adam/Test/develop?label=tests)](https://github.com/mavolin/adam/actions)
 [![codecov](https://codecov.io/gh/mavolin/adam/branch/develop/graph/badge.svg?token=3qRIAudu4r)](https://codecov.io/gh/mavolin/adam)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mavolin/adam)](https://goreportcard.com/report/github.com/mavolin/adam)
-[![License](https://img.shields.io/github/license/mavolin/dismock)](https://github.com/mavolin/dismock/blob/v2/LICENSE)
+[![License](https://img.shields.io/github/license/mavolin/adam)](https://github.com/mavolin/adam/blob/develop/LICENSE)
 </div>
 
 ---
