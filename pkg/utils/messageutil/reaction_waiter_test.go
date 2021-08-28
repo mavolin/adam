@@ -13,7 +13,11 @@ import (
 )
 
 func TestReactionWaiter_Await(t *testing.T) {
+	t.Parallel()
+
 	t.Run("timeout", func(t *testing.T) {
+		t.Parallel()
+
 		_, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{

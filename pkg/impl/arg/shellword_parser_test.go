@@ -12,6 +12,8 @@ import (
 )
 
 func Test_shellwordParser_Parse(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name   string
 		config plugin.ArgConfig
@@ -403,8 +405,13 @@ func Test_shellwordParser_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := new(plugin.Context)
 
 				err := ShellwordParser.Parse(c.rawArgs, c.config, nil, ctx)
@@ -525,8 +532,12 @@ func Test_shellwordParser_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
 				actual := ShellwordParser.Parse(c.rawArgs, c.config, nil, new(plugin.Context))
 				assert.Equal(t, c.expect, actual)
 			})
@@ -535,6 +546,8 @@ func Test_shellwordParser_Parse(t *testing.T) {
 }
 
 func Test_shellwordParser_FormatArgs(t *testing.T) {
+	t.Parallel()
+
 	args := []string{"Foo", "-Bar", "Foo, Bar", `Bar\ "Foo"`}
 	flags := map[string]string{
 		"foo":     "bar",
@@ -553,6 +566,8 @@ func Test_shellwordParser_FormatArgs(t *testing.T) {
 }
 
 func Test_shellwordParser_FormatUsage(t *testing.T) {
+	t.Parallel()
+
 	args := []string{"<Foo>", "<Bar>", "[FooBar]"}
 
 	expect := "<Foo> <Bar> [FooBar]"
@@ -561,6 +576,8 @@ func Test_shellwordParser_FormatUsage(t *testing.T) {
 }
 
 func Test_shellwordParser_FormatFlag(t *testing.T) {
+	t.Parallel()
+
 	expect := "-foo"
 	actual := ShellwordParser.FormatFlag("foo")
 	assert.Equal(t, expect, actual)

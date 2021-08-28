@@ -7,6 +7,8 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
+
 	expect := "abc"
 
 	actual := New(expect)
@@ -16,6 +18,8 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewWithStack(t *testing.T) {
+	t.Parallel()
+
 	expect := "abc"
 
 	actual := NewWithStack(expect)
@@ -25,6 +29,8 @@ func TestNewWithStack(t *testing.T) {
 }
 
 func TestNewWithStackf(t *testing.T) {
+	t.Parallel()
+
 	expect := "abc def"
 
 	actual := NewWithStackf("abc %s", "def")

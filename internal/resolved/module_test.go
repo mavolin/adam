@@ -3,195 +3,200 @@ package resolved
 import (
 	"testing"
 
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	mockplugin "github.com/mavolin/adam/internal/mock/plugin"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
 func TestModule_ShortDescription(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		expect := "abc"
+	t.Parallel()
 
-		rmod := &Module{
-			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: expect}}},
-			},
-		}
+	testCases := []struct {
+		name string
 
-		actual := rmod.ShortDescription(nil)
-		assert.Equal(t, expect, actual)
-	})
+		shortDescriptions []string
 
-	t.Run("fallback", func(t *testing.T) {
-		expect := "def"
+		expect string
+	}{
+		{
+			name:              "first hit",
+			shortDescriptions: []string{"abc", "def"},
+			expect:            "abc",
+		},
+		{
+			name:              "fallback",
+			shortDescriptions: []string{"", "abc"},
+			expect:            "abc",
+		},
+		{
+			name:              "none",
+			shortDescriptions: []string{"", ""},
+			expect:            "",
+		},
+	}
 
-		rmod := &Module{
-			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: ""}}},
-				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: expect}}},
-			},
-		}
+	for _, c := range testCases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
 
-		actual := rmod.ShortDescription(nil)
-		assert.Equal(t, expect, actual)
-	})
+			rmod := &Module{sources: make([]plugin.SourceModule, len(c.shortDescriptions))}
 
-	t.Run("none", func(t *testing.T) {
-		rmod := &Module{
-			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: ""}}},
-				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: ""}}},
-			},
-		}
+			for i, sdesc := range c.shortDescriptions {
+				rmod.sources[i].Modules = []plugin.Module{
+					mockplugin.Module{ShortDescription: sdesc},
+				}
+			}
 
-		actual := rmod.ShortDescription(nil)
-		assert.Empty(t, actual)
-	})
+			actual := rmod.ShortDescription(nil)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
 }
 
 func TestModule_LongDescription(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		expect := "abc"
+	t.Parallel()
 
-		rmod := &Module{
-			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockplugin.Module{LongDescription: expect}}},
+	testCases := []struct {
+		name string
+
+		modules []plugin.Module
+
+		expect string
+	}{
+		{
+			name: "first hit",
+			modules: []plugin.Module{
+				mockplugin.Module{LongDescription: "abc"},
+				mockplugin.Module{LongDescription: "def"},
 			},
-		}
-
-		actual := rmod.LongDescription(nil)
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("fallback", func(t *testing.T) {
-		expect := "def"
-
-		rmod := &Module{
-			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockplugin.Module{}}},
-				{Modules: []plugin.Module{mockplugin.Module{LongDescription: expect}}},
+			expect: "abc",
+		},
+		{
+			name: "second hit",
+			modules: []plugin.Module{
+				mockplugin.Module{},
+				mockplugin.Module{LongDescription: "abc"},
 			},
-		}
-
-		actual := rmod.LongDescription(nil)
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("short description", func(t *testing.T) {
-		expect := "abc"
-
-		rmod := &Module{
-			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockplugin.Module{}}},
-				{Modules: []plugin.Module{mockplugin.Module{ShortDescription: expect}}},
+			expect: "abc",
+		},
+		{
+			name: "fallback to short description",
+			modules: []plugin.Module{
+				mockplugin.Module{},
+				mockplugin.Module{ShortDescription: "abc"},
 			},
-		}
-
-		actual := rmod.LongDescription(nil)
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("none", func(t *testing.T) {
-		rmod := &Module{
-			sources: []plugin.SourceModule{
-				{Modules: []plugin.Module{mockplugin.Module{}}},
-				{Modules: []plugin.Module{mockplugin.Module{LongDescription: ""}}},
+			expect: "abc",
+		},
+		{
+			name: "empty",
+			modules: []plugin.Module{
+				mockplugin.Module{},
+				mockplugin.Module{},
 			},
-		}
+			expect: "",
+		},
+	}
 
-		actual := rmod.LongDescription(nil)
-		assert.Empty(t, actual)
-	})
+	for _, c := range testCases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
+			rmod := &Module{sources: make([]plugin.SourceModule, len(c.modules))}
+
+			for i, smod := range c.modules {
+				rmod.sources[i].Modules = []plugin.Module{smod}
+			}
+
+			actual := rmod.LongDescription(nil)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
 }
 
 func TestModule_FindCommand(t *testing.T) {
-	t.Run("Name", func(t *testing.T) {
-		expect := &Command{source: mockplugin.Command{Name: "def"}}
+	t.Parallel()
 
-		rmod := &Module{
-			commands: []plugin.ResolvedCommand{
-				&Command{source: mockplugin.Command{Name: "abc"}},
-				expect,
-				&Command{source: mockplugin.Command{Name: "ghi"}},
-			},
+	smod := mockplugin.Module{
+		Name: "abc",
+		Commands: []plugin.Command{
+			mockplugin.Command{Name: "def", Aliases: []string{"ghi", "jkl"}},
+			mockplugin.Command{Name: "mno"},
+			mockplugin.Command{Name: "pqr", Aliases: []string{"stu"}},
+		},
+	}
+
+	resolver := NewPluginResolver(nil)
+	resolver.AddBuiltInModule(smod)
+
+	rmod := resolver.NewProvider(event.NewBase(), &discord.Message{}).Modules()[0]
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		for _, expect := range rmod.Commands() {
+			actual := rmod.FindCommand(expect.Name())
+			require.NotNilf(t, actual,
+				"expected query %s to yield command %s, but found nil", expect.Name(), expect.ID())
+			assert.Samef(t, expect, actual,
+				"expected query %s to yield command %s, but found %s", expect.Name(), expect.ID(), actual.ID())
+
+			for _, alias := range expect.Aliases() {
+				actual = rmod.FindCommand(alias)
+				require.NotNilf(t, actual,
+					"expected query %s to yield command %s, but found nil", expect.Name(), expect.ID())
+				assert.Samef(t, expect, actual,
+					"expected query %s to yield command %s, but found %s", expect.Name(), expect.ID(), actual.ID())
+			}
 		}
-
-		actual := rmod.FindCommand(expect.Name())
-		assert.Equal(t, expect, actual)
-	})
-
-	t.Run("alias", func(t *testing.T) {
-		expect := &Command{
-			source:  mockplugin.Command{Name: "def", Aliases: []string{"mno"}},
-			aliases: []string{"mno"},
-		}
-
-		rmod := &Module{
-			commands: []plugin.ResolvedCommand{
-				&Command{
-					source: mockplugin.Command{Name: "abc", Aliases: []string{"jkl"}},
-				},
-				expect,
-				&Command{source: mockplugin.Command{Name: "ghi"}},
-			},
-		}
-
-		actual := rmod.FindCommand(expect.Aliases()[0])
-		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("not found", func(t *testing.T) {
-		actual := new(Module).FindCommand("abc")
+		t.Parallel()
+
+		actual := rmod.FindCommand("cba")
 		assert.Nil(t, actual)
 	})
 }
 
 func TestResolvedModule_FindModule(t *testing.T) {
+	t.Parallel()
+
+	smod := mockplugin.Module{
+		Name: "abc",
+		Modules: []plugin.Module{
+			mockplugin.Module{Name: "def"},
+			mockplugin.Module{Name: "ghi"},
+			mockplugin.Module{Name: "jkl"},
+		},
+	}
+
+	resolver := NewPluginResolver(nil)
+	resolver.AddBuiltInModule(smod)
+
+	rmod := resolver.NewProvider(event.NewBase(), &discord.Message{}).Modules()[0]
+
 	t.Run("success", func(t *testing.T) {
-		expect := &Module{
-			sources: []plugin.SourceModule{
-				{
-					SourceName: plugin.BuiltInSource,
-					Modules: []plugin.Module{
-						mockplugin.Module{Name: "def"},
-					},
-				},
-			},
-		}
+		t.Parallel()
 
-		rmod := &Module{
-			modules: []plugin.ResolvedModule{
-				&Module{
-					sources: []plugin.SourceModule{
-						{
-							SourceName: plugin.BuiltInSource,
-							Modules: []plugin.Module{
-								mockplugin.Module{Name: "abc"},
-							},
-						},
-					},
-				},
-				expect,
-				&Module{
-					sources: []plugin.SourceModule{
-						{
-							SourceName: plugin.BuiltInSource,
-							Modules: []plugin.Module{
-								mockplugin.Module{Name: "ghi"},
-							},
-						},
-					},
-				},
-			},
+		for _, expect := range rmod.Modules() {
+			actual := rmod.FindModule(expect.Name())
+			require.NotNilf(t, actual,
+				"expected query %s to yield module %s, but found nil", expect.Name(), expect.ID())
+			assert.Samef(t, expect, actual,
+				"expected query %s to yield module %s, but found %s", expect.Name(), expect.ID(), actual.ID())
 		}
-
-		actual := rmod.FindModule(expect.Name())
-		assert.Equal(t, expect, actual)
 	})
 
 	t.Run("not found", func(t *testing.T) {
-		actual := new(Module).FindModule("abc")
+		t.Parallel()
+
+		actual := rmod.FindModule("cba")
 		assert.Nil(t, actual)
 	})
 }

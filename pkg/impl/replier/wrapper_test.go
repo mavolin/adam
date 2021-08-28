@@ -15,6 +15,8 @@ import (
 )
 
 func Test_wrappedReplier_Reply(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name        string
 		ctx         *plugin.Context
@@ -121,7 +123,10 @@ func Test_wrappedReplier_Reply(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			m, s := state.NewMocker(t)
 
 			r := WrapState(s, c.inlineReply)
@@ -136,7 +141,11 @@ func Test_wrappedReplier_Reply(t *testing.T) {
 }
 
 func Test_wrappedReplier_ReplyDM(t *testing.T) {
+	t.Parallel()
+
 	t.Run("unknown dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
@@ -177,6 +186,8 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 	})
 
 	t.Run("known dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
@@ -217,6 +228,8 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 }
 
 func Test_wrappedReplier_Edit(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &plugin.Context{
@@ -254,7 +267,11 @@ func Test_wrappedReplier_Edit(t *testing.T) {
 }
 
 func Test_wrappedReplier_EditDM(t *testing.T) {
+	t.Parallel()
+
 	t.Run("unknown dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
@@ -295,6 +312,8 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 	})
 
 	t.Run("known dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{

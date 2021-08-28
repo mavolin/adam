@@ -23,6 +23,8 @@ func (t *mockThrottler) Check(*state.State, *plugin.Context) (func(), error) {
 }
 
 func TestConditional_Check(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name        string
 		conditional Conditional
@@ -97,7 +99,10 @@ func TestConditional_Check(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			ref := 0
 
 			for _, con := range c.conditional.Conditions {

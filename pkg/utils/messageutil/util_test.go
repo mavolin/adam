@@ -14,6 +14,8 @@ import (
 )
 
 func Test_invokeMiddlewares(t *testing.T) {
+	t.Parallel()
+
 	_, s := state.NewMocker(t)
 
 	e := &event.MessageCreate{
@@ -27,6 +29,8 @@ func Test_invokeMiddlewares(t *testing.T) {
 	testErr := errors.New("abc")
 
 	t.Run("state, interface", func(t *testing.T) {
+		t.Parallel()
+
 		m := mock.Mock{}
 
 		middleware := func(s *state.State, e interface{}) {
@@ -42,7 +46,11 @@ func Test_invokeMiddlewares(t *testing.T) {
 	})
 
 	t.Run("state, interface returns error", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("no error", func(t *testing.T) {
+			t.Parallel()
+
 			m := mock.Mock{}
 
 			middleware := func(s *state.State, e interface{}) error {
@@ -62,6 +70,8 @@ func Test_invokeMiddlewares(t *testing.T) {
 		})
 
 		t.Run("error", func(t *testing.T) {
+			t.Parallel()
+
 			m := mock.Mock{}
 
 			middleware := func(s *state.State, b interface{}) error {
@@ -82,6 +92,8 @@ func Test_invokeMiddlewares(t *testing.T) {
 	})
 
 	t.Run("state, base", func(t *testing.T) {
+		t.Parallel()
+
 		m := mock.Mock{}
 
 		middleware := func(s *state.State, e *event.Base) {
@@ -97,7 +109,11 @@ func Test_invokeMiddlewares(t *testing.T) {
 	})
 
 	t.Run("state, base returns error", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("no error", func(t *testing.T) {
+			t.Parallel()
+
 			m := mock.Mock{}
 
 			middleware := func(s *state.State, b *event.Base) error {
@@ -117,6 +133,8 @@ func Test_invokeMiddlewares(t *testing.T) {
 		})
 
 		t.Run("error", func(t *testing.T) {
+			t.Parallel()
+
 			m := mock.Mock{}
 
 			middleware := func(s *state.State, b *event.Base) error {
@@ -137,6 +155,8 @@ func Test_invokeMiddlewares(t *testing.T) {
 	})
 
 	t.Run("state, message create event", func(t *testing.T) {
+		t.Parallel()
+
 		m := mock.Mock{}
 
 		middleware := func(s *state.State, e *event.MessageCreate) {
@@ -152,7 +172,11 @@ func Test_invokeMiddlewares(t *testing.T) {
 	})
 
 	t.Run("state, message create event returns error", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("no error", func(t *testing.T) {
+			t.Parallel()
+
 			m := mock.Mock{}
 
 			middleware := func(s *state.State, e *event.MessageCreate) error {
@@ -172,6 +196,8 @@ func Test_invokeMiddlewares(t *testing.T) {
 		})
 
 		t.Run("error", func(t *testing.T) {
+			t.Parallel()
+
 			m := mock.Mock{}
 
 			middleware := func(s *state.State, e *event.MessageCreate) error {

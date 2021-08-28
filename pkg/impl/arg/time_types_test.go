@@ -16,7 +16,11 @@ import (
 )
 
 func TestDuration_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		expect := 1*duration.Week + 3*duration.Day
 
 		ctx := &plugin.ParseContext{Raw: "1w 3d"}
@@ -83,8 +87,13 @@ func TestDuration_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
 					Kind: plugin.KindArg,
@@ -596,7 +605,11 @@ func TestDateTime_Parse(t *testing.T) {
 }
 
 func TestTimeZone_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &plugin.ParseContext{Raw: "America/New_York"}
 
 		expect, err := time.LoadLocation("America/New_York")
@@ -610,6 +623,8 @@ func TestTimeZone_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &plugin.ParseContext{Raw: "not a timezone"}
 
 		expect := newArgumentError(timeZoneInvalidError, ctx, nil)

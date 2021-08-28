@@ -15,6 +15,8 @@ import (
 )
 
 func TestCheckHidden(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name      string
 		hiddenLvl HiddenLevel
@@ -57,7 +59,10 @@ func TestCheckHidden(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := CheckHidden(c.hiddenLvl)(c.cmd, nil, nil)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -65,6 +70,8 @@ func TestCheckHidden(t *testing.T) {
 }
 
 func TestCheckChannelTypes(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name      string
 		hiddenLvl HiddenLevel
@@ -112,8 +119,13 @@ func TestCheckChannelTypes(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				actual := CheckChannelTypes(c.hiddenLvl)(c.cmd, nil, c.ctx)
 				assert.Equal(t, c.expect, actual)
 			})
@@ -121,6 +133,8 @@ func TestCheckChannelTypes(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		expect := Show
 
 		cmd := mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
@@ -146,6 +160,8 @@ func TestCheckChannelTypes(t *testing.T) {
 }
 
 func TestCheckRestrictions(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name      string
 		hiddenLvl HiddenLevel
@@ -186,7 +202,10 @@ func TestCheckRestrictions(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := CheckRestrictions(c.hiddenLvl)(c.cmd, nil, nil)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -198,6 +217,8 @@ func TestCheckRestrictions(t *testing.T) {
 // =====================================================================================
 
 func TestHelp_calcCommandHiddenLevel(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name  string
 		funcs []HideFunc
@@ -217,7 +238,10 @@ func TestHelp_calcCommandHiddenLevel(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			h := &Help{Options: Options{HideFuncs: c.funcs}}
 
 			actual := h.calcCommandHiddenLevel(nil, nil, nil)
@@ -227,6 +251,8 @@ func TestHelp_calcCommandHiddenLevel(t *testing.T) {
 }
 
 func TestHelp_calcModuleHiddenLevel(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		lvls []HiddenLevel
@@ -246,7 +272,10 @@ func TestHelp_calcModuleHiddenLevel(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			h := &Help{Options: Options{HideFuncs: make([]HideFunc, len(c.lvls))}}
 
 			mod := module.New(module.Meta{})
@@ -273,6 +302,8 @@ func TestHelp_calcModuleHiddenLevel(t *testing.T) {
 }
 
 func Test_filterCommands(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name  string
 		cmds  []plugin.ResolvedCommand
@@ -347,7 +378,10 @@ func Test_filterCommands(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			h := &Help{Options: Options{HideFuncs: c.funcs}}
 
 			actual := h.filterCommands(nil, nil, c.lvl, c.cmds...)

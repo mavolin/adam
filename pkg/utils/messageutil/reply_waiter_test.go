@@ -20,7 +20,11 @@ import (
 )
 
 func TestWaiter_Await(t *testing.T) {
+	t.Parallel()
+
 	t.Run("initial timeout", func(t *testing.T) {
+		t.Parallel()
+
 		_, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
@@ -55,6 +59,8 @@ func TestWaiter_Await(t *testing.T) {
 }
 
 func TestWaiter_handleMessages(t *testing.T) {
+	t.Parallel()
+
 	testError := errors.New("abc")
 
 	testCases := []struct {
@@ -157,7 +163,11 @@ func TestWaiter_handleMessages(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
+
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, s := state.NewMocker(t)
 
 			c.waiter.state = s
@@ -195,6 +205,8 @@ func TestWaiter_handleMessages(t *testing.T) {
 }
 
 func TestWaiter_handleCancelReactions(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		waiter *ReplyWaiter
@@ -269,7 +281,10 @@ func TestWaiter_handleCancelReactions(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			m, s := state.NewMocker(t)
 
 			c.waiter.state = s

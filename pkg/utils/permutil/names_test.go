@@ -10,6 +10,8 @@ import (
 )
 
 func TestPermissionNames(t *testing.T) {
+	t.Parallel()
+
 	expect := []string{"Administrator", "Video"}
 
 	perms := discord.PermissionAdministrator | discord.PermissionStream
@@ -19,6 +21,8 @@ func TestPermissionNames(t *testing.T) {
 }
 
 func TestPermissionNamesl(t *testing.T) {
+	t.Parallel()
+
 	expect := []string{"Ban Members", "View Channel"}
 
 	perms := discord.PermissionBanMembers | discord.PermissionViewChannel

@@ -8,7 +8,11 @@ import (
 )
 
 func TestCappedBuilderWriteRune(t *testing.T) {
+	t.Parallel()
+
 	t.Run("chunk limit", func(t *testing.T) {
+		t.Parallel()
+
 		totalCap := 20
 		chunkCap := 5
 
@@ -25,6 +29,8 @@ func TestCappedBuilderWriteRune(t *testing.T) {
 	})
 
 	t.Run("global limit", func(t *testing.T) {
+		t.Parallel()
+
 		totalCap := 10
 		chunkCap := 6
 
@@ -48,8 +54,14 @@ func TestCappedBuilderWriteRune(t *testing.T) {
 }
 
 func TestCappedBuilder_WriteString(t *testing.T) {
+	t.Parallel()
+
 	t.Run("chunk limit", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("full Write", func(t *testing.T) {
+			t.Parallel()
+
 			totalCap := 20
 			chunkCap := 6
 
@@ -66,6 +78,8 @@ func TestCappedBuilder_WriteString(t *testing.T) {
 		})
 
 		t.Run("partial Write", func(t *testing.T) {
+			t.Parallel()
+
 			totalCap := 20
 			chunkCap := 5
 
@@ -82,8 +96,12 @@ func TestCappedBuilder_WriteString(t *testing.T) {
 		})
 	})
 
-	t.Run("global limit", func(t *testing.T) {
-		t.Run("full Write", func(t *testing.T) {
+	t.Run("total limit", func(t *testing.T) {
+		t.Parallel()
+
+		t.Run("full write", func(t *testing.T) {
+			t.Parallel()
+
 			totalCap := 10
 			chunkCap := 6
 
@@ -105,7 +123,9 @@ func TestCappedBuilder_WriteString(t *testing.T) {
 			assert.Equal(t, expect, b.String())
 		})
 
-		t.Run("partial Write", func(t *testing.T) {
+		t.Run("partial write", func(t *testing.T) {
+			t.Parallel()
+
 			totalCap := 9
 			chunkCap := 6
 
@@ -130,6 +150,8 @@ func TestCappedBuilder_WriteString(t *testing.T) {
 }
 
 func TestCappedBuilder_Reset(t *testing.T) {
+	t.Parallel()
+
 	chunkCap := 3
 
 	b := New(10, chunkCap)
@@ -148,7 +170,11 @@ func TestCappedBuilder_Reset(t *testing.T) {
 }
 
 func TestCappedBuilderRem(t *testing.T) {
+	t.Parallel()
+
 	t.Run("chunk", func(t *testing.T) {
+		t.Parallel()
+
 		chunkCap := 5
 
 		b := New(10, chunkCap)
@@ -158,6 +184,8 @@ func TestCappedBuilderRem(t *testing.T) {
 	})
 
 	t.Run("total", func(t *testing.T) {
+		t.Parallel()
+
 		totalCap := 10
 		chunkCap := 7
 

@@ -9,6 +9,8 @@ import (
 )
 
 func Test_snowflakeThrottler_expire(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name      string
 		throttled []time.Time
@@ -58,7 +60,10 @@ func Test_snowflakeThrottler_expire(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			var s discord.Snowflake = 123
 
 			st := newSnowflakeThrottler(10, 10)

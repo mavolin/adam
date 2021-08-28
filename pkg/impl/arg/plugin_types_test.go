@@ -13,7 +13,11 @@ import (
 )
 
 func TestCommand_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &plugin.ParseContext{
 			Raw: "abc",
 			Context: &plugin.Context{
@@ -39,7 +43,11 @@ func TestCommand_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("unknown command", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
@@ -56,6 +64,8 @@ func TestCommand_Parse(t *testing.T) {
 		})
 
 		t.Run("unknown command - some commands unavailable", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
@@ -79,7 +89,11 @@ func TestCommand_Parse(t *testing.T) {
 }
 
 func TestModule_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &plugin.ParseContext{
 			Raw: "abc",
 			Context: &plugin.Context{
@@ -105,7 +119,11 @@ func TestModule_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("unknown module", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
@@ -122,6 +140,8 @@ func TestModule_Parse(t *testing.T) {
 		})
 
 		t.Run("unknown module - some commands unavailable", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
@@ -145,8 +165,14 @@ func TestModule_Parse(t *testing.T) {
 }
 
 func TestPlugin_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("command", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
@@ -172,6 +198,8 @@ func TestPlugin_Parse(t *testing.T) {
 		})
 
 		t.Run("module", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
@@ -198,7 +226,11 @@ func TestPlugin_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("unknown plugin", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{
@@ -215,6 +247,8 @@ func TestPlugin_Parse(t *testing.T) {
 		})
 
 		t.Run("unknown plugin - some commands unavailable", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw: "abc",
 				Context: &plugin.Context{

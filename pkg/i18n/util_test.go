@@ -9,6 +9,8 @@ import (
 )
 
 func Test_isOne(t *testing.T) {
+	t.Parallel()
+
 	//goland:noinspection GoRedundantConversion
 	successCases := []struct {
 		// the number 1 in that type;
@@ -44,10 +46,15 @@ func Test_isOne(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			name := reflect.TypeOf(c.one).Name()
 
 			t.Run(name, func(t *testing.T) {
+				t.Parallel()
+
 				plural, err := isOne(c.one)
 				if assert.NoError(t, err) {
 					assert.True(t, plural)
@@ -83,8 +90,13 @@ func Test_isOne(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				_, err := isOne(c.plural)
 				assert.Error(t, err)
 			})
@@ -93,6 +105,8 @@ func Test_isOne(t *testing.T) {
 }
 
 func Test_fillName(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name         string
 		tmpl         string
@@ -108,17 +122,20 @@ func Test_fillName(t *testing.T) {
 			name: "template",
 			tmpl: "this is a {{.Test.Type}} test",
 			placeholders: map[string]interface{}{
-				"Test": map[string]interface{}{
-					"Type": "unit",
-				},
+				"Test": map[string]interface{}{"Type": "unit"},
 			},
 			expect: "this is a unit test",
 		},
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				actual, err := fillTemplate(c.tmpl, c.placeholders)
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
@@ -127,7 +144,11 @@ func Test_fillName(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("syntax error", func(t *testing.T) {
+			t.Parallel()
+
 			tmpl := "{{{.Error}}"
 
 			actual, err := fillTemplate(tmpl, nil)

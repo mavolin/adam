@@ -12,6 +12,8 @@ import (
 )
 
 func TestDelimiterParser_Parse(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name   string
 		config plugin.ArgConfig
@@ -414,8 +416,13 @@ func TestDelimiterParser_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := new(plugin.Context)
 
 				parser := &DelimiterParser{Delimiter: ','}
@@ -579,8 +586,13 @@ func TestDelimiterParser_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				parser := &DelimiterParser{Delimiter: ','}
 
 				actual := parser.Parse(c.rawArgs, c.config, nil, new(plugin.Context))
@@ -591,7 +603,11 @@ func TestDelimiterParser_Parse(t *testing.T) {
 }
 
 func TestDelimiterParser_FormatArgs(t *testing.T) {
+	t.Parallel()
+
 	t.Run("no minus escape", func(t *testing.T) {
+		t.Parallel()
+
 		parser := &DelimiterParser{Delimiter: ','}
 
 		args := []string{"Foo", "Bar", "Foo, Bar"}
@@ -608,6 +624,8 @@ func TestDelimiterParser_FormatArgs(t *testing.T) {
 	})
 
 	t.Run("minus escape", func(t *testing.T) {
+		t.Parallel()
+
 		parser := &DelimiterParser{Delimiter: ','}
 
 		args := []string{"-Foo", "Bar", "Foo, Bar"}
@@ -619,6 +637,8 @@ func TestDelimiterParser_FormatArgs(t *testing.T) {
 }
 
 func TestDelimiterParser_FormatUsage(t *testing.T) {
+	t.Parallel()
+
 	parser := &DelimiterParser{Delimiter: ','}
 
 	args := []string{"<Foo>", "<Bar>", "[FooBar]"}
@@ -629,6 +649,8 @@ func TestDelimiterParser_FormatUsage(t *testing.T) {
 }
 
 func TestDelimiterParser_FormatFlag(t *testing.T) {
+	t.Parallel()
+
 	expect := "-foo"
 	actual := new(DelimiterParser).FormatFlag("foo")
 	assert.Equal(t, expect, actual)

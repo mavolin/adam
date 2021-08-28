@@ -13,7 +13,11 @@ import (
 )
 
 func TestText_Name(t *testing.T) {
+	t.Parallel()
+
 	t.Run("default name", func(t *testing.T) {
+		t.Parallel()
+
 		expect := i18n.NewFallbackLocalizer().MustLocalize(textName)
 
 		txt := SimpleText
@@ -23,6 +27,8 @@ func TestText_Name(t *testing.T) {
 	})
 
 	t.Run("custom name", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		txt := Text{CustomName: i18n.NewStaticConfig(expect)}
@@ -33,7 +39,11 @@ func TestText_Name(t *testing.T) {
 }
 
 func TestText_Description(t *testing.T) {
+	t.Parallel()
+
 	t.Run("default description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := i18n.NewFallbackLocalizer().MustLocalize(textDescription)
 
 		txt := SimpleText
@@ -43,6 +53,8 @@ func TestText_Description(t *testing.T) {
 	})
 
 	t.Run("custom description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		txt := Text{CustomDescription: i18n.NewStaticConfig(expect)}
@@ -53,6 +65,8 @@ func TestText_Description(t *testing.T) {
 }
 
 func TestText_Parse(t *testing.T) {
+	t.Parallel()
+
 	sucessCases := []struct {
 		name string
 		text plugin.ArgType
@@ -88,8 +102,13 @@ func TestText_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range sucessCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.text.Parse(nil, ctx)
@@ -147,8 +166,13 @@ func TestText_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
 					Kind: plugin.KindArg,
@@ -170,7 +194,11 @@ func TestText_Parse(t *testing.T) {
 }
 
 func TestLink_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "https://github.com/mavolin/adam"
 
 		ctx := &plugin.ParseContext{
@@ -222,8 +250,13 @@ func TestLink_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
 					Kind: plugin.KindArg,
@@ -245,7 +278,11 @@ func TestLink_Parse(t *testing.T) {
 }
 
 func TestAlphanumericID_Name(t *testing.T) {
+	t.Parallel()
+
 	t.Run("default name", func(t *testing.T) {
+		t.Parallel()
+
 		expect := i18n.NewFallbackLocalizer().MustLocalize(idName)
 
 		id := SimpleAlphanumericID
@@ -255,6 +292,8 @@ func TestAlphanumericID_Name(t *testing.T) {
 	})
 
 	t.Run("custom name", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		id := AlphanumericID{CustomName: i18n.NewStaticConfig(expect)}
@@ -265,7 +304,11 @@ func TestAlphanumericID_Name(t *testing.T) {
 }
 
 func TestAlphanumericID_Description(t *testing.T) {
+	t.Parallel()
+
 	t.Run("default description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := i18n.NewFallbackLocalizer().MustLocalize(idDescription)
 
 		id := SimpleAlphanumericID
@@ -275,6 +318,8 @@ func TestAlphanumericID_Description(t *testing.T) {
 	})
 
 	t.Run("custom description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		id := AlphanumericID{CustomDescription: i18n.NewStaticConfig(expect)}
@@ -285,6 +330,8 @@ func TestAlphanumericID_Description(t *testing.T) {
 }
 
 func TestAlphanumericID_Parse(t *testing.T) {
+	t.Parallel()
+
 	sucessCases := []struct {
 		name string
 		id   plugin.ArgType
@@ -320,8 +367,13 @@ func TestAlphanumericID_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range sucessCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.id.Parse(nil, ctx)
@@ -379,8 +431,13 @@ func TestAlphanumericID_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
 					Kind: plugin.KindArg,

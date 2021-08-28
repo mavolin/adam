@@ -16,6 +16,8 @@ import (
 )
 
 func TestUser_Parse(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name string
 
@@ -39,8 +41,13 @@ func TestUser_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				m, s := state.NewMocker(t)
 
 				m.User(*c.expect)
@@ -52,6 +59,8 @@ func TestUser_Parse(t *testing.T) {
 		}
 
 		t.Run("mention", func(t *testing.T) {
+			t.Parallel()
+
 			expect := &discord.User{ID: 123}
 
 			ctx := &plugin.ParseContext{
@@ -70,7 +79,11 @@ func TestUser_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("mention id range", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Raw:  fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
 				Kind: plugin.KindArg,
@@ -89,6 +102,8 @@ func TestUser_Parse(t *testing.T) {
 		})
 
 		t.Run("mention user not found", func(t *testing.T) {
+			t.Parallel()
+
 			srcMocker, _ := state.NewMocker(t)
 
 			var userID discord.UserID = 123
@@ -122,6 +137,8 @@ func TestUser_Parse(t *testing.T) {
 		})
 
 		t.Run("not id", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{Raw: "abc"}
 
 			expect := newArgumentError(userInvalidError, ctx, nil)
@@ -131,6 +148,8 @@ func TestUser_Parse(t *testing.T) {
 		})
 
 		t.Run("id user not found", func(t *testing.T) {
+			t.Parallel()
+
 			m, s := state.NewMocker(t)
 
 			var userID discord.UserID = 123
@@ -152,6 +171,8 @@ func TestUser_Parse(t *testing.T) {
 }
 
 func TestMember_Parse(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name string
 
@@ -182,8 +203,13 @@ func TestMember_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				m, s := state.NewMocker(t)
 
 				m.Member(c.ctx.GuildID, *c.expect)
@@ -195,6 +221,8 @@ func TestMember_Parse(t *testing.T) {
 		}
 
 		t.Run("mention", func(t *testing.T) {
+			t.Parallel()
+
 			expect := &discord.Member{
 				User: discord.User{ID: 456},
 				Deaf: true,
@@ -222,7 +250,11 @@ func TestMember_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("mention id range", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     fmt.Sprintf("<@%d9>", uint64(math.MaxUint64)),
@@ -242,6 +274,8 @@ func TestMember_Parse(t *testing.T) {
 		})
 
 		t.Run("mention member not found", func(t *testing.T) {
+			t.Parallel()
+
 			srcMocker, _ := state.NewMocker(t)
 
 			var userID discord.UserID = 456
@@ -276,6 +310,8 @@ func TestMember_Parse(t *testing.T) {
 		})
 
 		t.Run("not id", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "abc",
@@ -288,6 +324,8 @@ func TestMember_Parse(t *testing.T) {
 		})
 
 		t.Run("id user not found", func(t *testing.T) {
+			t.Parallel()
+
 			m, s := state.NewMocker(t)
 
 			var userID discord.UserID = 456

@@ -13,6 +13,8 @@ import (
 )
 
 func TestMiddlewareManager_AddMiddleware(t *testing.T) {
+	t.Parallel()
+
 	successCases := []interface{}{
 		func(*state.State, interface{}) {},
 		func(*state.State, interface{}) error { return nil },
@@ -31,10 +33,15 @@ func TestMiddlewareManager_AddMiddleware(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
 			funcType := reflect.TypeOf(c)
 
+			c := c
 			t.Run(funcType.String(), func(t *testing.T) {
+				t.Parallel()
+
 				var m MiddlewareManager
 
 				err := m.TryAddMiddleware(c)
@@ -44,6 +51,8 @@ func TestMiddlewareManager_AddMiddleware(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		var m MiddlewareManager
 
 		err := m.TryAddMiddleware("invalid")

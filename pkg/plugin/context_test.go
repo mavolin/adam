@@ -18,7 +18,11 @@ import (
 )
 
 func TestContext_IsBotOwner(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		var owner discord.UserID = 123
 
 		ctx := &Context{
@@ -30,6 +34,8 @@ func TestContext_IsBotOwner(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &Context{
 			Message:     discord.Message{Author: discord.User{ID: 123}},
 			BotOwnerIDs: []discord.UserID{465},
@@ -40,6 +46,8 @@ func TestContext_IsBotOwner(t *testing.T) {
 }
 
 func TestContext_Reply(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -62,6 +70,8 @@ func TestContext_Reply(t *testing.T) {
 }
 
 func TestContext_Replyf(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -84,6 +94,8 @@ func TestContext_Replyf(t *testing.T) {
 }
 
 func TestContext_Replyl(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -114,6 +126,8 @@ func TestContext_Replyl(t *testing.T) {
 }
 
 func TestContext_Replylt(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -172,6 +186,8 @@ func TestContext_ReplyEmbed(t *testing.T) {
 }
 
 func TestContext_ReplyEmbedBuilder(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -205,6 +221,8 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 }
 
 func TestContext_ReplyMessage(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -229,6 +247,8 @@ func TestContext_ReplyMessage(t *testing.T) {
 }
 
 func TestContext_ReplyDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -260,6 +280,8 @@ func TestContext_ReplyDM(t *testing.T) {
 }
 
 func TestContext_ReplyfDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -291,6 +313,8 @@ func TestContext_ReplyfDM(t *testing.T) {
 }
 
 func TestContext_ReplylDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -331,6 +355,8 @@ func TestContext_ReplylDM(t *testing.T) {
 }
 
 func TestContext_ReplyltDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -370,6 +396,8 @@ func TestContext_ReplyltDM(t *testing.T) {
 }
 
 func TestContext_ReplyEmbedDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -407,6 +435,8 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 }
 
 func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -449,6 +479,8 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 }
 
 func TestContext_ReplyMessageDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -483,6 +515,8 @@ func TestContext_ReplyMessageDM(t *testing.T) {
 }
 
 func TestContext_Edit(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -505,6 +539,8 @@ func TestContext_Edit(t *testing.T) {
 }
 
 func TestContext_Editf(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -527,6 +563,8 @@ func TestContext_Editf(t *testing.T) {
 }
 
 func TestContext_Editl(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -557,6 +595,8 @@ func TestContext_Editl(t *testing.T) {
 }
 
 func TestContext_Editlt(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -587,6 +627,8 @@ func TestContext_Editlt(t *testing.T) {
 }
 
 func TestContext_EditEmbed(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -615,6 +657,8 @@ func TestContext_EditEmbed(t *testing.T) {
 }
 
 func TestContext_EditEmbedBuilder(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -648,6 +692,8 @@ func TestContext_EditEmbedBuilder(t *testing.T) {
 }
 
 func TestContext_EditMessage(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -672,6 +718,8 @@ func TestContext_EditMessage(t *testing.T) {
 }
 
 func TestContext_EditDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -703,6 +751,8 @@ func TestContext_EditDM(t *testing.T) {
 }
 
 func TestContext_EditfDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -734,6 +784,8 @@ func TestContext_EditfDM(t *testing.T) {
 }
 
 func TestContext_EditlDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -774,6 +826,8 @@ func TestContext_EditlDM(t *testing.T) {
 }
 
 func TestContext_EditltDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	var (
@@ -813,6 +867,8 @@ func TestContext_EditltDM(t *testing.T) {
 }
 
 func TestContext_EditEmbedDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -850,6 +906,8 @@ func TestContext_EditEmbedDM(t *testing.T) {
 }
 
 func TestContext_EditEmbedBuilderDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -892,6 +950,8 @@ func TestContext_EditEmbedBuilderDM(t *testing.T) {
 }
 
 func TestContext_EditMessageDM(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -926,7 +986,11 @@ func TestContext_EditMessageDM(t *testing.T) {
 }
 
 func TestContext_SelfPermissions(t *testing.T) {
+	t.Parallel()
+
 	t.Run("dm", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &Context{Message: discord.Message{GuildID: 0}}
 
 		actual, err := ctx.SelfPermissions()
@@ -935,6 +999,8 @@ func TestContext_SelfPermissions(t *testing.T) {
 	})
 
 	t.Run("guild", func(t *testing.T) {
+		t.Parallel()
+
 		expect := discord.PermissionViewChannel | discord.PermissionAddReactions
 
 		ctx := &Context{
@@ -956,7 +1022,11 @@ func TestContext_SelfPermissions(t *testing.T) {
 }
 
 func TestContext_UserPermissions(t *testing.T) {
+	t.Parallel()
+
 	t.Run("dm", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &Context{
 			Message: discord.Message{GuildID: 0},
 		}
@@ -967,6 +1037,8 @@ func TestContext_UserPermissions(t *testing.T) {
 	})
 
 	t.Run("guild", func(t *testing.T) {
+		t.Parallel()
+
 		expect := discord.PermissionViewChannel | discord.PermissionAddReactions
 
 		ctx := &Context{

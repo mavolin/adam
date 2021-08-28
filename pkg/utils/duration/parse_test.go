@@ -11,7 +11,11 @@ import (
 )
 
 func TestParse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		s := "50min 3y 12.5 min6s3h"
 
 		expect := 50*Minute + 3*Year + 12*Minute + 30*time.Second + 6*Second + 3*Hour
@@ -54,8 +58,13 @@ func TestParse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				c.expect.RawDuration = c.raw
 
 				_, actual := Parse(c.raw)

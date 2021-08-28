@@ -12,6 +12,8 @@ import (
 )
 
 func Test_WrappedReplier_Reply(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	r := NewWrappedReplier(s, 123, 456)
@@ -33,7 +35,11 @@ func Test_WrappedReplier_Reply(t *testing.T) {
 }
 
 func Test_wrappedReplier_ReplyDM(t *testing.T) {
+	t.Parallel()
+
 	t.Run("unknown dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		r := NewWrappedReplier(s, 123, 456)
@@ -61,6 +67,8 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 	})
 
 	t.Run("known dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		r := NewWrappedReplier(s, 123, 456)
@@ -84,6 +92,8 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 }
 
 func Test_wrappedReplier_Edit(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	r := NewWrappedReplier(s, 123, 456)
@@ -105,7 +115,11 @@ func Test_wrappedReplier_Edit(t *testing.T) {
 }
 
 func Test_wrappedReplier_EditDM(t *testing.T) {
+	t.Parallel()
+
 	t.Run("unknown dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		r := NewWrappedReplier(s, 123, 456)
@@ -133,6 +147,8 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 	})
 
 	t.Run("known dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		r := NewWrappedReplier(s, 123, 456)

@@ -7,6 +7,8 @@ import (
 )
 
 func TestFormat(t *testing.T) {
+	t.Parallel()
+
 	d := 10*Year + 70*Minute
 
 	expect := "10y 1h 10min"

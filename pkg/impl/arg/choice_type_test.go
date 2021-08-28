@@ -11,6 +11,8 @@ import (
 )
 
 func TestChoice_Parse(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name   string
 		choice Choice
@@ -40,8 +42,13 @@ func TestChoice_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.choice.Parse(nil, ctx)
@@ -52,6 +59,8 @@ func TestChoice_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		choice := Choice{{Name: "abc"}}
 
 		ctx := &plugin.ParseContext{Raw: "def"}
@@ -64,7 +73,11 @@ func TestChoice_Parse(t *testing.T) {
 }
 
 func TestChoice_Default(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		choice := Choice{{Name: "abc", Value: 123}}
 
 		expect := 0
@@ -74,6 +87,8 @@ func TestChoice_Default(t *testing.T) {
 	})
 
 	t.Run("string fallback", func(t *testing.T) {
+		t.Parallel()
+
 		choice := Choice{{Name: "abc"}}
 
 		expect := ""
@@ -83,6 +98,8 @@ func TestChoice_Default(t *testing.T) {
 	})
 
 	t.Run("empty", func(t *testing.T) {
+		t.Parallel()
+
 		choice := Choice{}
 
 		var expect interface{}
@@ -93,7 +110,11 @@ func TestChoice_Default(t *testing.T) {
 }
 
 func TestLocalizedChoice_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "ghi"
 
 		choice := LocalizedChoice{
@@ -116,6 +137,8 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		choice := LocalizedChoice{
 			{
 				Names: []*i18n.Config{i18n.NewFallbackConfig("abc", "def")},
@@ -136,7 +159,11 @@ func TestLocalizedChoice_Parse(t *testing.T) {
 }
 
 func TestLocalizedChoice_Default(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		choice := LocalizedChoice{
 			{
 				Names: []*i18n.Config{i18n.NewFallbackConfig("abc", "def")},
@@ -151,6 +178,8 @@ func TestLocalizedChoice_Default(t *testing.T) {
 	})
 
 	t.Run("empty", func(t *testing.T) {
+		t.Parallel()
+
 		choice := Choice{}
 
 		var expect interface{}

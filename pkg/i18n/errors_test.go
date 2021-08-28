@@ -8,6 +8,8 @@ import (
 )
 
 func TestLocalizationError_Error(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		term   Term
@@ -26,10 +28,11 @@ func TestLocalizationError_Error(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
-			err := &LocalizationError{
-				Term: c.term,
-			}
+			t.Parallel()
+
+			err := &LocalizationError{Term: c.term}
 
 			actual := err.Error()
 			assert.Equal(t, c.expect, actual)

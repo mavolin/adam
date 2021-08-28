@@ -9,12 +9,14 @@ import (
 )
 
 func TestLocalizer_WithPlaceholder(t *testing.T) {
+	t.Parallel()
+
 	t.Run("new map", func(t *testing.T) {
+		t.Parallel()
+
 		k, v := "abc", "def"
 
-		expect := map[string]interface{}{
-			k: v,
-		}
+		expect := map[string]interface{}{k: v}
 
 		l := new(Localizer)
 		l.WithPlaceholder(k, v)
@@ -23,17 +25,14 @@ func TestLocalizer_WithPlaceholder(t *testing.T) {
 	})
 
 	t.Run("append map", func(t *testing.T) {
+		t.Parallel()
+
 		k, v := "ghi", "jkl"
 
-		expect := map[string]interface{}{
-			"abc": "def",
-			k:     v,
-		}
+		expect := map[string]interface{}{"abc": "def", k: v}
 
 		l := &Localizer{
-			defaultPlaceholders: map[string]interface{}{
-				"abc": "def",
-			},
+			defaultPlaceholders: map[string]interface{}{"abc": "def"},
 		}
 
 		l.WithPlaceholder(k, v)
@@ -42,16 +41,14 @@ func TestLocalizer_WithPlaceholder(t *testing.T) {
 	})
 
 	t.Run("overwrite map", func(t *testing.T) {
+		t.Parallel()
+
 		k, v := "abc", "ghi"
 
-		expect := map[string]interface{}{
-			k: v,
-		}
+		expect := map[string]interface{}{k: v}
 
 		l := &Localizer{
-			defaultPlaceholders: map[string]interface{}{
-				k: "def",
-			},
+			defaultPlaceholders: map[string]interface{}{k: "def"},
 		}
 
 		l.WithPlaceholder(k, v)
@@ -61,7 +58,11 @@ func TestLocalizer_WithPlaceholder(t *testing.T) {
 }
 
 func TestLocalizer_WithPlaceholders(t *testing.T) {
+	t.Parallel()
+
 	t.Run("new map", func(t *testing.T) {
+		t.Parallel()
+
 		m := map[string]interface{}{
 			"abc": 123,
 			"def": "ghi",
@@ -74,6 +75,8 @@ func TestLocalizer_WithPlaceholders(t *testing.T) {
 	})
 
 	t.Run("append map", func(t *testing.T) {
+		t.Parallel()
+
 		m := map[string]interface{}{
 			"ghi": 123,
 			"jkl": "mno",
@@ -86,9 +89,7 @@ func TestLocalizer_WithPlaceholders(t *testing.T) {
 		}
 
 		l := &Localizer{
-			defaultPlaceholders: map[string]interface{}{
-				"abc": "def",
-			},
+			defaultPlaceholders: map[string]interface{}{"abc": "def"},
 		}
 
 		l.WithPlaceholders(m)
@@ -97,6 +98,8 @@ func TestLocalizer_WithPlaceholders(t *testing.T) {
 	})
 
 	t.Run("overwrite map", func(t *testing.T) {
+		t.Parallel()
+
 		m := map[string]interface{}{
 			"abc": 123,
 			"def": "ghi",
@@ -108,9 +111,7 @@ func TestLocalizer_WithPlaceholders(t *testing.T) {
 		}
 
 		l := &Localizer{
-			defaultPlaceholders: map[string]interface{}{
-				"abc": "def",
-			},
+			defaultPlaceholders: map[string]interface{}{"abc": "def"},
 		}
 
 		l.WithPlaceholders(m)
@@ -120,6 +121,8 @@ func TestLocalizer_WithPlaceholders(t *testing.T) {
 }
 
 func TestLocalizer_Localize(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name                string
 		defaultPlaceholders map[string]interface{}
@@ -184,8 +187,13 @@ func TestLocalizer_Localize(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				if c.langFunc == nil {
 					c.langFunc = func(t *testing.T) Func { return nil } //nolint:thelper
 				}
@@ -233,8 +241,13 @@ func TestLocalizer_Localize(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				l := &Localizer{f: c.langFunc}
 
 				actual, err := l.Localize(c.config)
@@ -246,7 +259,11 @@ func TestLocalizer_Localize(t *testing.T) {
 }
 
 func TestLocalizer_LocalizeTerm(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		var expectTerm Term = "abc"
 
 		expect := "def"
@@ -267,9 +284,9 @@ func TestLocalizer_LocalizeTerm(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		l := &Localizer{
-			f: nil,
-		}
+		t.Parallel()
+
+		l := new(Localizer)
 
 		var term Term = "unknown_term"
 
@@ -282,12 +299,14 @@ func TestLocalizer_LocalizeTerm(t *testing.T) {
 }
 
 func TestLocalizer_MustLocalize(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
-		l := &Localizer{
-			f: nil,
-		}
+		l := new(Localizer)
 
 		var actual string
 
@@ -302,9 +321,7 @@ func TestLocalizer_MustLocalize(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		l := &Localizer{
-			f: nil,
-		}
+		l := new(Localizer)
 
 		assert.Panics(t, func() {
 			l.MustLocalize(&Config{Term: "abc"})
@@ -337,9 +354,7 @@ func TestLocalizer_MustLocalizeTerm(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		l := &Localizer{
-			f: nil,
-		}
+		l := new(Localizer)
 
 		assert.Panics(t, func() {
 			l.MustLocalizeTerm("abc")

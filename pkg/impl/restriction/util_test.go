@@ -12,6 +12,8 @@ import (
 )
 
 func Test_assertChannelTypes(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name    string
 		ctx     *plugin.Context
@@ -119,7 +121,10 @@ func Test_assertChannelTypes(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := assertChannelTypes(c.ctx, c.allowed)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -127,6 +132,8 @@ func Test_assertChannelTypes(t *testing.T) {
 }
 
 func Test_insertRoleSorted(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		role   discord.Role
@@ -154,7 +161,10 @@ func Test_insertRoleSorted(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := insertRoleSorted(c.role, c.roles)
 			assert.Equal(t, c.expect, actual)
 		})

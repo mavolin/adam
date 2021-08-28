@@ -19,7 +19,11 @@ import (
 // =====================================================================================
 
 func TestArgumentParsingError_Description(t *testing.T) {
+	t.Parallel()
+
 	t.Run("string description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		e := NewArgumentError(expect)
@@ -30,6 +34,8 @@ func TestArgumentParsingError_Description(t *testing.T) {
 	})
 
 	t.Run("localized description", func(t *testing.T) {
+		t.Parallel()
+
 		var term i18n.Term = "abc"
 
 		expect := "def"
@@ -47,6 +53,8 @@ func TestArgumentParsingError_Description(t *testing.T) {
 }
 
 func TestArgumentParsingError_Handle(t *testing.T) {
+	t.Parallel()
+
 	expectDesc := "abc"
 
 	var channelID discord.ChannelID = 123
@@ -79,6 +87,8 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 // =====================================================================================
 
 func TestNewBotPermissionsError(t *testing.T) {
+	t.Parallel()
+
 	perms := discord.PermissionViewChannel | discord.PermissionManageEmojisAndStickers
 
 	expect := &BotPermissionsError{Missing: perms}
@@ -88,7 +98,11 @@ func TestNewBotPermissionsError(t *testing.T) {
 }
 
 func TestBotPermissionsError_Is(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		var perms discord.Permissions = 123
 
 		err1 := NewBotPermissionsError(perms)
@@ -98,6 +112,8 @@ func TestBotPermissionsError_Is(t *testing.T) {
 	})
 
 	t.Run("different types", func(t *testing.T) {
+		t.Parallel()
+
 		err1 := NewBotPermissionsError(1)
 		err2 := errors.New("abc")
 
@@ -105,6 +121,8 @@ func TestBotPermissionsError_Is(t *testing.T) {
 	})
 
 	t.Run("different missing permissions", func(t *testing.T) {
+		t.Parallel()
+
 		err1 := NewBotPermissionsError(discord.PermissionStream)
 		err2 := NewBotPermissionsError(discord.PermissionUseVAD)
 
@@ -113,7 +131,11 @@ func TestBotPermissionsError_Is(t *testing.T) {
 }
 
 func TestBotPermissionsError_Handle(t *testing.T) {
+	t.Parallel()
+
 	t.Run("single permission", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &Context{
@@ -141,6 +163,8 @@ func TestBotPermissionsError_Handle(t *testing.T) {
 	})
 
 	t.Run("multiple permissions", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &Context{
@@ -171,7 +195,11 @@ func TestBotPermissionsError_Handle(t *testing.T) {
 // =====================================================================================
 
 func TestChannelTypeError_Is(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		types := GuildChannels
 
 		err1 := NewChannelTypeError(types)
@@ -181,6 +209,8 @@ func TestChannelTypeError_Is(t *testing.T) {
 	})
 
 	t.Run("different types", func(t *testing.T) {
+		t.Parallel()
+
 		err1 := NewChannelTypeError(DirectMessages)
 		err2 := errors.New("abc")
 
@@ -188,6 +218,8 @@ func TestChannelTypeError_Is(t *testing.T) {
 	})
 
 	t.Run("different missing permissions", func(t *testing.T) {
+		t.Parallel()
+
 		err1 := NewChannelTypeError(DirectMessages)
 		err2 := NewChannelTypeError(GuildChannels)
 
@@ -196,6 +228,8 @@ func TestChannelTypeError_Is(t *testing.T) {
 }
 
 func TestChannelTypeError_Handle(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &Context{
@@ -227,7 +261,11 @@ func TestChannelTypeError_Handle(t *testing.T) {
 // =====================================================================================
 
 func TestRestrictionError_Description(t *testing.T) {
+	t.Parallel()
+
 	t.Run("string description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		e := NewRestrictionError(expect)
@@ -238,6 +276,8 @@ func TestRestrictionError_Description(t *testing.T) {
 	})
 
 	t.Run("localized description", func(t *testing.T) {
+		t.Parallel()
+
 		var term i18n.Term = "abc"
 
 		expect := "def"
@@ -255,6 +295,8 @@ func TestRestrictionError_Description(t *testing.T) {
 }
 
 func TestRestrictionError_Handle(t *testing.T) {
+	t.Parallel()
+
 	expectDesc := "abc"
 
 	m, s := state.NewMocker(t)
@@ -285,7 +327,11 @@ func TestRestrictionError_Handle(t *testing.T) {
 // =====================================================================================
 
 func TestThrottlingError_Description(t *testing.T) {
+	t.Parallel()
+
 	t.Run("string description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		e := NewThrottlingError(expect)
@@ -296,6 +342,8 @@ func TestThrottlingError_Description(t *testing.T) {
 	})
 
 	t.Run("localized description", func(t *testing.T) {
+		t.Parallel()
+
 		var term i18n.Term = "abc"
 
 		expect := "def"
@@ -313,6 +361,8 @@ func TestThrottlingError_Description(t *testing.T) {
 }
 
 func TestThrottlingError_Handle(t *testing.T) {
+	t.Parallel()
+
 	expectDesc := "abc"
 
 	m, s := state.NewMocker(t)

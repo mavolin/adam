@@ -13,6 +13,8 @@ import (
 )
 
 func TestAll(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		funcs  []plugin.RestrictionFunc
@@ -161,7 +163,10 @@ func TestAll(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
 			fillHeaderAndInline(c.expect, ctx.Localizer)
@@ -175,7 +180,11 @@ func TestAll(t *testing.T) {
 }
 
 func TestAllf(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		err := errors.New("abc")
 
 		f := Allf(err, nilFunc, nilFunc)
@@ -185,6 +194,8 @@ func TestAllf(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		expect := errors.New("abc")
 
 		f := Allf(expect, errorFunc1, nilFunc)
@@ -195,6 +206,8 @@ func TestAllf(t *testing.T) {
 }
 
 func TestAny(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		funcs  []plugin.RestrictionFunc
@@ -328,7 +341,10 @@ func TestAny(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.Context{Localizer: i18n.NewFallbackLocalizer()}
 
 			fillHeaderAndInline(c.expect, ctx.Localizer)
@@ -342,7 +358,11 @@ func TestAny(t *testing.T) {
 }
 
 func TestAnyf(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		err := errors.New("abc")
 
 		f := Anyf(err, nilFunc, errorFunc1)
@@ -352,6 +372,8 @@ func TestAnyf(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		expect := errors.New("abc")
 
 		f := Anyf(expect, errorFunc1, errorFunc2)
@@ -362,6 +384,8 @@ func TestAnyf(t *testing.T) {
 }
 
 func Test_allError_format(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		err    *allError
@@ -437,7 +461,10 @@ func Test_allError_format(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			fillHeaderAndInline(c.err, i18n.NewFallbackLocalizer())
 			c.expect = c.err.header + "\n\n" + c.expect
 
@@ -449,6 +476,8 @@ func Test_allError_format(t *testing.T) {
 }
 
 func Test_allError_As(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		desc string
@@ -480,7 +509,10 @@ func Test_allError_As(t *testing.T) {
 
 	t.Run("errors.Error", func(t *testing.T) {
 		for _, c := range testCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				err := c.fun(nil, ctx)
 				require.IsType(t, new(allError), err)
 
@@ -500,8 +532,13 @@ func Test_allError_As(t *testing.T) {
 	})
 
 	t.Run("*plugin.RestrictionError", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range testCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				err := c.fun(nil, ctx)
 				require.IsType(t, new(allError), err)
 
@@ -522,6 +559,8 @@ func Test_allError_As(t *testing.T) {
 }
 
 func Test_anyError_format(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		err    *anyError
@@ -618,7 +657,10 @@ func Test_anyError_format(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			fillHeaderAndInline(c.err, i18n.NewFallbackLocalizer())
 			c.expect = c.err.header + "\n\n" + c.expect
 
@@ -630,6 +672,8 @@ func Test_anyError_format(t *testing.T) {
 }
 
 func Test_anyError_As(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		desc string
@@ -660,8 +704,13 @@ func Test_anyError_As(t *testing.T) {
 	}
 
 	t.Run("errors.Error", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range testCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				err := c.fun(nil, ctx)
 				require.IsType(t, new(anyError), err)
 
@@ -681,8 +730,13 @@ func Test_anyError_As(t *testing.T) {
 	})
 
 	t.Run("*plugin.RestrictionError", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range testCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				err := c.fun(nil, ctx)
 				require.IsType(t, new(anyError), err)
 

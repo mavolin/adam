@@ -8,6 +8,8 @@ import (
 )
 
 func TestResolvePositions(t *testing.T) {
+	t.Parallel()
+
 	channels := []discord.Channel{
 		{ID: 11, Position: 0, Type: discord.GuildCategory},
 		{ID: 10, Position: 0, Type: discord.GuildCategory},
@@ -47,7 +49,11 @@ func TestResolvePositions(t *testing.T) {
 }
 
 func TestResolveCategories(t *testing.T) {
+	t.Parallel()
+
 	t.Run("with category-less channels", func(t *testing.T) {
+		t.Parallel()
+
 		channels := []discord.Channel{
 			{ID: 11, Position: 0, Type: discord.GuildCategory},
 			{ID: 10, Position: 0, Type: discord.GuildCategory},
@@ -95,6 +101,8 @@ func TestResolveCategories(t *testing.T) {
 	})
 
 	t.Run("only categories", func(t *testing.T) {
+		t.Parallel()
+
 		channels := []discord.Channel{
 			{ID: 11, Position: 0, Type: discord.GuildCategory},
 			{ID: 10, Position: 0, Type: discord.GuildCategory},

@@ -13,7 +13,11 @@ import (
 )
 
 func TestRegularExpression_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		expect := regexp.MustCompile("abc")
 
 		ctx := &plugin.ParseContext{Raw: expect.String()}
@@ -113,8 +117,13 @@ func TestRegularExpression_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(string(c.name), func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
 					Kind: plugin.KindArg,

@@ -14,7 +14,11 @@ import (
 )
 
 func TestInteger_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		expect := 123
 
 		ctx := &plugin.ParseContext{Raw: "123"}
@@ -78,8 +82,13 @@ func TestInteger_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				var i plugin.ArgType
 
 				switch {
@@ -114,7 +123,11 @@ func TestInteger_Parse(t *testing.T) {
 }
 
 func TestDecimal_Parse(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		expect := 123.456
 
 		ctx := &plugin.ParseContext{Raw: "123.456"}
@@ -178,7 +191,10 @@ func TestDecimal_Parse(t *testing.T) {
 	}
 
 	for _, c := range failureCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			var d Decimal
 
 			switch {
@@ -210,7 +226,11 @@ func TestDecimal_Parse(t *testing.T) {
 }
 
 func TestNumericID_Name(t *testing.T) {
+	t.Parallel()
+
 	t.Run("default name", func(t *testing.T) {
+		t.Parallel()
+
 		expect := i18n.NewFallbackLocalizer().MustLocalize(idName)
 
 		id := SimpleNumericID
@@ -220,6 +240,8 @@ func TestNumericID_Name(t *testing.T) {
 	})
 
 	t.Run("custom name", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		id := NumericID{
@@ -232,7 +254,11 @@ func TestNumericID_Name(t *testing.T) {
 }
 
 func TestNumericID_Description(t *testing.T) {
+	t.Parallel()
+
 	t.Run("default description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := i18n.NewFallbackLocalizer().MustLocalize(idDescription)
 
 		id := SimpleNumericID
@@ -242,6 +268,8 @@ func TestNumericID_Description(t *testing.T) {
 	})
 
 	t.Run("custom description", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		id := NumericID{
@@ -254,6 +282,8 @@ func TestNumericID_Description(t *testing.T) {
 }
 
 func TestNumericID_Parse(t *testing.T) {
+	t.Parallel()
+
 	sucessCases := []struct {
 		name string
 		id   plugin.ArgType
@@ -283,8 +313,13 @@ func TestNumericID_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range sucessCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := c.id.Parse(nil, ctx)
@@ -329,8 +364,13 @@ func TestNumericID_Parse(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{
 					Raw:  c.raw,
 					Kind: plugin.KindArg,

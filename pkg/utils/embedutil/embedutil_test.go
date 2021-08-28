@@ -8,6 +8,8 @@ import (
 )
 
 func TestCountChars(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name string
 		e    discord.Embed
@@ -47,7 +49,10 @@ func TestCountChars(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := CountChars(c.e)
 			assert.Equal(t, c.expect, actual)
 		})

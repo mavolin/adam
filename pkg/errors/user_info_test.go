@@ -13,7 +13,11 @@ import (
 )
 
 func TestUserInfo_Handle(t *testing.T) {
+	t.Parallel()
+
 	t.Run("without Embed", func(t *testing.T) {
+		t.Parallel()
+
 		expectDesc := "abc"
 
 		m, s := state.NewMocker(t)
@@ -40,6 +44,8 @@ func TestUserInfo_Handle(t *testing.T) {
 	})
 
 	t.Run("with Embed", func(t *testing.T) {
+		t.Parallel()
+
 		var (
 			expectDesc       = "abc"
 			expectFieldName  = "def"

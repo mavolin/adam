@@ -13,6 +13,8 @@ import (
 )
 
 func TestEmbedBuilder_WithTitle(t *testing.T) {
+	t.Parallel()
+
 	title := "abc"
 
 	expect := discord.Embed{Title: title}
@@ -26,6 +28,8 @@ func TestEmbedBuilder_WithTitle(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithTitlelt(t *testing.T) {
+	t.Parallel()
+
 	title := "abc"
 
 	expect := discord.Embed{Title: title}
@@ -43,6 +47,8 @@ func TestEmbedBuilder_WithTitlelt(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithTitlel(t *testing.T) {
+	t.Parallel()
+
 	title := "abc"
 
 	expect := discord.Embed{Title: title}
@@ -60,6 +66,8 @@ func TestEmbedBuilder_WithTitlel(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithTitleURL(t *testing.T) {
+	t.Parallel()
+
 	url := "def"
 
 	expect := discord.Embed{URL: url}
@@ -73,6 +81,8 @@ func TestEmbedBuilder_WithTitleURL(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithDescription(t *testing.T) {
+	t.Parallel()
+
 	description := "abc"
 
 	expect := discord.Embed{Description: description}
@@ -86,6 +96,8 @@ func TestEmbedBuilder_WithDescription(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
+	t.Parallel()
+
 	description := "abc"
 
 	expect := discord.Embed{Description: description}
@@ -103,6 +115,8 @@ func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
+	t.Parallel()
+
 	description := "abc"
 
 	expect := discord.Embed{Description: description}
@@ -120,6 +134,8 @@ func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithTimestamp(t *testing.T) {
+	t.Parallel()
+
 	timestamp := discord.NowTimestamp()
 
 	expect := discord.Embed{Timestamp: timestamp}
@@ -133,6 +149,8 @@ func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithColor(t *testing.T) {
+	t.Parallel()
+
 	var color discord.Color = 123
 
 	expect := discord.Embed{Color: color}
@@ -146,6 +164,8 @@ func TestEmbedBuilder_WithColor(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithFooter(t *testing.T) {
+	t.Parallel()
+
 	text := "abc"
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Text: text}}
@@ -159,6 +179,8 @@ func TestEmbedBuilder_WithFooter(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithFooterlt(t *testing.T) {
+	t.Parallel()
+
 	text := "abc"
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Text: text}}
@@ -176,6 +198,8 @@ func TestEmbedBuilder_WithFooterlt(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithFooterl(t *testing.T) {
+	t.Parallel()
+
 	text := "abc"
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Text: text}}
@@ -193,6 +217,8 @@ func TestEmbedBuilder_WithFooterl(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithFooterIcon(t *testing.T) {
+	t.Parallel()
+
 	icon := "def"
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Icon: icon}}
@@ -206,6 +232,8 @@ func TestEmbedBuilder_WithFooterIcon(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithImage(t *testing.T) {
+	t.Parallel()
+
 	image := "abc"
 
 	expect := discord.Embed{
@@ -221,6 +249,8 @@ func TestEmbedBuilder_WithImage(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithThumbnail(t *testing.T) {
+	t.Parallel()
+
 	thumbnail := "abc"
 
 	expect := discord.Embed{
@@ -236,6 +266,8 @@ func TestEmbedBuilder_WithThumbnail(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithAuthor(t *testing.T) {
+	t.Parallel()
+
 	name := "abc"
 
 	expect := discord.Embed{
@@ -251,6 +283,8 @@ func TestEmbedBuilder_WithAuthor(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
+	t.Parallel()
+
 	name := "abc"
 
 	expect := discord.Embed{
@@ -270,6 +304,8 @@ func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithAuthorl(t *testing.T) {
+	t.Parallel()
+
 	name := "abc"
 
 	expect := discord.Embed{
@@ -289,6 +325,8 @@ func TestEmbedBuilder_WithAuthorl(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithAuthorURL(t *testing.T) {
+	t.Parallel()
+
 	url := "def"
 
 	expect := discord.Embed{
@@ -306,12 +344,12 @@ func TestEmbedBuilder_WithAuthorURL(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithAuthorIcon(t *testing.T) {
+	t.Parallel()
+
 	icon := "def"
 
 	expect := discord.Embed{
-		Author: &discord.EmbedAuthor{
-			Icon: icon,
-		},
+		Author: &discord.EmbedAuthor{Icon: icon},
 	}
 
 	actual, err := NewBuilder().
@@ -323,6 +361,8 @@ func TestEmbedBuilder_WithAuthorIcon(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithField(t *testing.T) {
+	t.Parallel()
+
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -340,6 +380,8 @@ func TestEmbedBuilder_WithField(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithFieldlt(t *testing.T) {
+	t.Parallel()
+
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -362,6 +404,8 @@ func TestEmbedBuilder_WithFieldlt(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithFieldl(t *testing.T) {
+	t.Parallel()
+
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -384,6 +428,8 @@ func TestEmbedBuilder_WithFieldl(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithInlinedField(t *testing.T) {
+	t.Parallel()
+
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -401,6 +447,8 @@ func TestEmbedBuilder_WithInlinedField(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
+	t.Parallel()
+
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -423,6 +471,8 @@ func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
 }
 
 func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
+	t.Parallel()
+
 	field := discord.EmbedField{
 		Name:   "abc",
 		Value:  "def",
@@ -445,6 +495,8 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 }
 
 func TestBuilder_Clone(t *testing.T) {
+	t.Parallel()
+
 	expectA := NewBuilder().
 		WithTitle("abc").
 		WithTitleURL("def").
@@ -479,8 +531,7 @@ func TestBuilder_Clone(t *testing.T) {
 
 	assert.Equal(t, a, b)
 
-	b.
-		WithTitle("cba").
+	b.WithTitle("cba").
 		WithTitleURL("fed").
 		WithDescription("ihg").
 		WithTimestamp(discord.NowTimestamp()).

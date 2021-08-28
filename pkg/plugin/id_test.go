@@ -8,6 +8,8 @@ import (
 )
 
 func TestNewIDFromInvoke(t *testing.T) {
+	t.Parallel()
+
 	invoke := "  abc  \ndef\njkl  mno"
 
 	var expect ID = ".abc.def.jkl.mno"
@@ -17,6 +19,8 @@ func TestNewIDFromInvoke(t *testing.T) {
 }
 
 func TestID_Parent(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		ID     ID
@@ -40,7 +44,10 @@ func TestID_Parent(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := c.ID
 
 			for lvl, expect := range c.expect {
@@ -52,6 +59,8 @@ func TestID_Parent(t *testing.T) {
 }
 
 func TestID_All(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		ID     ID
@@ -75,7 +84,10 @@ func TestID_All(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := c.ID.All()
 			assert.Equal(t, c.expect, actual)
 		})
@@ -83,35 +95,51 @@ func TestID_All(t *testing.T) {
 }
 
 func TestID_IsRoot(t *testing.T) {
+	t.Parallel()
+
 	t.Run("root", func(t *testing.T) {
+		t.Parallel()
+
 		isRoot := ID(".").IsRoot()
 		assert.True(t, isRoot)
 	})
 
 	t.Run("not root", func(t *testing.T) {
+		t.Parallel()
+
 		isRoot := ID(".mod").IsRoot()
 		assert.False(t, isRoot)
 	})
 }
 
 func TestID_NumParents(t *testing.T) {
+	t.Parallel()
+
 	t.Run("root", func(t *testing.T) {
+		t.Parallel()
+
 		actual := ID(".").NumParents()
 		assert.Equal(t, 0, actual)
 	})
 
 	t.Run("no parents", func(t *testing.T) {
+		t.Parallel()
+
 		actual := ID(".mod").NumParents()
 		assert.Equal(t, 0, actual)
 	})
 
 	t.Run("parents", func(t *testing.T) {
+		t.Parallel()
+
 		actual := ID(".mod.ban").NumParents()
 		assert.Equal(t, 1, actual)
 	})
 }
 
 func TestID_IsParentOf(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		id     ID
@@ -139,7 +167,10 @@ func TestID_IsParentOf(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := c.id.IsParentOf(c.target)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -147,6 +178,8 @@ func TestID_IsParentOf(t *testing.T) {
 }
 
 func TestID_IsChild(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		id     ID
@@ -174,7 +207,10 @@ func TestID_IsChild(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := c.id.IsChildOf(c.target)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -182,6 +218,8 @@ func TestID_IsChild(t *testing.T) {
 }
 
 func TestID_AsCommandInvoke(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		id     ID
@@ -205,7 +243,10 @@ func TestID_AsCommandInvoke(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := c.id.AsInvoke()
 			assert.Equal(t, c.expect, actual)
 		})
@@ -213,6 +254,8 @@ func TestID_AsCommandInvoke(t *testing.T) {
 }
 
 func TestID_Name(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		ID     ID
@@ -236,7 +279,10 @@ func TestID_Name(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := c.ID.Name()
 			assert.Equal(t, c.expect, actual)
 		})

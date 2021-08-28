@@ -12,46 +12,56 @@ import (
 )
 
 func TestCommand_LongDescription(t *testing.T) {
-	t.Run("long description", func(t *testing.T) {
-		expect := "abc"
+	t.Parallel()
 
-		rcmd := &Command{
-			source: mockplugin.Command{
-				LongDescription: expect,
-			},
-		}
+	testCases := []struct {
+		name string
 
-		actual := rcmd.LongDescription(nil)
-		assert.Equal(t, expect, actual)
-	})
+		longDescription  string
+		shortDescription string
 
-	t.Run("short description", func(t *testing.T) {
-		expect := "abc"
+		expect string
+	}{
+		{
+			name:             "long description",
+			longDescription:  "abc",
+			shortDescription: "def",
+			expect:           "abc",
+		},
+		{name: "short description", shortDescription: "abc", expect: "abc"},
+	}
 
-		rcmd := &Command{
-			source: mockplugin.Command{
-				ShortDescription: expect,
-			},
-		}
+	for _, c := range testCases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
 
-		actual := rcmd.LongDescription(nil)
-		assert.Equal(t, expect, actual)
-	})
+			rcmd := &Command{
+				source: mockplugin.Command{
+					ShortDescription: c.shortDescription,
+					LongDescription:  c.longDescription,
+				},
+			}
+
+			actual := rcmd.LongDescription(nil)
+			assert.Equal(t, c.expect, actual)
+		})
+	}
 }
 
 func TestResolvedCommand_IsRestricted(t *testing.T) {
-	t.Run("regular error", func(t *testing.T) {
-		expect := errors.New("abc")
+	t.Parallel()
 
-		rcmd := &Command{
-			source: mockplugin.Command{
-				Restrictions: func(*state.State, *plugin.Context) error {
-					return expect
-				},
+	expect := errors.New("abc")
+
+	rcmd := &Command{
+		source: mockplugin.Command{
+			Restrictions: func(*state.State, *plugin.Context) error {
+				return expect
 			},
-		}
+		},
+	}
 
-		actual := rcmd.IsRestricted(nil, nil)
-		assert.Equal(t, expect, actual)
-	})
+	actual := rcmd.IsRestricted(nil, nil)
+	assert.Equal(t, expect, actual)
 }

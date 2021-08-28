@@ -15,6 +15,8 @@ import (
 )
 
 func TestTracker_GuildMessages(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &plugin.Context{
@@ -57,6 +59,8 @@ func TestTracker_GuildMessages(t *testing.T) {
 }
 
 func TestTracker_DMs(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &plugin.Context{
@@ -99,6 +103,8 @@ func TestTracker_DMs(t *testing.T) {
 }
 
 func TestTracker_EditedGuildMessages(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &plugin.Context{
@@ -141,6 +147,8 @@ func TestTracker_EditedGuildMessages(t *testing.T) {
 }
 
 func TestTracker_EditedDMs(t *testing.T) {
+	t.Parallel()
+
 	m, s := state.NewMocker(t)
 
 	ctx := &plugin.Context{
@@ -183,6 +191,8 @@ func TestTracker_EditedDMs(t *testing.T) {
 }
 
 func TestTracker_ReplyMessage(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name        string
 		ctx         *plugin.Context
@@ -289,7 +299,10 @@ func TestTracker_ReplyMessage(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			m, s := state.NewMocker(t)
 
 			r := NewTracker(s, c.inlineReply)
@@ -304,7 +317,11 @@ func TestTracker_ReplyMessage(t *testing.T) {
 }
 
 func TestTracker_ReplyDM(t *testing.T) {
+	t.Parallel()
+
 	t.Run("unknown dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{
@@ -345,6 +362,8 @@ func TestTracker_ReplyDM(t *testing.T) {
 	})
 
 	t.Run("known dm id", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		ctx := &plugin.Context{

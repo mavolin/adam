@@ -13,7 +13,11 @@ import (
 )
 
 func TestPluginProvider_PluginSources(t *testing.T) {
+	t.Parallel()
+
 	t.Run("not loaded", func(t *testing.T) {
+		t.Parallel()
+
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -25,10 +29,8 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 			resolver: r,
 			sources: []plugin.Source{
 				{
-					Name: plugin.BuiltInSource,
-					Commands: []plugin.Command{
-						mockplugin.Command{Name: "abc"},
-					},
+					Name:     plugin.BuiltInSource,
+					Commands: []plugin.Command{mockplugin.Command{Name: "abc"}},
 				},
 			},
 			usedNames: make(map[string]struct{}),
@@ -36,19 +38,13 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 
 		expect := []plugin.Source{
 			{
-				Name: plugin.BuiltInSource,
-				Commands: []plugin.Command{
-					mockplugin.Command{Name: "abc"},
-				},
+				Name:     plugin.BuiltInSource,
+				Commands: []plugin.Command{mockplugin.Command{Name: "abc"}},
 			},
 			{
-				Name: "another",
-				Commands: []plugin.Command{
-					mockplugin.Command{Name: "def"},
-				},
-				Modules: []plugin.Module{
-					mockplugin.Module{Name: "ghi"},
-				},
+				Name:     "another",
+				Commands: []plugin.Command{mockplugin.Command{Name: "def"}},
+				Modules:  []plugin.Module{mockplugin.Module{Name: "ghi"}},
 			},
 		}
 
@@ -57,24 +53,20 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 	})
 
 	t.Run("loaded", func(t *testing.T) {
+		t.Parallel()
+
 		p := &PluginProvider{
 			resolver: NewPluginResolver(nil),
 			commands: make([]plugin.ResolvedCommand, 0),
 			sources: []plugin.Source{
 				{
-					Name: plugin.BuiltInSource,
-					Commands: []plugin.Command{
-						mockplugin.Command{Name: "abc"},
-					},
+					Name:     plugin.BuiltInSource,
+					Commands: []plugin.Command{mockplugin.Command{Name: "abc"}},
 				},
 				{
-					Name: "another",
-					Commands: []plugin.Command{
-						mockplugin.Command{Name: "def"},
-					},
-					Modules: []plugin.Module{
-						mockplugin.Module{Name: "ghi"},
-					},
+					Name:     "another",
+					Commands: []plugin.Command{mockplugin.Command{Name: "def"}},
+					Modules:  []plugin.Module{mockplugin.Module{Name: "ghi"}},
 				},
 			},
 		}
@@ -87,7 +79,11 @@ func TestPluginProvider_PluginSources(t *testing.T) {
 }
 
 func TestPluginProvider_Commands(t *testing.T) {
+	t.Parallel()
+
 	t.Run("not loaded", func(t *testing.T) {
+		t.Parallel()
+
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -151,6 +147,8 @@ func TestPluginProvider_Commands(t *testing.T) {
 	})
 
 	t.Run("loaded", func(t *testing.T) {
+		t.Parallel()
+
 		p := new(PluginProvider)
 		p.resolver = NewPluginResolver(nil)
 		p.sources = []plugin.Source{
@@ -185,7 +183,11 @@ func TestPluginProvider_Commands(t *testing.T) {
 	})
 
 	t.Run("provider", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("single", func(t *testing.T) {
+			t.Parallel()
+
 			throttler := mockplugin.NewThrottler(errors.New("abc"))
 
 			sources := []plugin.Source{
@@ -223,6 +225,8 @@ func TestPluginProvider_Commands(t *testing.T) {
 		})
 
 		t.Run("merge", func(t *testing.T) {
+			t.Parallel()
+
 			sources := []plugin.Source{
 				{
 					Name: "abc",
@@ -256,6 +260,8 @@ func TestPluginProvider_Commands(t *testing.T) {
 		})
 
 		t.Run("merge", func(t *testing.T) {
+			t.Parallel()
+
 			sources := []plugin.Source{
 				{
 					Name: "ghi",
@@ -292,6 +298,8 @@ func TestPluginProvider_Commands(t *testing.T) {
 		})
 
 		t.Run("skip duplicates", func(t *testing.T) {
+			t.Parallel()
+
 			sources := []plugin.Source{
 				{
 					Name: "abc",
@@ -322,6 +330,8 @@ func TestPluginProvider_Commands(t *testing.T) {
 		})
 
 		t.Run("remove duplicate aliases", func(t *testing.T) {
+			t.Parallel()
+
 			sources := []plugin.Source{
 				{
 					Name: "abc",
@@ -378,7 +388,11 @@ func TestPluginProvider_Commands(t *testing.T) {
 }
 
 func TestPluginProvider_Modules(t *testing.T) {
+	t.Parallel()
+
 	t.Run("not loaded", func(t *testing.T) {
+		t.Parallel()
+
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -518,6 +532,8 @@ func TestPluginProvider_Modules(t *testing.T) {
 	})
 
 	t.Run("loaded", func(t *testing.T) {
+		t.Parallel()
+
 		p := new(PluginProvider)
 		p.resolver = NewPluginResolver(nil)
 
@@ -628,8 +644,14 @@ func TestPluginProvider_Modules(t *testing.T) {
 	})
 
 	t.Run("provider", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("generate", func(t *testing.T) {
+			t.Parallel()
+
 			t.Run("", func(t *testing.T) {
+				t.Parallel()
+
 				sources := []plugin.Source{
 					{
 						Name: plugin.BuiltInSource,
@@ -1035,6 +1057,8 @@ func TestPluginProvider_Modules(t *testing.T) {
 			})
 
 			t.Run("children Hidden", func(t *testing.T) {
+				t.Parallel()
+
 				sources := []plugin.Source{
 					{
 						Name: plugin.BuiltInSource,
@@ -1159,6 +1183,8 @@ func TestPluginProvider_Modules(t *testing.T) {
 			})
 
 			t.Run("not Hidden", func(t *testing.T) {
+				t.Parallel()
+
 				sources := []plugin.Source{
 					{
 						Name: plugin.BuiltInSource,
@@ -1330,7 +1356,11 @@ func TestPluginProvider_Modules(t *testing.T) {
 }
 
 func TestPluginProvider_Command(t *testing.T) {
+	t.Parallel()
+
 	t.Run("top-level", func(t *testing.T) {
+		t.Parallel()
+
 		p := new(PluginProvider)
 		p.commands = []plugin.ResolvedCommand{
 			&Command{
@@ -1353,6 +1383,8 @@ func TestPluginProvider_Command(t *testing.T) {
 	})
 
 	t.Run("nested", func(t *testing.T) {
+		t.Parallel()
+
 		p := new(PluginProvider)
 		p.resolver = NewPluginResolver(nil)
 
@@ -1478,6 +1510,8 @@ func TestPluginProvider_Command(t *testing.T) {
 }
 
 func TestPluginProvider_Module(t *testing.T) {
+	t.Parallel()
+
 	p := new(PluginProvider)
 	p.resolver = NewPluginResolver(nil)
 
@@ -1687,7 +1721,11 @@ func TestPluginProvider_Module(t *testing.T) {
 }
 
 func TestPluginProvider_FindCommand(t *testing.T) {
+	t.Parallel()
+
 	t.Run("top-level", func(t *testing.T) {
+		t.Parallel()
+
 		p := new(PluginProvider)
 		p.commands = []plugin.ResolvedCommand{
 			&Command{
@@ -1710,6 +1748,8 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 	})
 
 	t.Run("nested", func(t *testing.T) {
+		t.Parallel()
+
 		p := new(PluginProvider)
 		p.resolver = NewPluginResolver(nil)
 
@@ -1837,6 +1877,8 @@ func TestPluginProvider_FindCommand(t *testing.T) {
 }
 
 func TestPluginProvider_FindModule(t *testing.T) {
+	t.Parallel()
+
 	p := new(PluginProvider)
 	p.resolver = NewPluginResolver(nil)
 
@@ -2046,7 +2088,11 @@ func TestPluginProvider_FindModule(t *testing.T) {
 }
 
 func TestPluginProvider_UnavailablePluginSources(t *testing.T) {
+	t.Parallel()
+
 	t.Run("not loaded", func(t *testing.T) {
+		t.Parallel()
+
 		r := NewPluginResolver(nil)
 		r.AddSource("another",
 			func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -2081,6 +2127,8 @@ func TestPluginProvider_UnavailablePluginSources(t *testing.T) {
 	})
 
 	t.Run("loaded", func(t *testing.T) {
+		t.Parallel()
+
 		p := &PluginProvider{
 			resolver: NewPluginResolver(nil),
 			commands: make([]plugin.ResolvedCommand, 0),

@@ -10,6 +10,8 @@ import (
 )
 
 func TestCode_Parse(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name string
 
@@ -77,8 +79,13 @@ func TestCode_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				ctx := &plugin.ParseContext{Raw: c.raw}
 
 				actual, err := Code.Parse(nil, ctx)
@@ -89,6 +96,8 @@ func TestCode_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := &plugin.ParseContext{
 			Raw:  "def not code",
 			Kind: plugin.KindArg,

@@ -19,6 +19,8 @@ import (
 // =====================================================================================
 
 func Test_newCtxErrorHandler(t *testing.T) {
+	t.Parallel()
+
 	var called bool
 
 	f := func(error, *state.State, *plugin.Context) { called = true }
@@ -30,6 +32,8 @@ func Test_newCtxErrorHandler(t *testing.T) {
 }
 
 func TestCtxErrorHandler_HandleError(t *testing.T) {
+	t.Parallel()
+
 	var actual error
 
 	var h ctxErrorHandler = func(err error) { actual = err }
@@ -46,7 +50,11 @@ func TestCtxErrorHandler_HandleError(t *testing.T) {
 // =====================================================================================
 
 func TestDiscordDataProvider_GuildAsync(t *testing.T) {
+	t.Parallel()
+
 	t.Run("cached", func(t *testing.T) {
+		t.Parallel()
+
 		_, s := state.NewMocker(t)
 
 		expect := &discord.Guild{ID: 123}
@@ -67,6 +75,8 @@ func TestDiscordDataProvider_GuildAsync(t *testing.T) {
 	})
 
 	t.Run("fetch", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		expect := &discord.Guild{
@@ -91,7 +101,11 @@ func TestDiscordDataProvider_GuildAsync(t *testing.T) {
 }
 
 func TestDiscordDataProvider_ChannelAsync(t *testing.T) {
+	t.Parallel()
+
 	t.Run("cached", func(t *testing.T) {
+		t.Parallel()
+
 		_, s := state.NewMocker(t)
 
 		expect := &discord.Channel{ID: 123, GuildID: 456}
@@ -112,6 +126,8 @@ func TestDiscordDataProvider_ChannelAsync(t *testing.T) {
 	})
 
 	t.Run("fetch", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		expect := &discord.Channel{
@@ -133,7 +149,11 @@ func TestDiscordDataProvider_ChannelAsync(t *testing.T) {
 }
 
 func TestDiscordDataProvider_MemberAsync(t *testing.T) {
+	t.Parallel()
+
 	t.Run("cached", func(t *testing.T) {
+		t.Parallel()
+
 		_, s := state.NewMocker(t)
 
 		var guildID discord.GuildID = 123
@@ -159,6 +179,8 @@ func TestDiscordDataProvider_MemberAsync(t *testing.T) {
 	})
 
 	t.Run("fetch", func(t *testing.T) {
+		t.Parallel()
+
 		m, s := state.NewMocker(t)
 
 		var guildID discord.GuildID = 123

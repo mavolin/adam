@@ -14,8 +14,14 @@ import (
 )
 
 func TestHelp_Invoke(t *testing.T) {
+	t.Parallel()
+
 	t.Run("all", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("guild", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.Context{
 				Message:   discord.Message{GuildID: 123},
 				Localizer: i18n.NewFallbackLocalizer(),
@@ -112,6 +118,8 @@ func TestHelp_Invoke(t *testing.T) {
 		})
 
 		t.Run("dm", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.Context{
 				Localizer: i18n.NewFallbackLocalizer(),
 				Args:      plugin.Args{nil},
@@ -142,6 +150,8 @@ func TestHelp_Invoke(t *testing.T) {
 	})
 
 	t.Run("module", func(t *testing.T) {
+		t.Parallel()
+
 		mod := mock.Module{
 			Name:            "abc",
 			LongDescription: "abc desc",
@@ -232,7 +242,11 @@ func TestHelp_Invoke(t *testing.T) {
 	})
 
 	t.Run("command", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("single option", func(t *testing.T) {
+			t.Parallel()
+
 			cmd := mock.Command{
 				Name:            "abc",
 				Aliases:         []string{"cba"},
@@ -313,6 +327,8 @@ func TestHelp_Invoke(t *testing.T) {
 		})
 
 		t.Run("no args", func(t *testing.T) {
+			t.Parallel()
+
 			cmd := mock.Command{
 				Name:            "abc",
 				Aliases:         []string{"cba"},

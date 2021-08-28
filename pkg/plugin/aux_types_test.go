@@ -9,6 +9,8 @@ import (
 )
 
 func TestChannelType_Has(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name        string
 		channelType ChannelTypes
@@ -38,8 +40,13 @@ func TestChannelType_Has(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				has := c.channelType.Has(c.target)
 				assert.True(t, has)
 			})
@@ -47,12 +54,16 @@ func TestChannelType_Has(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		has := GuildTextChannels.Has(discord.DirectMessage)
 		assert.False(t, has)
 	})
 }
 
 func TestChannelTypes_Check(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name    string
 		ctx     *Context
@@ -128,7 +139,10 @@ func TestChannelTypes_Check(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual, err := c.allowed.Check(c.ctx)
 			require.NoError(t, err)
 			assert.Equal(t, c.expect, actual)

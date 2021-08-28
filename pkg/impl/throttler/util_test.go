@@ -11,6 +11,8 @@ import (
 )
 
 func Test_genError(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name          string
 		duration      time.Duration
@@ -44,7 +46,10 @@ func Test_genError(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			secondConfig := i18n.NewTermConfig("second")
 			minuteConfig := i18n.NewTermConfig("minute")
 

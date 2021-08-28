@@ -10,20 +10,27 @@ import (
 )
 
 func TestLocalizer_Clone(t *testing.T) {
-	l1 := NewLocalizer(t).
+	t.Parallel()
+
+	a := NewLocalizer(t).
 		On("abc", "def")
 
-	l2 := l1.Clone(t)
+	b := a.Clone(t)
 
-	assert.Equal(t, l1, l2)
+	assert.Equal(t, a, b)
+	assert.NotSame(t, a, b)
 
-	l1.On("ghi", "jkl")
+	a.On("ghi", "jkl")
 
-	assert.NotEqual(t, l1, l2)
+	assert.NotEqual(t, a, b)
 }
 
 func TestLocalizer_Build(t *testing.T) {
+	t.Parallel()
+
 	t.Run("default", func(t *testing.T) {
+		t.Parallel()
+
 		expect := "abc"
 
 		l := NewLocalizerWithDefault(t, expect).
@@ -35,7 +42,11 @@ func TestLocalizer_Build(t *testing.T) {
 	})
 
 	t.Run("expected i18n", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("error on", func(t *testing.T) {
+			t.Parallel()
+
 			var term i18n.Term = "abc"
 
 			l := NewLocalizer(t).
@@ -47,6 +58,8 @@ func TestLocalizer_Build(t *testing.T) {
 		})
 
 		t.Run("on", func(t *testing.T) {
+			t.Parallel()
+
 			var term i18n.Term = "abc"
 
 			expect := "def"
@@ -62,6 +75,8 @@ func TestLocalizer_Build(t *testing.T) {
 	})
 
 	t.Run("unexpected i18n", func(t *testing.T) {
+		t.Parallel()
+
 		tMock := new(testing.T)
 
 		l := NewLocalizer(tMock).

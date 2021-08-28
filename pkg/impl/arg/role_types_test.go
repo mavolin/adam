@@ -14,6 +14,8 @@ import (
 )
 
 func TestRole_Parse(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name string
 
@@ -40,8 +42,13 @@ func TestRole_Parse(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
+				t.Parallel()
+
 				m, s := state.NewMocker(t)
 
 				m.Roles(c.ctx.GuildID, []discord.Role{*c.expect})
@@ -54,7 +61,11 @@ func TestRole_Parse(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("mention id range", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     fmt.Sprintf("<@&%d9>", uint64(math.MaxUint64)),
@@ -74,6 +85,8 @@ func TestRole_Parse(t *testing.T) {
 		})
 
 		t.Run("mention role not found", func(t *testing.T) {
+			t.Parallel()
+
 			srcMocker, _ := state.NewMocker(t)
 
 			var roleID discord.RoleID = 123
@@ -103,6 +116,8 @@ func TestRole_Parse(t *testing.T) {
 		})
 
 		t.Run("not id", func(t *testing.T) {
+			t.Parallel()
+
 			ctx := &plugin.ParseContext{
 				Context: &plugin.Context{Message: discord.Message{GuildID: 123}},
 				Raw:     "abc",
@@ -115,6 +130,8 @@ func TestRole_Parse(t *testing.T) {
 		})
 
 		t.Run("role id not found", func(t *testing.T) {
+			t.Parallel()
+
 			m, s := state.NewMocker(t)
 
 			ctx := &plugin.ParseContext{

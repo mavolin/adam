@@ -13,6 +13,8 @@ import (
 )
 
 func TestNSFW(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		ctx    *plugin.Context
@@ -58,7 +60,10 @@ func TestNSFW(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := NSFW(nil, c.ctx)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -66,6 +71,8 @@ func TestNSFW(t *testing.T) {
 }
 
 func TestGuildOwner(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		ctx    *plugin.Context
@@ -119,7 +126,10 @@ func TestGuildOwner(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := GuildOwner(nil, c.ctx)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -127,6 +137,8 @@ func TestGuildOwner(t *testing.T) {
 }
 
 func TestBotOwner(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		ctx    *plugin.Context
@@ -151,7 +163,10 @@ func TestBotOwner(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := BotOwner(nil, c.ctx)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -159,6 +174,8 @@ func TestBotOwner(t *testing.T) {
 }
 
 func TestUsers(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name    string
 		userIDs []discord.UserID
@@ -189,7 +206,10 @@ func TestUsers(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			f := Users(c.userIDs...)
 
 			actual := f(nil, c.ctx)
@@ -199,6 +219,8 @@ func TestUsers(t *testing.T) {
 }
 
 func TestAllRoles(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name    string
 		allowed []discord.RoleID
@@ -285,7 +307,10 @@ func TestAllRoles(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			f := AllRoles(c.allowed...)
 
 			actual := f(nil, c.ctx)
@@ -295,6 +320,8 @@ func TestAllRoles(t *testing.T) {
 }
 
 func TestMustAllRoles(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name    string
 		allowed []discord.RoleID
@@ -354,7 +381,10 @@ func TestMustAllRoles(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			f := MustAllRoles(c.allowed...)
 
 			actual := f(nil, c.ctx)
@@ -364,6 +394,8 @@ func TestMustAllRoles(t *testing.T) {
 }
 
 func TestAnyRole(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name    string
 		allowed []discord.RoleID
@@ -445,7 +477,10 @@ func TestAnyRole(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			f := AnyRole(c.allowed...)
 
 			actual := f(nil, c.ctx)
@@ -455,6 +490,8 @@ func TestAnyRole(t *testing.T) {
 }
 
 func TestMustAnyRole(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name    string
 		allowed []discord.RoleID
@@ -519,7 +556,10 @@ func TestMustAnyRole(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			f := MustAnyRole(c.allowed...)
 
 			actual := f(nil, c.ctx)
@@ -529,6 +569,8 @@ func TestMustAnyRole(t *testing.T) {
 }
 
 func TestChannels(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name           string
 		channelIDs     []discord.ChannelID
@@ -616,7 +658,10 @@ func TestChannels(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			m, s := state.NewMocker(t)
 
 			if c.channelsReturn != nil {
@@ -632,6 +677,8 @@ func TestChannels(t *testing.T) {
 }
 
 func TestUserPermissions(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name   string
 		perms  discord.Permissions
@@ -711,7 +758,10 @@ func TestUserPermissions(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			f := UserPermissions(c.perms)
 
 			actual := f(nil, c.ctx)

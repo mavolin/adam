@@ -16,6 +16,8 @@ import (
 // =====================================================================================
 
 func Test_formatCommands(t *testing.T) {
+	t.Parallel()
+
 	expect := "`mod abc`\n" +
 		"`mod ban` - bans someone\n" +
 		"`mod kick` - kicks someone"
@@ -41,6 +43,8 @@ func Test_formatCommands(t *testing.T) {
 }
 
 func Test_formatModule(t *testing.T) {
+	t.Parallel()
+
 	expect := "`mod abc`\n" +
 		"`mod ban` - bans someone\n" +
 		"`mod kick` - kicks someone\n" +

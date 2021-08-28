@@ -8,6 +8,8 @@ import (
 )
 
 func TestNewTermConfig(t *testing.T) {
+	t.Parallel()
+
 	var term Term = "abc"
 
 	expect := term.AsConfig()
@@ -17,6 +19,8 @@ func TestNewTermConfig(t *testing.T) {
 }
 
 func TestNewFallbackConfig(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name     string
 		term     Term
@@ -29,27 +33,23 @@ func TestNewFallbackConfig(t *testing.T) {
 			term:     "abc",
 			fallback: "def",
 			expect: &Config{
-				Term: "abc",
-				Fallback: Fallback{
-					Other: "def",
-				},
+				Term:     "abc",
+				Fallback: Fallback{Other: "def"},
 			},
 		},
 		{
 			name:     "empty term and empty fallback",
 			term:     "",
 			fallback: "",
-			expect: &Config{
-				Term: "",
-				Fallback: Fallback{
-					Other: "",
-				},
-			},
+			expect:   &Config{},
 		},
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+
 			actual := NewFallbackConfig(c.term, c.fallback)
 			assert.Equal(t, c.expect, actual)
 		})
@@ -57,17 +57,19 @@ func TestNewFallbackConfig(t *testing.T) {
 }
 
 func TestConfig_WithPlaceholders(t *testing.T) {
-	c1 := Config{
-		Term: "abc",
-	}
+	t.Parallel()
 
-	c2 := c1.WithPlaceholders(map[string]interface{}{"def": "ghi"})
+	a := Config{Term: "abc"}
 
-	assert.NotEqual(t, c1, c2)
-	assert.Equal(t, c1.Term, c2.Term)
+	b := a.WithPlaceholders(map[string]interface{}{"def": "ghi"})
+
+	assert.NotEqual(t, a, b)
+	assert.Equal(t, a.Term, b.Term)
 }
 
 func TestConfig_placeholdersToMap(t *testing.T) {
+	t.Parallel()
+
 	successCases := []struct {
 		name         string
 		placeholders interface{}
@@ -156,10 +158,11 @@ func TestConfig_placeholdersToMap(t *testing.T) {
 	}
 
 	for _, c := range successCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
-			cfg := Config{
-				Placeholders: c.placeholders,
-			}
+			t.Parallel()
+
+			cfg := Config{Placeholders: c.placeholders}
 
 			actual, err := cfg.placeholdersToMap()
 			require.NoError(t, err)
@@ -168,9 +171,9 @@ func TestConfig_placeholdersToMap(t *testing.T) {
 	}
 
 	t.Run("invalid type", func(t *testing.T) {
-		cfg := Config{
-			Placeholders: []string{},
-		}
+		t.Parallel()
+
+		cfg := Config{Placeholders: []string{}}
 
 		_, err := cfg.placeholdersToMap()
 		assert.Error(t, err)
@@ -178,6 +181,8 @@ func TestConfig_placeholdersToMap(t *testing.T) {
 }
 
 func TestFallback_genTranslation(t *testing.T) {
+	t.Parallel()
+
 	const (
 		expectOne   = "abc"
 		expectOther = "def"
@@ -207,12 +212,14 @@ func TestFallback_genTranslation(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range successCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
-				f := Fallback{
-					One:   expectOne,
-					Other: expectOther,
-				}
+				t.Parallel()
+
+				f := Fallback{One: expectOne, Other: expectOther}
 
 				actual, err := f.genTranslation(nil, c.plural)
 				require.NoError(t, err)
@@ -244,12 +251,14 @@ func TestFallback_genTranslation(t *testing.T) {
 	}
 
 	t.Run("failure", func(t *testing.T) {
+		t.Parallel()
+
 		for _, c := range failureCases {
+			c := c
 			t.Run(c.name, func(t *testing.T) {
-				f := Fallback{
-					One:   c.one,
-					Other: c.other,
-				}
+				t.Parallel()
+
+				f := Fallback{One: c.one, Other: c.other}
 
 				_, err := f.genTranslation(nil, c.plural)
 				assert.Error(t, err)

@@ -13,7 +13,11 @@ import (
 )
 
 func TestUserError_Handle(t *testing.T) {
+	t.Parallel()
+
 	t.Run("without description", func(t *testing.T) {
+		t.Parallel()
+
 		expectDesc := "abc"
 
 		m, s := state.NewMocker(t)
@@ -40,6 +44,8 @@ func TestUserError_Handle(t *testing.T) {
 	})
 
 	t.Run("with description", func(t *testing.T) {
+		t.Parallel()
+
 		var (
 			expectDesc       = "abc"
 			expectFieldName  = "def"

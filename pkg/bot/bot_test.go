@@ -12,19 +12,25 @@ import (
 )
 
 func TestBot_AddPluginSource(t *testing.T) {
+	t.Parallel()
+
 	t.Run("name built_in", func(t *testing.T) {
+		t.Parallel()
+
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		assert.Panics(t, func() {
-			pfunc := func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
+			source := func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
 				return nil, nil, nil
 			}
 
-			b.AddPluginSource(plugin.BuiltInSource, pfunc)
+			b.AddPluginSource(plugin.BuiltInSource, source)
 		})
 	})
 
 	t.Run("nil", func(t *testing.T) {
+		t.Parallel()
+
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		b.AddPluginSource("abc", nil)
@@ -32,6 +38,8 @@ func TestBot_AddPluginSource(t *testing.T) {
 	})
 
 	t.Run("replace", func(t *testing.T) {
+		t.Parallel()
+
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		p := func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {
@@ -60,6 +68,8 @@ func TestBot_AddPluginSource(t *testing.T) {
 	})
 
 	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		p := func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error) {

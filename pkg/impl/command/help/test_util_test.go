@@ -7,6 +7,8 @@ import (
 )
 
 func Test_mockHideFunc(t *testing.T) {
+	t.Parallel()
+
 	testCases := []HiddenLevel{Show, HideList, Hide}
 
 	for _, c := range testCases {
