@@ -1,4 +1,4 @@
-package messageutil
+package msgawait
 
 import "github.com/mavolin/adam/pkg/i18n"
 

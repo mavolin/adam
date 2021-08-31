@@ -16,10 +16,10 @@ import (
 	"github.com/mavolin/adam/pkg/impl/arg"
 	"github.com/mavolin/adam/pkg/impl/command"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
-var BaseEmbed = embedutil.NewBuilder().
+var BaseEmbed = msgbuilder.NewEmbed().
 	WithColor(0x6eb7b1)
 
 // Help is the default help command.
@@ -156,7 +156,7 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 		return discord.Embed{}, err
 	}
 
-	b := capbuilder.New(embedutil.MaxChars-embedutil.CountChars(e), 1024)
+	b := capbuilder.New(msgbuilder.MaxChars-msgbuilder.CountEmbedChars(e), 1024)
 
 	maxMods := 25 - len(e.Fields)
 
@@ -204,7 +204,7 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedMo
 
 	maxMods := 25 - len(e.Fields)
 
-	b := capbuilder.New(embedutil.MaxChars-embedutil.CountChars(e), 1024)
+	b := capbuilder.New(msgbuilder.MaxChars-msgbuilder.CountEmbedChars(e), 1024)
 
 	if f := h.genCommandsField(b, s, ctx, mod.Commands()); len(f.Name) > 0 {
 		e.Fields = append(e.Fields, f)

@@ -24,7 +24,7 @@ type (
 		// 	• float32, float64
 		//	• string
 		//	• discord.Embed, *discord.Embed
-		//	• *embedutil.Builder
+		//	• *msgbuilder.Builder
 		//	• api.SendMessageData
 		//	• i18n.Term
 		//	• *i18n.Config

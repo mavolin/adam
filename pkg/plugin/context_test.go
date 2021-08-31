@@ -13,7 +13,7 @@ import (
 
 	mocki18n "github.com/mavolin/adam/internal/mock/i18n"
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
@@ -196,8 +196,8 @@ func TestContext_ReplyEmbedBuilder(t *testing.T) {
 		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
-	builder := embedutil.
-		NewBuilder().
+	builder := msgbuilder.
+		NewEmbed().
 		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
@@ -448,8 +448,8 @@ func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
 		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
-	builder := embedutil.
-		NewBuilder().
+	builder := msgbuilder.
+		NewEmbed().
 		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
@@ -667,8 +667,8 @@ func TestContext_EditEmbedBuilder(t *testing.T) {
 		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
-	builder := embedutil.
-		NewBuilder().
+	builder := msgbuilder.
+		NewEmbed().
 		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)
@@ -919,8 +919,8 @@ func TestContext_EditEmbedBuilderDM(t *testing.T) {
 		Localizer: mocki18n.NewLocalizer(t).Build(),
 	}
 
-	builder := embedutil.
-		NewBuilder().
+	builder := msgbuilder.
+		NewEmbed().
 		WithTitle("abc").
 		WithDescription("def").
 		WithColor(discord.DefaultEmbedColor)

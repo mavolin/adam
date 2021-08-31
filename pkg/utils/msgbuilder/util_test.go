@@ -1,4 +1,4 @@
-package embedutil
+package msgbuilder
 
 import (
 	"testing"
@@ -53,7 +53,7 @@ func TestCountChars(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 
-			actual := CountChars(c.e)
+			actual := CountEmbedChars(c.e)
 			assert.Equal(t, c.expect, actual)
 		})
 	}

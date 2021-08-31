@@ -1,16 +1,13 @@
-// Package embedutil provides utilities to generate and interact with embeds.
-package embedutil
+package msgbuilder
 
-import (
-	"github.com/diamondburned/arikawa/v3/discord"
-)
+import "github.com/diamondburned/arikawa/v3/discord"
 
 // MaxChars is the maximum amount of characters Discord allows an embed to
 // hold.
 const MaxChars = 6000
 
-// CountChars returns the number of characters in the embed.
-func CountChars(e discord.Embed) int {
+// CountEmbedChars returns the number of characters in the embed.
+func CountEmbedChars(e discord.Embed) int {
 	sum := len([]rune(e.Title)) + len([]rune(e.Description))
 
 	if e.Footer != nil {
