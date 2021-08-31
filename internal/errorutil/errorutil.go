@@ -21,5 +21,5 @@ func WithStack(err error) error {
 }
 
 func (e *StackError) StackTrace() StackTrace { return e.s }
-func (s *StackError) Unwrap() error          { return s.cause }
-func (s *StackError) Error() string          { return s.cause.Error() }
+func (e *StackError) Unwrap() error          { return e.cause }
+func (e *StackError) Error() string          { return e.cause.Error() }

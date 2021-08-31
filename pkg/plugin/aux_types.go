@@ -28,6 +28,8 @@ const (
 	GuildChannels = GuildTextChannels | GuildNewsChannels
 )
 
+// todo: add threads
+
 // Has checks if the passed discord.ChannelType is found in the ChannelTypes.
 func (t ChannelTypes) Has(target discord.ChannelType) bool {
 	//nolint:exhaustive // other types handled in default

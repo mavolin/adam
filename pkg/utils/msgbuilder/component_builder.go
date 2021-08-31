@@ -271,7 +271,7 @@ func (b *SelectBuilder) disable() {
 	b.Disable()
 }
 
-// With adds the passed *SelectOptionBuilder to the SelectBuilder
+// With adds the passed *SelectOptionBuilder to the SelectBuilder.
 func (b *SelectBuilder) With(option *SelectOptionBuilder) *SelectBuilder {
 	b.options = append(b.options, option)
 	return b
