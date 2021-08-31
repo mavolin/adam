@@ -793,10 +793,11 @@ func TestInternalError_Handle(t *testing.T) {
 			Replier:        mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed := NewErrorEmbed().
+		embed, err := NewErrorEmbed().
 			WithTitlelt(internalErrorTitle.Term).
 			WithDescription(expectDesc).
-			MustBuild(ctx.Localizer)
+			Build(ctx.Localizer)
+		require.NoError(t, err)
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
@@ -805,7 +806,7 @@ func TestInternalError_Handle(t *testing.T) {
 
 		e := WithDescription(New(""), expectDesc)
 
-		err := e.(*InternalError).Handle(s, ctx)
+		err = e.(*InternalError).Handle(s, ctx)
 		require.NoError(t, err, "InternalError.Handle should never return an error")
 	})
 }

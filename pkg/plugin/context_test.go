@@ -13,7 +13,6 @@ import (
 
 	mocki18n "github.com/mavolin/adam/internal/mock/i18n"
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
@@ -181,41 +180,6 @@ func TestContext_ReplyEmbed(t *testing.T) {
 	m.SendEmbeds(*expect)
 
 	actual, err := ctx.ReplyEmbeds(expect.Embeds[0])
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestContext_ReplyEmbedBuilder(t *testing.T) {
-	t.Parallel()
-
-	m, s := state.NewMocker(t)
-
-	ctx := &Context{
-		Message:   discord.Message{ChannelID: 123},
-		Replier:   newMockedWrappedReplier(s, 123, 0),
-		Localizer: mocki18n.NewLocalizer(t).Build(),
-	}
-
-	builder := msgbuilder.
-		NewEmbed().
-		WithTitle("abc").
-		WithDescription("def").
-		WithColor(discord.DefaultEmbedColor)
-
-	embed := builder.MustBuild(ctx.Localizer)
-	embed.Type = discord.NormalEmbed
-
-	expect := &discord.Message{
-		ID:        123,
-		Author:    discord.User{ID: 456},
-		ChannelID: ctx.ChannelID,
-		Content:   "abc",
-		Embeds:    []discord.Embed{embed},
-	}
-
-	m.SendEmbeds(*expect)
-
-	actual, err := ctx.ReplyEmbedBuilders(builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
@@ -434,50 +398,6 @@ func TestContext_ReplyEmbedDM(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func TestContext_ReplyEmbedBuilderDM(t *testing.T) {
-	t.Parallel()
-
-	m, s := state.NewMocker(t)
-
-	ctx := &Context{
-		Message: discord.Message{
-			GuildID: 1,
-			Author:  discord.User{ID: 123},
-		},
-		Replier:   newMockedWrappedReplier(s, 0, 123),
-		Localizer: mocki18n.NewLocalizer(t).Build(),
-	}
-
-	builder := msgbuilder.
-		NewEmbed().
-		WithTitle("abc").
-		WithDescription("def").
-		WithColor(discord.DefaultEmbedColor)
-
-	embed := builder.MustBuild(ctx.Localizer)
-	embed.Type = discord.NormalEmbed
-
-	var channelID discord.ChannelID = 456
-
-	expect := &discord.Message{
-		ID:        789,
-		Author:    discord.User{ID: 123},
-		ChannelID: channelID,
-		Content:   "abc",
-		Embeds:    []discord.Embed{embed},
-	}
-
-	m.CreatePrivateChannel(discord.Channel{
-		ID:           channelID,
-		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
-	})
-	m.SendEmbeds(*expect)
-
-	actual, err := ctx.ReplyEmbedBuildersDM(builder)
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
 func TestContext_ReplyMessageDM(t *testing.T) {
 	t.Parallel()
 
@@ -652,41 +572,6 @@ func TestContext_EditEmbed(t *testing.T) {
 	m.EditEmbeds(*expect)
 
 	actual, err := ctx.EditEmbeds(expect.ID, expect.Embeds[0])
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestContext_EditEmbedBuilder(t *testing.T) {
-	t.Parallel()
-
-	m, s := state.NewMocker(t)
-
-	ctx := &Context{
-		Message:   discord.Message{ChannelID: 123},
-		Replier:   newMockedWrappedReplier(s, 123, 0),
-		Localizer: mocki18n.NewLocalizer(t).Build(),
-	}
-
-	builder := msgbuilder.
-		NewEmbed().
-		WithTitle("abc").
-		WithDescription("def").
-		WithColor(discord.DefaultEmbedColor)
-
-	embed := builder.MustBuild(ctx.Localizer)
-	embed.Type = discord.NormalEmbed
-
-	expect := &discord.Message{
-		ID:        123,
-		Author:    discord.User{ID: 456},
-		ChannelID: ctx.ChannelID,
-		Content:   "abc",
-		Embeds:    []discord.Embed{embed},
-	}
-
-	m.EditEmbeds(*expect)
-
-	actual, err := ctx.EditEmbedBuilders(expect.ID, builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }
@@ -901,50 +786,6 @@ func TestContext_EditEmbedDM(t *testing.T) {
 	m.EditEmbeds(*expect)
 
 	actual, err := ctx.EditEmbedsDM(expect.ID, expect.Embeds[0])
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestContext_EditEmbedBuilderDM(t *testing.T) {
-	t.Parallel()
-
-	m, s := state.NewMocker(t)
-
-	ctx := &Context{
-		Message: discord.Message{
-			GuildID: 1,
-			Author:  discord.User{ID: 123},
-		},
-		Replier:   newMockedWrappedReplier(s, 0, 123),
-		Localizer: mocki18n.NewLocalizer(t).Build(),
-	}
-
-	builder := msgbuilder.
-		NewEmbed().
-		WithTitle("abc").
-		WithDescription("def").
-		WithColor(discord.DefaultEmbedColor)
-
-	embed := builder.MustBuild(ctx.Localizer)
-	embed.Type = discord.NormalEmbed
-
-	var channelID discord.ChannelID = 456
-
-	expect := &discord.Message{
-		ID:        789,
-		Author:    discord.User{ID: 123},
-		ChannelID: channelID,
-		Content:   "abc",
-		Embeds:    []discord.Embed{embed},
-	}
-
-	m.CreatePrivateChannel(discord.Channel{
-		ID:           channelID,
-		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
-	})
-	m.EditEmbeds(*expect)
-
-	actual, err := ctx.EditEmbedBuildersDM(expect.ID, builder)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }

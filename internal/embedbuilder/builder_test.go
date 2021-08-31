@@ -1,4 +1,4 @@
-package msgbuilder
+package embedbuilder
 
 import (
 	"testing"
@@ -19,7 +19,7 @@ func TestEmbedBuilder_WithTitle(t *testing.T) {
 
 	expect := discord.Embed{Title: title}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithTitle(title).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -38,7 +38,7 @@ func TestEmbedBuilder_WithTitlelt(t *testing.T) {
 		On("a", title).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithTitlelt("a").
 		Build(l)
 
@@ -57,7 +57,7 @@ func TestEmbedBuilder_WithTitlel(t *testing.T) {
 		On("a", title).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithTitlel(i18n.NewTermConfig("a")).
 		Build(l)
 
@@ -72,7 +72,7 @@ func TestEmbedBuilder_WithTitleURL(t *testing.T) {
 
 	expect := discord.Embed{URL: url}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithTitleURL(url).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -87,7 +87,7 @@ func TestEmbedBuilder_WithDescription(t *testing.T) {
 
 	expect := discord.Embed{Description: description}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithDescription(description).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -106,7 +106,7 @@ func TestEmbedBuilder_WithDescriptionl(t *testing.T) {
 		On("a", description).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithDescriptionl(i18n.NewTermConfig("a")).
 		Build(l)
 
@@ -125,7 +125,7 @@ func TestEmbedBuilder_WithDescriptionlt(t *testing.T) {
 		On("a", description).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithDescriptionlt("a").
 		Build(l)
 
@@ -140,7 +140,7 @@ func TestEmbedBuilder_WithTimestamp(t *testing.T) {
 
 	expect := discord.Embed{Timestamp: timestamp}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithTimestamp(timestamp).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -155,7 +155,7 @@ func TestEmbedBuilder_WithColor(t *testing.T) {
 
 	expect := discord.Embed{Color: color}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithColor(color).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -170,7 +170,7 @@ func TestEmbedBuilder_WithFooter(t *testing.T) {
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Text: text}}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithFooter(text).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -189,7 +189,7 @@ func TestEmbedBuilder_WithFooterlt(t *testing.T) {
 		On("a", text).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithFooterlt("a").
 		Build(l)
 
@@ -208,7 +208,7 @@ func TestEmbedBuilder_WithFooterl(t *testing.T) {
 		On("a", text).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithFooterl(i18n.NewTermConfig("a")).
 		Build(l)
 
@@ -223,7 +223,7 @@ func TestEmbedBuilder_WithFooterIcon(t *testing.T) {
 
 	expect := discord.Embed{Footer: &discord.EmbedFooter{Icon: icon}}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithFooterIcon(icon).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -240,7 +240,7 @@ func TestEmbedBuilder_WithImage(t *testing.T) {
 		Image: &discord.EmbedImage{URL: image},
 	}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithImage(image).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -257,7 +257,7 @@ func TestEmbedBuilder_WithThumbnail(t *testing.T) {
 		Thumbnail: &discord.EmbedThumbnail{URL: thumbnail},
 	}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithThumbnail(thumbnail).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -274,7 +274,7 @@ func TestEmbedBuilder_WithAuthor(t *testing.T) {
 		Author: &discord.EmbedAuthor{Name: name},
 	}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithAuthor(name).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -295,7 +295,7 @@ func TestEmbedBuilder_WithSimpleAuthorlt(t *testing.T) {
 		On("a", name).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithAuthorlt("a").
 		Build(l)
 
@@ -316,7 +316,7 @@ func TestEmbedBuilder_WithAuthorl(t *testing.T) {
 		On("a", name).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithAuthorl(i18n.NewTermConfig("a")).
 		Build(l)
 
@@ -335,7 +335,7 @@ func TestEmbedBuilder_WithAuthorURL(t *testing.T) {
 		},
 	}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithAuthorURL(url).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -352,7 +352,7 @@ func TestEmbedBuilder_WithAuthorIcon(t *testing.T) {
 		Author: &discord.EmbedAuthor{Icon: icon},
 	}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithAuthorIcon(icon).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -371,7 +371,7 @@ func TestEmbedBuilder_WithField(t *testing.T) {
 
 	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithField(field.Name, field.Value).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -395,7 +395,7 @@ func TestEmbedBuilder_WithFieldlt(t *testing.T) {
 		On("b", field.Value).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithFieldlt("a", "b").
 		Build(l)
 
@@ -419,7 +419,7 @@ func TestEmbedBuilder_WithFieldl(t *testing.T) {
 		On("b", field.Value).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithFieldl(i18n.NewTermConfig("a"), i18n.NewTermConfig("b")).
 		Build(l)
 
@@ -438,7 +438,7 @@ func TestEmbedBuilder_WithInlinedField(t *testing.T) {
 
 	expect := discord.Embed{Fields: []discord.EmbedField{field}}
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithInlinedField(field.Name, field.Value).
 		Build(mocki18n.NewLocalizer(t).Build())
 
@@ -462,7 +462,7 @@ func TestEmbedBuilder_WithInlinedFieldlt(t *testing.T) {
 		On("b", field.Value).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithInlinedFieldlt("a", "b").
 		Build(l)
 
@@ -486,7 +486,7 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 		On("b", field.Value).
 		Build()
 
-	actual, err := NewEmbed().
+	actual, err := New().
 		WithInlinedFieldl(i18n.NewTermConfig("a"), i18n.NewTermConfig("b")).
 		Build(l)
 
@@ -497,7 +497,7 @@ func TestEmbedBuilder_WithInlinedFieldl(t *testing.T) {
 func TestBuilder_Clone(t *testing.T) {
 	t.Parallel()
 
-	expectA := NewEmbed().
+	expectA := New().
 		WithTitle("abc").
 		WithTitleURL("def").
 		WithDescription("ghi").
@@ -512,7 +512,7 @@ func TestBuilder_Clone(t *testing.T) {
 		WithAuthorURL("bcd").
 		WithField("efg", "hij")
 
-	a := NewEmbed().
+	a := New().
 		WithTitle("abc").
 		WithTitleURL("def").
 		WithDescription("ghi").

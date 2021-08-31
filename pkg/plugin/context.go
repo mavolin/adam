@@ -9,10 +9,10 @@ import (
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/mavolin/disstate/v4/pkg/event"
 
+	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
@@ -151,8 +151,9 @@ func (ctx *Context) ReplyEmbeds(embeds ...discord.Embed) (*discord.Message, erro
 }
 
 // ReplyEmbedBuilders builds the discord.Embeds from the passed
-// *msgbuilder.Builders and sends it in the channel the command was sent in.
-func (ctx *Context) ReplyEmbedBuilders(builders ...*msgbuilder.EmbedBuilder) (*discord.Message, error) {
+// *msgbuilder.EmbedBuilders and sends it in the channel the command was sent
+// in.
+func (ctx *Context) ReplyEmbedBuilders(builders ...*embedbuilder.Builder) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 
 	for i, builder := range builders {
@@ -211,8 +212,9 @@ func (ctx *Context) ReplyEmbedsDM(embeds ...discord.Embed) (*discord.Message, er
 }
 
 // ReplyEmbedBuildersDM builds the discord.Embeds from the passed
-// *msgbuilder.Builders and sends it in a direct message to the invoking user.
-func (ctx *Context) ReplyEmbedBuildersDM(builders ...*msgbuilder.EmbedBuilder) (*discord.Message, error) {
+// *msgbuilder.EmbedBuilders and sends it in a direct message to the invoking
+// user.
+func (ctx *Context) ReplyEmbedBuildersDM(builders ...*embedbuilder.Builder) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 
 	for i, builder := range builders {
@@ -271,10 +273,10 @@ func (ctx *Context) EditEmbeds(messageID discord.MessageID, embeds ...discord.Em
 }
 
 // EditEmbedBuilders builds the discord.Embeds from the passed
-// *msgbuilder.Builders, and replaces the embeds of the message with the passed
-// id in the invoking channel.
+// *msgbuilder.EmbedBuilders, and replaces the embeds of the message with the
+// passed id in the invoking channel.
 func (ctx *Context) EditEmbedBuilders(
-	messageID discord.MessageID, builders ...*msgbuilder.EmbedBuilder,
+	messageID discord.MessageID, builders ...*embedbuilder.Builder,
 ) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 
@@ -339,10 +341,10 @@ func (ctx *Context) EditEmbedsDM(messageID discord.MessageID, embeds ...discord.
 }
 
 // EditEmbedBuildersDM builds the discord.Embeds from the passed
-// *msgbuilder.Builders, and replaces the embeds of the message with the passed
-// id in the direct message channel with the invoking user.
+// *msgbuilder.EmbedBuilders, and replaces the embeds of the message with the
+// passed id in the direct message channel with the invoking user.
 func (ctx *Context) EditEmbedBuildersDM(
-	messageID discord.MessageID, builders ...*msgbuilder.EmbedBuilder,
+	messageID discord.MessageID, builders ...*embedbuilder.Builder,
 ) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 

@@ -28,9 +28,10 @@ func TestUserInfo_Handle(t *testing.T) {
 			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed := NewInfoEmbed().
+		embed, err := NewInfoEmbed().
 			WithDescription(expectDesc).
-			MustBuild(ctx.Localizer)
+			Build(ctx.Localizer)
+		require.NoError(t, err)
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
@@ -39,7 +40,7 @@ func TestUserInfo_Handle(t *testing.T) {
 
 		e := NewUserInfo(expectDesc)
 
-		err := e.Handle(s, ctx)
+		err = e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 
@@ -60,10 +61,11 @@ func TestUserInfo_Handle(t *testing.T) {
 			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed := NewInfoEmbed().
+		embed, err := NewInfoEmbed().
 			WithDescription(expectDesc).
 			WithField(expectFieldName, expectFieldValue).
-			MustBuild(ctx.Localizer)
+			Build(ctx.Localizer)
+		require.NoError(t, err)
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
@@ -73,7 +75,7 @@ func TestUserInfo_Handle(t *testing.T) {
 		e := NewUserInfo(expectDesc).
 			WithField(expectFieldName, expectFieldValue)
 
-		err := e.Handle(s, ctx)
+		err = e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 }

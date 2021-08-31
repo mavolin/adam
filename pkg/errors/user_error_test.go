@@ -28,9 +28,10 @@ func TestUserError_Handle(t *testing.T) {
 			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed := NewErrorEmbed().
+		embed, err := NewErrorEmbed().
 			WithDescription(expectDesc).
-			MustBuild(ctx.Localizer)
+			Build(ctx.Localizer)
+		require.NoError(t, err)
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
@@ -39,7 +40,7 @@ func TestUserError_Handle(t *testing.T) {
 
 		e := NewUserError(expectDesc)
 
-		err := e.Handle(s, ctx)
+		err = e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 
@@ -60,10 +61,11 @@ func TestUserError_Handle(t *testing.T) {
 			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed := NewErrorEmbed().
+		embed, err := NewErrorEmbed().
 			WithDescription(expectDesc).
 			WithField(expectFieldName, expectFieldValue).
-			MustBuild(ctx.Localizer)
+			Build(ctx.Localizer)
+		require.NoError(t, err)
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
@@ -73,7 +75,7 @@ func TestUserError_Handle(t *testing.T) {
 		e := NewUserError(expectDesc).
 			WithField(expectFieldName, expectFieldValue)
 
-		err := e.Handle(s, ctx)
+		err = e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 }

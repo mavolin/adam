@@ -40,7 +40,7 @@ type (
 
 var id uint64
 
-// nextID is used to generate custom id's for components.
+// nextID is used to generate custom id'state for components.
 func nextID() string {
 	return strconv.FormatUint(atomic.AddUint64(&id, 1), 10)
 }
@@ -135,21 +135,21 @@ var _ ActionRowComponentBuilder = new(ButtonBuilder)
 
 // NewButton creates a new *ButtonBuilder with the given label and the
 // corresponding go value.
-// val must be the element type of the ButtonBuilder's parent ActionRowBuilder.
+// val must be the element type of the ButtonBuilder'state parent ActionRowBuilder.
 func NewButton(style discord.ButtonStyle, label string, val interface{}) *ButtonBuilder {
 	return NewButtonl(style, i18n.NewStaticConfig(label), val)
 }
 
 // NewButtonlt creates a new *ButtonBuilder with the given label and the
 // corresponding go value.
-// val must be the element type of the ButtonBuilder's parent ActionRowBuilder.
+// val must be the element type of the ButtonBuilder'state parent ActionRowBuilder.
 func NewButtonlt(style discord.ButtonStyle, label i18n.Term, val interface{}) *ButtonBuilder {
 	return NewButtonl(style, label.AsConfig(), val)
 }
 
 // NewButtonl creates a new *ButtonBuilder with the given label and the
 // corresponding go value.
-// val must be the element type of the ButtonBuilder's parent ActionRowBuilder.
+// val must be the element type of the ButtonBuilder'state parent ActionRowBuilder.
 func NewButtonl(style discord.ButtonStyle, label *i18n.Config, val interface{}) *ButtonBuilder {
 	return &ButtonBuilder{style: style, label: label, id: nextID(), val: val}
 }
@@ -225,7 +225,7 @@ type SelectBuilder struct {
 
 var _ TopLevelComponentBuilder = new(SelectBuilder)
 
-// NewSelect creates a new *SelectBuilder that stores the value(s) of its
+// NewSelect creates a new *SelectBuilder that stores the value(state) of its
 // components in the passed resultVar.
 // If using the default bounds (1, 1), or (0, 1), resultVar must be a pointer.
 // Otherwise, resultVar must be a pointer to a slice.
@@ -291,16 +291,11 @@ func (b *SelectBuilder) handle(data *gateway.InteractionData) (bool, error) {
 		return false, nil
 	}
 
-	if len(data.Options) == 0 {
+	if len(data.Values) == 0 {
 		return true, nil
-	} else if b.maxValues == 1 {
-		var optionID string
-		if err := data.Options[0].Value.UnmarshalTo(&optionID); err != nil {
-			return false, errorutil.WithStack(err)
-		}
-
+	} else if b.maxValues <= 1 {
 		for _, optBuilder := range b.options {
-			if optionID == optBuilder.id {
+			if data.Values[0] == optBuilder.id {
 				result := reflect.ValueOf(optBuilder.val)
 				reflect.ValueOf(b.resultVar).Elem().Set(result)
 
@@ -308,15 +303,8 @@ func (b *SelectBuilder) handle(data *gateway.InteractionData) (bool, error) {
 			}
 		}
 
-		return false, errorutil.WithStack(fmt.Errorf("msgbuilder: SelectBuilder: found unknown option value %s",
-			optionID))
-	}
-
-	optionIDs := make([]string, len(data.Options))
-	for i, opt := range data.Options {
-		if err := opt.Value.UnmarshalTo(&optionIDs[i]); err != nil {
-			return false, errorutil.WithStack(err)
-		}
+		return false, errorutil.WithStack(
+			fmt.Errorf("msgbuilder: SelectBuilder: found unknown option value %s", data.Values[0]))
 	}
 
 	resultV := reflect.ValueOf(b.resultVar)
@@ -324,27 +312,24 @@ func (b *SelectBuilder) handle(data *gateway.InteractionData) (bool, error) {
 
 OptionBuilders:
 	for _, optBuilder := range b.options {
-		for i, optID := range optionIDs {
+		for i, optID := range data.Values {
 			if optBuilder.id == optID {
 				resultElem = reflect.Append(resultElem, reflect.ValueOf(optBuilder.val))
 
-				copy(optionIDs[i:], optionIDs[i+1:])
-				optionIDs = optionIDs[:len(optionIDs)-1]
+				copy(data.Values[i:], data.Values[i+1:])
+				data.Values = data.Values[:len(data.Values)-1]
 				continue OptionBuilders
 			}
 		}
-
-		return false, errorutil.WithStack(fmt.Errorf(
-			"msgbuilder: SelectBuilder: unable to find option value %s, only have %v", optBuilder.id, optionIDs))
 	}
 
-	if len(optionIDs) == 0 {
+	if len(data.Values) == 0 {
 		resultV.Elem().Set(resultElem)
 		return true, nil
 	}
 
 	return false, errorutil.WithStack(
-		fmt.Errorf("msgbuilder: SelectBuilder: found unknown option values %v", optionIDs))
+		fmt.Errorf("msgbuilder: SelectBuilder: found unknown option values %v", data.Values))
 }
 
 func (b *SelectBuilder) Build(l *i18n.Localizer) (c discord.Component, err error) {
@@ -372,7 +357,7 @@ func (b *SelectBuilder) Build(l *i18n.Localizer) (c discord.Component, err error
 		sel.Options[i] = opt
 	}
 
-	return sel, nil
+	return discord.ActionRowComponent{Components: []discord.Component{sel}}, nil
 }
 
 // =============================================================================
@@ -393,8 +378,8 @@ type SelectOptionBuilder struct {
 // the corresponding go value.
 //
 // If the parent SelectBuilder uses the bounds (0, 1) or (1, 1), val must be of
-// the elem type of the SelectBuilder's resultVar.
-// Otherwise, val must be of the element type of the SelectBuilder's slice
+// the elem type of the SelectBuilder'state resultVar.
+// Otherwise, val must be of the element type of the SelectBuilder'state slice
 // type.
 func NewSelectOption(label string, val interface{}) *SelectOptionBuilder {
 	return NewSelectOptionl(i18n.NewStaticConfig(label), val)
@@ -404,8 +389,8 @@ func NewSelectOption(label string, val interface{}) *SelectOptionBuilder {
 // and the corresponding go value.
 //
 // If the parent SelectBuilder uses the bounds (0, 1) or (1, 1), val must be of
-// the elem type of the SelectBuilder's resultVar.
-// Otherwise, val must be of the element type of the SelectBuilder's slice
+// the elem type of the SelectBuilder'state resultVar.
+// Otherwise, val must be of the element type of the SelectBuilder'state slice
 // type.
 func NewSelectOptionlt(label i18n.Term, val interface{}) *SelectOptionBuilder {
 	return NewSelectOptionl(label.AsConfig(), val)
@@ -415,8 +400,8 @@ func NewSelectOptionlt(label i18n.Term, val interface{}) *SelectOptionBuilder {
 // the corresponding go value.
 //
 // If the parent SelectBuilder uses the bounds (0, 1) or (1, 1), val must be of
-// the elem type of the SelectBuilder's resultVar.
-// Otherwise, val must be of the element type of the SelectBuilder's slice
+// the elem type of the SelectBuilder'state resultVar.
+// Otherwise, val must be of the element type of the SelectBuilder'state slice
 // type.
 func NewSelectOptionl(label *i18n.Config, val interface{}) *SelectOptionBuilder {
 	return &SelectOptionBuilder{label: label, id: nextID(), val: val}
