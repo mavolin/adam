@@ -1,4 +1,4 @@
-package messageutil
+package msgawait
 
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	// DefaultReplyWaiter is the waiter used for NewReplyWaiterFromDefault.
+	// DefaultReplyWaiter is the waiter used for ReplyFromDefault.
 	// DefaultReplyWaiter must not be used directly to handleMessages reply.
 	DefaultReplyWaiter = &ReplyWaiter{
 		cancelKeywords: []*i18n.Config{defaultCancelKeyword},
@@ -71,7 +71,7 @@ type (
 	}
 )
 
-// NewReplyWaiter creates a new reply waiter using the passed state and
+// Reply creates a new reply waiter using the passed state and
 // context.
 // It will wait for a message from the message author in the channel the
 // command was invoked in.
@@ -90,7 +90,7 @@ type (
 //  • func(*state.State, *state.MessageCreateEvent) error
 //
 // All values of other types will be discarded.
-func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
+func Reply(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 	w = &ReplyWaiter{
 		state:     s,
 		ctx:       ctx,
@@ -106,9 +106,9 @@ func NewReplyWaiter(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 	return w
 }
 
-// NewReplyWaiterFromDefault creates a new default waiter using the
+// ReplyFromDefault creates a new default waiter using the
 // DefaultReplyWaiter variable as a template.
-func NewReplyWaiterFromDefault(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
+func ReplyFromDefault(s *state.State, ctx *plugin.Context) (w *ReplyWaiter) {
 	w = DefaultReplyWaiter.Clone()
 	w.state = s
 	w.ctx = ctx
@@ -313,7 +313,7 @@ func (w *ReplyWaiter) AwaitContext(
 		case error:
 			return nil, r
 		default: // this should never happen
-			return nil, errors.NewWithStack("messageutil: unexpected return value of result channel")
+			return nil, errors.NewWithStack("msgawait: unexpected return value of result channel")
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package messageutil
+package msgawait
 
 import (
 	"context"
@@ -33,11 +33,11 @@ type (
 	}
 )
 
-// NewReactionWaiter creates a new ReactionWaiter using the passed state.State
+// Reaction creates a new ReactionWaiter using the passed state.State
 // and plugin.Context.
 // ctx.Author will be assumed as the user to make the reaction in
 // ctx.ChannelID.
-func NewReactionWaiter(s *state.State, ctx *plugin.Context, messageID discord.MessageID) *ReactionWaiter {
+func Reaction(s *state.State, ctx *plugin.Context, messageID discord.MessageID) *ReactionWaiter {
 	return &ReactionWaiter{
 		state:     s,
 		ctx:       ctx,
@@ -190,7 +190,7 @@ func (w *ReactionWaiter) AwaitContext(ctx context.Context) (discord.APIEmoji, er
 		case error:
 			return "", r
 		default: // this should never happen
-			return "", errors.NewWithStack("messageutil: unexpected return value of result channel")
+			return "", errors.NewWithStack("msgawait: unexpected return value of result channel")
 		}
 	}
 }

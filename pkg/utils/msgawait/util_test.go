@@ -1,4 +1,4 @@
-package messageutil
+package msgawait
 
 import (
 	"testing"

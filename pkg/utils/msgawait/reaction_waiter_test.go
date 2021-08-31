@@ -1,4 +1,4 @@
-package messageutil
+package msgawait
 
 import (
 	"context"
@@ -44,7 +44,7 @@ func TestReactionWaiter_Await(t *testing.T) {
 		rctx, cancel := context.WithTimeout(context.Background(), 1)
 		defer cancel()
 
-		_, actual := NewReactionWaiter(s, ctx, 123).
+		_, actual := Reaction(s, ctx, 123).
 			AwaitContext(rctx)
 		assert.Equal(t, expect, actual)
 	})

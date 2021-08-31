@@ -1,4 +1,4 @@
-package messageutil
+package msgawait
 
 import (
 	"github.com/diamondburned/arikawa/v3/discord"

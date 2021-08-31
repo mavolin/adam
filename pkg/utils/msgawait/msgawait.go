@@ -1,5 +1,5 @@
-// Package messageutil provides utilities for awaiting replies and reactions.
-package messageutil
+// Package msgawait provides utilities for awaiting replies and reactions.
+package msgawait
 
 import (
 	"time"
@@ -14,5 +14,5 @@ import (
 func AwaitReply(
 	s *state.State, ctx *plugin.Context, initialTimeout, typingTimeout time.Duration,
 ) (*discord.Message, error) {
-	return NewReplyWaiterFromDefault(s, ctx).Await(initialTimeout, typingTimeout)
+	return ReplyFromDefault(s, ctx).Await(initialTimeout, typingTimeout)
 }
