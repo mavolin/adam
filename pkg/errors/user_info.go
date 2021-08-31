@@ -6,7 +6,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
 // UserInfo is less severe error on the user-side.
@@ -14,7 +14,7 @@ import (
 // description of the problem.
 // It won't be logged.
 type UserInfo struct {
-	Embed *embedutil.Builder
+	Embed *msgbuilder.EmbedBuilder
 }
 
 var _ Error = new(UserInfo)
@@ -25,8 +25,8 @@ func NewCustomUserInfo() *UserInfo {
 }
 
 // NewUserInfoFromEmbed creates a new *UserInfo from the passed
-// *embedutil.Builder.
-func NewUserInfoFromEmbed(e *embedutil.Builder) *UserInfo {
+// *msgbuilder.EmbedBuilder.
+func NewUserInfoFromEmbed(e *msgbuilder.EmbedBuilder) *UserInfo {
 	return &UserInfo{Embed: e}
 }
 

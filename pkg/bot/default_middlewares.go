@@ -16,7 +16,7 @@ import (
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
@@ -354,7 +354,7 @@ func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err erro
 				err = nil
 			}
 		}
-	case *embedutil.Builder:
+	case *msgbuilder.EmbedBuilder:
 		if reply != nil {
 			_, err = ctx.ReplyEmbedBuilders(reply)
 			if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {

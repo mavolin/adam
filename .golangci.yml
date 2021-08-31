@@ -8,8 +8,6 @@ linters:
     - errorlint
     - exportloopref
     - forbidigo
-    - funlen
-    - gocognit
     - gocritic
     - godot
     - gofumpt

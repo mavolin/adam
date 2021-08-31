@@ -6,7 +6,7 @@ import (
 
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
 // UserError is an error on the user-side.
@@ -14,7 +14,7 @@ import (
 // of the problem.
 // It won't be logged.
 type UserError struct {
-	Embed *embedutil.Builder
+	Embed *msgbuilder.EmbedBuilder
 }
 
 var _ Error = new(UserError)
@@ -26,8 +26,8 @@ func NewCustomUserError() *UserError {
 }
 
 // NewUserErrorFromEmbed creates a new *UserError from the passed
-// *embedutil.Builder.
-func NewUserErrorFromEmbed(e *embedutil.Builder) *UserError {
+// *msgbuilder.EmbedBuilder.
+func NewUserErrorFromEmbed(e *msgbuilder.EmbedBuilder) *UserError {
 	return &UserError{Embed: e}
 }
 

@@ -15,9 +15,9 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/channelutil"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
 	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
-	"github.com/mavolin/adam/pkg/utils/messageutil"
+	"github.com/mavolin/adam/pkg/utils/msgawait"
+	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
 // TextChannelAllowIDs is a global flag that defines whether TextChannels may
@@ -38,11 +38,11 @@ var (
 		discord.APIEmoji(emojiutil.Keycap10),
 	}
 
-	// CategoryChooserBuilder is the source *embedutil.Builder used to create
+	// CategoryChooserBuilder is the source *msgbuilder.EmbedBuilder used to create
 	// category chooser embeds.
 	// When sending a chooser embed, title and description will be
 	// set/overwritten and at most 2 fields will be added.
-	CategoryChooserBuilder = embedutil.NewBuilder()
+	CategoryChooserBuilder = msgbuilder.NewEmbed()
 
 	// CategoryAllowSearch is a global flag that defines whether categories may
 	// be referenced by name.
@@ -68,11 +68,11 @@ var (
 		discord.APIEmoji(emojiutil.Keycap10),
 	}
 
-	// VoiceChannelChooserBuilder is the source *embedutil.Builder used to
+	// VoiceChannelChooserBuilder is the source *msgbuilder.EmbedBuilder used to
 	// create VoiceChannel chooser embeds.
 	// When sending a chooser embed, title and description will be
 	// set/overwritten and at most 2 fields will be added.
-	VoiceChannelChooserBuilder = embedutil.NewBuilder()
+	VoiceChannelChooserBuilder = msgbuilder.NewEmbed()
 
 	// VoiceChannelAllowSearch is a global flag that defines whether a
 	// voice channels may be referenced by name.
@@ -326,7 +326,7 @@ func (c category) sendChooser(
 		}
 	}()
 
-	choice, err := messageutil.NewReactionWaiter(s, ctx.Context, msg.ID).
+	choice, err := msgawait.Reaction(s, ctx.Context, msg.ID).
 		WithReactions(CategoryOptionEmojis[:numMatches]...).
 		WithCancelReactions(CategoryCancelEmoji).
 		NoAutoDelete(). // we will delete the whole message anyway
@@ -352,7 +352,7 @@ func (c category) sendChooser(
 
 func (c category) genChooserEmbed(
 	ctx *plugin.ParseContext, fullMatches, partialMatches []categoryMatch,
-) (chooser *embedutil.Builder, numMatches int, err error) {
+) (chooser *msgbuilder.EmbedBuilder, numMatches int, err error) {
 	chooser = CategoryChooserBuilder.Clone().
 		WithTitlel(categoryChooserTitle).
 		WithDescriptionl(categoryChooserDescription.
@@ -604,7 +604,7 @@ func (c voiceChannel) sendChooser(
 		}
 	}()
 
-	choice, err := messageutil.NewReactionWaiter(s, ctx.Context, msg.ID).
+	choice, err := msgawait.Reaction(s, ctx.Context, msg.ID).
 		WithReactions(VoiceChannelOptionEmojis[:numMatches]...).
 		WithCancelReactions(VoiceChannelCancelEmoji).
 		NoAutoDelete(). // we will delete the whole message anyway
@@ -631,7 +631,7 @@ func (c voiceChannel) sendChooser(
 //nolint:dupl,funlen,gocognit
 func (c voiceChannel) genChooserEmbed(
 	ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
-) (chooser *embedutil.Builder, numMatches int, err error) {
+) (chooser *msgbuilder.EmbedBuilder, numMatches int, err error) {
 	chooser = VoiceChannelChooserBuilder.Clone().
 		WithTitlel(voiceChannelChooserTitle).
 		WithDescriptionl(voiceChannelChooserDescription.

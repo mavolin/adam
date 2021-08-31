@@ -2,29 +2,29 @@ package errors
 
 import (
 	"github.com/mavolin/adam/internal/shared"
-	"github.com/mavolin/adam/pkg/utils/embedutil"
+	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
-// SetErrorEmbed updates the *embedutil.Builder used to create new error
+// SetErrorEmbed updates the *msgbuilder.EmbedBuilder used to create new error
 // embeds.
 //
-// It should be made sure that Builder always succeeds in building, as
+// It should be made sure that EmbedBuilder always succeeds in building, as
 // otherwise errors might not get sent.
 // This means if localizing the Embed, fallbacks should be defined.
 //
 // SetErrorEmbed is not safe for concurrent use and should not be called after
 // the bot has been started.
-func SetErrorEmbed(b *embedutil.Builder) {
+func SetErrorEmbed(b *msgbuilder.EmbedBuilder) {
 	shared.ErrorEmbed = b
 }
 
-// NewErrorEmbed creates a new *embedutil.Builder that can be used to build
+// NewErrorEmbed creates a new *msgbuilder.EmbedBuilder that can be used to build
 // error embeds.
-func NewErrorEmbed() *embedutil.Builder {
+func NewErrorEmbed() *msgbuilder.EmbedBuilder {
 	return shared.ErrorEmbed.Clone()
 }
 
-// SetInfoEmbed updates the *embedutil.Builder used to create new info embeds.
+// SetInfoEmbed updates the *msgbuilder.EmbedBuilder used to create new info embeds.
 //
 // It should be made sure that Embed builder always succeeds in building, as
 // otherwise errors might not get sent.
@@ -32,12 +32,12 @@ func NewErrorEmbed() *embedutil.Builder {
 //
 // SetInfoEmbed is not safe for concurrent use and should not be called after
 // the bot has been started.
-func SetInfoEmbed(b *embedutil.Builder) {
+func SetInfoEmbed(b *msgbuilder.EmbedBuilder) {
 	shared.ErrorEmbed = b
 }
 
-// NewInfoEmbed creates a new *embedutil.Builder that can be used to build
+// NewInfoEmbed creates a new *msgbuilder.EmbedBuilder that can be used to build
 // info embeds.
-func NewInfoEmbed() *embedutil.Builder {
+func NewInfoEmbed() *msgbuilder.EmbedBuilder {
 	return shared.InfoEmbed.Clone()
 }
