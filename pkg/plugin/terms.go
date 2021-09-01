@@ -43,6 +43,22 @@ var (
 		"plugin.error.channel_types.dm",
 		"You can only use this command in a direct message.")
 
+	channelTypeErrorThread = i18n.NewFallbackConfig(
+		"plugin.error.channel_types.thread",
+		"You can only use this command in a thread.")
+
+	channelTypeErrorGuildTextAndGuildNews = i18n.NewFallbackConfig(
+		"plugin.error.channel_types.guild_text_and_guild_news",
+		"You can only use this command in a regular text channel or an announcement channel.")
+
+	channelTypeErrorGuildTextAndThread = i18n.NewFallbackConfig(
+		"plugin.error.channel_types.guild_text_and_thread",
+		"You can only use this command in a regular text channel or a thread.")
+
+	channelTypeErrorGuildNewsAndThread = i18n.NewFallbackConfig(
+		"plugin.error.channel_types.guild_news_and_thread",
+		"You can only use this command in an announcement channel or a thread.")
+
 	channelTypeErrorGuild = i18n.NewFallbackConfig(
 		"plugin.error.channel_types.guild",
 		"You can only use this command in a server.")
@@ -54,6 +70,10 @@ var (
 	channelTypeErrorDMAndGuildNews = i18n.NewFallbackConfig(
 		"plugin.error.channel_types.dm_and_guild_news.",
 		"You can only use this command in a direct message or an announcement channel.")
+
+	channelTypeErrorDMAndThread = i18n.NewFallbackConfig(
+		"plugin.error.channel_types.dm_and_thread",
+		"You can only use this command in a direct message or a thread.")
 
 	channelTypeErrorFallback = i18n.NewFallbackConfig(
 		"plugin.error.channel_type.fallback",
