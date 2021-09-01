@@ -49,6 +49,10 @@ type discordDataProvider struct {
 	channelErr error
 	channelWG  *sync.WaitGroup
 
+	parentChannel    *discord.Channel
+	parentChannelErr error
+	parentChannelWG  *sync.WaitGroup
+
 	self    *discord.Member
 	selfErr error
 	selfWG  *sync.WaitGroup
@@ -131,6 +135,54 @@ func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
 	return func() (*discord.Channel, error) {
 		d.channelWG.Wait()
 		return d.channel, d.channelErr
+	}
+}
+
+func (d *discordDataProvider) ParentChannelAsync() func() (*discord.Channel, error) {
+	if d.parentChannel != nil || d.parentChannelErr != nil {
+		return func() (*discord.Channel, error) { return d.parentChannel, d.parentChannelErr }
+	}
+
+	d.mut.Lock()
+	defer d.mut.Unlock()
+
+	c, err := d.s.Cabinet.Channel(d.channelID)
+	if err == nil {
+		d.channel = c
+
+		parent, err := d.s.Cabinet.Channel(c.ParentID)
+		if err == nil {
+			d.parentChannel = parent
+			return func() (*discord.Channel, error) { return parent, nil }
+		}
+	}
+
+	if d.parentChannelWG != nil {
+		return func() (*discord.Channel, error) {
+			d.parentChannelWG.Wait()
+			return d.parentChannel, d.parentChannelErr
+		}
+	}
+
+	d.parentChannelWG = new(sync.WaitGroup)
+	d.parentChannelWG.Add(1)
+
+	go func() {
+		defer d.parentChannelWG.Done()
+
+		c, err := d.ChannelAsync()()
+		if err != nil {
+			d.parentChannelErr = err
+			return
+		}
+
+		d.parentChannel, err = d.s.Channel(c.ParentID)
+		d.parentChannelErr = errors.WithStack(err)
+	}()
+
+	return func() (*discord.Channel, error) {
+		d.parentChannelWG.Wait()
+		return d.parentChannel, d.parentChannelErr
 	}
 }
 

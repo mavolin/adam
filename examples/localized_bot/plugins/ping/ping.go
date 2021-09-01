@@ -25,7 +25,6 @@ func New() *Ping {
 			// we can leave this empty, if we want to use the ShortDescription
 			// as LongDescription as well
 			LongDescription: nil,
-			ChannelTypes:    plugin.AllChannels,
 			BotPermissions:  discord.PermissionSendMessages,
 		},
 	}

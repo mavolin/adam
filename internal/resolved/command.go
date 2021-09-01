@@ -119,8 +119,16 @@ func (cmd *Command) Examples(l *i18n.Localizer) []string {
 	return examples
 }
 
-func (cmd *Command) IsHidden() bool                      { return cmd.source.IsHidden() }
-func (cmd *Command) ChannelTypes() plugin.ChannelTypes   { return cmd.source.GetChannelTypes() }
+func (cmd *Command) IsHidden() bool { return cmd.source.IsHidden() }
+
+func (cmd *Command) ChannelTypes() plugin.ChannelTypes {
+	if t := cmd.source.GetChannelTypes(); t > 0 {
+		return t
+	}
+
+	return plugin.AllChannels
+}
+
 func (cmd *Command) BotPermissions() discord.Permissions { return cmd.source.GetBotPermissions() }
 
 func (cmd *Command) IsRestricted(s *state.State, ctx *plugin.Context) error {

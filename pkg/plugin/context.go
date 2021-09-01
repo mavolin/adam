@@ -376,6 +376,12 @@ func (ctx *Context) Channel() (*discord.Channel, error) {
 	return ctx.ChannelAsync()()
 }
 
+// ParentChannel returns the parent *discord.Channel the command was invoked
+// in.
+func (ctx *Context) ParentChannel() (*discord.Channel, error) {
+	return ctx.ParentChannelAsync()()
+}
+
 // Self returns the *discord.Member that belongs to the bot.
 // It will return (nil, nil) if the command was not invoked in a guild.
 func (ctx *Context) Self() (*discord.Member, error) {
@@ -392,19 +398,27 @@ func (ctx *Context) SelfPermissions() (discord.Permissions, error) {
 	}
 
 	gf := ctx.GuildAsync()
-	cf := ctx.ChannelAsync()
+	sf := ctx.SelfAsync()
 
-	s, err := ctx.Self()
+	ch, err := ctx.Channel()
+	if err != nil {
+		return 0, err
+	}
+
+	if ch.Type == discord.GuildNewsThread || ch.Type == discord.GuildPublicThread ||
+		ch.Type == discord.GuildPrivateThread {
+		ch, err = ctx.ParentChannel()
+		if err != nil {
+			return 0, nil
+		}
+	}
+
+	s, err := sf()
 	if err != nil {
 		return 0, err
 	}
 
 	g, err := gf()
-	if err != nil {
-		return 0, err
-	}
-
-	ch, err := cf()
 	if err != nil {
 		return 0, err
 	}
@@ -466,6 +480,9 @@ type (
 		// ChannelAsync returns a callback returning the Channel the message
 		// was sent in.
 		ChannelAsync() func() (*discord.Channel, error)
+		// ParentChannelAsync returns a callback returning the parent of the
+		// Channel the message was sent in.
+		ParentChannelAsync() func() (*discord.Channel, error)
 		// SelfAsync returns a callback returning the member object of the bot
 		// in the calling guild.
 		// If this happened in a private channel, SelfAsync will return

@@ -18,17 +18,17 @@ const (
 	GuildNewsChannels
 	// DirectMessages is the ChannelTypes of a private chat (1).
 	DirectMessages
+	// Threads is the ChannelTypes of a thread (10, 11, 12).
+	Threads
 
 	// ================================ Combinations ================================
 
 	// AllChannels is a combination of all ChannelTypes.
 	AllChannels = DirectMessages | GuildChannels
 	// GuildChannels is a combination of all ChannelTypes used in guilds, i.e.
-	// GuildTextChannels and GuildNewsChannels.
-	GuildChannels = GuildTextChannels | GuildNewsChannels
+	// GuildTextChannels, GuildNewsChannels, and Threads.
+	GuildChannels = GuildTextChannels | GuildNewsChannels | Threads
 )
-
-// todo: add threads
 
 // Has checks if the passed discord.ChannelType is found in the ChannelTypes.
 func (t ChannelTypes) Has(target discord.ChannelType) bool {
@@ -40,6 +40,12 @@ func (t ChannelTypes) Has(target discord.ChannelType) bool {
 		return t&DirectMessages == DirectMessages
 	case discord.GuildNews:
 		return t&GuildNewsChannels == GuildNewsChannels
+	case discord.GuildNewsThread:
+		fallthrough
+	case discord.GuildPublicThread:
+		fallthrough
+	case discord.GuildPrivateThread:
+		return t&Threads == Threads
 	default:
 		return false
 	}

@@ -12,6 +12,9 @@ type mockDiscordDataProvider struct {
 	ChannelReturn *discord.Channel
 	ChannelError  error
 
+	ParentChannelReturn *discord.Channel
+	ParentChannelError  error
+
 	GuildReturn *discord.Guild
 	GuildError  error
 
@@ -22,6 +25,12 @@ type mockDiscordDataProvider struct {
 func (d mockDiscordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
 	return func() (*discord.Channel, error) {
 		return d.ChannelReturn, d.ChannelError
+	}
+}
+
+func (d mockDiscordDataProvider) ParentChannelAsync() func() (*discord.Channel, error) {
+	return func() (*discord.Channel, error) {
+		return d.ParentChannelReturn, d.ParentChannelError
 	}
 }
 
