@@ -640,44 +640,33 @@ var (
 // ================================ Chooser ================================
 
 var (
-	categoryChooserTitle = i18n.NewFallbackConfig("arg.type.category.chooser.title", "Multiple Matches")
-
-	categoryChooserDescription = i18n.NewFallbackConfig(
-		"arg.type.category.chooser.description",
+	categoryChooserContent = i18n.NewFallbackConfig(
+		"arg.type.category.chooser.content",
 		"There are multiple categories that match the name you gave me. "+
-			"Please choose the correct one by reacting with the corresponding emoji, "+
-			"or react with {{.cancel_emoji}} to cancel.")
+			"Please select the correct one, or select *Cancel* to cancel.")
+
+	categoryChooserPartialMatchesAddition = i18n.NewFallbackConfig(
+		"arg.type.category.chooser.partial_matches_addition",
+		"There are also {{.num_partial_matches}} additional partial matches. "+
+			"Use the full name of the category or its id, to match any of these.")
 
 	categoryChooserMatch = i18n.NewFallbackConfig(
 		"arg.type.category.chooser.match",
-		"{{.emoji}} **{{.category_name}}** (position: {{.position}})")
+		"{{.category_name}} (position: {{.position}})")
 
-	categoryChooserFullMatchesName = i18n.NewFallbackConfig(
-		"arg.type.category.chooser.full_matches.name",
-		"Full Matches")
-
-	categoryChooserPartialMatchesName = i18n.NewFallbackConfig(
-		"arg.type.category.chooser.partial_matches.name",
-		"Partial Matches")
-
-	categoryChooserTooManyPartialMatches = i18n.NewFallbackConfig(
-		"arg.type.category.chooser.too_many_partial_matches",
-		"There are {{.num_partial_matches}} additional partial matches. "+
-			"Use the full name of the category or their id, to match any of these.")
+	categoryChooserCancel = i18n.NewFallbackConfig(
+		"arg.type.category.chooser.cancel",
+		"Cancel")
 )
 
 type (
-	categoryChooserDescriptionPlaceholders struct {
-		CancelEmoji discord.APIEmoji
-	}
-
 	categoryChooserMatchPlaceholders struct {
 		Emoji        discord.APIEmoji
 		CategoryName string
 		Position     int
 	}
 
-	categoryChooserTooManyPartialMatchesPlaceholders struct {
+	categoryChooserPartialMatchesAdditionPlaceholders struct {
 		NumPartialMatches int
 	}
 )
@@ -728,52 +717,40 @@ var (
 // ================================ Chooser ================================
 
 var (
-	voiceChannelChooserTitle = i18n.NewFallbackConfig("arg.type.voice_channel.chooser.title", "Multiple Matches")
-
-	voiceChannelChooserDescription = i18n.NewFallbackConfig(
-		"arg.type.voice_channel.chooser.description",
+	voiceChannelChooserContent = i18n.NewFallbackConfig(
+		"arg.type.voice_channel.chooser.content",
 		"There are multiple voice channels that match the name you gave me. "+
-			"Please choose the correct one by reacting with the corresponding emoji, "+
-			"or react with {{.cancel_emoji}} to cancel.")
+			"Please select the correct one, or select *Cancel* to cancel.")
+
+	voiceChannelChooserPartialMatchesAddition = i18n.NewFallbackConfig(
+		"arg.type.voice_channel.chooser.partial_matches_addition",
+		"There are also {{.num_partial_matches}} additional partial matches. "+
+			"Use the full name of the voice channel or its id, to match any of these.")
 
 	voiceChannelChooserRootMatch = i18n.NewFallbackConfig(
-		"arg.type.category.chooser.match.root",
-		"{{.emoji}} **{{.channel_name}}** (position: {{.position}})")
+		"arg.type.voice_channel.chooser.match.root",
+		"**{{.channel_name}}** (position: {{.position}})")
 
 	voiceChannelChooserNestedMatch = i18n.NewFallbackConfig(
 		"arg.type.voice_channel.chooser.match.nested",
-		"{{.emoji}} **{{.channel_name}}** ({{.category_name}}, position: {{.position}})")
+		"**{{.channel_name}}** ({{.category_name}}, position: {{.position}})")
 
-	voiceChannelChooserFullMatchesName = i18n.NewFallbackConfig(
-		"arg.type.voice_channel.chooser.full_matches.name",
-		"Full Matches")
-
-	voiceChannelChooserPartialMatchesName = i18n.NewFallbackConfig(
-		"arg.type.voice_channel.chooser.partial_matches.name",
-		"Partial Matches")
-
-	voiceChannelChooserTooManyPartialMatches = i18n.NewFallbackConfig(
-		"arg.type.voice_channel.chooser.too_many_partial_matches",
-		"There are {{.num_partial_matches}} additional partial matches. "+
-			"Use the full name of the voice channel or their id, to match any of these.")
+	voiceChannelChooserCancel = i18n.NewFallbackConfig(
+		"arg.type.voice_channel.chooser.cancel",
+		"Cancel")
 )
 
 type (
-	voiceChannelChooserDescriptionPlaceholders struct {
-		CancelEmoji discord.APIEmoji
+	voiceChannelChooserPartialMatchesAdditionPlaceholders struct {
+		NumPartialMatches int
 	}
 
 	// voiceChannelChooserMatchPlaceholders is the placeholder struct used for
 	// both voiceChannelChooserRootMatch and voiceChannelChooserNestedMatch.
 	voiceChannelChooserMatchPlaceholders struct {
-		Emoji        discord.APIEmoji
 		CategoryName string
 		ChannelName  string
 		Position     int
-	}
-
-	voiceChannelChooserTooManyPartialMatchesPlaceholders struct {
-		NumPartialMatches int
 	}
 )
 
