@@ -248,6 +248,7 @@ func TestChannelTypeError_Handle(t *testing.T) {
 	}
 
 	expectEmbed, err := shared.NewErrorEmbed(ctx.Localizer, ctx.MustLocalize(channelTypeErrorGuild))
+	require.NoError(t, err)
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
