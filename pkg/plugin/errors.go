@@ -65,12 +65,10 @@ var HandleArgumentError = func(_ *state.State, ctx *Context, aerr *ArgumentError
 		return err
 	}
 
-	embed, err := shared.NewErrorEmbed(ctx.Localizer, desc)
-	if err != nil {
-		return err
-	}
+	embed := shared.ErrorEmbed.Clone().
+		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbeds(embed)
+	_, err = ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -181,10 +179,8 @@ var HandleBotPermissionsError = func(_ *state.State, ctx *Context, perr *BotPerm
 		return nil
 	}
 
-	embed, err := shared.NewErrorEmbed(ctx.Localizer, perr.Description(ctx.Localizer))
-	if err != nil {
-		return err
-	}
+	embed := shared.ErrorEmbed.Clone().
+		WithDescription(perr.Description(ctx.Localizer))
 
 	if !perr.IsSinglePermission() {
 		permsName, err := ctx.Localize(botPermissionsMissingPermissionsFieldName)
@@ -192,13 +188,10 @@ var HandleBotPermissionsError = func(_ *state.State, ctx *Context, perr *BotPerm
 			return err
 		}
 
-		embed.Fields = append(embed.Fields, discord.EmbedField{
-			Name:  permsName,
-			Value: perr.PermissionList(ctx.Localizer),
-		})
+		embed.WithField(permsName, perr.PermissionList(ctx.Localizer))
 	}
 
-	_, err = ctx.ReplyEmbeds(embed)
+	_, err := ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -230,13 +223,24 @@ func (e *ChannelTypeError) Description(l *i18n.Localizer) (desc string) {
 		desc, _ = l.Localize(channelTypeErrorGuildNews)
 	case e.Allowed == DirectMessages:
 		desc, _ = l.Localize(channelTypeErrorDM)
+	case e.Allowed == Threads:
+		desc, _ = l.Localize(channelTypeErrorThread)
+
 	// ----- combinations -----
+	case e.Allowed == (GuildTextChannels | GuildNewsChannels):
+		desc, _ = l.Localize(channelTypeErrorGuildTextAndGuildNews)
+	case e.Allowed == (GuildTextChannels | Threads):
+		desc, _ = l.Localize(channelTypeErrorGuildTextAndThread)
+	case e.Allowed == (GuildNewsChannels | Threads):
+		desc, _ = l.Localize(channelTypeErrorGuildNewsAndThread)
 	case e.Allowed == GuildChannels:
 		desc, _ = l.Localize(channelTypeErrorGuild)
 	case e.Allowed == (DirectMessages | GuildTextChannels):
 		desc, _ = l.Localize(channelTypeErrorDMAndGuildText)
 	case e.Allowed == (DirectMessages | GuildNewsChannels):
 		desc, _ = l.Localize(channelTypeErrorDMAndGuildNews)
+	case e.Allowed == (DirectMessages | Threads):
+		desc, _ = l.Localize(channelTypeErrorDMAndThread)
 	default:
 		desc, _ = l.Localize(channelTypeErrorFallback)
 	}
@@ -264,14 +268,10 @@ func (e *ChannelTypeError) Handle(s *state.State, ctx *Context) error {
 }
 
 var HandleChannelTypeError = func(s *state.State, ctx *Context, cerr *ChannelTypeError) error {
-	desc := cerr.Description(ctx.Localizer)
+	embed := shared.ErrorEmbed.Clone().
+		WithDescription(cerr.Description(ctx.Localizer))
 
-	embed, err := shared.NewErrorEmbed(ctx.Localizer, desc)
-	if err != nil {
-		return err
-	}
-
-	_, err = ctx.ReplyEmbeds(embed)
+	_, err := ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -370,12 +370,13 @@ var HandleRestrictionError = func(s *state.State, ctx *Context, rerr *Restrictio
 		return err
 	}
 
-	embed, err := shared.NewErrorEmbed(ctx.Localizer, desc)
+	embed := shared.ErrorEmbed.Clone().
+		WithDescription(desc)
 	if err != nil {
 		return err
 	}
 
-	_, err = ctx.ReplyEmbeds(embed)
+	_, err = ctx.ReplyEmbedBuilders(embed)
 	return err
 }
 
@@ -430,11 +431,9 @@ var HandleThrottlingError = func(s *state.State, ctx *Context, terr *ThrottlingE
 		return err
 	}
 
-	embed, err := shared.NewInfoEmbed(ctx.Localizer, desc)
-	if err != nil {
-		return err
-	}
+	embed := shared.InfoEmbed.Clone().
+		WithDescription(desc)
 
-	_, err = ctx.ReplyEmbeds(embed)
+	_, err = ctx.ReplyEmbedBuilders(embed)
 	return err
 }
