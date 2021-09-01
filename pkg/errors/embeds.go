@@ -20,8 +20,8 @@ var (
 
 // This may be a bit ugly, but it allows two things:
 // a) Package msgbuilder can import package plugin, and
-// b) plugin-related errors can actualy be provided by package plugin, and not
-// error
+// b) plugin-related errors can actually be provided by package plugin, and not
+// error.
 func init() {
 	shared.NewErrorEmbed = func(l *i18n.Localizer, desc string) (discord.Embed, error) {
 		return NewErrorEmbed().
