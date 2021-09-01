@@ -118,7 +118,6 @@ func New(o Options) *Help {
 					},
 				},
 			},
-			ChannelTypes:   plugin.AllChannels,
 			BotPermissions: discord.PermissionSendMessages,
 		},
 		Options: o,

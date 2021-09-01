@@ -4,9 +4,9 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
+	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
 // UserError is an error on the user-side.
@@ -14,7 +14,7 @@ import (
 // of the problem.
 // It won't be logged.
 type UserError struct {
-	Embed *msgbuilder.EmbedBuilder
+	Embed *embedbuilder.Builder
 }
 
 var _ Error = new(UserError)
@@ -27,7 +27,7 @@ func NewCustomUserError() *UserError {
 
 // NewUserErrorFromEmbed creates a new *UserError from the passed
 // *msgbuilder.EmbedBuilder.
-func NewUserErrorFromEmbed(e *msgbuilder.EmbedBuilder) *UserError {
+func NewUserErrorFromEmbed(e *embedbuilder.Builder) *UserError {
 	return &UserError{Embed: e}
 }
 

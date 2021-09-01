@@ -148,6 +148,64 @@ func TestDiscordDataProvider_ChannelAsync(t *testing.T) {
 	})
 }
 
+func TestDiscordDataProvider_ParentChannelAsync(t *testing.T) {
+	t.Parallel()
+
+	t.Run("cached", func(t *testing.T) {
+		t.Parallel()
+
+		_, s := state.NewMocker(t)
+
+		child := &discord.Channel{ID: 123, GuildID: 456, ParentID: 789}
+		expect := &discord.Channel{ID: 789, GuildID: 456}
+
+		s.Cabinet = &store.Cabinet{ChannelStore: defaultstore.NewChannel()}
+
+		err := s.Cabinet.ChannelSet(*child, false)
+		require.NoError(t, err)
+
+		err = s.Cabinet.ChannelSet(*expect, false)
+		require.NoError(t, err)
+
+		p := &discordDataProvider{
+			s:         s,
+			channelID: child.ID,
+		}
+
+		actual, err := p.ParentChannelAsync()()
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("fetch", func(t *testing.T) {
+		t.Parallel()
+
+		m, s := state.NewMocker(t)
+
+		child := &discord.Channel{
+			ID:               123,
+			ParentID:         456,
+			VideoQualityMode: discord.AutoVideoQuality,
+		}
+		m.Channel(*child)
+
+		expect := &discord.Channel{
+			ID:               456,
+			VideoQualityMode: discord.AutoVideoQuality,
+		}
+		m.Channel(*expect)
+
+		p := &discordDataProvider{
+			s:         s,
+			channelID: child.ID,
+		}
+
+		actual, err := p.ParentChannelAsync()()
+		require.NoError(t, err)
+		assert.Equal(t, expect, actual)
+	})
+}
+
 func TestDiscordDataProvider_MemberAsync(t *testing.T) {
 	t.Parallel()
 

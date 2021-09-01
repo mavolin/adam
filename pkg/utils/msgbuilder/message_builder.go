@@ -16,14 +16,22 @@ import (
 	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
+	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
+	"github.com/mavolin/adam/pkg/plugin"
 )
 
+type EmbedBuilder = embedbuilder.Builder
+
+func NewEmbed() *EmbedBuilder {
+	return embedbuilder.New()
+}
+
 // Builder is a message builder.
+// After creating or editing a message, it must not be used again.
 type Builder struct {
-	s         *state.State
-	localizer *i18n.Localizer
+	// ========= message =========
 
 	content *i18n.Config
 	embeds  *[]*EmbedBuilder
@@ -41,19 +49,37 @@ type Builder struct {
 	attachments *[]discord.Attachment
 	files       []sendpart.File
 
-	channelID discord.ChannelID
+	// ========= internals =========
+
+	state *state.State
+	ctx   *plugin.Context
+
+	userID discord.UserID
+
+	channelID discord.ChannelID // NullChannelID if replier
 	messageID discord.MessageID
+	dm        bool // only used when using replier
 }
 
-// New creates a new *Builder.
-func New(s *state.State, l *i18n.Localizer) *Builder {
-	return &Builder{s: s, localizer: l, awaitIndexes: make(map[int]struct{})}
+// New creates a new *Builder that awaits a component interaction from the
+// invoking user.
+func New(s *state.State, ctx *plugin.Context) *Builder {
+	return &Builder{
+		awaitIndexes: make(map[int]struct{}),
+		state:        s,
+		ctx:          ctx,
+		userID:       ctx.Author.ID,
+	}
 }
+
+// =============================================================================
+// Message Related Methods
+// =====================================================================================
 
 // WithContent sets the content of the message to the given content.
 // It may be no longer than 2000 characters.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithContent(content string) *Builder {
 	return b.WithContentl(i18n.NewStaticConfig(content))
 }
@@ -61,7 +87,7 @@ func (b *Builder) WithContent(content string) *Builder {
 // WithContentlt sets the content of the message to the given content.
 // It may be no longer than 2000 characters.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithContentlt(content i18n.Term) *Builder {
 	return b.WithContentl(content.AsConfig())
 }
@@ -69,7 +95,7 @@ func (b *Builder) WithContentlt(content i18n.Term) *Builder {
 // WithContentl sets the content of the message to the given content.
 // It may be no longer than 2000 characters.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithContentl(content *i18n.Config) *Builder {
 	b.content = content
 	return b
@@ -85,7 +111,7 @@ func (b *Builder) RemoveContent() *Builder {
 
 // WithEmbed adds the passed embed to the message.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithEmbed(embed *EmbedBuilder) *Builder {
 	if b.embeds == nil {
 		b.embeds = new([]*EmbedBuilder)
@@ -107,7 +133,7 @@ func (b *Builder) RemoveEmbeds() *Builder {
 
 // WithComponent adds the passed TopLevelComponentBuilder to the message.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithComponent(component TopLevelComponentBuilder) *Builder {
 	if b.components == nil {
 		b.components = new([]TopLevelComponentBuilder)
@@ -119,9 +145,9 @@ func (b *Builder) WithComponent(component TopLevelComponentBuilder) *Builder {
 
 // WithAwaitedComponent adds the passed TopLevelComponentBuilder to the
 // message, and waits for an interaction for that component when
-// AwaitComponents or AwaitAllComponents is called.
+// AwaitComponents is called.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithAwaitedComponent(component TopLevelComponentBuilder) *Builder {
 	if b.components == nil {
 		b.components = new([]TopLevelComponentBuilder)
@@ -145,7 +171,7 @@ func (b *Builder) RemoveComponents() *Builder {
 
 // AsTTS sends the message as a TTS message.
 //
-// Actions: create
+// Actions: send
 func (b *Builder) AsTTS() *Builder {
 	b.tts = true
 	return b
@@ -154,7 +180,7 @@ func (b *Builder) AsTTS() *Builder {
 // WithAllowedMentionTypes adds the passed api.AllowedMentionTypes to the
 // allowed mentions of the message.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithAllowedMentionTypes(allowed ...api.AllowedMentionType) *Builder {
 	if b.allowedMentions == nil {
 		b.allowedMentions = new(api.AllowedMentions)
@@ -166,7 +192,7 @@ func (b *Builder) WithAllowedMentionTypes(allowed ...api.AllowedMentionType) *Bu
 
 // WithRoleMentions adds the passed role ids to the allowed mentions.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithRoleMentions(roleIDs ...discord.RoleID) *Builder {
 	if b.allowedMentions == nil {
 		b.allowedMentions = new(api.AllowedMentions)
@@ -178,7 +204,7 @@ func (b *Builder) WithRoleMentions(roleIDs ...discord.RoleID) *Builder {
 
 // WithUserMentions adds the passed user ids to the allowed mentions.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithUserMentions(userIDs ...discord.UserID) *Builder {
 	if b.allowedMentions == nil {
 		b.allowedMentions = new(api.AllowedMentions)
@@ -190,7 +216,7 @@ func (b *Builder) WithUserMentions(userIDs ...discord.UserID) *Builder {
 
 // MentionRepliedUser allows the replied user to be mentioned.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) MentionRepliedUser() *Builder {
 	if b.allowedMentions == nil {
 		b.allowedMentions = new(api.AllowedMentions)
@@ -202,7 +228,7 @@ func (b *Builder) MentionRepliedUser() *Builder {
 
 // WithReference references the message with the passed id.
 //
-// Actions: create
+// Actions: send
 func (b *Builder) WithReference(messageID discord.MessageID) *Builder {
 	b.reference = &discord.MessageReference{MessageID: messageID}
 	return b
@@ -248,24 +274,28 @@ func (b *Builder) RemoveAttachments() *Builder {
 
 // WithFile adds the passed file to the message.
 //
-// Actions: create and edit
+// Actions: send and edit
 func (b *Builder) WithFile(name string, reader io.Reader) *Builder {
 	b.files = append(b.files, sendpart.File{Name: name, Reader: reader})
 	return b
 }
 
-// disableAllComponents disables all components.
-func (b *Builder) disableAllComponents() {
-	if b.components != nil {
-		for _, c := range *b.components {
-			c.disable()
-		}
-	}
+// =============================================================================
+// Component Await Settings
+// =====================================================================================
+
+// AwaitingUser sets the id of the user that is awaited to the passed id.
+func (b *Builder) AwaitingUser(userID discord.UserID) *Builder {
+	b.userID = userID
+	return b
 }
 
-// Send creates a new message in the passed channel.
-func (b *Builder) Send(channelID discord.ChannelID) (msg *discord.Message, err error) {
-	data := api.SendMessageData{
+// =============================================================================
+// Message Sending
+// =====================================================================================
+
+func (b *Builder) sendMessageData() (data api.SendMessageData, err error) {
+	data = api.SendMessageData{
 		TTS:             b.tts,
 		Files:           b.files,
 		AllowedMentions: b.allowedMentions,
@@ -273,9 +303,9 @@ func (b *Builder) Send(channelID discord.ChannelID) (msg *discord.Message, err e
 	}
 
 	if b.content != nil {
-		data.Content, err = b.localizer.Localize(b.content)
+		data.Content, err = b.ctx.Localize(b.content)
 		if err != nil {
-			return nil, err
+			return api.SendMessageData{}, nil
 		}
 	}
 
@@ -283,9 +313,9 @@ func (b *Builder) Send(channelID discord.ChannelID) (msg *discord.Message, err e
 		data.Embeds = make([]discord.Embed, len(*b.embeds))
 
 		for i, embedBuilder := range *b.embeds {
-			embed, err := embedBuilder.Build(b.localizer)
+			embed, err := embedBuilder.Build(b.ctx.Localizer)
 			if err != nil {
-				return nil, err
+				return api.SendMessageData{}, nil
 			}
 
 			data.Embeds[i] = embed
@@ -296,16 +326,71 @@ func (b *Builder) Send(channelID discord.ChannelID) (msg *discord.Message, err e
 		data.Components = make([]discord.Component, len(*b.components))
 
 		for i, componentBuilder := range *b.components {
-			c, err := componentBuilder.Build(b.localizer)
+			c, err := componentBuilder.Build(b.ctx.Localizer)
 			if err != nil {
-				return nil, err
+				return api.SendMessageData{}, nil
 			}
 
 			data.Components[i] = c
 		}
 	}
 
-	msg, err = b.s.SendMessageComplex(channelID, data)
+	return data, err
+}
+
+// Reply sends the message using the plugin.Context's plugin.Replier.
+func (b *Builder) Reply() (*discord.Message, error) {
+	data, err := b.sendMessageData()
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err := b.ctx.ReplyMessage(data)
+	if err == nil {
+		b.channelID = discord.NullChannelID
+		b.messageID = msg.ID
+	}
+
+	return msg, err
+}
+
+// ReplyAndAwait sends the message using the plugin.Context's plugin.Replier
+// and then waits for a component interaction.
+// Upon returning, it disables all components.
+func (b *Builder) ReplyAndAwait(timeout time.Duration) (*discord.Message, error) {
+	msg, err := b.Reply()
+	if err != nil {
+		return nil, err
+	}
+
+	return msg, b.AwaitComponents(timeout, true)
+}
+
+// ReplyDM sends the message in a DM using the plugin.Context's plugin.Replier.
+func (b *Builder) ReplyDM() (*discord.Message, error) {
+	data, err := b.sendMessageData()
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err := b.ctx.ReplyMessageDM(data)
+	if err == nil {
+		b.channelID = discord.NullChannelID
+		b.messageID = msg.ID
+		b.dm = true
+	}
+
+	return msg, err
+}
+
+// Send creates a new message in the passed channel.
+func (b *Builder) Send(channelID discord.ChannelID) (msg *discord.Message, err error) {
+	data, err := b.sendMessageData()
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err = b.state.SendMessageComplex(channelID, data)
 	if err == nil {
 		b.channelID = msg.ChannelID
 		b.messageID = msg.ID
@@ -314,15 +399,12 @@ func (b *Builder) Send(channelID discord.ChannelID) (msg *discord.Message, err e
 	return msg, errorutil.WithStack(err)
 }
 
-// Edit edits the message with the passed channel and message id.
-func (b *Builder) Edit(channelID discord.ChannelID, messageID discord.MessageID) (*discord.Message, error) {
-	b.channelID = channelID
-	b.messageID = messageID
+// =============================================================================
+// Message Editing
+// =====================================================================================
 
+func (b *Builder) editMessageData() (api.EditMessageData, error) {
 	data := api.EditMessageData{
-		Content:         nil,
-		Embeds:          nil,
-		Components:      nil,
 		AllowedMentions: b.allowedMentions,
 		Attachments:     b.attachments,
 		Flags:           b.flags,
@@ -330,9 +412,9 @@ func (b *Builder) Edit(channelID discord.ChannelID, messageID discord.MessageID)
 	}
 
 	if b.content != nil {
-		content, err := b.localizer.Localize(b.content)
+		content, err := b.ctx.Localize(b.content)
 		if err != nil {
-			return nil, err
+			return api.EditMessageData{}, err
 		}
 
 		data.Content = option.NewNullableString(content)
@@ -346,9 +428,9 @@ func (b *Builder) Edit(channelID discord.ChannelID, messageID discord.MessageID)
 		*data.Embeds = make([]discord.Embed, len(*b.embeds))
 
 		for i, embedBuilder := range *b.embeds {
-			embed, err := embedBuilder.Build(b.localizer)
+			embed, err := embedBuilder.Build(b.ctx.Localizer)
 			if err != nil {
-				return nil, err
+				return api.EditMessageData{}, err
 			}
 
 			(*data.Embeds)[i] = embed
@@ -363,40 +445,71 @@ func (b *Builder) Edit(channelID discord.ChannelID, messageID discord.MessageID)
 		*data.Components = make([]discord.Component, len(*b.components))
 
 		for i, componentBuilder := range *b.components {
-			c, err := componentBuilder.Build(b.localizer)
+			c, err := componentBuilder.Build(b.ctx.Localizer)
 			if err != nil {
-				return nil, err
+				return api.EditMessageData{}, err
 			}
 
 			(*data.Components)[i] = c
 		}
 	}
-
-	msg, err := b.s.EditMessageComplex(channelID, messageID, data)
-	return msg, errorutil.WithStack(err)
+	return data, nil
 }
 
-// AwaitComponents calls AwaitComponentsContext with a context with the given
-// timeout.
-func (b *Builder) AwaitComponents(timeout time.Duration, userID discord.UserID, disable bool) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
+// EditReply edits the message with the given id using the plugin.Context's
+// plugin.Replier.
+func (b *Builder) EditReply(messageID discord.MessageID) (*discord.Message, error) {
+	b.messageID = messageID
+	b.channelID = discord.NullChannelID
 
-	return b.AwaitComponentsContext(ctx, userID, disable)
-}
-
-// SendAndAwait sends the message in the given channel, and waits until the
-// user with the given id interacts with the message, or the timeout elapses.
-// Afterwards, it disables all components.
-func (b *Builder) SendAndAwait(
-	channelID discord.ChannelID, userID discord.UserID, timeout time.Duration,
-) (*discord.Message, error) {
-	msg, err := b.Send(channelID)
+	data, err := b.editMessageData()
 	if err != nil {
 		return nil, err
 	}
 
-	return msg, b.AwaitComponents(timeout, userID, true)
+	return b.ctx.EditMessage(messageID, data)
+}
+
+// EditReplyDM edits the direct message with the given id using the
+// plugin.Context's plugin.Replier.
+func (b *Builder) EditReplyDM(messageID discord.MessageID) (*discord.Message, error) {
+	b.messageID = messageID
+	b.channelID = discord.NullChannelID
+	b.dm = true
+
+	data, err := b.editMessageData()
+	if err != nil {
+		return nil, err
+	}
+
+	return b.ctx.EditMessageDM(messageID, data)
+}
+
+// Edit edits the message with the passed channel and message id.
+func (b *Builder) Edit(channelID discord.ChannelID, messageID discord.MessageID) (*discord.Message, error) {
+	b.channelID = channelID
+	b.messageID = messageID
+
+	data, err := b.editMessageData()
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err := b.state.EditMessageComplex(channelID, messageID, data)
+	return msg, errorutil.WithStack(err)
+}
+
+// =============================================================================
+// Await Components
+// =====================================================================================
+
+// AwaitComponents calls AwaitComponentsContext with a context with the given
+// timeout.
+func (b *Builder) AwaitComponents(timeout time.Duration, disable bool) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	return b.AwaitComponentsContext(ctx, disable)
 }
 
 // AwaitComponentsContext waits until the first awaited component is interacted
@@ -411,178 +524,104 @@ func (b *Builder) SendAndAwait(
 //
 // Interactions that happened before AwaitComponentsContext was called, or
 // those that happened between calls will not be evaluated.
-//nolint:gocognit
-func (b *Builder) AwaitComponentsContext(ctx context.Context, userID discord.UserID, disable bool) (err error) {
+func (b *Builder) AwaitComponentsContext(ctx context.Context, disable bool) (err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	eventChan := make(chan *event.InteractionCreate)
+	rm := b.state.AddHandler(b.interactionCreateHandler(ctx, eventChan))
+	defer rm()
 
-	rm := b.s.AddHandler(func(_ *state.State, e *event.InteractionCreate) {
-		if e.Data == nil || e.Message.ID != b.messageID ||
-			(e.User != nil && e.User.ID != userID) || (e.Member != nil && e.Member.User.ID != userID) {
-			return
-		}
-
-		select {
-		case <-ctx.Done():
-		case eventChan <- e:
-		}
-	})
+	done := make(chan error, 1)
 
 	go func() {
 		var ok bool
 
-		for e := range eventChan {
-			for i, c := range *b.components {
-				ok, err = c.handle(e.Data)
-				if err != nil { // something went wrong, this takes precedence
-					cancel()
-					return
-				}
-
-				// check if the component matched the event
-				if !ok {
-					continue
-				}
-
-				if disable {
-					b.disableAllComponents()
-					_, err = b.Edit(b.channelID, b.messageID)
-					if err != nil {
-						cancel()
+		for {
+			select {
+			case <-ctx.Done():
+				done <- &TimeoutError{UserID: b.userID, Cause: ctx.Err()}
+				return
+			case e := <-eventChan:
+				for i, c := range *b.components {
+					ok, err = c.handle(e.Data)
+					if err != nil { // something went wrong, this takes precedence
+						done <- err
 						return
 					}
-				}
 
-				err = b.s.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
-					Type: api.DeferredMessageUpdate,
-				})
-				if err != nil {
-					cancel()
-					return
-				}
+					// check if the component matched the event
+					if !ok {
+						continue
+					}
 
-				// the component matched the event and this is one of the
-				// components we should wait for
-				if _, await := b.awaitIndexes[i]; await {
-					cancel()
-					return
-				}
-			}
-		}
-	}()
-
-	<-ctx.Done()
-	rm()
-	return err
-}
-
-// AwaitAllComponents calls AwaitAllComponentsContext with a context with the
-// given timeout.
-func (b *Builder) AwaitAllComponents(s *state.State, userID discord.UserID, timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	return b.AwaitAllComponentsContext(ctx, userID, s)
-}
-
-// AwaitAllComponentsContext waits until all awaited components were interacted
-// with once, or the context is done, whichever happens first.
-// Before returning, it disables all components.
-//
-// Subsequent calls to AwaitAllComponentsContext will return immediately with
-// a nil error.
-// However, calling AwaitAllComponentsContext after AwaitComponentsContext was
-// called, is allowed, and will behave as described above.
-//
-// Interactions that happened before AwaitAllComponentsContext was called, or
-// those that happened between calls will not be evaluated.
-//nolint:gocognit
-func (b *Builder) AwaitAllComponentsContext(ctx context.Context, userID discord.UserID, s *state.State) (err error) {
-	if len(b.awaitIndexes) == 0 {
-		return nil
-	}
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	eventChan := make(chan *event.InteractionCreate)
-
-	rm := s.AddHandler(func(_ *state.State, e *event.InteractionCreate) {
-		if e.Data == nil || e.Message.ID != b.messageID ||
-			(e.User != nil && e.User.ID != userID) || (e.Member != nil && e.Member.User.ID != userID) {
-			return
-		}
-
-		select {
-		case <-ctx.Done():
-		case eventChan <- e:
-		}
-	})
-
-	go func() {
-		var ok bool
-
-		for e := range eventChan {
-			for i, c := range *b.components {
-				ok, err = c.handle(e.Data)
-				if err != nil { // something went wrong, this takes precedence
-					cancel()
-					return
-				}
-
-				// check that the component matched the event
-				if !ok {
-					continue
-				}
-
-				err = s.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
-					Type: api.DeferredMessageUpdate,
-				})
-				if err != nil {
-					cancel()
-					return
-				}
-
-				// the component matched the event and this is one of the
-				// components we should wait for
-				if _, await := b.awaitIndexes[i]; await {
-					// remove the component from the awaited components
-					delete(b.awaitIndexes, i)
-
-					// if all components we waited for were interacted with,
-					// return
-					if len(b.awaitIndexes) == 0 {
-						b.disableAllComponents()
-						_, err = b.Edit(b.channelID, b.messageID)
-						if err != nil {
-							cancel()
+					if disable {
+						if err := b.disableAllComponents(); err != nil {
+							done <- err
 							return
 						}
 					}
 
-					err = s.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
+					err = b.state.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
 						Type: api.DeferredMessageUpdate,
 					})
 					if err != nil {
-						cancel()
+						done <- err
 						return
 					}
 
-					if len(b.awaitIndexes) == 0 {
-						cancel()
+					// the component matched the event and this is one of the
+					// components we should wait for
+					if _, await := b.awaitIndexes[i]; await {
+						done <- nil
 						return
 					}
-
-					// otherwise, break and wait for the next event
-					break
 				}
 			}
 		}
 	}()
 
-	<-ctx.Done()
-	rm()
+	return <-done
+}
+
+// =============================================================================
+// Utils
+// =====================================================================================
+
+// disableAllComponents disables all components and edits the message.
+func (b *Builder) disableAllComponents() error {
+	if b.components != nil {
+		for _, c := range *b.components {
+			c.disable()
+		}
+	}
+
+	if b.channelID == discord.NullChannelID {
+		if b.dm {
+			_, err := b.EditReplyDM(b.messageID)
+			return err
+		}
+
+		_, err := b.EditReply(b.messageID)
+		return err
+	}
+
+	_, err := b.Edit(b.channelID, b.messageID)
 	return err
+}
+
+func (b *Builder) interactionCreateHandler(
+	ctx context.Context, eventChan chan *event.InteractionCreate,
+) func(*state.State, *event.InteractionCreate) {
+	return func(_ *state.State, e *event.InteractionCreate) {
+		if e.Data == nil || e.Message.ID != b.messageID ||
+			(e.User != nil && e.User.ID != b.userID) || (e.Member != nil && e.Member.User.ID != b.userID) {
+			return
+		}
+
+		select {
+		case <-ctx.Done():
+		case eventChan <- e:
+		}
+	}
 }

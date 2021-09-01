@@ -67,18 +67,19 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
+	expectEmbed, err := shared.NewErrorEmbed(ctx.Localizer, expectDesc)
+	require.NoError(t, err)
+
 	m.SendEmbeds(discord.Message{
 		ChannelID: channelID,
 		Embeds: []discord.Embed{
-			shared.ErrorEmbed.Clone().
-				WithDescription(expectDesc).
-				MustBuild(ctx.Localizer),
+			expectEmbed,
 		},
 	})
 
 	e := NewArgumentError(expectDesc)
 
-	err := e.Handle(s, ctx)
+	err = e.Handle(s, ctx)
 	require.NoError(t, err)
 }
 
@@ -144,21 +145,22 @@ func TestBotPermissionsError_Handle(t *testing.T) {
 			Replier:   newMockedWrappedReplier(s, 123, 0),
 		}
 
-		embed := shared.ErrorEmbed.Clone().
-			WithDescriptionl(botPermissionsDescSingle.
-				WithPlaceholders(botPermissionsDescSinglePlaceholders{
-					MissingPermission: "Video",
-				})).
-			MustBuild(ctx.Localizer)
+		e := NewBotPermissionsError(discord.PermissionStream)
+
+		expectDesc := ctx.MustLocalize(botPermissionsDescSingle.
+			WithPlaceholders(botPermissionsDescSinglePlaceholders{
+				MissingPermission: "Video",
+			}))
+
+		expectEmbed, err := shared.NewErrorEmbed(ctx.Localizer, expectDesc)
+		require.NoError(t, err)
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
-			Embeds:    []discord.Embed{embed},
+			Embeds:    []discord.Embed{expectEmbed},
 		})
 
-		e := NewBotPermissionsError(discord.PermissionStream)
-
-		err := e.Handle(s, ctx)
+		err = e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 
@@ -173,19 +175,23 @@ func TestBotPermissionsError_Handle(t *testing.T) {
 			Replier:   newMockedWrappedReplier(s, 123, 0),
 		}
 
-		embed := shared.ErrorEmbed.Clone().
-			WithDescriptionl(botPermissionsDescMulti).
-			WithField("Missing Permissions", "• Video\n• View Audit Log").
-			MustBuild(ctx.Localizer)
+		expectEmbed, err := shared.NewErrorEmbed(ctx.Localizer, ctx.MustLocalize(botPermissionsDescMulti))
+		require.NoError(t, err)
+
+		expectEmbed.Fields = append(expectEmbed.Fields, discord.EmbedField{
+			Name:   "Missing Permissions",
+			Value:  "• Video\n• View Audit Log",
+			Inline: false,
+		})
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
-			Embeds:    []discord.Embed{embed},
+			Embeds:    []discord.Embed{expectEmbed},
 		})
 
 		e := NewBotPermissionsError(discord.PermissionViewAuditLog | discord.PermissionStream)
 
-		err := e.Handle(s, ctx)
+		err = e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 }
@@ -241,18 +247,17 @@ func TestChannelTypeError_Handle(t *testing.T) {
 		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescriptionl(channelTypeErrorGuild).
-		MustBuild(ctx.Localizer)
+	expectEmbed, err := shared.NewErrorEmbed(ctx.Localizer, ctx.MustLocalize(channelTypeErrorGuild))
+	require.NoError(t, err)
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
-		Embeds:    []discord.Embed{embed},
+		Embeds:    []discord.Embed{expectEmbed},
 	})
 
 	e := NewChannelTypeError(GuildChannels)
 
-	err := e.Handle(s, ctx)
+	err = e.Handle(s, ctx)
 	require.NoError(t, err)
 }
 
@@ -307,18 +312,17 @@ func TestRestrictionError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(expectDesc).
-		MustBuild(ctx.Localizer)
+	expectEmbed, err := shared.NewErrorEmbed(ctx.Localizer, expectDesc)
+	require.NoError(t, err)
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
-		Embeds:    []discord.Embed{embed},
+		Embeds:    []discord.Embed{expectEmbed},
 	})
 
 	e := NewRestrictionError(expectDesc)
 
-	err := e.Handle(s, ctx)
+	err = e.Handle(s, ctx)
 	require.NoError(t, err)
 }
 
@@ -373,17 +377,16 @@ func TestThrottlingError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
-	embed := shared.InfoEmbed.Clone().
-		WithDescription(expectDesc).
-		MustBuild(ctx.Localizer)
+	expectEmbed, err := shared.NewInfoEmbed(ctx.Localizer, expectDesc)
+	require.NoError(t, err)
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
-		Embeds:    []discord.Embed{embed},
+		Embeds:    []discord.Embed{expectEmbed},
 	})
 
 	e := NewThrottlingError(expectDesc)
 
-	err := e.Handle(s, ctx)
+	err = e.Handle(s, ctx)
 	require.NoError(t, err)
 }

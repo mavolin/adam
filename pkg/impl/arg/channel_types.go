@@ -15,8 +15,6 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/channelutil"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
-	emojiutil "github.com/mavolin/adam/pkg/utils/emoji"
-	"github.com/mavolin/adam/pkg/utils/msgawait"
 	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
@@ -25,63 +23,25 @@ import (
 var TextChannelAllowIDs = false
 
 var (
-	// CategoryCancelEmoji is the emoji used as cancel emoji in a Category
-	// chooser embed.
-	CategoryCancelEmoji = discord.APIEmoji(emojiutil.CrossMarkButton)
-	// CategoryOptionEmojis are the emojis used as options in a category
-	// chooser embed.
-	// It must contain at least 2 emojis.
-	CategoryOptionEmojis = []discord.APIEmoji{
-		discord.APIEmoji(emojiutil.Keycap1), discord.APIEmoji(emojiutil.Keycap2), discord.APIEmoji(emojiutil.Keycap3),
-		discord.APIEmoji(emojiutil.Keycap4), discord.APIEmoji(emojiutil.Keycap5), discord.APIEmoji(emojiutil.Keycap6),
-		discord.APIEmoji(emojiutil.Keycap7), discord.APIEmoji(emojiutil.Keycap8), discord.APIEmoji(emojiutil.Keycap9),
-		discord.APIEmoji(emojiutil.Keycap10),
-	}
-
-	// CategoryChooserBuilder is the source *msgbuilder.EmbedBuilder used to create
-	// category chooser embeds.
-	// When sending a chooser embed, title and description will be
-	// set/overwritten and at most 2 fields will be added.
-	CategoryChooserBuilder = msgbuilder.NewEmbed()
-
 	// CategoryAllowSearch is a global flag that defines whether categories may
 	// be referenced by name.
 	// If multiple matches are found, Category might ask the user to choose a
 	// category through a reaction driven chooser embed.
 	CategoryAllowSearch = true
-	// CategorySearchTimeout is the amount of time the user has to choose the
+	// CategoryChooserTimeout is the amount of time the user has to choose the
 	// desired category from the chooser embed.
-	CategorySearchTimeout = 20 * time.Second
+	CategoryChooserTimeout = 20 * time.Second
 )
 
 var (
-	// VoiceChannelCancelEmoji is the emoji used as cancel emoji in a
-	// VoiceChannel chooser embed.
-	VoiceChannelCancelEmoji = discord.APIEmoji(emojiutil.CrossMarkButton)
-	// VoiceChannelOptionEmojis are the emojis used as options in a
-	// VoiceChannel chooser embed.
-	// It must contain at least 2 emojis.
-	VoiceChannelOptionEmojis = []discord.APIEmoji{
-		discord.APIEmoji(emojiutil.Keycap1), discord.APIEmoji(emojiutil.Keycap2), discord.APIEmoji(emojiutil.Keycap3),
-		discord.APIEmoji(emojiutil.Keycap4), discord.APIEmoji(emojiutil.Keycap5), discord.APIEmoji(emojiutil.Keycap6),
-		discord.APIEmoji(emojiutil.Keycap7), discord.APIEmoji(emojiutil.Keycap8), discord.APIEmoji(emojiutil.Keycap9),
-		discord.APIEmoji(emojiutil.Keycap10),
-	}
-
-	// VoiceChannelChooserBuilder is the source *msgbuilder.EmbedBuilder used to
-	// create VoiceChannel chooser embeds.
-	// When sending a chooser embed, title and description will be
-	// set/overwritten and at most 2 fields will be added.
-	VoiceChannelChooserBuilder = msgbuilder.NewEmbed()
-
 	// VoiceChannelAllowSearch is a global flag that defines whether a
 	// voice channels may be referenced by name.
 	// If multiple matches are found, VoiceChannel might ask the user to choose
 	// a category through a reaction driven chooser embed.
 	VoiceChannelAllowSearch = true
-	// VoiceChannelSearchTimeout is the amount of time the user has to choose
+	// VoiceChannelChooserTimeout is the amount of time the user has to choose
 	// the desired voice channel from the chooser embed.
-	VoiceChannelSearchTimeout = 20 * time.Second
+	VoiceChannelChooserTimeout = 20 * time.Second
 )
 
 // =============================================================================
@@ -246,6 +206,8 @@ type categoryMatch struct {
 	pos     int
 }
 
+const maxCategoryMatches = 24
+
 // handleName attempts to find a category that matches ctx.Raw partially or
 // fully.
 // It ignores case.
@@ -258,9 +220,9 @@ func (c category) handleName(s *state.State, ctx *plugin.ParseContext) (*discord
 	resolved := channelutil.ResolveCategories(channels)
 
 	var (
-		fullMatches = make([]categoryMatch, 0, len(CategoryOptionEmojis))
+		fullMatches = make([]categoryMatch, 0, maxCategoryMatches)
 
-		partialMatches  = make([]categoryMatch, 0, len(CategoryOptionEmojis))
+		partialMatches  = make([]categoryMatch, 0, maxCategoryMatches)
 		partialOverflow = false
 	)
 
@@ -270,7 +232,7 @@ func (c category) handleName(s *state.State, ctx *plugin.ParseContext) (*discord
 		lowerName := strings.ToLower(categories[0].Name)
 
 		if lowerName == lowerRaw {
-			if len(fullMatches) >= len(CategoryOptionEmojis) {
+			if len(fullMatches) >= maxCategoryMatches {
 				return nil, newArgumentError(categoryTooManyMatchesError, ctx, nil)
 			}
 
@@ -279,7 +241,7 @@ func (c category) handleName(s *state.State, ctx *plugin.ParseContext) (*discord
 				pos:     i,
 			})
 		} else if strings.Contains(lowerName, lowerRaw) {
-			if len(partialMatches) >= len(CategoryOptionEmojis) {
+			if len(partialMatches) >= maxCategoryMatches {
 				partialOverflow = true
 				continue
 			}
@@ -309,128 +271,55 @@ func (c category) handleName(s *state.State, ctx *plugin.ParseContext) (*discord
 func (c category) sendChooser(
 	s *state.State, ctx *plugin.ParseContext, fullMatches, partialMatches []categoryMatch,
 ) (*discord.Channel, error) {
-	chooser, numMatches, err := c.genChooserEmbed(ctx, fullMatches, partialMatches)
+	content, err := ctx.Localize(categoryChooserContent)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := ctx.ReplyEmbedBuilders(chooser)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		err := s.DeleteMessage(msg.ChannelID, msg.ID, "")
-		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
-			ctx.HandleErrorSilently(err)
-		}
-	}()
-
-	choice, err := msgawait.Reaction(s, ctx.Context, msg.ID).
-		WithReactions(CategoryOptionEmojis[:numMatches]...).
-		WithCancelReactions(CategoryCancelEmoji).
-		NoAutoDelete(). // we will delete the whole message anyway
-		Await(CategorySearchTimeout)
-	if err != nil {
-		return nil, err
-	}
-
-	var i int
-
-	for i = 0; i < numMatches; i++ {
-		if CategoryOptionEmojis[i] == choice {
-			break
-		}
-	}
-
-	if i < len(fullMatches) {
-		return fullMatches[i].channel, nil
-	}
-
-	return partialMatches[i-len(fullMatches)].channel, nil
-}
-
-func (c category) genChooserEmbed(
-	ctx *plugin.ParseContext, fullMatches, partialMatches []categoryMatch,
-) (chooser *msgbuilder.EmbedBuilder, numMatches int, err error) {
-	chooser = CategoryChooserBuilder.Clone().
-		WithTitlel(categoryChooserTitle).
-		WithDescriptionl(categoryChooserDescription.
-			WithPlaceholders(categoryChooserDescriptionPlaceholders{
-				CancelEmoji: CategoryCancelEmoji,
+	if len(fullMatches)+len(partialMatches) > maxCategoryMatches {
+		contentAmend, err := ctx.Localize(categoryChooserPartialMatchesAddition.
+			WithPlaceholders(categoryChooserPartialMatchesAdditionPlaceholders{
+				NumPartialMatches: len(partialMatches),
 			}))
-
-	var b strings.Builder
-	b.Grow(1024) // max field size
-
-	if len(fullMatches) > 0 {
-		fullMatchesName, err := ctx.Localize(categoryChooserFullMatchesName)
 		if err != nil {
-			return nil, 0, err
+			return nil, err
 		}
 
-		for i, m := range fullMatches {
-			if i > 0 {
-				b.WriteRune('\n')
-			}
-
-			match, err := ctx.Localize(categoryChooserMatch.
-				WithPlaceholders(categoryChooserMatchPlaceholders{
-					Emoji:        CategoryOptionEmojis[numMatches],
-					CategoryName: m.channel.Name,
-					Position:     m.pos + 1,
-				}))
-			if err != nil {
-				return nil, 0, err
-			}
-
-			b.WriteString(match)
-
-			numMatches++
-		}
-
-		chooser.WithField(fullMatchesName, b.String())
-		b.Reset()
+		content += "\n" + contentAmend
 	}
 
-	if len(partialMatches) > len(CategoryOptionEmojis)-numMatches && len(partialMatches) != 0 {
-		chooser.WithFieldl(
-			categoryChooserPartialMatchesName,
-			categoryChooserTooManyPartialMatches.
-				WithPlaceholders(categoryChooserTooManyPartialMatchesPlaceholders{
-					NumPartialMatches: len(partialMatches),
-				}))
-	} else if len(partialMatches) <= len(CategoryOptionEmojis)-numMatches && len(partialMatches) != 0 {
-		// add partialMatches if there are any, and there is still room
-		partialMatchesName, err := ctx.Localize(categoryChooserPartialMatchesName)
-		if err != nil {
-			return nil, 0, err
-		}
+	var result *discord.Channel
 
-		for i, m := range partialMatches {
-			if i > 0 {
-				b.WriteRune('\n')
-			}
+	selectBuilder := msgbuilder.NewSelect(&result).
+		WithDefault(msgbuilder.NewSelectOptionl(categoryChooserCancel, (*discord.Channel)(nil)))
 
-			match, err := ctx.Localize(categoryChooserMatch.
-				WithPlaceholders(categoryChooserMatchPlaceholders{
-					Emoji:        CategoryOptionEmojis[numMatches],
-					CategoryName: m.channel.Name,
-					Position:     m.pos + 1,
-				}))
-			if err != nil {
-				return nil, 0, err
-			}
+	for _, match := range fullMatches {
+		label := categoryChooserMatch.
+			WithPlaceholders(categoryChooserMatchPlaceholders{
+				CategoryName: match.channel.Name,
+				Position:     match.pos,
+			})
 
-			b.WriteString(match)
-
-			numMatches++
-		}
-
-		chooser.WithField(partialMatchesName, b.String())
+		selectBuilder.With(msgbuilder.NewSelectOptionl(label, match.channel))
 	}
 
-	return chooser, numMatches, nil
+	if maxCategoryMatches-len(fullMatches) >= len(partialMatches) {
+		for _, match := range partialMatches {
+			label := categoryChooserMatch.
+				WithPlaceholders(categoryChooserMatchPlaceholders{
+					CategoryName: match.channel.Name,
+					Position:     match.pos,
+				})
+
+			selectBuilder.With(msgbuilder.NewSelectOptionl(label, match.channel))
+		}
+	}
+
+	_, err = msgbuilder.New(s, ctx.Context).
+		WithContent(content).
+		WithAwaitedComponent(selectBuilder).
+		ReplyAndAwait(CategoryChooserTimeout)
+	return result, err
 }
 
 func (c category) GetDefault() interface{} {
@@ -513,6 +402,8 @@ type voiceMatch struct {
 	pos          int
 }
 
+const maxVoiceMatches = 24
+
 // handleName attempts to find a voice channel that matches ctx.Raw partially or
 // fully.
 // It ignores case.
@@ -525,9 +416,9 @@ func (c voiceChannel) handleName(s *state.State, ctx *plugin.ParseContext) (*dis
 	resolved := channelutil.ResolveCategories(channels)
 
 	var (
-		fullMatches = make([]voiceMatch, 0, len(VoiceChannelOptionEmojis))
+		fullMatches = make([]voiceMatch, 0, maxVoiceMatches)
 
-		partialMatches  = make([]voiceMatch, 0, len(VoiceChannelOptionEmojis))
+		partialMatches  = make([]voiceMatch, 0, maxVoiceMatches)
 		partialOverflow = false
 	)
 
@@ -545,7 +436,7 @@ func (c voiceChannel) handleName(s *state.State, ctx *plugin.ParseContext) (*dis
 			lowerName := strings.ToLower(c.Name)
 
 			if lowerName == lowerRaw {
-				if len(fullMatches) >= len(VoiceChannelOptionEmojis) {
+				if len(fullMatches) >= maxVoiceMatches {
 					return nil, newArgumentError(voiceChannelTooManyMatchesError, ctx, nil)
 				}
 
@@ -555,7 +446,7 @@ func (c voiceChannel) handleName(s *state.State, ctx *plugin.ParseContext) (*dis
 					pos:          j,
 				})
 			} else if strings.Contains(lowerName, lowerRaw) {
-				if len(partialMatches) >= len(CategoryOptionEmojis) {
+				if len(partialMatches) >= maxVoiceMatches {
 					partialOverflow = true
 					continue
 				}
@@ -587,159 +478,73 @@ func (c voiceChannel) handleName(s *state.State, ctx *plugin.ParseContext) (*dis
 func (c voiceChannel) sendChooser(
 	s *state.State, ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
 ) (*discord.Channel, error) {
-	chooser, numMatches, err := c.genChooserEmbed(ctx, fullMatches, partialMatches)
+	content, err := ctx.Localize(voiceChannelChooserContent)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := ctx.ReplyEmbedBuilders(chooser)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		err := s.DeleteMessage(msg.ChannelID, msg.ID, "")
-		if err != nil && !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
-			ctx.HandleErrorSilently(err)
-		}
-	}()
-
-	choice, err := msgawait.Reaction(s, ctx.Context, msg.ID).
-		WithReactions(VoiceChannelOptionEmojis[:numMatches]...).
-		WithCancelReactions(VoiceChannelCancelEmoji).
-		NoAutoDelete(). // we will delete the whole message anyway
-		Await(VoiceChannelSearchTimeout)
-	if err != nil {
-		return nil, err
-	}
-
-	var i int
-
-	for i = 0; i < numMatches; i++ {
-		if VoiceChannelOptionEmojis[i] == choice {
-			break
-		}
-	}
-
-	if i < len(fullMatches) {
-		return fullMatches[i].channel, nil
-	}
-
-	return partialMatches[i-len(fullMatches)].channel, nil
-}
-
-//nolint:dupl,funlen,gocognit
-func (c voiceChannel) genChooserEmbed(
-	ctx *plugin.ParseContext, fullMatches, partialMatches []voiceMatch,
-) (chooser *msgbuilder.EmbedBuilder, numMatches int, err error) {
-	chooser = VoiceChannelChooserBuilder.Clone().
-		WithTitlel(voiceChannelChooserTitle).
-		WithDescriptionl(voiceChannelChooserDescription.
-			WithPlaceholders(voiceChannelChooserDescriptionPlaceholders{
-				CancelEmoji: VoiceChannelCancelEmoji,
+	if len(fullMatches)+len(partialMatches) > maxCategoryMatches {
+		contentAmend, err := ctx.Localize(voiceChannelChooserPartialMatchesAddition.
+			WithPlaceholders(voiceChannelChooserPartialMatchesAdditionPlaceholders{
+				NumPartialMatches: len(partialMatches),
 			}))
-
-	var b strings.Builder
-	b.Grow(1024) // max field size
-
-	if len(fullMatches) > 0 {
-		fullMatchesName, err := ctx.Localize(voiceChannelChooserFullMatchesName)
 		if err != nil {
-			return nil, 0, err
+			return nil, err
 		}
 
-		for i, m := range fullMatches {
-			if i > 0 {
-				b.WriteRune('\n')
-			}
-
-			var match string
-
-			if len(m.categoryName) == 0 {
-				match, err = ctx.Localize(voiceChannelChooserRootMatch.
-					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
-						Emoji:       VoiceChannelOptionEmojis[numMatches],
-						ChannelName: m.channel.Name,
-						Position:    m.pos + 1,
-					}))
-				if err != nil {
-					return nil, 0, err
-				}
-			} else {
-				match, err = ctx.Localize(voiceChannelChooserNestedMatch.
-					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
-						Emoji:        VoiceChannelOptionEmojis[numMatches],
-						CategoryName: m.categoryName,
-						ChannelName:  m.channel.Name,
-						Position:     m.pos + 1,
-					}))
-				if err != nil {
-					return nil, 0, err
-				}
-			}
-
-			b.WriteString(match)
-
-			numMatches++
-		}
-
-		chooser.WithField(fullMatchesName, b.String())
-		b.Reset()
+		content += "\n" + contentAmend
 	}
 
-	if len(partialMatches) > len(VoiceChannelOptionEmojis)-numMatches && len(partialMatches) != 0 {
-		chooser.WithFieldl(
-			voiceChannelChooserPartialMatchesName,
-			voiceChannelChooserTooManyPartialMatches.
-				WithPlaceholders(voiceChannelChooserTooManyPartialMatchesPlaceholders{
-					NumPartialMatches: len(partialMatches),
-				}))
-	} else if len(partialMatches) <= len(VoiceChannelOptionEmojis)-numMatches && len(partialMatches) != 0 {
-		// add partialMatches if there are any, and there is still room
-		partialMatchesName, err := ctx.Localize(voiceChannelChooserPartialMatchesName)
-		if err != nil {
-			return nil, 0, err
+	var result *discord.Channel
+
+	selectBuilder := msgbuilder.NewSelect(&result).
+		WithDefault(msgbuilder.NewSelectOptionl(voiceChannelChooserCancel, (*discord.Channel)(nil)))
+
+	for _, match := range fullMatches {
+		if match.categoryName == "" {
+			label := voiceChannelChooserRootMatch.
+				WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+					ChannelName: match.channel.Name,
+					Position:    match.pos,
+				})
+			selectBuilder.With(msgbuilder.NewSelectOptionl(label, match.channel))
+		} else {
+			label := voiceChannelChooserNestedMatch.
+				WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+					CategoryName: match.categoryName,
+					ChannelName:  match.channel.Name,
+					Position:     match.pos,
+				})
+			selectBuilder.With(msgbuilder.NewSelectOptionl(label, match.channel))
 		}
-
-		for i, m := range partialMatches {
-			if i > 0 {
-				b.WriteRune('\n')
-			}
-
-			var match string
-
-			if len(m.categoryName) == 0 {
-				match, err = ctx.Localize(voiceChannelChooserRootMatch.
-					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
-						Emoji:       VoiceChannelOptionEmojis[numMatches],
-						ChannelName: m.channel.Name,
-						Position:    m.pos + 1,
-					}))
-				if err != nil {
-					return nil, 0, err
-				}
-			} else {
-				match, err = ctx.Localize(voiceChannelChooserNestedMatch.
-					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
-						Emoji:        VoiceChannelOptionEmojis[numMatches],
-						CategoryName: m.categoryName,
-						ChannelName:  m.channel.Name,
-						Position:     m.pos + 1,
-					}))
-				if err != nil {
-					return nil, 0, err
-				}
-			}
-
-			b.WriteString(match)
-
-			numMatches++
-		}
-
-		chooser.WithField(partialMatchesName, b.String())
 	}
 
-	return chooser, numMatches, nil
+	if maxCategoryMatches-len(fullMatches) >= len(partialMatches) {
+		for _, match := range partialMatches {
+			if match.categoryName == "" {
+				label := voiceChannelChooserRootMatch.
+					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+						ChannelName: match.channel.Name,
+						Position:    match.pos,
+					})
+				selectBuilder.With(msgbuilder.NewSelectOptionl(label, match.channel))
+			} else {
+				label := voiceChannelChooserNestedMatch.
+					WithPlaceholders(voiceChannelChooserMatchPlaceholders{
+						CategoryName: match.categoryName,
+						ChannelName:  match.channel.Name,
+						Position:     match.pos,
+					})
+				selectBuilder.With(msgbuilder.NewSelectOptionl(label, match.channel))
+			}
+		}
+	}
+
+	_, err = msgbuilder.New(s, ctx.Context).
+		WithContent(content).
+		WithAwaitedComponent(selectBuilder).
+		ReplyAndAwait(VoiceChannelChooserTimeout)
+	return result, err
 }
 
 func findVoiceStart(c []discord.Channel) int {

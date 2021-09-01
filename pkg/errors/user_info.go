@@ -4,9 +4,9 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
+	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 )
 
 // UserInfo is less severe error on the user-side.
@@ -14,7 +14,7 @@ import (
 // description of the problem.
 // It won't be logged.
 type UserInfo struct {
-	Embed *msgbuilder.EmbedBuilder
+	Embed *embedbuilder.Builder
 }
 
 var _ Error = new(UserInfo)
@@ -26,7 +26,7 @@ func NewCustomUserInfo() *UserInfo {
 
 // NewUserInfoFromEmbed creates a new *UserInfo from the passed
 // *msgbuilder.EmbedBuilder.
-func NewUserInfoFromEmbed(e *msgbuilder.EmbedBuilder) *UserInfo {
+func NewUserInfoFromEmbed(e *embedbuilder.Builder) *UserInfo {
 	return &UserInfo{Embed: e}
 }
 

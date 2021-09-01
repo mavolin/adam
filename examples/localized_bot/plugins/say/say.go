@@ -35,7 +35,6 @@ func New() *Say {
 					},
 				},
 			},
-			ChannelTypes:   plugin.AllChannels,
 			BotPermissions: discord.PermissionSendMessages,
 		},
 	}

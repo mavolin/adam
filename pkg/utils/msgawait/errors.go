@@ -6,7 +6,7 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 )
 
-// TimeoutError is an error that fulfills errors.As for *errors.UserError.
+// TimeoutError is an error that fulfills errors.As for *errors.UserInfo.
 type TimeoutError struct {
 	UserID discord.UserID
 	// Cause contains the cause of the TimeoutError.
@@ -15,7 +15,7 @@ type TimeoutError struct {
 	// Should that be the case, Cause will hold ctx.Err().
 	//
 	// If Cause is nil, it can be assumed that the timeout was reached
-	// regularly.
+	// regularly, i.e. by the user stopping to type.
 	Cause error
 }
 

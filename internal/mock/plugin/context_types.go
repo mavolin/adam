@@ -22,6 +22,9 @@ type DiscordDataProvider struct {
 	ChannelReturn *discord.Channel
 	ChannelError  error
 
+	ParentChannelReturn *discord.Channel
+	ParentChannelError  error
+
 	GuildReturn *discord.Guild
 	GuildError  error
 
@@ -34,6 +37,12 @@ var _ plugin.DiscordDataProvider = DiscordDataProvider{}
 func (d DiscordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
 	return func() (*discord.Channel, error) {
 		return d.ChannelReturn, d.ChannelError
+	}
+}
+
+func (d DiscordDataProvider) ParentChannelAsync() func() (*discord.Channel, error) {
+	return func() (*discord.Channel, error) {
+		return d.ParentChannelReturn, d.ParentChannelError
 	}
 }
 

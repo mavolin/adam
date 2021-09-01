@@ -96,7 +96,7 @@ func TestHelp_Invoke(t *testing.T) {
 				},
 			}
 
-			expect := BaseEmbed.Clone().
+			expect, err := BaseEmbed.Clone().
 				WithTitlel(allTitle).
 				WithDescriptionl(allDescriptionGuild).
 				WithField(ctx.MustLocalize(allPrefixesFieldName), "`@Testy`, `my_cool_prefix`").
@@ -107,7 +107,8 @@ func TestHelp_Invoke(t *testing.T) {
 				WithField(ctx.MustLocalize(moduleTitle.
 					WithPlaceholders(moduleTitlePlaceholders{"mno"})),
 					"`mno abc` - abc desc\n`mno def` - def desc").
-				MustBuild(ctx.Localizer)
+				Build(ctx.Localizer)
+			require.NoError(t, err)
 
 			actual, err := New(Options{
 				HideFuncs: []HideFunc{CheckHidden(HideList)},
@@ -136,11 +137,12 @@ func TestHelp_Invoke(t *testing.T) {
 				},
 			}
 
-			expect := BaseEmbed.Clone().
+			expect, err := BaseEmbed.Clone().
 				WithTitlel(allTitle).
 				WithDescriptionl(allDescriptionDM).
 				WithField(ctx.MustLocalize(commandsFieldName), "`abc`\n`def`").
-				MustBuild(ctx.Localizer)
+				Build(ctx.Localizer)
+			require.NoError(t, err)
 
 			actual, err := New(Options{HideFuncs: []HideFunc{}}).Invoke(nil, ctx)
 			require.NoError(t, err)
@@ -216,7 +218,7 @@ func TestHelp_Invoke(t *testing.T) {
 			Args:      plugin.Args{mock.ResolveModule(plugin.BuiltInSource, mod)},
 		}
 
-		expect := BaseEmbed.Clone().
+		expect, err := BaseEmbed.Clone().
 			WithTitlel(moduleTitle.
 				WithPlaceholders(moduleTitlePlaceholders{
 					Module: "abc",
@@ -230,7 +232,8 @@ func TestHelp_Invoke(t *testing.T) {
 			WithField(ctx.MustLocalize(moduleTitle.
 				WithPlaceholders(moduleTitlePlaceholders{"abc pqr"})),
 				"`abc pqr abc` - abc desc\n`abc pqr def` - def desc").
-			MustBuild(ctx.Localizer)
+			Build(ctx.Localizer)
+		require.NoError(t, err)
 
 		actual, err := New(Options{
 			HideFuncs: []HideFunc{CheckHidden(HideList)},
@@ -303,7 +306,7 @@ func TestHelp_Invoke(t *testing.T) {
 				Args:      plugin.Args{mock.ResolveCommand(plugin.BuiltInSource, cmd)},
 			}
 
-			expect := BaseEmbed.Clone().
+			expect, err := BaseEmbed.Clone().
 				WithTitlel(commandTitle.
 					WithPlaceholders(commandTitlePlaceholders{
 						Command: "abc",
@@ -319,7 +322,8 @@ func TestHelp_Invoke(t *testing.T) {
 					"`-flag (User)` - flag description\n`-multi, -m (ID+)`").
 				WithField(ctx.MustLocalize(examplesFieldName),
 					"```abc example one, 2021-06-24``````abc example two, 2003-05-09```").
-				MustBuild(ctx.Localizer)
+				Build(ctx.Localizer)
+			require.NoError(t, err)
 
 			actual, err := New(Options{HideFuncs: []HideFunc{}}).Invoke(nil, ctx)
 			require.NoError(t, err)
@@ -343,7 +347,7 @@ func TestHelp_Invoke(t *testing.T) {
 				},
 			}
 
-			expect := BaseEmbed.Clone().
+			expect, err := BaseEmbed.Clone().
 				WithTitlel(commandTitle.
 					WithPlaceholders(commandTitlePlaceholders{
 						Command: "abc",
@@ -351,7 +355,8 @@ func TestHelp_Invoke(t *testing.T) {
 				WithDescription("long description").
 				WithField(ctx.MustLocalize(aliasesFieldName), "`cba`").
 				WithField(ctx.MustLocalize(usageFieldNameSingle), "```abc```").
-				MustBuild(ctx.Localizer)
+				Build(ctx.Localizer)
+			require.NoError(t, err)
 
 			actual, err := New(Options{HideFuncs: []HideFunc{}}).Invoke(nil, ctx)
 			require.NoError(t, err)

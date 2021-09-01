@@ -65,10 +65,12 @@ var HandleArgumentError = func(_ *state.State, ctx *Context, aerr *ArgumentError
 		return err
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(desc)
+	embed, err := shared.NewErrorEmbed(ctx.Localizer, desc)
+	if err != nil {
+		return err
+	}
 
-	_, err = ctx.ReplyEmbedBuilders(embed)
+	_, err = ctx.ReplyEmbeds(embed)
 	return err
 }
 
@@ -179,19 +181,24 @@ var HandleBotPermissionsError = func(_ *state.State, ctx *Context, perr *BotPerm
 		return nil
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(perr.Description(ctx.Localizer))
+	embed, err := shared.NewErrorEmbed(ctx.Localizer, perr.Description(ctx.Localizer))
+	if err != nil {
+		return err
+	}
 
 	if !perr.IsSinglePermission() {
-		perms, err := ctx.Localize(botPermissionsMissingPermissionsFieldName)
+		permsName, err := ctx.Localize(botPermissionsMissingPermissionsFieldName)
 		if err != nil {
 			return err
 		}
 
-		embed.WithField(perms, perr.PermissionList(ctx.Localizer))
+		embed.Fields = append(embed.Fields, discord.EmbedField{
+			Name:  permsName,
+			Value: perr.PermissionList(ctx.Localizer),
+		})
 	}
 
-	_, err := ctx.ReplyEmbedBuilders(embed)
+	_, err = ctx.ReplyEmbeds(embed)
 	return err
 }
 
@@ -257,10 +264,14 @@ func (e *ChannelTypeError) Handle(s *state.State, ctx *Context) error {
 }
 
 var HandleChannelTypeError = func(s *state.State, ctx *Context, cerr *ChannelTypeError) error {
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(cerr.Description(ctx.Localizer))
+	desc := cerr.Description(ctx.Localizer)
 
-	_, err := ctx.ReplyEmbedBuilders(embed)
+	embed, err := shared.NewErrorEmbed(ctx.Localizer, desc)
+	if err != nil {
+		return err
+	}
+
+	_, err = ctx.ReplyEmbeds(embed)
 	return err
 }
 
@@ -359,10 +370,12 @@ var HandleRestrictionError = func(s *state.State, ctx *Context, rerr *Restrictio
 		return err
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(desc)
+	embed, err := shared.NewErrorEmbed(ctx.Localizer, desc)
+	if err != nil {
+		return err
+	}
 
-	_, err = ctx.ReplyEmbedBuilders(embed)
+	_, err = ctx.ReplyEmbeds(embed)
 	return err
 }
 
@@ -417,9 +430,11 @@ var HandleThrottlingError = func(s *state.State, ctx *Context, terr *ThrottlingE
 		return err
 	}
 
-	embed := shared.InfoEmbed.Clone().
-		WithDescription(desc)
+	embed, err := shared.NewInfoEmbed(ctx.Localizer, desc)
+	if err != nil {
+		return err
+	}
 
-	_, err = ctx.ReplyEmbedBuilders(embed)
+	_, err = ctx.ReplyEmbeds(embed)
 	return err
 }

@@ -1,4 +1,4 @@
-package msgbuilder
+package embedbuilder
 
 import (
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	// EmbedBuilder is a builder used to build embeds.
-	EmbedBuilder struct {
+	// Builder is a builder used to build embeds.
+	Builder struct {
 		title       *i18n.Config
 		description *i18n.Config
 
@@ -42,84 +42,84 @@ type (
 	}
 )
 
-// NewEmbed creates a new EmbedBuilder.
-func NewEmbed() *EmbedBuilder {
-	return new(EmbedBuilder)
+// New creates a new Builder.
+func New() *Builder {
+	return new(Builder)
 }
 
 // WithTitle sets the title (max. 256 characters) to the passed title.
-func (b *EmbedBuilder) WithTitle(title string) *EmbedBuilder {
+func (b *Builder) WithTitle(title string) *Builder {
 	return b.WithTitlel(i18n.NewStaticConfig(title))
 }
 
 // WithTitlelt sets the title (max. 256 characters) to the passed title.
-func (b *EmbedBuilder) WithTitlelt(title i18n.Term) *EmbedBuilder {
+func (b *Builder) WithTitlelt(title i18n.Term) *Builder {
 	return b.WithTitlel(title.AsConfig())
 }
 
 // WithTitlel sets the title (max. 256 characters) to the passed title.
-func (b *EmbedBuilder) WithTitlel(title *i18n.Config) *EmbedBuilder {
+func (b *Builder) WithTitlel(title *i18n.Config) *Builder {
 	b.title = title
 	return b
 }
 
 // WithTitleURL assigns a discord.URL to the title.
-func (b *EmbedBuilder) WithTitleURL(url discord.URL) *EmbedBuilder {
+func (b *Builder) WithTitleURL(url discord.URL) *Builder {
 	b.url = url
 	return b
 }
 
 // WithDescription sets the description (max. 2048 characters) to the passed
 // description.
-func (b *EmbedBuilder) WithDescription(description string) *EmbedBuilder {
+func (b *Builder) WithDescription(description string) *Builder {
 	return b.WithDescriptionl(i18n.NewStaticConfig(description))
 }
 
 // WithDescriptionlt sets the description (max. 2048 characters) to the passed
 // description.
-func (b *EmbedBuilder) WithDescriptionlt(description i18n.Term) *EmbedBuilder {
+func (b *Builder) WithDescriptionlt(description i18n.Term) *Builder {
 	return b.WithDescriptionl(description.AsConfig())
 }
 
 // WithDescriptionl sets the description (max. 2048 characters) to the passed
 // description.
-func (b *EmbedBuilder) WithDescriptionl(description *i18n.Config) *EmbedBuilder {
+func (b *Builder) WithDescriptionl(description *i18n.Config) *Builder {
 	b.description = description
 	return b
 }
 
 // WithTimestamp sets the timestamp to the passed discord.Timestamp.
-func (b *EmbedBuilder) WithTimestamp(timestamp discord.Timestamp) *EmbedBuilder {
+func (b *Builder) WithTimestamp(timestamp discord.Timestamp) *Builder {
 	b.timestamp = timestamp
 	return b
 }
 
 // WithTimestampNow sets the timestamp to a timestamp of the current time.
-func (b *EmbedBuilder) WithTimestampNow() *EmbedBuilder {
+func (b *Builder) WithTimestampNow() *Builder {
 	return b.WithTimestamp(discord.NowTimestamp())
 }
 
 // WithColor sets the color to the passed discord.Color.
-func (b *EmbedBuilder) WithColor(color discord.Color) *EmbedBuilder {
+func (b *Builder) WithColor(color discord.Color) *Builder {
 	b.color = color
 	return b
 }
 
 // WithFooter sets the text of the footer (max. 2048 characters) to the passed
 // text.
-func (b *EmbedBuilder) WithFooter(text string) *EmbedBuilder {
+func (b *Builder) WithFooter(text string) *Builder {
 	return b.WithFooterl(i18n.NewStaticConfig(text))
 }
 
 // WithFooterlt sets the text of the footer (max. 2048 characters) to the
 // passed text.
-func (b *EmbedBuilder) WithFooterlt(text i18n.Term) *EmbedBuilder {
+func (b *Builder) WithFooterlt(text i18n.Term) *Builder {
 	return b.WithFooterl(text.AsConfig())
 }
 
 // WithFooterl sets the text of the footer (max. 2048 characters) to the passed
 // text.
-func (b *EmbedBuilder) WithFooterl(text *i18n.Config) *EmbedBuilder {
+func (b *Builder) WithFooterl(text *i18n.Config) *Builder {
 	if b.footer == nil {
 		b.footer = &footer{text: text}
 	} else {
@@ -130,7 +130,7 @@ func (b *EmbedBuilder) WithFooterl(text *i18n.Config) *EmbedBuilder {
 }
 
 // WithFooterIcon sets the icon of the footer to the passed icon url.
-func (b *EmbedBuilder) WithFooterIcon(icon discord.URL) *EmbedBuilder {
+func (b *Builder) WithFooterIcon(icon discord.URL) *Builder {
 	if b.footer == nil {
 		b.footer = &footer{icon: icon}
 	} else {
@@ -141,33 +141,33 @@ func (b *EmbedBuilder) WithFooterIcon(icon discord.URL) *EmbedBuilder {
 }
 
 // WithImage sets the image to the passed image url.
-func (b *EmbedBuilder) WithImage(image discord.URL) *EmbedBuilder {
+func (b *Builder) WithImage(image discord.URL) *Builder {
 	b.imageURL = image
 	return b
 }
 
 // WithThumbnail sets the thumbnail to the passed thumbnail url.
-func (b *EmbedBuilder) WithThumbnail(thumbnail discord.URL) *EmbedBuilder {
+func (b *Builder) WithThumbnail(thumbnail discord.URL) *Builder {
 	b.thumbnailURL = thumbnail
 
 	return b
 }
 
-// WithAuthor sets the author's name (max. 256 characters) to the passed
+// WithAuthor sets the author'state name (max. 256 characters) to the passed
 // name.
-func (b *EmbedBuilder) WithAuthor(name string) *EmbedBuilder {
+func (b *Builder) WithAuthor(name string) *Builder {
 	return b.WithAuthorl(i18n.NewStaticConfig(name))
 }
 
-// WithAuthorlt sets the author's name (max. 256 characters) to the passed
+// WithAuthorlt sets the author'state name (max. 256 characters) to the passed
 // name.
-func (b *EmbedBuilder) WithAuthorlt(name i18n.Term) *EmbedBuilder {
+func (b *Builder) WithAuthorlt(name i18n.Term) *Builder {
 	return b.WithAuthorl(name.AsConfig())
 }
 
-// WithAuthorl sets the author's name (max. 256 characters) to the passed
+// WithAuthorl sets the author'state name (max. 256 characters) to the passed
 // name.
-func (b *EmbedBuilder) WithAuthorl(name *i18n.Config) *EmbedBuilder {
+func (b *Builder) WithAuthorl(name *i18n.Config) *Builder {
 	if b.author == nil {
 		b.author = &author{name: name}
 	} else {
@@ -178,7 +178,7 @@ func (b *EmbedBuilder) WithAuthorl(name *i18n.Config) *EmbedBuilder {
 }
 
 // WithAuthorURL assigns the author the passed discord.URL.
-func (b *EmbedBuilder) WithAuthorURL(url discord.URL) *EmbedBuilder {
+func (b *Builder) WithAuthorURL(url discord.URL) *Builder {
 	if b.author == nil {
 		b.author = &author{url: url}
 	} else {
@@ -189,7 +189,7 @@ func (b *EmbedBuilder) WithAuthorURL(url discord.URL) *EmbedBuilder {
 }
 
 // WithAuthorIcon sets the icon of the author to the passed icon url.
-func (b *EmbedBuilder) WithAuthorIcon(icon discord.URL) *EmbedBuilder {
+func (b *Builder) WithAuthorIcon(icon discord.URL) *Builder {
 	if b.author == nil {
 		b.author = &author{icon: icon}
 	} else {
@@ -201,19 +201,19 @@ func (b *EmbedBuilder) WithAuthorIcon(icon discord.URL) *EmbedBuilder {
 
 // WithField adds a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-func (b *EmbedBuilder) WithField(name, value string) *EmbedBuilder {
+func (b *Builder) WithField(name, value string) *Builder {
 	return b.WithFieldl(i18n.NewStaticConfig(name), i18n.NewStaticConfig(value))
 }
 
 // WithFieldlt adds a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-func (b *EmbedBuilder) WithFieldlt(name, value i18n.Term) *EmbedBuilder {
+func (b *Builder) WithFieldlt(name, value i18n.Term) *Builder {
 	return b.WithFieldl(name.AsConfig(), value.AsConfig())
 }
 
 // WithFieldl adds a field (name: max. 256 characters, value: max 1024
 // characters) to the embed.
-func (b *EmbedBuilder) WithFieldl(name, value *i18n.Config) *EmbedBuilder {
+func (b *Builder) WithFieldl(name, value *i18n.Config) *Builder {
 	b.fields = append(b.fields, field{
 		inlined: false,
 		name:    name,
@@ -225,19 +225,19 @@ func (b *EmbedBuilder) WithFieldl(name, value *i18n.Config) *EmbedBuilder {
 
 // WithInlinedField adds an inlined field (name: max. 256 characters, value:
 // max 1024 characters) to the embed.
-func (b *EmbedBuilder) WithInlinedField(name, value string) *EmbedBuilder {
+func (b *Builder) WithInlinedField(name, value string) *Builder {
 	return b.WithInlinedFieldl(i18n.NewStaticConfig(name), i18n.NewStaticConfig(value))
 }
 
 // WithInlinedFieldlt adds an inlined field (name: max. 256 characters,
 // value: max 1024 characters) to the embed.
-func (b *EmbedBuilder) WithInlinedFieldlt(name, value i18n.Term) *EmbedBuilder {
+func (b *Builder) WithInlinedFieldlt(name, value i18n.Term) *Builder {
 	return b.WithInlinedFieldl(name.AsConfig(), value.AsConfig())
 }
 
 // WithInlinedFieldl adds an inlined field (name: max. 256 characters,
 // value: max 1024 characters) to the embed.
-func (b *EmbedBuilder) WithInlinedFieldl(name, value *i18n.Config) *EmbedBuilder {
+func (b *Builder) WithInlinedFieldl(name, value *i18n.Config) *Builder {
 	b.fields = append(b.fields, field{
 		inlined: true,
 		name:    name,
@@ -247,9 +247,9 @@ func (b *EmbedBuilder) WithInlinedFieldl(name, value *i18n.Config) *EmbedBuilder
 	return b
 }
 
-// Clone creates a copy of the EmbedBuilder.
-func (b *EmbedBuilder) Clone() *EmbedBuilder {
-	cp := new(EmbedBuilder)
+// Clone creates a copy of the Builder.
+func (b *Builder) Clone() *Builder {
+	cp := new(Builder)
 
 	*cp = *b
 
@@ -280,8 +280,7 @@ func (b *EmbedBuilder) Clone() *EmbedBuilder {
 }
 
 // Build builds the discord.Embed.
-//nolint:funlen
-func (b *EmbedBuilder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
+func (b *Builder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	if b.title != nil {
 		e.Title, err = l.Localize(b.title)
 		if err != nil {
@@ -301,9 +300,7 @@ func (b *EmbedBuilder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	e.Color = b.color
 
 	if b.footer != nil {
-		e.Footer = &discord.EmbedFooter{
-			Icon: b.footer.icon,
-		}
+		e.Footer = &discord.EmbedFooter{Icon: b.footer.icon}
 
 		if b.footer.text != nil {
 			e.Footer.Text, err = l.Localize(b.footer.text)
@@ -314,15 +311,11 @@ func (b *EmbedBuilder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	}
 
 	if b.imageURL != "" {
-		e.Image = &discord.EmbedImage{
-			URL: b.imageURL,
-		}
+		e.Image = &discord.EmbedImage{URL: b.imageURL}
 	}
 
 	if b.thumbnailURL != "" {
-		e.Thumbnail = &discord.EmbedThumbnail{
-			URL: b.thumbnailURL,
-		}
+		e.Thumbnail = &discord.EmbedThumbnail{URL: b.thumbnailURL}
 	}
 
 	if b.author != nil {
@@ -370,14 +363,4 @@ func (b *EmbedBuilder) Build(l *i18n.Localizer) (e discord.Embed, err error) {
 	}
 
 	return e, err
-}
-
-// MustBuild is the same as Build, but panics if Build returns an error.
-func (b *EmbedBuilder) MustBuild(l *i18n.Localizer) discord.Embed {
-	e, err := b.Build(l)
-	if err != nil {
-		panic(err)
-	}
-
-	return e
 }

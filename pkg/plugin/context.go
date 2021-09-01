@@ -9,10 +9,10 @@ import (
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/mavolin/disstate/v4/pkg/event"
 
+	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
-	"github.com/mavolin/adam/pkg/utils/msgbuilder"
 	"github.com/mavolin/adam/pkg/utils/permutil"
 )
 
@@ -151,8 +151,9 @@ func (ctx *Context) ReplyEmbeds(embeds ...discord.Embed) (*discord.Message, erro
 }
 
 // ReplyEmbedBuilders builds the discord.Embeds from the passed
-// *msgbuilder.Builders and sends it in the channel the command was sent in.
-func (ctx *Context) ReplyEmbedBuilders(builders ...*msgbuilder.EmbedBuilder) (*discord.Message, error) {
+// *msgbuilder.EmbedBuilders and sends it in the channel the command was sent
+// in.
+func (ctx *Context) ReplyEmbedBuilders(builders ...*embedbuilder.Builder) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 
 	for i, builder := range builders {
@@ -211,8 +212,9 @@ func (ctx *Context) ReplyEmbedsDM(embeds ...discord.Embed) (*discord.Message, er
 }
 
 // ReplyEmbedBuildersDM builds the discord.Embeds from the passed
-// *msgbuilder.Builders and sends it in a direct message to the invoking user.
-func (ctx *Context) ReplyEmbedBuildersDM(builders ...*msgbuilder.EmbedBuilder) (*discord.Message, error) {
+// *msgbuilder.EmbedBuilders and sends it in a direct message to the invoking
+// user.
+func (ctx *Context) ReplyEmbedBuildersDM(builders ...*embedbuilder.Builder) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 
 	for i, builder := range builders {
@@ -271,10 +273,10 @@ func (ctx *Context) EditEmbeds(messageID discord.MessageID, embeds ...discord.Em
 }
 
 // EditEmbedBuilders builds the discord.Embeds from the passed
-// *msgbuilder.Builders, and replaces the embeds of the message with the passed
-// id in the invoking channel.
+// *msgbuilder.EmbedBuilders, and replaces the embeds of the message with the
+// passed id in the invoking channel.
 func (ctx *Context) EditEmbedBuilders(
-	messageID discord.MessageID, builders ...*msgbuilder.EmbedBuilder,
+	messageID discord.MessageID, builders ...*embedbuilder.Builder,
 ) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 
@@ -339,10 +341,10 @@ func (ctx *Context) EditEmbedsDM(messageID discord.MessageID, embeds ...discord.
 }
 
 // EditEmbedBuildersDM builds the discord.Embeds from the passed
-// *msgbuilder.Builders, and replaces the embeds of the message with the passed
-// id in the direct message channel with the invoking user.
+// *msgbuilder.EmbedBuilders, and replaces the embeds of the message with the
+// passed id in the direct message channel with the invoking user.
 func (ctx *Context) EditEmbedBuildersDM(
-	messageID discord.MessageID, builders ...*msgbuilder.EmbedBuilder,
+	messageID discord.MessageID, builders ...*embedbuilder.Builder,
 ) (*discord.Message, error) {
 	embeds := make([]discord.Embed, len(builders))
 
@@ -374,6 +376,12 @@ func (ctx *Context) Channel() (*discord.Channel, error) {
 	return ctx.ChannelAsync()()
 }
 
+// ParentChannel returns the parent *discord.Channel the command was invoked
+// in.
+func (ctx *Context) ParentChannel() (*discord.Channel, error) {
+	return ctx.ParentChannelAsync()()
+}
+
 // Self returns the *discord.Member that belongs to the bot.
 // It will return (nil, nil) if the command was not invoked in a guild.
 func (ctx *Context) Self() (*discord.Member, error) {
@@ -390,19 +398,27 @@ func (ctx *Context) SelfPermissions() (discord.Permissions, error) {
 	}
 
 	gf := ctx.GuildAsync()
-	cf := ctx.ChannelAsync()
+	sf := ctx.SelfAsync()
 
-	s, err := ctx.Self()
+	ch, err := ctx.Channel()
+	if err != nil {
+		return 0, err
+	}
+
+	if ch.Type == discord.GuildNewsThread || ch.Type == discord.GuildPublicThread ||
+		ch.Type == discord.GuildPrivateThread {
+		ch, err = ctx.ParentChannel()
+		if err != nil {
+			return 0, nil
+		}
+	}
+
+	s, err := sf()
 	if err != nil {
 		return 0, err
 	}
 
 	g, err := gf()
-	if err != nil {
-		return 0, err
-	}
-
-	ch, err := cf()
 	if err != nil {
 		return 0, err
 	}
@@ -464,6 +480,9 @@ type (
 		// ChannelAsync returns a callback returning the Channel the message
 		// was sent in.
 		ChannelAsync() func() (*discord.Channel, error)
+		// ParentChannelAsync returns a callback returning the parent of the
+		// Channel the message was sent in.
+		ParentChannelAsync() func() (*discord.Channel, error)
 		// SelfAsync returns a callback returning the member object of the bot
 		// in the calling guild.
 		// If this happened in a private channel, SelfAsync will return
