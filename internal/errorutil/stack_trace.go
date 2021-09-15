@@ -103,6 +103,10 @@ func (st StackTrace) formatSlice(s fmt.State, verb rune) {
 	io.WriteString(s, "]")
 }
 
+func (st StackTrace) String() string {
+	return fmt.Sprintf("%+v", st)
+}
+
 // Frame represents a program counter inside a stack frame.
 type Frame uintptr
 

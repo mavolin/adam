@@ -10,34 +10,58 @@ import (
 // identical.
 func New(text string) error { return errors.New(text) }
 
-// NewWithStack returns an new *InternalError using the default description and
+// NewWithStack returns a new *InternalError using the default description and
 // an error using the passed text as cause.
 // Each call to NewWithStack returns a distinct error value even if the text is
 // identical.
-func NewWithStack(text string) error { return withStack(New(text)) }
+func NewWithStack(text string) *InternalError {
+	cause := New(text)
+
+	return &InternalError{
+		cause:      cause,
+		stackTrace: stackTrace(cause, 1),
+		desc:       defaultInternalDesc,
+	}
+}
 
 // NewWithStackf returns a new *InternalError using the default description
 // and an error that formats as the passed text as cause.
 // Each call to NewWithStackf returns a distinct error value even if the text
 // is identical.
-func NewWithStackf(format string, a ...interface{}) error {
-	return withStack(New(fmt.Sprintf(format, a...)))
+func NewWithStackf(format string, a ...interface{}) *InternalError {
+	cause := fmt.Errorf(format, a...)
+
+	return &InternalError{
+		cause:      cause,
+		stackTrace: stackTrace(cause, 1),
+		desc:       defaultInternalDesc,
+	}
 }
 
-// NewSilent returns a new *SilentError with no description and an error with
+// NewSilent returns a new *InternalError with no description and an error with
 // the passed text as cause.
-// Each call to NewWithStack returns a distinct error value even if the text is
+// Each call to NewSilent returns a distinct error value even if the text is
 // identical.
-func NewSilent(text string) error {
-	return Silent(New(text))
+func NewSilent(text string) *InternalError {
+	cause := New(text)
+
+	return &InternalError{
+		cause:      cause,
+		stackTrace: stackTrace(cause, 1),
+	}
 }
 
 // NewSilentf returns a new *InternalError with no description and an error that
 // formats as the passed text as cause.
 // Each call to NewSilentf returns a distinct error value even if the text
 // is identical.
-func NewSilentf(format string, a ...interface{}) error {
-	return Silent(New(fmt.Sprintf(format, a...)))
+func NewSilentf(format string, a ...interface{}) *InternalError {
+	cause := fmt.Errorf(format, a...)
+
+	return &InternalError{
+		cause:      cause,
+		stackTrace: stackTrace(cause, 1),
+	}
 }
 
 // Unwrap returns the result of calling the Unwrap method on err, if err's
