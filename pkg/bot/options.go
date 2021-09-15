@@ -216,27 +216,27 @@ type Options struct {
 	// Otherwise, you are required to set this function yourself.
 	Rescale func(update func(state.Options) (*state.State, error))
 
-	// NoDefaultMiddlewares, if true, prevents the default middlewares from
-	// being added on creation.
-	// These middlewares are responsible for validating the user is allowed
-	// to run a command and the bot is able to, as well as filling some of the
-	// context's fields.
+	// NoDefaultMiddlewares, if true, does not add the default middlewares
+	// upon creation of the bot.
+	// These middlewares are responsible for validation as well as filling some
+	// of the plugin.Context's fields.
 	//
-	// If setting this to true, those checks, or equivalents of them, should be
+	// If setting this to true those checks, or equivalents of them, should be
 	// manually added.
-	// Although possible, it is highly discouraged to disable certain checks,
+	// Although possible, it is highly discouraged to disable certain checks
 	// unless the resulting behavior is explicitly desired, as default or
 	// third-party plugins may rely on these checks in order to perform as
 	// intended.
 	//
-	// When the first middleware is called, not all fields of the context will
+	// When the first middleware is called not all fields of the context will
 	// be set.
-	// Instead, they are set by the middlewares.
+	// Instead, they are set by the default middlewares.
 	// If you want to swap out a default middleware for a custom
 	// implementation, refer to its doc to see which fields it sets.
-	// Also keep in mind that middlewares added after a middleware setting
-	// fields may rely on these fields.
-	// Fully removing a default middleware that sets some fields, without
+	//
+	// Also keep in mind that middlewares added after field-setting
+	// middlewares, may rely on those field being set.
+	// Fully removing a default middleware that sets some fields without
 	// filling them otherwise is highly discouraged, as plugins will assume
 	// all fields to be filled.
 	//
@@ -246,18 +246,18 @@ type Options struct {
 	// By default, the following middlewares are added upon creation of the
 	// bot.
 	//
-	//  Bot.TryAddMiddleware(CheckMessageType)
-	//  Bot.TryAddMiddleware(CheckHuman) // if Options.AllowBot is true
-	//	Bot.TryAddMiddleware(NewSettingsRetriever(Options.SettingsProvider))
-	//  Bot.TryAddMiddleware(CheckPrefix)
-	//	Bot.TryAddMiddleware(FindCommand)
-	//	Bot.TryAddMiddleware(CheckChannelTypes)
-	//	Bot.TryAddMiddleware(CheckBotPermissions)
-	//	Bot.TryAddMiddleware(NewThrottlerChecker(Options.ThrottlerCancelChecker))
+	//  Bot.AddMiddleware(CheckMessageType)
+	//  Bot.AddMiddleware(CheckHuman) // if Options.AllowBot is true
+	//	Bot.AddMiddleware(NewSettingsRetriever(Options.SettingsProvider))
+	//  Bot.AddMiddleware(CheckPrefix)
+	//	Bot.AddMiddleware(FindCommand)
+	//	Bot.AddMiddleware(CheckChannelTypes)
+	//	Bot.AddMiddleware(CheckBotPermissions)
+	//	Bot.AddMiddleware(NewThrottlerChecker(Options.ThrottlerCancelChecker))
 	//
-	//	Bot.TryAddPostMiddleware(CheckRestrictions)
-	//	Bot.TryAddPostMiddleware(ParseArgs)
-	//	Bot.TryAddPostMiddleware(InvokeCommand)
+	//	Bot.AddPostMiddleware(CheckRestrictions)
+	//	Bot.AddPostMiddleware(ParseArgs)
+	//	Bot.AddPostMiddleware(InvokeCommand)
 	NoDefaultMiddlewares bool
 }
 
