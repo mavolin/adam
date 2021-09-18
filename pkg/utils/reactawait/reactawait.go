@@ -1,4 +1,4 @@
-package msgawait
+package reactawait
 
 import (
 	"context"
@@ -13,32 +13,30 @@ import (
 	"github.com/mavolin/adam/pkg/utils/discorderr"
 )
 
-type (
-	// A ReactionWaiter is used to await reactions.
-	// Wait can either be cancelled by the user through a cancel reaction, or
-	// by the ReactionWaiter if the timeout expires.
-	ReactionWaiter struct {
-		state *state.State
-		ctx   *plugin.Context
+// A Waiter is used to await reactions.
+// Wait can either be cancelled by the user through a cancel reaction, or
+// by the Waiter if the timeout expires.
+type Waiter struct {
+	state *state.State
+	ctx   *plugin.Context
 
-		userID    discord.UserID
-		messageID discord.MessageID
-		channelID discord.ChannelID
+	userID    discord.UserID
+	messageID discord.MessageID
+	channelID discord.ChannelID
 
-		reactions, cancelReactions []discord.APIEmoji
-		noAutoReact                bool
-		noAutoDelete               bool
+	reactions, cancelReactions []discord.APIEmoji
+	noAutoReact                bool
+	noAutoDelete               bool
 
-		middlewares []interface{}
-	}
-)
+	middlewares []interface{}
+}
 
-// Reaction creates a new ReactionWaiter using the passed state.State
-// and plugin.Context.
+// New creates a new Waiter using the passed state.State and
+// plugin.Context.
 // ctx.Author will be assumed as the user to make the reaction in
 // ctx.ChannelID.
-func Reaction(s *state.State, ctx *plugin.Context, messageID discord.MessageID) *ReactionWaiter {
-	return &ReactionWaiter{
+func New(s *state.State, ctx *plugin.Context, messageID discord.MessageID) *Waiter {
+	return &Waiter{
 		state:     s,
 		ctx:       ctx,
 		userID:    ctx.Author.ID,
@@ -49,19 +47,19 @@ func Reaction(s *state.State, ctx *plugin.Context, messageID discord.MessageID) 
 
 // WithUser changes the user that is expected to react to the user with the
 // passed id.
-func (w *ReactionWaiter) WithUser(id discord.UserID) *ReactionWaiter {
+func (w *Waiter) WithUser(id discord.UserID) *Waiter {
 	w.userID = id
 	return w
 }
 
 // InChannel changes the channel id to the passed discord.ChannelID.
-func (w *ReactionWaiter) InChannel(id discord.ChannelID) *ReactionWaiter {
+func (w *Waiter) InChannel(id discord.ChannelID) *Waiter {
 	w.channelID = id
 	return w
 }
 
 // WithReactions adds the passed reaction to the wait list.
-func (w *ReactionWaiter) WithReactions(reactions ...discord.APIEmoji) *ReactionWaiter {
+func (w *Waiter) WithReactions(reactions ...discord.APIEmoji) *Waiter {
 	w.reactions = append(w.reactions, reactions...)
 	return w
 }
@@ -69,20 +67,20 @@ func (w *ReactionWaiter) WithReactions(reactions ...discord.APIEmoji) *ReactionW
 // WithCancelReactions adds the passed cancel reactions.
 // If the user reacts with one of the passed emojis, AwaitReply will return
 // errors.Abort.
-func (w *ReactionWaiter) WithCancelReactions(reactions ...discord.APIEmoji) *ReactionWaiter {
+func (w *Waiter) WithCancelReactions(reactions ...discord.APIEmoji) *Waiter {
 	w.cancelReactions = append(w.cancelReactions, reactions...)
 	return w
 }
 
 // NoAutoReact disables automatic reaction and deletion of the reactions.
-func (w *ReactionWaiter) NoAutoReact() *ReactionWaiter {
+func (w *Waiter) NoAutoReact() *Waiter {
 	w.noAutoReact = true
 	w.noAutoDelete = true
 	return w
 }
 
 // NoAutoDelete disables the automatic deletion of the reactions.
-func (w *ReactionWaiter) NoAutoDelete() *ReactionWaiter {
+func (w *Waiter) NoAutoDelete() *Waiter {
 	w.noAutoDelete = true
 	return w
 }
@@ -97,7 +95,7 @@ func (w *ReactionWaiter) NoAutoDelete() *ReactionWaiter {
 //	• func(*state.State, *event.Base) error
 //	• func(*state.State, *state.MessageReactionAddEvent)
 //	• func(*state.State, *state.MessageReactionAddEvent) error
-func (w *ReactionWaiter) WithMiddlewares(middlewares ...interface{}) *ReactionWaiter {
+func (w *Waiter) WithMiddlewares(middlewares ...interface{}) *Waiter {
 	if len(w.middlewares) == 0 {
 		w.middlewares = make([]interface{}, 0, len(middlewares))
 	}
@@ -120,9 +118,9 @@ func (w *ReactionWaiter) WithMiddlewares(middlewares ...interface{}) *ReactionWa
 	return w
 }
 
-// Clone creates a deep copy of the ReactionWaiter.
-func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
-	cp = &ReactionWaiter{
+// Clone creates a deep copy of the Waiter.
+func (w *Waiter) Clone() (cp *Waiter) {
+	cp = &Waiter{
 		noAutoReact: w.noAutoReact,
 	}
 
@@ -140,7 +138,7 @@ func (w *ReactionWaiter) Clone() (cp *ReactionWaiter) {
 
 // Await creates a context.Context with the given timeout and calls
 // AwaitContext with it.
-func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) {
+func (w *Waiter) Await(timeout time.Duration) (discord.APIEmoji, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -158,7 +156,7 @@ func (w *ReactionWaiter) Await(timeout time.Duration) (discord.APIEmoji, error) 
 // returned.
 //
 // Besides that, the wait can also be canceled through a middleware.
-func (w *ReactionWaiter) AwaitContext(ctx context.Context) (discord.APIEmoji, error) {
+func (w *Waiter) AwaitContext(ctx context.Context) (discord.APIEmoji, error) {
 	perms, err := w.ctx.SelfPermissions()
 	if err != nil {
 		return "", err
@@ -190,13 +188,13 @@ func (w *ReactionWaiter) AwaitContext(ctx context.Context) (discord.APIEmoji, er
 		case error:
 			return "", r
 		default: // this should never happen
-			return "", errors.NewWithStack("msgawait: unexpected return value of result channel")
+			return "", errors.NewWithStack("reactawait: unexpected return value of result channel")
 		}
 	}
 }
 
 //nolint:gocognit,funlen
-func (w *ReactionWaiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
+func (w *Waiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
 	rmReact := w.state.AddHandler(func(s *state.State, e *event.MessageReactionAdd) {
 		if e.UserID != w.userID || e.MessageID != w.messageID {
 			return

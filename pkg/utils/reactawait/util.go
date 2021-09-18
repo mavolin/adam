@@ -1,4 +1,4 @@
-package msgawait
+package reactawait
 
 import (
 	"context"
@@ -7,35 +7,6 @@ import (
 	"github.com/mavolin/disstate/v4/pkg/state"
 )
 
-//nolint:dupl
-func invokeMessageMiddlewares(s *state.State, e *event.MessageCreate, middlewares []interface{}) error {
-	for _, m := range middlewares {
-		switch m := m.(type) {
-		case func(*state.State, interface{}):
-			m(s, e)
-		case func(*state.State, interface{}) error:
-			if err := m(s, e); err != nil {
-				return err
-			}
-		case func(*state.State, *event.Base):
-			m(s, e.Base)
-		case func(*state.State, *event.Base) error:
-			if err := m(s, e.Base); err != nil {
-				return err
-			}
-		case func(*state.State, *event.MessageCreate):
-			m(s, e)
-		case func(*state.State, *event.MessageCreate) error:
-			if err := m(s, e); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-//nolint:dupl
 func invokeReactionAddMiddlewares(s *state.State, e *event.MessageReactionAdd, middlewares []interface{}) error {
 	for _, m := range middlewares {
 		switch m := m.(type) {

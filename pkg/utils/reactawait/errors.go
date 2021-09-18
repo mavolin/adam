@@ -1,4 +1,4 @@
-package msgawait
+package reactawait
 
 import (
 	"github.com/diamondburned/arikawa/v3/discord"

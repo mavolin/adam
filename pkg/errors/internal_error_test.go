@@ -42,7 +42,7 @@ func TestWithStack(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		ierr := WithStack(cause).(*InternalError)
 
@@ -107,7 +107,7 @@ func TestSilent(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		ierr := Silent(cause)
 
@@ -149,7 +149,7 @@ func TestMustInternal(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		ierr := MustInternal(cause)
 
@@ -162,7 +162,7 @@ func TestMustInternal(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		ierr := MustInternal(cause)
 
@@ -197,7 +197,7 @@ func TestMustSilent(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		ierr := MustSilent(cause)
 
@@ -210,7 +210,7 @@ func TestMustSilent(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		ierr := MustSilent(cause)
 
@@ -245,7 +245,7 @@ func TestWrap(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 		expectMsg := "def"
 
 		ierr := Wrap(cause, expectMsg).(*InternalError)
@@ -259,7 +259,7 @@ func TestWrap(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 		expectMsg := "def"
 
 		ierr := Wrap(cause, expectMsg).(*InternalError)
@@ -306,7 +306,7 @@ func TestWrapSilent(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		expectMsg := "def"
 		ierr := WrapSilent(cause, expectMsg).(*InternalError)
@@ -319,7 +319,7 @@ func TestWrapSilent(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		expectMsg := "def"
 		ierr := WrapSilent(cause, expectMsg).(*InternalError)
@@ -362,7 +362,7 @@ func TestWrapf(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		expectMsg := "def ghi"
 
@@ -376,7 +376,7 @@ func TestWrapf(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		expectMsg := "def ghi"
 
@@ -423,7 +423,7 @@ func TestWrapSilentf(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		expectMsg := "def ghi"
 
@@ -437,7 +437,7 @@ func TestWrapSilentf(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		expectMsg := "def ghi"
 
@@ -481,7 +481,7 @@ func TestWithDescription(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		expectDesc := "def"
 		ierr := WithDescription(cause, expectDesc).(*InternalError)
@@ -495,7 +495,7 @@ func TestWithDescription(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		expectDesc := "def"
 		ierr := WithDescription(cause, expectDesc).(*InternalError)
@@ -542,7 +542,7 @@ func TestWithDescriptionf(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		expectDesc := "def"
 		ierr := WithDescription(cause, expectDesc).(*InternalError)
@@ -556,7 +556,7 @@ func TestWithDescriptionf(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		expectDesc := "def ghi"
 		ierr := WithDescriptionf(cause, "def %s", "ghi").(*InternalError)
@@ -604,7 +604,7 @@ func TestWithDescriptionl(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		expectDesc := i18n.NewTermConfig("def")
 		ierr := WithDescriptionl(cause, expectDesc).(*InternalError)
@@ -618,7 +618,7 @@ func TestWithDescriptionl(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		expectDesc := i18n.NewTermConfig("def")
 
@@ -666,7 +666,7 @@ func TestWithDescriptionlt(t *testing.T) {
 	t.Run("silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewSilent("abc").(*InternalError)
+		cause := NewSilent("abc")
 
 		var expectDesc i18n.Term = "def"
 		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
@@ -680,7 +680,7 @@ func TestWithDescriptionlt(t *testing.T) {
 	t.Run("non-silent internal error", func(t *testing.T) {
 		t.Parallel()
 
-		cause := NewWithStack("abc").(*InternalError)
+		cause := NewWithStack("abc")
 
 		var expectDesc i18n.Term = "def"
 		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
@@ -749,7 +749,7 @@ func TestInternalError_Description(t *testing.T) {
 	t.Run("no description", func(t *testing.T) {
 		t.Parallel()
 
-		ierr := NewSilent("abc").(*InternalError)
+		ierr := NewSilent("abc")
 		assert.Empty(t, ierr.Description(i18n.NewFallbackLocalizer()))
 	})
 }
@@ -773,7 +773,7 @@ func TestInternalError_Handle(t *testing.T) {
 
 		e := NewSilent("abc")
 
-		err := e.(*InternalError).Handle(s, ctx)
+		err := e.Handle(s, ctx)
 		require.NoError(t, err, "InternalError.Handle should never return an error")
 	})
 

@@ -1,4 +1,4 @@
-package msgawait
+package reactawait
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/mavolin/adam/pkg/utils/mock"
 )
 
-func TestReactionWaiter_Await(t *testing.T) {
+func TestWaiter_Await(t *testing.T) {
 	t.Parallel()
 
 	t.Run("timeout", func(t *testing.T) {
@@ -44,7 +44,7 @@ func TestReactionWaiter_Await(t *testing.T) {
 		rctx, cancel := context.WithTimeout(context.Background(), 1)
 		defer cancel()
 
-		_, actual := Reaction(s, ctx, 123).
+		_, actual := New(s, ctx, 123).
 			AwaitContext(rctx)
 		assert.Equal(t, expect, actual)
 	})
