@@ -24,13 +24,13 @@ type ActionRowError struct {
 	s errorutil.StackTrace
 }
 
-// NewActionRowError creates a new *ActionRowError.
-func NewActionRowError(index int, typ string, cause error) *ActionRowError {
+// newActionRowError creates a new *ActionRowError.
+func newActionRowError(index int, typ string, cause error) *ActionRowError {
 	return &ActionRowError{
 		Index: index,
 		Type:  typ,
 		Cause: cause,
-		s:     errorutil.GenerateStackTrace(1),
+		s:     errors.GenerateStackTrace(1),
 	}
 }
 
@@ -58,15 +58,15 @@ type SelectError struct {
 
 	Cause error
 
-	s errorutil.StackTrace
+	s errors.StackTrace
 }
 
-// NewSelectError creates a new *ActionRowError.
-func NewSelectError(index int, cause error) *SelectError {
+// newSelectError creates a new *ActionRowError.
+func newSelectError(index int, cause error) *SelectError {
 	return &SelectError{
 		Index: index,
 		Cause: cause,
-		s:     errorutil.GenerateStackTrace(1),
+		s:     errors.GenerateStackTrace(1),
 	}
 }
 

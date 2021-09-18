@@ -106,7 +106,7 @@ func (b *ActionRowBuilder) Build(l *i18n.Localizer) (discord.Component, error) {
 	for i, cb := range b.components {
 		c, err := cb.Build(l)
 		if err != nil {
-			return nil, NewActionRowError(i, reflect.TypeOf(cb).String(), err)
+			return nil, newActionRowError(i, reflect.TypeOf(cb).String(), err)
 		}
 
 		r.Components[i] = c
@@ -351,7 +351,7 @@ func (b *SelectBuilder) Build(l *i18n.Localizer) (c discord.Component, err error
 	for i, optBuilder := range b.options {
 		opt, err := optBuilder.Build(l)
 		if err != nil {
-			return nil, NewSelectError(i, err)
+			return nil, newSelectError(i, err)
 		}
 
 		sel.Options[i] = opt

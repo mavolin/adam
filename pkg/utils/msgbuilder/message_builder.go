@@ -7,6 +7,7 @@ package msgbuilder
 import (
 	"context"
 	"io"
+	"sync"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/api"
@@ -22,7 +23,19 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
+// typingInterval is the interval in which the client of the user sends the
+// typing event, if the user is continuously typing.
+//
+// It has been observed that the first follow-up event is received after about
+// 9.5 seconds, all successive events are received in an interval of
+// approximately 8.25 seconds. Additionally, we add a 1.5 second margin for network delays.
+const typingInterval = 11 * time.Second
+
 type EmbedBuilder = embedbuilder.Builder
+
+type replyMiddlewaresKey struct{}
+
+var ResponseMiddlewaresKey = new(replyMiddlewaresKey)
 
 func NewEmbed() *EmbedBuilder {
 	return embedbuilder.New()
@@ -49,6 +62,14 @@ type Builder struct {
 	attachments *[]discord.Attachment
 	files       []sendpart.File
 
+	// ========= response await =========
+
+	responseMsgPtr         *discord.Message
+	initialResponseTimeout time.Duration
+	typingResponseTimeout  time.Duration
+
+	responseMiddlewares []interface{}
+
 	// ========= internals =========
 
 	state *state.State
@@ -59,17 +80,30 @@ type Builder struct {
 	channelID discord.ChannelID // NullChannelID if replier
 	messageID discord.MessageID
 	dm        bool // only used when using replier
+
 }
 
 // New creates a new *Builder that awaits a component interaction from the
 // invoking user.
+//
+// It adds the middlewares stored in the context under the
+// ResponseMiddlewareKey to the builder's response middlewares, to be used when
+// awaiting a response.
 func New(s *state.State, ctx *plugin.Context) *Builder {
-	return &Builder{
+
+	b := &Builder{
 		awaitIndexes: make(map[int]struct{}),
 		state:        s,
 		ctx:          ctx,
 		userID:       ctx.Author.ID,
 	}
+
+	middlewares := ctx.Get(ResponseMiddlewaresKey)
+	if middlewares, ok := middlewares.([]interface{}); ok && middlewares != nil {
+		b.WithResponseMiddlewares(middlewares...)
+	}
+
+	return b
 }
 
 // =============================================================================
@@ -145,7 +179,7 @@ func (b *Builder) WithComponent(component TopLevelComponentBuilder) *Builder {
 
 // WithAwaitedComponent adds the passed TopLevelComponentBuilder to the
 // message, and waits for an interaction for that component when
-// AwaitComponents is called.
+// Await is called.
 //
 // Actions: send and edit
 func (b *Builder) WithAwaitedComponent(component TopLevelComponentBuilder) *Builder {
@@ -280,6 +314,75 @@ func (b *Builder) WithFile(name string, reader io.Reader) *Builder {
 	return b
 }
 
+// WithAwaitedResponse will cause the message to await a response from the
+// user when Await or AwaitContext is called.
+//
+// The builder will wait for a response until the initial timeout expires and
+// the user is not typing, or until the user stops typing and the typing
+// timeout is reached.
+// Note that you need the typing intent to monitor typing.
+//
+// If one of the timeouts is reached, a *TimeoutError will be returned.
+//
+// The typing timeout will start after the user first starts typing.
+// Because Discord sends the typing event in an interval of about 10 seconds,
+// the user might have stopped typing before the waiter notices that the typing
+// status was not updated.
+//
+// The timeout given to Await, or the cancellation of the context given to
+// AwaitContext servers as a maximum timeout.
+// If it is reached, the await functions will return no matter if the user is
+// still typing.
+//
+// Besides that, a reply can also be canceled through a middleware.
+func (b *Builder) WithAwaitedResponse(
+	responseVar *discord.Message, initialTimeout, typingTimeout time.Duration,
+) *Builder {
+	b.responseMsgPtr = responseVar
+	b.initialResponseTimeout = initialTimeout
+	b.typingResponseTimeout = typingTimeout
+
+	return b
+}
+
+// WithResponseMiddlewares adds the passed middlewares to the builder to be
+// executed before every message create event processed.
+//
+// Any errors returned by the middlewares will be returned by the await
+// function that awaited a response.
+//
+// All middlewares of invalid type will be discarded.
+//
+// The following types are permitted:
+// 	• func(*state.State, interface{})
+//	• func(*state.State, interface{}) error
+//	• func(*state.State, *event.Base)
+//	• func(*state.State, *event.Base) error
+//	• func(*state.State, *state.MessageCreateEvent)
+//	• func(*state.State, *state.MessageCreateEvent) error
+func (b *Builder) WithResponseMiddlewares(middlewares ...interface{}) *Builder {
+	if len(b.responseMiddlewares) == 0 {
+		b.responseMiddlewares = make([]interface{}, 0, len(middlewares))
+	}
+
+	for _, m := range middlewares {
+		switch m.(type) { // check that the middleware is of a valid type
+		case func(*state.State, interface{}):
+		case func(*state.State, interface{}) error:
+		case func(*state.State, *event.Base):
+		case func(*state.State, *event.Base) error:
+		case func(*state.State, *event.MessageCreate):
+		case func(*state.State, *event.MessageCreate) error:
+		default:
+			continue
+		}
+
+		b.responseMiddlewares = append(b.responseMiddlewares, m)
+	}
+
+	return b
+}
+
 // =============================================================================
 // Component Await Settings
 // =====================================================================================
@@ -363,7 +466,7 @@ func (b *Builder) ReplyAndAwait(timeout time.Duration) (*discord.Message, error)
 		return nil, err
 	}
 
-	return msg, b.AwaitComponents(timeout, true)
+	return msg, b.Await(timeout, true)
 }
 
 // ReplyDM sends the message in a DM using the plugin.Context's plugin.Replier.
@@ -500,88 +603,213 @@ func (b *Builder) Edit(channelID discord.ChannelID, messageID discord.MessageID)
 }
 
 // =============================================================================
-// Await Components
+// Await
 // =====================================================================================
 
-// AwaitComponents calls AwaitComponentsContext with a context with the given
-// timeout.
-func (b *Builder) AwaitComponents(timeout time.Duration, disable bool) error {
+// Await calls AwaitContext with a context with the given timeout.
+func (b *Builder) Await(timeout time.Duration, disable bool) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	return b.AwaitComponentsContext(ctx, disable)
+	return b.AwaitContext(ctx, disable)
 }
 
-// AwaitComponentsContext waits until the first awaited component is interacted
-// with, or the passed context.Context is done, whichever is first.
+// AwaitContext waits until the first awaited component is interacted
+// with, or, if awaiting a response, a response is sent.
 //
-// Subsequent calls to AwaitComponentsContext will await further interactions.
+// Subsequent calls to AwaitContext will await further interactions/responses.
 //
 // If disable is set to true, all components will be disabled after the
 // function returns, making subsequent calls impossible.
-// When calling AwaitComponentsContext for the last time, disable should always
+// When calling AwaitContext for the last time, disable should always
 // be true.
+// Errors that occur when disabling will be handled silently and will not be
+// returned, as disabling the components is just cosmetic, and has no influence
+// over the successful execution of await.
+// Even if AwaitContext returns with an error, all components will still be
+// disabled if disable is true.
 //
-// Interactions that happened before AwaitComponentsContext was called, or
+// Interactions that happened before AwaitContext was called, or
 // those that happened between calls will not be evaluated.
-func (b *Builder) AwaitComponentsContext(ctx context.Context, disable bool) (err error) {
+func (b *Builder) AwaitContext(ctx context.Context, disable bool) (err error) {
+	if disable {
+		defer func() {
+			if err := b.disableAllComponents(); err != nil {
+				b.ctx.HandleErrorSilently(err)
+			}
+		}()
+	}
+
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	eventChan := make(chan *event.InteractionCreate)
-	rm := b.state.AddHandler(b.interactionCreateHandler(ctx, eventChan))
-	defer rm()
+	doneChan := make(chan error)
 
-	done := make(chan error, 1)
+	if b.components != nil && len(*b.components) > 0 {
+		interactionCleanup := b.handleInteractions(ctx, doneChan)
+		defer interactionCleanup()
+	}
+
+	if b.responseMsgPtr != nil {
+		perms, err := b.ctx.SelfPermissions()
+		if err != nil {
+			return err
+		}
+
+		// make sure we have permission to send messages and create reactions
+		// if time extensions are enabled
+		if !perms.Has(discord.PermissionSendMessages) {
+			return plugin.NewBotPermissionsError(discord.PermissionSendMessages)
+		}
+
+		msgCleanup := b.handleMessages(ctx, doneChan)
+		defer msgCleanup()
+
+		timeoutCleanup := b.watchTimeout(ctx, b.initialResponseTimeout, b.typingResponseTimeout, doneChan)
+		defer timeoutCleanup()
+	}
+
+	select {
+	case <-ctx.Done():
+		return &TimeoutError{UserID: b.userID, Cause: ctx.Err()}
+	case err := <-doneChan:
+		return err
+	}
+}
+
+func (b *Builder) handleInteractions(ctx context.Context, doneChan chan<- error) func() {
+	ctx, cancel := context.WithCancel(ctx)
+
+	var mut sync.Mutex
+
+	return b.state.AddHandler(func(_ *state.State, e *event.InteractionCreate) {
+		if e.Data == nil || e.Message.ID != b.messageID ||
+			(e.User != nil && e.User.ID != b.userID) || (e.Member != nil && e.Member.User.ID != b.userID) {
+			return
+		}
+
+		mut.Lock()
+		defer mut.Unlock()
+
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
+		for i, c := range *b.components {
+			ok, err := c.handle(e.Data)
+			if err != nil { // something went wrong, this takes precedence
+				sendDone(ctx, doneChan, err)
+
+				// Make sure only a single event is handled by preventing that
+				// others pass the above select.
+				// We need this, because the mutex lock might queue up events
+				// that might get processed in between sending into done and
+				// the parent context being canceled.
+				// Cancelling ourselves closes this gap.
+				cancel()
+
+				return
+			}
+
+			// check if the component matched the event
+			if !ok {
+				continue
+			}
+
+			err = b.state.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
+				Type: api.DeferredMessageUpdate,
+			})
+			if err != nil {
+				sendDone(ctx, doneChan, err)
+				cancel()
+				return
+			}
+
+			// the component matched the event and this is one of the
+			// components we should wait for
+			if _, await := b.awaitIndexes[i]; await {
+				sendDone(ctx, doneChan, err)
+				cancel()
+				return
+			}
+		}
+	})
+}
+
+func (b *Builder) handleMessages(ctx context.Context, doneChan chan<- error) func() {
+	var mut sync.Mutex
+
+	ctx, cancel := context.WithCancel(ctx)
+
+	channelID := b.channelID
+	if channelID == discord.NullChannelID {
+		channelID = b.ctx.ChannelID
+	}
+
+	return b.state.AddHandler(func(s *state.State, e *event.MessageCreate) {
+		// not the message we are waiting for
+		if e.ChannelID != channelID || e.Author.ID != b.userID {
+			return
+		}
+
+		mut.Lock()
+		defer mut.Unlock()
+
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
+		if err := b.invokeResponseMiddlewares(s, e); err != nil {
+			sendDone(ctx, doneChan, err)
+			cancel()
+			return
+		}
+
+		*b.responseMsgPtr = e.Message
+		sendDone(ctx, doneChan, nil)
+		cancel()
+	})
+}
+
+func (b *Builder) watchTimeout(
+	ctx context.Context, initialTimeout, typingTimeout time.Duration, doneChan chan<- error,
+) func() {
+	if typingTimeout <= 0 {
+		return func() {}
+	}
+
+	t := time.NewTimer(initialTimeout)
+
+	rm := b.state.AddHandler(func(s *state.State, e *event.TypingStart) {
+		if e.ChannelID != b.channelID || e.UserID != b.userID {
+			return
+		}
+
+		// this should always return true, except if timer expired after
+		// the typing event was received and this handler was called
+		if t.Stop() {
+			t.Reset(typingTimeout + typingInterval)
+		}
+	})
 
 	go func() {
-		var ok bool
-
 		for {
 			select {
 			case <-ctx.Done():
-				done <- &TimeoutError{UserID: b.userID, Cause: ctx.Err()}
+				t.Stop()
 				return
-			case e := <-eventChan:
-				for i, c := range *b.components {
-					ok, err = c.handle(e.Data)
-					if err != nil { // something went wrong, this takes precedence
-						done <- err
-						return
-					}
-
-					// check if the component matched the event
-					if !ok {
-						continue
-					}
-
-					if disable {
-						if err := b.disableAllComponents(); err != nil {
-							done <- err
-							return
-						}
-					}
-
-					err = b.state.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
-						Type: api.DeferredMessageUpdate,
-					})
-					if err != nil {
-						done <- err
-						return
-					}
-
-					// the component matched the event and this is one of the
-					// components we should wait for
-					if _, await := b.awaitIndexes[i]; await {
-						done <- nil
-						return
-					}
-				}
+			case <-t.C:
+				doneChan <- &TimeoutError{UserID: b.userID}
+				return
 			}
 		}
 	}()
 
-	return <-done
+	return rm
 }
 
 // =============================================================================
@@ -610,18 +838,37 @@ func (b *Builder) disableAllComponents() error {
 	return err
 }
 
-func (b *Builder) interactionCreateHandler(
-	ctx context.Context, eventChan chan *event.InteractionCreate,
-) func(*state.State, *event.InteractionCreate) {
-	return func(_ *state.State, e *event.InteractionCreate) {
-		if e.Data == nil || e.Message.ID != b.messageID ||
-			(e.User != nil && e.User.ID != b.userID) || (e.Member != nil && e.Member.User.ID != b.userID) {
-			return
+func (b *Builder) invokeResponseMiddlewares(s *state.State, e *event.MessageCreate) error {
+	for _, m := range b.responseMiddlewares {
+		switch m := m.(type) {
+		case func(*state.State, interface{}):
+			m(s, e)
+		case func(*state.State, interface{}) error:
+			if err := m(s, e); err != nil {
+				return err
+			}
+		case func(*state.State, *event.Base):
+			m(s, e.Base)
+		case func(*state.State, *event.Base) error:
+			if err := m(s, e.Base); err != nil {
+				return err
+			}
+		case func(*state.State, *event.MessageCreate):
+			m(s, e)
+		case func(*state.State, *event.MessageCreate) error:
+			if err := m(s, e); err != nil {
+				return err
+			}
 		}
+	}
 
-		select {
-		case <-ctx.Done():
-		case eventChan <- e:
-		}
+	return nil
+}
+
+func sendDone(ctx context.Context, doneChan chan<- error, err error) {
+	select {
+	case <-ctx.Done():
+		return
+	case doneChan <- err:
 	}
 }

@@ -12,7 +12,6 @@ import (
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
-	"github.com/mavolin/adam/pkg/utils/discorderr"
 )
 
 var (
@@ -42,34 +41,26 @@ type replyMiddlewaresKey struct{}
 // approximately 8.25 seconds. Additionally, we add a 1.5 second margin for network delays.
 var typingInterval = 11 * time.Second
 
-type (
-	// A ReplyWaiter is used to await messages.
-	// Wait can be cancelled either by the user through a cancel keyword or by
-	// using a cancel reaction.
-	// Furthermore, wait may be cancelled by the ReplyWaiter if the initial
-	// timeout expires and the user is not typing or the user stopped typing
-	// and the typing timeout expired.
-	ReplyWaiter struct {
-		state *state.State
-		ctx   *plugin.Context
+// A ReplyWaiter is used to await messages.
+// Wait can be cancelled either by the user through a cancel keyword or by
+// using a cancel reaction.
+// Furthermore, wait may be cancelled by the ReplyWaiter if the initial
+// timeout expires and the user is not typing or the user stopped typing
+// and the typing timeout expired.
+type ReplyWaiter struct {
+	state *state.State
+	ctx   *plugin.Context
 
-		userID    discord.UserID
-		channelID discord.ChannelID
+	userID    discord.UserID
+	channelID discord.ChannelID
 
-		caseSensitive bool
-		noAutoReact   bool
+	caseSensitive bool
+	noAutoReact   bool
 
-		cancelKeywords  []*i18n.Config
-		cancelReactions []cancelReaction
+	cancelKeywords []*i18n.Config
 
-		middlewares []interface{}
-	}
-
-	cancelReaction struct {
-		messageID discord.MessageID
-		reaction  discord.APIEmoji
-	}
-)
+	middlewares []interface{}
+}
 
 // Reply creates a new reply waiter using the passed state and
 // context.
@@ -213,20 +204,6 @@ func (w *ReplyWaiter) WithCancelKeywordslt(keywords ...i18n.Term) *ReplyWaiter {
 	return w
 }
 
-// WithCancelReactions adds the passed cancel reactions.
-// If the user reacts with one of the passed emojis, AwaitReply will return
-// errors.Abort.
-func (w *ReplyWaiter) WithCancelReactions(messageID discord.MessageID, reactions ...discord.APIEmoji) *ReplyWaiter {
-	for _, r := range reactions {
-		w.cancelReactions = append(w.cancelReactions, cancelReaction{
-			messageID: messageID,
-			reaction:  r,
-		})
-	}
-
-	return w
-}
-
 // Clone creates a deep copy of the ReplyWaiter.
 func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 	cp = &ReplyWaiter{
@@ -236,9 +213,6 @@ func (w *ReplyWaiter) Clone() (cp *ReplyWaiter) {
 
 	cp.cancelKeywords = make([]*i18n.Config, len(w.cancelKeywords))
 	copy(cp.cancelKeywords, w.cancelKeywords)
-
-	cp.cancelReactions = make([]cancelReaction, len(w.cancelReactions))
-	copy(cp.cancelReactions, w.cancelReactions)
 
 	cp.middlewares = make([]interface{}, len(w.middlewares))
 	copy(cp.middlewares, w.middlewares)
@@ -280,11 +254,9 @@ func (w *ReplyWaiter) AwaitContext(
 	}
 
 	// make sure we have permission to send messages and create reactions, if
-	// time extensions are enabled or we have cancel reactions.
+	// time extensions are enabled
 	if !perms.Has(discord.PermissionSendMessages) {
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
-	} else if !w.noAutoReact && len(w.cancelReactions) > 0 && !perms.Has(discord.PermissionAddReactions) {
-		return nil, plugin.NewBotPermissionsError(discord.PermissionAddReactions)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -294,11 +266,6 @@ func (w *ReplyWaiter) AwaitContext(
 
 	msgCleanup := w.handleMessages(ctx, result)
 	defer msgCleanup()
-
-	if len(w.cancelReactions) > 0 {
-		reactCleanup := w.handleCancelReactions(ctx, result)
-		defer reactCleanup()
-	}
 
 	timeoutCleanup := w.watchTimeout(ctx, initialTimeout, typingTimeout, result)
 	defer timeoutCleanup()
@@ -347,52 +314,6 @@ func (w *ReplyWaiter) handleMessages(ctx context.Context, result chan<- interfac
 	})
 
 	return rm
-}
-
-func (w *ReplyWaiter) handleCancelReactions(ctx context.Context, result chan<- interface{}) func() {
-	rm := w.state.AddHandler(func(s *state.State, e *event.MessageReactionAdd) {
-		if e.UserID != w.userID {
-			return
-		}
-
-		for _, r := range w.cancelReactions {
-			if e.MessageID == r.messageID && e.Emoji.APIString() == r.reaction {
-				sendResult(ctx, result, errors.Abort)
-				return
-			}
-		}
-	})
-
-	if !w.noAutoReact {
-		for _, r := range w.cancelReactions {
-			if err := w.state.React(w.channelID, r.messageID, r.reaction); err != nil {
-				if !discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
-					w.ctx.HandleErrorSilently(err)
-				}
-			}
-		}
-	}
-
-	return func() {
-		rm()
-
-		if !w.noAutoReact {
-			go func() {
-				for _, r := range w.cancelReactions {
-					err := w.state.DeleteReactions(w.channelID, r.messageID, r.reaction)
-					if err != nil {
-						// someone else deleted the resource we are accessing,
-						// no need to capture this
-						if discorderr.Is(discorderr.As(err), discorderr.UnknownResource...) {
-							return
-						}
-
-						w.ctx.HandleErrorSilently(err)
-					}
-				}
-			}()
-		}
-	}
 }
 
 func (w *ReplyWaiter) watchTimeout(
