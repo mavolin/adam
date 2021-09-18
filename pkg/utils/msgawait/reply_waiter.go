@@ -29,10 +29,10 @@ var (
 
 	// ReplyMiddlewaresKey is the key used to retrieve middlewares used for
 	// ReplyWaiters.
-	ReplyMiddlewaresKey = replyMiddlewaresKeyType{}
+	ReplyMiddlewaresKey = new(replyMiddlewaresKey)
 )
 
-type replyMiddlewaresKeyType struct{}
+type replyMiddlewaresKey struct{}
 
 // typingInterval is the interval in which the client of the user sends the
 // typing event, if the user is continuously typing.

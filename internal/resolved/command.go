@@ -82,7 +82,7 @@ func (cmd *Command) ShortDescription(l *i18n.Localizer) string {
 
 func (cmd *Command) LongDescription(l *i18n.Localizer) string {
 	desc := cmd.source.GetLongDescription(l)
-	if len(desc) > 0 {
+	if desc != "" {
 		return desc
 	}
 
@@ -111,7 +111,7 @@ func (cmd *Command) Examples(l *i18n.Localizer) []string {
 		examples[i] = cmd.ID().AsInvoke()
 
 		exampleArgString := cmd.ArgParser().FormatArgs(cmd.Args(), exampleArg.Args, exampleArg.Flags)
-		if len(exampleArgString) > 0 {
+		if exampleArgString != "" {
 			examples[i] += " " + exampleArgString
 		}
 	}

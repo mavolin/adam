@@ -92,7 +92,7 @@ func (l *Localizer) Localize(c *Config) (string, error) {
 	}
 
 	// try the user-defined translator first, if there is one
-	if len(c.Term) > 0 && l.f != nil {
+	if c.Term != "" && l.f != nil {
 		s, err := l.f(c.Term, placeholders, c.Plural)
 		if err == nil {
 			return s, nil
@@ -103,7 +103,7 @@ func (l *Localizer) Localize(c *Config) (string, error) {
 	// if there is a fallback available
 
 	// checking Other suffices as it will always be set if there is a fallback
-	if len(c.Fallback.Other) > 0 || len(c.Term) == 0 {
+	if c.Fallback.Other != "" || c.Term == "" {
 		return c.Fallback.genTranslation(placeholders, c.Plural)
 	}
 

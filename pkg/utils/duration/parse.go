@@ -273,7 +273,7 @@ func (p *parser) nextUnit() (unit string, err error) {
 		unit += string(next)
 	}
 
-	if len(unit) == 0 {
+	if unit == "" {
 		return "", &ParseError{
 			Code:        ErrMissingUnit,
 			RawDuration: string(p.raw),

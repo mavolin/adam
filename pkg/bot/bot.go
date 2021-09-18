@@ -67,7 +67,7 @@ func New(o Options) (b *Bot, err error) {
 
 	var activity *discord.Activity
 
-	if len(o.ActivityName) > 0 {
+	if o.ActivityName != "" {
 		activity = &discord.Activity{
 			Name: o.ActivityName,
 			Type: o.ActivityType,

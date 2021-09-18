@@ -339,7 +339,7 @@ func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err erro
 	case float64:
 		_, err = ctx.Reply(reply)
 	case string:
-		if len(reply) > 0 {
+		if reply != "" {
 			_, err = ctx.Reply(reply)
 		}
 	case discord.Embed:

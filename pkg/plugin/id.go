@@ -96,7 +96,7 @@ func (id ID) IsChildOf(target ID) bool {
 //
 // Returns "" if the ID is root or invalid.
 func (id ID) AsInvoke() string {
-	if len(id) == 0 {
+	if id == "" {
 		return ""
 	}
 

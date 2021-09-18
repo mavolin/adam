@@ -141,7 +141,7 @@ func (p *PluginProvider) Module(id plugin.ID) plugin.ResolvedModule {
 }
 
 func (p *PluginProvider) FindCommand(invoke string) plugin.ResolvedCommand {
-	if len(invoke) == 0 {
+	if invoke == "" {
 		return nil
 	}
 
@@ -185,7 +185,7 @@ func (p *PluginProvider) FindCommandWithArgs(invoke string) (rcmd plugin.Resolve
 
 	for {
 		word, invoke = firstWord(invoke)
-		if len(word) == 0 {
+		if word == "" {
 			return nil, ""
 		}
 

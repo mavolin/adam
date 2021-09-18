@@ -169,7 +169,7 @@ func (h *Help) all(s *state.State, ctx *plugin.Context) (discord.Embed, error) {
 		maxMods--
 	}
 
-	if f := h.genCommandsField(b, s, ctx, ctx.Commands()); len(f.Name) > 0 {
+	if f := h.genCommandsField(b, s, ctx, ctx.Commands()); f.Name != "" {
 		e.Fields = append(e.Fields, f)
 		maxMods--
 	}
@@ -192,7 +192,7 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedMo
 				Module: mod.ID().AsInvoke(),
 			}))
 
-	if desc := mod.LongDescription(ctx.Localizer); len(desc) > 0 {
+	if desc := mod.LongDescription(ctx.Localizer); desc != "" {
 		eb.WithDescription(desc)
 	}
 
@@ -205,7 +205,7 @@ func (h *Help) module(s *state.State, ctx *plugin.Context, mod plugin.ResolvedMo
 
 	b := capbuilder.New(msgbuilder.MaxChars-msgbuilder.CountEmbedChars(e), 1024)
 
-	if f := h.genCommandsField(b, s, ctx, mod.Commands()); len(f.Name) > 0 {
+	if f := h.genCommandsField(b, s, ctx, mod.Commands()); f.Name != "" {
 		e.Fields = append(e.Fields, f)
 		maxMods--
 	}
@@ -236,7 +236,7 @@ func (h *Help) command(s *state.State, ctx *plugin.Context, cmd plugin.ResolvedC
 				Command: cmd.Name(),
 			}))
 
-	if desc := cmd.LongDescription(ctx.Localizer); len(desc) > 0 {
+	if desc := cmd.LongDescription(ctx.Localizer); desc != "" {
 		eb.WithDescription(desc)
 	}
 

@@ -32,7 +32,7 @@ func (g *gemoji) UnmarshalJSON(bytes []byte) error {
 
 	// some older emojis don't have a version, leaving them at ver 0 is just
 	// fine
-	if len(emoji.UnicodeVersion) > 0 {
+	if emoji.UnicodeVersion != "" {
 		ver, err := strconv.ParseFloat(emoji.UnicodeVersion, 32)
 		if err != nil {
 			return err

@@ -48,7 +48,7 @@ func fillPlaceholders(placeholders map[string]interface{}, ctx *plugin.ParseCont
 
 	raw := ctx.Raw
 	if len(raw) > 100 {
-		raw = raw[:100]
+		raw = raw[:98] + "..."
 	}
 	placeholders["raw"] = raw
 

@@ -177,7 +177,8 @@ func newShellwordParserState(
 }
 
 func (p *shellwordParserState) parse() error {
-	if len(p.helper.rargData)+len(p.helper.oargData)+len(p.helper.flagData) == 0 && len(p.raw) != 0 {
+	if len(p.helper.rargData) == 0 && len(p.helper.oargData) == 0 && len(p.helper.flagData) == 0 &&
+		len(p.raw) > 0 {
 		return plugin.NewArgumentErrorl(noArgsError)
 	}
 

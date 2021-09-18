@@ -25,7 +25,7 @@ func (h *Help) genPrefixesField(b *capbuilder.CappedBuilder, ctx *plugin.Context
 	}
 
 	name := self.Nick
-	if len(name) == 0 {
+	if name == "" {
 		name = self.User.Username
 	}
 
@@ -187,7 +187,7 @@ func (h *Help) genArguments(
 	for i, arg := range requiredArgs {
 		desc := arg.GetDescription(ctx.Localizer)
 
-		if len(desc) == 0 {
+		if desc == "" {
 			continue
 		}
 
@@ -204,7 +204,7 @@ func (h *Help) genArguments(
 
 		variadic := cmd.Args().IsVariadic() && i == len(requiredArgs)-1 && len(optionalArgs) == 0
 
-		if (!strings.EqualFold(name, typeName) || variadic) && len(typeName) > 0 {
+		if (!strings.EqualFold(name, typeName) || variadic) && typeName != "" {
 			b.WriteString(" (")
 			b.WriteString(typeName)
 
@@ -222,7 +222,7 @@ func (h *Help) genArguments(
 	for i, arg := range optionalArgs {
 		desc := arg.GetDescription(ctx.Localizer)
 
-		if len(desc) == 0 {
+		if desc == "" {
 			continue
 		}
 
@@ -238,7 +238,7 @@ func (h *Help) genArguments(
 
 		variadic := cmd.Args().IsVariadic() && i == len(optionalArgs)-1
 
-		if (!strings.EqualFold(name, typeName) || variadic) && len(typeName) > 0 {
+		if (!strings.EqualFold(name, typeName) || variadic) && typeName != "" {
 			b.WriteString(" (")
 			b.WriteString(typeName)
 
@@ -253,7 +253,7 @@ func (h *Help) genArguments(
 		b.WriteString(desc)
 	}
 
-	if len(b.String()) == 0 {
+	if b.String() == "" {
 		return nil
 	}
 
@@ -289,7 +289,7 @@ func (h *Help) genFlags(b *strings.Builder, ctx *plugin.Context, cmd plugin.Reso
 		}
 
 		typeName := flag.GetType().GetName(ctx.Localizer)
-		if len(typeName) > 0 {
+		if typeName != "" {
 			b.WriteString(" (")
 			b.WriteString(typeName)
 
@@ -301,7 +301,7 @@ func (h *Help) genFlags(b *strings.Builder, ctx *plugin.Context, cmd plugin.Reso
 		}
 
 		desc := flag.GetDescription(ctx.Localizer)
-		if len(desc) > 0 {
+		if desc != "" {
 			b.WriteString(" - ")
 			b.WriteString(desc)
 		}
@@ -355,7 +355,7 @@ func (h *Help) formatCommands(
 		b.WriteString(cmd.ID().AsInvoke())
 		b.WriteRune('`')
 
-		if desc := cmd.ShortDescription(ctx.Localizer); len(desc) > 0 {
+		if desc := cmd.ShortDescription(ctx.Localizer); desc != "" {
 			b.WriteString(" - ")
 			b.WriteString(desc)
 		}

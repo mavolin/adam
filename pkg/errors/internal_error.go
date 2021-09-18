@@ -377,7 +377,7 @@ func wrap(err error, message string, silent bool) Error {
 // If that error is of type *InternalError, it's description will be set to the
 // given description.
 func WithDescription(err error, description string) Error {
-	if len(description) == 0 {
+	if description == "" {
 		return withDescription(err, nil)
 	}
 
@@ -431,7 +431,7 @@ func WithDescriptionl(err error, description *i18n.Config) Error {
 // If that error is of type *InternalError, it's description will be set to the
 // given description.
 func WithDescriptionlt(err error, description i18n.Term) Error {
-	if len(description) == 0 {
+	if description == "" {
 		return withDescription(err, nil)
 	}
 

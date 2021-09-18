@@ -75,7 +75,7 @@ func parseOwners() []discord.UserID {
 
 func parsePrefixes() []string {
 	prefixes := os.Getenv("BOT_PREFIXES")
-	if len(prefixes) == 0 {
+	if prefixes == "" {
 		return nil
 	}
 
