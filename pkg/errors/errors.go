@@ -10,6 +10,7 @@ import (
 
 	"github.com/mavolin/disstate/v4/pkg/state"
 
+	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
@@ -49,4 +50,12 @@ func Handle(s *state.State, ctx *plugin.Context, err error, maxHandles int) {
 			maxHandles--
 		}
 	}
+}
+
+type StackTrace = errorutil.StackTrace
+
+// GenerateStackTrace generates a StackTrace.
+// It skips the given amount of callers.
+func GenerateStackTrace(skip int) StackTrace {
+	return errorutil.GenerateStackTrace(skip + 1)
 }

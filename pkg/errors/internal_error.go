@@ -8,13 +8,10 @@ import (
 	"github.com/diamondburned/arikawa/v3/utils/httputil"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
-	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 	"github.com/mavolin/adam/pkg/utils/discorderr"
 )
-
-type StackTrace = errorutil.StackTrace
 
 // InternalError represents a non-user triggered error.
 //
@@ -585,5 +582,5 @@ func stackTrace(err error, skip int) StackTrace {
 		return tracer.StackTrace()
 	}
 
-	return errorutil.GenerateStackTrace(1 + skip)
+	return GenerateStackTrace(skip + 1)
 }
