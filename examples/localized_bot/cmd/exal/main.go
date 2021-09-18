@@ -13,6 +13,7 @@ import (
 	"github.com/mavolin/adam/examples/localized_bot/plugins/mod"
 	"github.com/mavolin/adam/examples/localized_bot/plugins/ping"
 	"github.com/mavolin/adam/examples/localized_bot/plugins/say"
+	"github.com/mavolin/adam/examples/plain_bot/plugins/embed"
 	"github.com/mavolin/adam/pkg/bot"
 	"github.com/mavolin/adam/pkg/impl/command/help"
 )
@@ -57,6 +58,7 @@ func main() {
 func addPlugins(b *bot.Bot) {
 	b.AddCommand(help.New(help.Options{}))
 
+	b.AddCommand(embed.New())
 	b.AddCommand(ping.New())
 	b.AddCommand(say.New())
 

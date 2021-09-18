@@ -10,6 +10,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 
+	"github.com/mavolin/adam/examples/plain_bot/plugins/embed"
 	"github.com/mavolin/adam/examples/plain_bot/plugins/mod"
 	"github.com/mavolin/adam/examples/plain_bot/plugins/ping"
 	"github.com/mavolin/adam/examples/plain_bot/plugins/say"
@@ -52,6 +53,7 @@ func main() {
 func addPlugins(b *bot.Bot) {
 	b.AddCommand(help.New(help.Options{}))
 
+	b.AddCommand(embed.New())
 	b.AddCommand(ping.New())
 	b.AddCommand(say.New())
 
