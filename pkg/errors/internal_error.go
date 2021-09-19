@@ -555,12 +555,26 @@ var HandleDiscordError = func(ierr *InternalError, derr *httputil.HTTPError) Err
 }
 
 // Log logs an InternalError.
+//
+// As InternalErrors can arise during the execution of a default middleware,
+// not all context fields might be set.
+// Hence, nil-checks should be performed on every nillable field, that are not
+// set by the router directly.
 var Log = func(ctx *plugin.Context, err *InternalError) {
-	log.Printf("internal error in command %s: %+v\n%+v", ctx.InvokedCommand.ID(), err, err.StackTrace())
+	if ctx.InvokedCommand == nil {
+		log.Printf("internal error: %+v\n%+v\n", err, err.StackTrace())
+	} else {
+		log.Printf("internal error in command %s: %+v\n%+v", ctx.InvokedCommand.ID(), err, err.StackTrace())
+	}
 }
 
 // HandleInternalError sends an error embed, if the internal error is
 // non-silent.
+//
+// As InternalErrors can arise during the execution of a default middleware,
+// not all context fields might be set.
+// Hence, nil-checks should be performed on every nillable field, that are not
+// set by the router directly.
 var HandleInternalError = func(s *state.State, ctx *plugin.Context, ierr *InternalError) {
 	desc := ierr.Description(ctx.Localizer)
 	if len(desc) == 0 {

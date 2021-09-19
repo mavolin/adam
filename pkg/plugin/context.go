@@ -32,8 +32,7 @@ type Context struct {
 	*i18n.Localizer
 
 	// InvokeIndex is the starting index of the invoke as found in Content.
-	// The invoke ends at ArgsIndex-1 and will be trailed by whitespace
-	// (' ', '\n').
+	// The invoke ends at ArgsIndex-1 and is trailed by whitespace (' ', '\n').
 	InvokeIndex int
 	// ArgsIndex is the starting index of the argument as found in Content.
 	ArgsIndex int
@@ -52,8 +51,8 @@ type Context struct {
 	// guild or user.
 	// Prefixes does not include the bot's mention, which is always a valid
 	// prefix.
-	// This also means that Prefixes may be empty, in which case the command
-	// was invoked used the bot's mention.
+	// It may be empty, in which case the command was invoked using the bot's
+	// mention.
 	//
 	// Note that direct messages do not require prefixes.
 	// However, the bot's mention or any other prefix returned by the bot's
@@ -102,13 +101,13 @@ func (ctx *Context) UsedPrefix() string {
 	return strings.TrimRight(ctx.Content[:ctx.InvokeIndex], shared.Whitespace)
 }
 
-// RawInvoke returns the raw invoke stripped of prefix and args, as the user
+// RawInvoke returns the raw invoke stripped of prefix and args as the user
 // typed it.
 func (ctx *Context) RawInvoke() string {
 	return strings.TrimRight(ctx.Content[ctx.InvokeIndex:ctx.ArgsIndex], shared.Whitespace)
 }
 
-// RawArgs returns the raw arguments, as the user typed them.
+// RawArgs returns the raw argument, as the user typed them.
 func (ctx *Context) RawArgs() string {
 	return ctx.Content[ctx.ArgsIndex:]
 }

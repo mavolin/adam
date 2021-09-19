@@ -6,6 +6,7 @@ import (
 	"github.com/mavolin/disstate/v4/pkg/state"
 
 	"github.com/mavolin/adam/pkg/errors"
+	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/impl/replier"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -16,6 +17,11 @@ var ErrUnknownCommand = errors.NewUserErrorl(unknownCommandErrorDescription)
 
 // Route attempts to route the passed message.
 // It aborts if the message is not a valid invoke.
+//
+// When calling the bot's middlewares, it guarantees that Message, Member,
+// Base, BotOwnerIDs, Replier, Provider, DiscordDataProvider, and ErrorHandler
+// are set.
+// Further, Localizer will be set to a fallback localizer.
 //nolint:funlen
 func (b *Bot) Route(base *event.Base, msg *discord.Message, member *discord.Member) {
 	// discard the message if THIS bot wrote it, even if b.AllowBot
@@ -31,7 +37,9 @@ func (b *Bot) Route(base *event.Base, msg *discord.Message, member *discord.Memb
 		Message:     *msg,
 		Member:      member,
 		Base:        base,
+		Localizer:   i18n.NewFallbackLocalizer(),
 		BotOwnerIDs: b.Owners,
+		Replier:     replier.WrapState(b.State, false),
 		Provider:    b.pluginResolver.NewProvider(base, msg),
 		DiscordDataProvider: &discordDataProvider{
 			s:         b.State,
@@ -39,7 +47,6 @@ func (b *Bot) Route(base *event.Base, msg *discord.Message, member *discord.Memb
 			channelID: msg.ChannelID,
 			selfID:    b.selfID,
 		},
-		Replier: replier.WrapState(b.State, false),
 	}
 	ctx.ErrorHandler = newCtxErrorHandler(b.State, ctx, b.ErrorHandler)
 
