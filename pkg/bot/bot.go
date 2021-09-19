@@ -136,7 +136,11 @@ func New(o Options) (b *Bot, err error) {
 // derive intents from the registered handlers.
 // Additionally, gateway.IntentGuilds will be added, if guild caching is
 // enabled.
-func (b *Bot) Open(ctx context.Context) error {
+//
+// Open takes in a timeout that is applied to each shard's call to
+// gateway.Gateway.Open individually.
+// This eliminates the need to account for rate limits between each open.
+func (b *Bot) Open(singleTimeout time.Duration) error {
 	if b.State.Gateway.Identifier.Intents == 0 {
 		b.AddIntents(b.State.DeriveIntents())
 		b.AddIntents(gateway.IntentGuildMessages)
@@ -173,11 +177,10 @@ func (b *Bot) Open(ctx context.Context) error {
 		}, b.MessageUpdateMiddlewares...)
 	}
 
-	if err := b.State.Open(ctx); err != nil {
-		return err
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), b.State.CalcOpenTimeout(singleTimeout))
+	defer cancel()
 
-	return nil
+	return b.State.Open(ctx)
 }
 
 func (b *Bot) openModule(mod plugin.Module) error {
@@ -202,19 +205,19 @@ func (b *Bot) openModule(mod plugin.Module) error {
 // If none of i's methods match those parameters, the function is a no-op.
 //
 // An error will only be returned if i.Open returns it.
-func (b *Bot) callOpen(i interface{}) error {
+func (b *Bot) callOpen(i interface{}) (err error) {
 	switch opener := i.(type) {
 	case interface{ Open() }:
 		opener.Open()
 	case interface{ Open(*Bot) }:
 		opener.Open(b)
 	case interface{ Open() error }:
-		return opener.Open()
+		err = opener.Open()
 	case interface{ Open(*Bot) error }:
-		return opener.Open(b)
+		err = opener.Open(b)
 	}
 
-	return nil
+	return err
 }
 
 // Close closes the websocket connection to Discord's gateway gracefully.
@@ -266,19 +269,19 @@ func (b *Bot) closeModule(mod plugin.Module) error {
 // If none of i's methods match those parameters, the function is a no-op.
 //
 // An error will only be returned if i.Close returns it.
-func (b *Bot) callClose(i interface{}) error {
+func (b *Bot) callClose(i interface{}) (err error) {
 	switch closer := i.(type) {
 	case interface{ Close() }:
 		closer.Close()
 	case interface{ Close(*Bot) }:
 		closer.Close(b)
 	case interface{ Close() error }:
-		return closer.Close()
+		err = closer.Close()
 	case interface{ Close(*Bot) error }:
-		return closer.Close(b)
+		err = closer.Close(b)
 	}
 
-	return nil
+	return err
 }
 
 // AddIntents adds the passed gateway.Intents to the bot.

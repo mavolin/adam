@@ -7,8 +7,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/iancoleman/strcase v0.1.3
 	github.com/mavolin/dismock/v3 v3.0.0-20210831142601-d09b1b87b784 // indirect
-	github.com/mavolin/disstate/v4 v4.0.0-20210824094831-2fd8f92ded70
-	github.com/stretchr/objx v0.3.0 // indirect
+	github.com/mavolin/disstate/v4 v4.0.0-20210919172014-e3fc0bab6ab8
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/text v0.3.3
 )
