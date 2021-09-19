@@ -19,7 +19,7 @@ with custom commands.
 
 ## Main Features
 
-* 🖥️ Typed (variadic) arguments and flags, as well as out-of-the-box parsing for shellword, and comma-based notations
+* 🖥️ Typed (variadic) arguments and flags, as well as out-of-the-box parsing for shellword, and delimiter-based notations
 * 🌍 Support for localization
 * 🗒️ Utilities for permission handling, emojis, and awaiting responses and reactions
 * ⚡ Error handling with automatic stack trace generation
