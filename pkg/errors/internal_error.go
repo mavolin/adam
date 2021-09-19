@@ -38,7 +38,10 @@ type InternalError struct {
 	desc *i18n.Config
 }
 
-var _ Error = new(InternalError)
+var (
+	_ Error       = new(InternalError)
+	_ StackTracer = new(InternalError)
+)
 
 // WithStack returns a new *InternalError using the caller's stack trace and
 // the default description.
@@ -591,7 +594,7 @@ var HandleInternalError = func(s *state.State, ctx *plugin.Context, ierr *Intern
 // stackTrace attempts to extract the stacktrace from the error.
 // If there is none, it will generate a stack trace.
 func stackTrace(err error, skip int) StackTrace {
-	var tracer interface{ StackTrace() StackTrace }
+	var tracer StackTracer
 	if As(err, &tracer) {
 		return tracer.StackTrace()
 	}

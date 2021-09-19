@@ -24,6 +24,8 @@ type ActionRowError struct {
 	s errorutil.StackTrace
 }
 
+var _ errors.StackTracer = new(ActionRowError)
+
 // newActionRowError creates a new *ActionRowError.
 func newActionRowError(index int, typ string, cause error) *ActionRowError {
 	return &ActionRowError{
@@ -52,14 +54,15 @@ func (e *ActionRowError) Error() string {
 // =====================================================================================
 
 // SelectError is the error returned if one of the SelectOptionBuilders inside
-// an Select failed to build.
+// a Select failed to build.
 type SelectError struct {
 	Index int
-
 	Cause error
 
 	s errors.StackTrace
 }
+
+var _ errors.StackTracer = new(SelectError)
 
 // newSelectError creates a new *ActionRowError.
 func newSelectError(index int, cause error) *SelectError {

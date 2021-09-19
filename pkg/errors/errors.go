@@ -59,3 +59,9 @@ type StackTrace = errorutil.StackTrace
 func GenerateStackTrace(skip int) StackTrace {
 	return errorutil.GenerateStackTrace(skip + 1)
 }
+
+// StackTracer is the interface implemented by all types providing stack
+// traces.
+type StackTracer interface {
+	StackTrace() StackTrace
+}
