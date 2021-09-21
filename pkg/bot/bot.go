@@ -130,17 +130,30 @@ func New(o Options) (b *Bot, err error) {
 	return b, nil
 }
 
-// Open opens a connection to the gateway and starts the bot.
+// Open takes in a timeout that is applied to each shard's call to
+// gateway.Gateway.Open individually.
+// This eliminates the need to account for rate limits between each open.
+func (b *Bot) Open(singleTimeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), b.State.CalcOpenTimeout(singleTimeout))
+	defer cancel()
+
+	return b.OpenContext(ctx)
+}
+
+// OpenContext opens a connection to the gateway and starts the bot.
 //
 // If no gateway.Intents were added to the State before opening, Open will
 // derive intents from the registered handlers.
 // Additionally, gateway.IntentGuilds will be added, if guild caching is
 // enabled.
 //
-// Open takes in a timeout that is applied to each shard's call to
-// gateway.Gateway.Open individually.
-// This eliminates the need to account for rate limits between each open.
-func (b *Bot) Open(singleTimeout time.Duration) error {
+// The context Bot accepts is prone to the same caveats as the one of
+// state.State.Open.
+// Therefore, if using timeouts, you should use Bot.State.CalcOpenTimeout
+// instead of using a fixed number.
+// Refer to the docs of state.State.Open and state.State.CalcOpenTimeout for
+// more information.
+func (b *Bot) OpenContext(ctx context.Context) error {
 	if b.State.Gateway.Identifier.Intents == 0 {
 		b.AddIntents(b.State.DeriveIntents())
 		b.AddIntents(gateway.IntentGuildMessages)
@@ -176,9 +189,6 @@ func (b *Bot) Open(singleTimeout time.Duration) error {
 			}
 		}, b.MessageUpdateMiddlewares...)
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), b.State.CalcOpenTimeout(singleTimeout))
-	defer cancel()
 
 	return b.State.Open(ctx)
 }
