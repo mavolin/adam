@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"os/signal"
@@ -39,7 +38,7 @@ func main() {
 
 	log.Println("starting up")
 
-	if err = b.Open(context.Background()); err != nil {
+	if err = b.Open(2 * time.Second); err != nil {
 		log.Fatal(err)
 	}
 
