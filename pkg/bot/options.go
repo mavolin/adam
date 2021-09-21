@@ -3,7 +3,6 @@ package bot
 import (
 	"log"
 	"runtime/debug"
-	"syscall"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -385,10 +384,11 @@ func DefaultGatewayErrorHandler(err error) {
 
 // FilterGatewayError filters out informational reconnect errors.
 func FilterGatewayError(err error) bool {
+	// https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-close-event-codes
+	const errShardingRequired = 4011
+
 	var cerr *websocket.CloseError
-	return (errors.As(err, &cerr) &&
-		(cerr.Code == websocket.CloseGoingAway || cerr.Code == websocket.CloseAbnormalClosure)) ||
-		errors.Is(err, syscall.ECONNRESET)
+	return errors.As(err, &cerr) && cerr.Code == errShardingRequired
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
