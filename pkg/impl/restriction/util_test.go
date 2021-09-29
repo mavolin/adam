@@ -41,7 +41,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				}),
 			},
 			allowed: plugin.GuildChannels,
-			expect:  newChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
+			expect:  NewFatalChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer()),
 		},
 		{
 			name: "pass direct messages",
@@ -64,7 +64,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				}),
 			},
 			allowed: plugin.DirectMessages,
-			expect:  newChannelTypesError(plugin.DirectMessages, i18n.NewFallbackLocalizer(), true),
+			expect:  NewFatalChannelTypesError(plugin.DirectMessages, i18n.NewFallbackLocalizer()),
 		},
 		{
 			name: "all channels",
@@ -101,7 +101,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				}),
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), true),
+			expect:  NewFatalChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer()),
 		},
 		{
 			name: "fail guild text - not fatal",
@@ -116,7 +116,7 @@ func Test_assertChannelTypes(t *testing.T) {
 				},
 			},
 			allowed: plugin.GuildTextChannels,
-			expect:  newChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer(), false),
+			expect:  NewChannelTypesError(plugin.GuildTextChannels, i18n.NewFallbackLocalizer()),
 		},
 	}
 

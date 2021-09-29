@@ -12,7 +12,7 @@ import (
 // assertChannelTypes asserts that the command with the passed context
 // is used in the passed channel types.
 // If that is not the case a *plugin.RestrictionError generated through
-// newChannelTypesError is returned.
+// NewChannelTypesError is returned.
 //
 // assertChannelTypes will also silently report errors in some cases.
 func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes) error {
@@ -27,16 +27,18 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes) error 
 	if remaining == 0 { // no channel types remaining
 		// there is no need to prevent execution, as another restriction
 		// may permit it, still we should capture this
-		ctx.HandleErrorSilently(fmt.Errorf("restriction: need channel types %s, but command only allows %s",
+		ctx.HandleErrorSilently(fmt.Errorf("restriction: restriction need channel types %s, but command only allows %s",
 			allowed, ctx.InvokedCommand.ChannelTypes()))
 
 		return plugin.DefaultFatalRestrictionError
 	}
 
-	fatal := (ctx.GuildID == 0 && remaining&plugin.DirectMessages == 0) ||
-		(ctx.GuildID != 0 && remaining == plugin.DirectMessages)
+	if (ctx.GuildID == 0 && remaining&plugin.DirectMessages == 0) ||
+		(ctx.GuildID != 0 && remaining == plugin.DirectMessages) {
+		return NewFatalChannelTypesError(remaining, ctx.Localizer)
+	}
 
-	return newChannelTypesError(remaining, ctx.Localizer, fatal)
+	return NewChannelTypesError(remaining, ctx.Localizer)
 }
 
 // insertRoleSorted inserts the passed discord.Role into the passed slice of

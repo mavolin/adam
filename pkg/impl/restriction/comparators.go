@@ -18,34 +18,6 @@ const (
 	entryPrefix = "• "
 )
 
-// EmbeddableError that formats differently, based on whether it is embedded in
-// an any or all error, or whether it is used directly.
-// Since the EmbeddableVersion is only used by any or all, it makes its direct
-// error available using As, which is checked when passed to the bot's error
-// handler.
-type EmbeddableError struct {
-	// EmbeddableVersion is the version used when embedded in an any or all
-	// error.
-	EmbeddableVersion *plugin.RestrictionError
-	// DefaultVersion is the version returned if the error won't get embedded.
-	DefaultVersion *plugin.RestrictionError
-}
-
-func (e *EmbeddableError) As(target interface{}) bool {
-	switch err := target.(type) {
-	case **plugin.RestrictionError:
-		*err = e.DefaultVersion
-		return true
-	case *errors.Error:
-		*err = e.DefaultVersion
-		return true
-	default:
-		return false
-	}
-}
-
-func (e *EmbeddableError) Error() string { return e.DefaultVersion.Error() }
-
 // All asserts that all the passed plugin.RestrictionFuncs return nil.
 // If not, it will create an error containing a list of all missing
 // requirements using the returned errors.

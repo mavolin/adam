@@ -155,7 +155,7 @@ func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return newAllMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAllMissingRolesError(missingRoles, ctx.Localizer)
 	}
 }
 
@@ -228,7 +228,7 @@ func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		return newAllMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAllMissingRolesError(missingRoles, ctx.Localizer)
 	}
 }
 
@@ -279,7 +279,7 @@ func AnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return newAnyMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAnyMissingRolesError(missingRoles, ctx.Localizer)
 	}
 }
 
@@ -326,7 +326,7 @@ func MustAnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		return newAnyMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAnyMissingRolesError(missingRoles, ctx.Localizer)
 	}
 }
 
@@ -381,7 +381,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		return newChannelsError(missingIDs, ctx.Localizer)
+		return NewChannelsError(missingIDs, ctx.Localizer)
 	}
 }
 
@@ -424,6 +424,6 @@ func UserPermissions(required discord.Permissions) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return newUserPermissionsError(missing, ctx.Localizer)
+		return NewUserPermissionsError(missing, ctx.Localizer)
 	}
 }

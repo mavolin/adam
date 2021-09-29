@@ -221,10 +221,10 @@ func (e *ChannelTypeError) Description(l *i18n.Localizer) (desc string) {
 		desc, _ = l.Localize(channelTypeErrorGuildText)
 	case e.Allowed == GuildNewsChannels:
 		desc, _ = l.Localize(channelTypeErrorGuildNews)
-	case e.Allowed == DirectMessages:
-		desc, _ = l.Localize(channelTypeErrorDM)
 	case e.Allowed == Threads:
 		desc, _ = l.Localize(channelTypeErrorThread)
+	case e.Allowed == DirectMessages:
+		desc, _ = l.Localize(channelTypeErrorDM)
 
 	// ----- combinations -----
 	case e.Allowed == (GuildTextChannels | GuildNewsChannels):
