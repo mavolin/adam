@@ -35,10 +35,10 @@ func assertChannelTypes(ctx *plugin.Context, allowed plugin.ChannelTypes) error 
 
 	if (ctx.GuildID == 0 && remaining&plugin.DirectMessages == 0) ||
 		(ctx.GuildID != 0 && remaining == plugin.DirectMessages) {
-		return NewFatalChannelTypesError(remaining, ctx.Localizer)
+		return NewFatalChannelTypesError(ctx.Localizer, remaining)
 	}
 
-	return NewChannelTypesError(remaining, ctx.Localizer)
+	return NewChannelTypesError(ctx.Localizer, remaining)
 }
 
 // insertRoleSorted inserts the passed discord.Role into the passed slice of

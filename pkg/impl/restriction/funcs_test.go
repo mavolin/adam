@@ -87,7 +87,7 @@ func TestGuildOwner(t *testing.T) {
 					ChannelTypes: plugin.AllChannels,
 				}),
 			},
-			expect: NewFatalChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer()),
+			expect: NewFatalChannelTypesError(i18n.NewFallbackLocalizer(), plugin.GuildChannels),
 		},
 		{
 			name: "is owner",
@@ -242,7 +242,7 @@ func TestAllRoles(t *testing.T) {
 					ChannelTypes: plugin.AllChannels,
 				}),
 			},
-			expect: NewFatalChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer()),
+			expect: NewFatalChannelTypesError(i18n.NewFallbackLocalizer(), plugin.GuildChannels),
 		},
 		{
 			name:    "none missing",
@@ -283,7 +283,7 @@ func TestAllRoles(t *testing.T) {
 					},
 				},
 			},
-			expect: NewAllMissingRolesError([]discord.Role{{ID: 456}}, i18n.NewFallbackLocalizer()),
+			expect: NewAllMissingRolesError(i18n.NewFallbackLocalizer(), discord.Role{ID: 456}),
 		},
 		{
 			name:    "missing - can manage",
@@ -343,7 +343,7 @@ func TestMustAllRoles(t *testing.T) {
 					ChannelTypes: plugin.AllChannels,
 				}),
 			},
-			expect: NewFatalChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer()),
+			expect: NewFatalChannelTypesError(i18n.NewFallbackLocalizer(), plugin.GuildChannels),
 		},
 		{
 			name:    "none missing",
@@ -376,7 +376,7 @@ func TestMustAllRoles(t *testing.T) {
 					GuildReturn: &discord.Guild{Roles: []discord.Role{{ID: 456}}},
 				},
 			},
-			expect: NewAllMissingRolesError([]discord.Role{{ID: 456}}, i18n.NewFallbackLocalizer()),
+			expect: NewAllMissingRolesError(i18n.NewFallbackLocalizer(), discord.Role{ID: 456}),
 		},
 	}
 
@@ -417,7 +417,7 @@ func TestAnyRole(t *testing.T) {
 					ChannelTypes: plugin.AllChannels,
 				}),
 			},
-			expect: NewFatalChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer()),
+			expect: NewFatalChannelTypesError(i18n.NewFallbackLocalizer(), plugin.GuildChannels),
 		},
 		{
 			name:    "none missing",
@@ -453,7 +453,7 @@ func TestAnyRole(t *testing.T) {
 					},
 				},
 			},
-			expect: NewAnyMissingRolesError([]discord.Role{{ID: 456, Position: 1}}, i18n.NewFallbackLocalizer()),
+			expect: NewAnyMissingRolesError(i18n.NewFallbackLocalizer(), discord.Role{ID: 456, Position: 1}),
 		},
 		{
 			name:    "missing - can manage",
@@ -513,7 +513,7 @@ func TestMustAnyRole(t *testing.T) {
 					ChannelTypes: plugin.AllChannels,
 				}),
 			},
-			expect: NewFatalChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer()),
+			expect: NewFatalChannelTypesError(i18n.NewFallbackLocalizer(), plugin.GuildChannels),
 		},
 		{
 			name:    "none missing",
@@ -551,7 +551,7 @@ func TestMustAnyRole(t *testing.T) {
 					},
 				},
 			},
-			expect: NewAnyMissingRolesError([]discord.Role{{ID: 456, Position: 2}}, i18n.NewFallbackLocalizer()),
+			expect: NewAnyMissingRolesError(i18n.NewFallbackLocalizer(), discord.Role{ID: 456, Position: 2}),
 		},
 	}
 
@@ -632,7 +632,7 @@ func TestChannels(t *testing.T) {
 					},
 				},
 			},
-			expect: NewChannelsError([]discord.ChannelID{456}, i18n.NewFallbackLocalizer()),
+			expect: NewChannelsError(i18n.NewFallbackLocalizer(), 456),
 		},
 		{
 			name:           "prohibited - allowed channels not in guild",
@@ -706,7 +706,7 @@ func TestUserPermissions(t *testing.T) {
 					ChannelTypes: plugin.AllChannels,
 				}),
 			},
-			expect: NewFatalChannelTypesError(plugin.GuildChannels, i18n.NewFallbackLocalizer()),
+			expect: NewFatalChannelTypesError(i18n.NewFallbackLocalizer(), plugin.GuildChannels),
 		},
 		{
 			name:  "pass guild",
@@ -752,8 +752,8 @@ func TestUserPermissions(t *testing.T) {
 					ChannelReturn: &discord.Channel{},
 				},
 			},
-			expect: NewUserPermissionsError(discord.PermissionStream|discord.PermissionSendTTSMessages,
-				i18n.NewFallbackLocalizer()),
+			expect: NewUserPermissionsError(i18n.NewFallbackLocalizer(),
+				discord.PermissionStream|discord.PermissionSendTTSMessages),
 		},
 	}
 

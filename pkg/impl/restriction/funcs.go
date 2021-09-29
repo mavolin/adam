@@ -82,7 +82,7 @@ func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 }
 
 // AllRoles asserts that the user has all of the passed roles or is able to
-// assign themself all of the passed roles.
+// assign themselves all of the passed roles.
 // You can mix roles from different guilds, roles that aren't available in a
 // guild are ignored.
 // However, the guild the command was invoked in must have at least one of the
@@ -91,7 +91,6 @@ func Users(allowed ...discord.UserID) plugin.RestrictionFunc {
 // to use the command at all.
 //
 // It fails if the command is used in a direct message.
-//nolint:gocognit
 func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 	return func(_ *state.State, ctx *plugin.Context) error {
 		if len(allowed) == 0 {
@@ -155,7 +154,7 @@ func AllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return NewAllMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAllMissingRolesError(ctx.Localizer, missingRoles...)
 	}
 }
 
@@ -228,7 +227,7 @@ func MustAllRoles(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		return NewAllMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAllMissingRolesError(ctx.Localizer, missingRoles...)
 	}
 }
 
@@ -279,7 +278,7 @@ func AnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return NewAnyMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAnyMissingRolesError(ctx.Localizer, missingRoles...)
 	}
 }
 
@@ -326,7 +325,7 @@ func MustAnyRole(allowed ...discord.RoleID) plugin.RestrictionFunc {
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		return NewAnyMissingRolesError(missingRoles, ctx.Localizer)
+		return NewAnyMissingRolesError(ctx.Localizer, missingRoles...)
 	}
 }
 
@@ -381,7 +380,7 @@ func Channels(allowed ...discord.ChannelID) plugin.RestrictionFunc {
 			return plugin.DefaultFatalRestrictionError
 		}
 
-		return NewChannelsError(missingIDs, ctx.Localizer)
+		return NewChannelsError(ctx.Localizer, missingIDs...)
 	}
 }
 
@@ -424,6 +423,6 @@ func UserPermissions(required discord.Permissions) plugin.RestrictionFunc {
 			return nil
 		}
 
-		return NewUserPermissionsError(missing, ctx.Localizer)
+		return NewUserPermissionsError(ctx.Localizer, missing)
 	}
 }

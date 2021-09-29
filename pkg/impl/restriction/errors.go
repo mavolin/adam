@@ -49,7 +49,7 @@ type ChannelTypesError struct {
 
 // NewChannelTypesError returns a new *ChannelTypesError created using the
 // passed plugin.ChannelTypes.
-func NewChannelTypesError(allowed plugin.ChannelTypes, l *i18n.Localizer) error {
+func NewChannelTypesError(l *i18n.Localizer, allowed plugin.ChannelTypes) error {
 	err := plugin.NewChannelTypeError(allowed)
 	desc := err.Description(l)
 
@@ -61,7 +61,7 @@ func NewChannelTypesError(allowed plugin.ChannelTypes, l *i18n.Localizer) error 
 
 // NewFatalChannelTypesError returns a fatal new *ChannelTypesError created
 // using the passed plugin.ChannelTypes.
-func NewFatalChannelTypesError(allowed plugin.ChannelTypes, l *i18n.Localizer) error {
+func NewFatalChannelTypesError(l *i18n.Localizer, allowed plugin.ChannelTypes) error {
 	err := plugin.NewChannelTypeError(allowed)
 	desc := err.Description(l)
 
@@ -109,9 +109,7 @@ type AllMissingRolesError struct {
 var _ error = new(AllMissingRolesError)
 
 // NewAllMissingRolesError creates a new *AllMissingRolesError.
-//
-// The name field of the roles must be set.
-func NewAllMissingRolesError(missing []discord.Role, l *i18n.Localizer) *AllMissingRolesError {
+func NewAllMissingRolesError(l *i18n.Localizer, missing ...discord.Role) *AllMissingRolesError {
 	if len(missing) == 0 {
 		return nil
 	} else if len(missing) == 1 {
@@ -195,7 +193,7 @@ type AnyMissingRolesError struct {
 
 // NewAnyMissingRolesError creates a new error containing an
 // error message for missing roles.
-func NewAnyMissingRolesError(missing []discord.Role, l *i18n.Localizer) *AnyMissingRolesError {
+func NewAnyMissingRolesError(l *i18n.Localizer, missing ...discord.Role) *AnyMissingRolesError {
 	if len(missing) == 0 {
 		return nil
 	} else if len(missing) == 1 {
@@ -279,7 +277,7 @@ type ChannelsError struct {
 
 // NewChannelsError creates a new error containing an error
 // message containing the allowed channels.
-func NewChannelsError(allowed []discord.ChannelID, l *i18n.Localizer) *ChannelsError {
+func NewChannelsError(l *i18n.Localizer, allowed ...discord.ChannelID) *ChannelsError {
 	if len(allowed) == 0 {
 		return nil
 	} else if len(allowed) == 1 {
@@ -363,7 +361,7 @@ type UserPermissionsError struct {
 
 // NewUserPermissionsError returns a new error containing the
 // missing permissions.
-func NewUserPermissionsError(missing discord.Permissions, l *i18n.Localizer) *UserPermissionsError {
+func NewUserPermissionsError(l *i18n.Localizer, missing discord.Permissions) *UserPermissionsError {
 	if missing == 0 {
 		return nil
 	}
