@@ -20,12 +20,12 @@ func ChannelPermissions(g discord.Guild, c discord.Channel) discord.Permissions 
 // The returned permissions do not include channel overwrites, that may deny or
 // grant permissions.
 func MemberPermissions(g discord.Guild, m discord.Member) discord.Permissions {
-	return MemberPermissionsInChannel(g, discord.Channel{}, m)
+	return MemberChannelPermissions(g, discord.Channel{}, m)
 }
 
-// MemberPermissionsInChannel calculates the permissions the passed member has
+// MemberChannelPermissions calculates the permissions the passed member has
 // in the channel of the passed guild.
-func MemberPermissionsInChannel(g discord.Guild, c discord.Channel, m discord.Member) discord.Permissions {
+func MemberChannelPermissions(g discord.Guild, c discord.Channel, m discord.Member) discord.Permissions {
 	return discord.CalcOverwrites(g, c, m)
 }
 
