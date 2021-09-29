@@ -1,6 +1,8 @@
 package plugin
 
 import (
+	"fmt"
+
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/mavolin/disstate/v4/pkg/state"
 )
@@ -16,10 +18,10 @@ const (
 	GuildTextChannels ChannelTypes = 1 << iota
 	// GuildNewsChannels is the ChannelTypes of a news channel (5).
 	GuildNewsChannels
-	// DirectMessages is the ChannelTypes of a private chat (1).
-	DirectMessages
 	// Threads is the ChannelTypes of a thread (10, 11, 12).
 	Threads
+	// DirectMessages is the ChannelTypes of a private chat (1).
+	DirectMessages
 
 	// ================================ Combinations ================================
 
@@ -36,8 +38,6 @@ func (t ChannelTypes) Has(target discord.ChannelType) bool {
 	switch target {
 	case discord.GuildText:
 		return t&GuildTextChannels == GuildTextChannels
-	case discord.DirectMessage:
-		return t&DirectMessages == DirectMessages
 	case discord.GuildNews:
 		return t&GuildNewsChannels == GuildNewsChannels
 	case discord.GuildNewsThread:
@@ -46,6 +46,8 @@ func (t ChannelTypes) Has(target discord.ChannelType) bool {
 		fallthrough
 	case discord.GuildPrivateThread:
 		return t&Threads == Threads
+	case discord.DirectMessage:
+		return t&DirectMessages == DirectMessages
 	default:
 		return false
 	}
@@ -53,7 +55,7 @@ func (t ChannelTypes) Has(target discord.ChannelType) bool {
 
 // Check checks if the ChannelTypes match the channel type of the invoking
 // channel.
-// It tries to avoid a call to Channel.
+// It tries to avoid a call to Context.Channel.
 func (t ChannelTypes) Check(ctx *Context) (bool, error) {
 	if t&AllChannels == AllChannels { // we match all channel types
 		return true, nil
@@ -95,18 +97,33 @@ func (t ChannelTypes) Check(ctx *Context) (bool, error) {
 
 func (t ChannelTypes) String() string {
 	switch {
-	case t&AllChannels == AllChannels:
-		return "all channels"
-	case t&GuildChannels == GuildChannels:
-		return "guild channels"
-	case t&GuildTextChannels == GuildTextChannels:
+	// ----- singles -----
+	case t == GuildTextChannels:
 		return "guild text channels"
-	case t&GuildNewsChannels == GuildNewsChannels:
+	case t == GuildNewsChannels:
 		return "guild news channels"
-	case t&DirectMessages == DirectMessages:
+	case t == Threads:
+		return "threads"
+	case t == DirectMessages:
 		return "direct messages"
+
+	// ----- combinations -----
+	case t == (GuildTextChannels | GuildNewsChannels):
+		return "guild text and guild news channels"
+	case t == (GuildTextChannels | Threads):
+		return "guild text channels and threads"
+	case t == (GuildNewsChannels | Threads):
+		return "guild news channels and threads"
+	case t == GuildChannels:
+		return "guild channels"
+	case t == (DirectMessages | GuildTextChannels):
+		return "direct messages and guild text channels"
+	case t == (DirectMessages | GuildNewsChannels):
+		return "direct messages and guild news channels"
+	case t == (DirectMessages | Threads):
+		return "direct messages and threads"
 	default:
-		return ""
+		return fmt.Sprintf("unknown channel type (%d)", t)
 	}
 }
 
