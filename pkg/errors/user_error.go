@@ -1,6 +1,8 @@
 package errors //nolint:dupl
 
 import (
+	"fmt"
+
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
@@ -19,30 +21,30 @@ type UserError struct {
 
 var _ Error = new(UserError)
 
-// NewCustomUserError creates a new *UserError using a NewErrorEmbed as a
-// template.
-func NewCustomUserError() *UserError {
+// NewBareUserError creates a new *UserError without a description, using a
+// NewErrorEmbed as a template.
+func NewBareUserError() *UserError {
 	return &UserError{Embed: NewErrorEmbed()}
-}
-
-// NewUserErrorFromEmbed creates a new *UserError from the passed
-// *msgbuilder.EmbedBuilder.
-func NewUserErrorFromEmbed(e *embedbuilder.Builder) *UserError {
-	return &UserError{Embed: e}
 }
 
 // NewUserError creates a new *UserError with the passed description using a
 // NewErrorEmbed as template.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserError(description string) *UserError {
-	return NewCustomUserError().
+	return NewBareUserError().
 		WithDescription(description)
+}
+
+// NewUserErrorf returns the result of calling NewUserError with
+// fmt.Sprinf(description, a...).
+func NewUserErrorf(description string, a ...interface{}) *UserError {
+	return NewUserError(fmt.Sprintf(description, a...))
 }
 
 // NewUserErrorl creates a new *UserError using the message generated from the
 // passed *i18n.Config as description.
 func NewUserErrorl(description *i18n.Config) *UserError {
-	return NewCustomUserError().
+	return NewBareUserError().
 		WithDescriptionl(description)
 }
 
