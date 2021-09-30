@@ -31,8 +31,7 @@ type Waiter struct {
 	middlewares []interface{}
 }
 
-// New creates a new Waiter using the passed state.State and
-// plugin.Context.
+// New creates a new Waiter using the passed state.State and plugin.Context.
 // ctx.Author will be assumed as the user to make the reaction in
 // ctx.ChannelID.
 func New(s *state.State, ctx *plugin.Context, messageID discord.MessageID) *Waiter {

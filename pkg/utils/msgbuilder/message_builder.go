@@ -28,14 +28,15 @@ import (
 //
 // It has been observed that the first follow-up event is received after about
 // 9.5 seconds, all successive events are received in an interval of
-// approximately 8.25 seconds. Additionally, we add a 1.5 second margin for network delays.
+// approximately 8.25 seconds. Additionally, we add a 1.5 second margin for
+// network delays.
 const typingInterval = 11 * time.Second
 
+type responseMiddlewaresKey struct{}
+
+var ResponseMiddlewaresKey = new(responseMiddlewaresKey)
+
 type EmbedBuilder = embedbuilder.Builder
-
-type replyMiddlewaresKey struct{}
-
-var ResponseMiddlewaresKey = new(replyMiddlewaresKey)
 
 func NewEmbed() *EmbedBuilder {
 	return embedbuilder.New()
@@ -90,7 +91,6 @@ type Builder struct {
 // ResponseMiddlewareKey to the builder's response middlewares, to be used when
 // awaiting a response.
 func New(s *state.State, ctx *plugin.Context) *Builder {
-
 	b := &Builder{
 		awaitIndexes: make(map[int]struct{}),
 		state:        s,
@@ -248,7 +248,7 @@ func (b *Builder) WithUserMentions(userIDs ...discord.UserID) *Builder {
 	return b
 }
 
-// MentionRepliedUser allows the replied user to be mentioned.
+// MentionRepliedUser mentions the user that is being replied.
 //
 // Actions: send and edit
 func (b *Builder) MentionRepliedUser() *Builder {
@@ -382,10 +382,6 @@ func (b *Builder) WithResponseMiddlewares(middlewares ...interface{}) *Builder {
 
 	return b
 }
-
-// =============================================================================
-// Component Await Settings
-// =====================================================================================
 
 // AwaitingUser sets the id of the user that is awaited to the passed id.
 func (b *Builder) AwaitingUser(userID discord.UserID) *Builder {
@@ -665,7 +661,7 @@ func (b *Builder) AwaitContext(ctx context.Context, disable bool) (err error) {
 		msgCleanup := b.handleMessages(ctx, doneChan)
 		defer msgCleanup()
 
-		timeoutCleanup := b.watchTimeout(ctx, b.initialResponseTimeout, b.typingResponseTimeout, doneChan)
+		timeoutCleanup := b.watchTyping(ctx, b.initialResponseTimeout, b.typingResponseTimeout, doneChan)
 		defer timeoutCleanup()
 	}
 
@@ -775,7 +771,7 @@ func (b *Builder) handleMessages(ctx context.Context, doneChan chan<- error) fun
 	})
 }
 
-func (b *Builder) watchTimeout(
+func (b *Builder) watchTyping(
 	ctx context.Context, initialTimeout, typingTimeout time.Duration, doneChan chan<- error,
 ) func() {
 	if typingTimeout <= 0 {
