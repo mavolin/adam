@@ -1,6 +1,8 @@
 package errors //nolint:dupl
 
 import (
+	"fmt"
+
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
@@ -19,29 +21,30 @@ type UserInfo struct {
 
 var _ Error = new(UserInfo)
 
-// NewCustomUserInfo creates a new *UserInfo using a NewInfoEmbed as template.
-func NewCustomUserInfo() *UserInfo {
+// NewBareUserInfo creates a new *UserInfo without a description,
+// using a NewInfoEmbed as template.
+func NewBareUserInfo() *UserInfo {
 	return &UserInfo{Embed: NewInfoEmbed()}
-}
-
-// NewUserInfoFromEmbed creates a new *UserInfo from the passed
-// *msgbuilder.EmbedBuilder.
-func NewUserInfoFromEmbed(e *embedbuilder.Builder) *UserInfo {
-	return &UserInfo{Embed: e}
 }
 
 // NewUserInfo creates a new *UserInfo using the passed description and the
 // NewInfoEmbed template.
 // The description mustn't be empty for this error to be handled properly.
 func NewUserInfo(description string) *UserInfo {
-	return NewCustomUserInfo().
+	return NewBareUserInfo().
 		WithDescription(description)
+}
+
+// NewUserInfof returns the result of calling NewUserInfo with
+// fmt.Sprinf(description, a...).
+func NewUserInfof(description string, a ...interface{}) *UserInfo {
+	return NewUserInfo(fmt.Sprintf(description, a...))
 }
 
 // NewUserInfol creates a new *UserInfo using the message generated from the
 // passed *i18n.Config.
 func NewUserInfol(description *i18n.Config) *UserInfo {
-	return NewCustomUserInfo().
+	return NewBareUserInfo().
 		WithDescriptionl(description)
 }
 
