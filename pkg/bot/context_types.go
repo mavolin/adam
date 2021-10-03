@@ -62,19 +62,12 @@ type discordDataProvider struct {
 	selfID    discord.UserID
 }
 
-//nolint:dupl
 func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) {
-	if d.guild != nil || d.guildErr != nil {
-		return func() (*discord.Guild, error) { return d.guild, d.guildErr }
-	}
-
 	d.mut.Lock()
 	defer d.mut.Unlock()
 
-	g, err := d.s.Cabinet.Guild(d.guildID)
-	if err == nil {
-		d.guild = g
-		return func() (*discord.Guild, error) { return g, nil }
+	if d.guild != nil || d.guildErr != nil {
+		return func() (*discord.Guild, error) { return d.guild, d.guildErr }
 	}
 
 	if d.guildWG != nil {
@@ -84,12 +77,21 @@ func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) {
 		}
 	}
 
+	g, err := d.s.Cabinet.Guild(d.guildID)
+	if err == nil {
+		d.guild = g
+		return func() (*discord.Guild, error) { return g, nil }
+	}
+
 	d.guildWG = new(sync.WaitGroup)
 	d.guildWG.Add(1)
 
 	go func() {
-		d.guild, err = d.s.Guild(d.guildID)
-		d.guildErr = errors.WithStack(err)
+		g, err = d.s.Guild(d.guildID)
+
+		d.mut.Lock()
+		d.guild, d.guildErr = g, errors.WithStack(err)
+		d.mut.Unlock()
 
 		d.guildWG.Done()
 	}()
@@ -100,19 +102,12 @@ func (d *discordDataProvider) GuildAsync() func() (*discord.Guild, error) {
 	}
 }
 
-//nolint:dupl
 func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
-	if d.channel != nil || d.channelErr != nil {
-		return func() (*discord.Channel, error) { return d.channel, d.channelErr }
-	}
-
 	d.mut.Lock()
 	defer d.mut.Unlock()
 
-	c, err := d.s.Cabinet.Channel(d.channelID)
-	if err == nil {
-		d.channel = c
-		return func() (*discord.Channel, error) { return c, nil }
+	if d.channel != nil || d.channelErr != nil {
+		return func() (*discord.Channel, error) { return d.channel, d.channelErr }
 	}
 
 	if d.channelWG != nil {
@@ -122,12 +117,21 @@ func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
 		}
 	}
 
+	c, err := d.s.Cabinet.Channel(d.channelID)
+	if err == nil {
+		d.channel = c
+		return func() (*discord.Channel, error) { return c, nil }
+	}
+
 	d.channelWG = new(sync.WaitGroup)
 	d.channelWG.Add(1)
 
 	go func() {
-		d.channel, err = d.s.Channel(d.channelID)
-		d.channelErr = errors.WithStack(err)
+		c, err = d.s.Channel(d.channelID)
+
+		d.mut.Lock()
+		d.channel, d.channelErr = c, errors.WithStack(err)
+		d.mut.Unlock()
 
 		d.channelWG.Done()
 	}()
@@ -139,22 +143,16 @@ func (d *discordDataProvider) ChannelAsync() func() (*discord.Channel, error) {
 }
 
 func (d *discordDataProvider) ParentChannelAsync() func() (*discord.Channel, error) {
+	d.mut.Lock()
+	defer d.mut.Unlock()
+
 	if d.parentChannel != nil || d.parentChannelErr != nil {
 		return func() (*discord.Channel, error) { return d.parentChannel, d.parentChannelErr }
 	}
 
-	d.mut.Lock()
-	defer d.mut.Unlock()
-
-	c, err := d.s.Cabinet.Channel(d.channelID)
-	if err == nil {
-		d.channel = c
-
-		parent, err := d.s.Cabinet.Channel(c.ParentID)
-		if err == nil {
-			d.parentChannel = parent
-			return func() (*discord.Channel, error) { return parent, nil }
-		}
+	if d.channelErr != nil {
+		d.parentChannelErr = errors.Wrap(d.channelErr, "could not get child channel to extract parent id from")
+		return func() (*discord.Channel, error) { return nil, d.parentChannelErr }
 	}
 
 	if d.parentChannelWG != nil {
@@ -168,16 +166,30 @@ func (d *discordDataProvider) ParentChannelAsync() func() (*discord.Channel, err
 	d.parentChannelWG.Add(1)
 
 	go func() {
-		defer d.parentChannelWG.Done()
-
 		c, err := d.ChannelAsync()()
 		if err != nil {
-			d.parentChannelErr = err
+			d.mut.Lock()
+			d.parentChannelErr = errors.Wrap(d.channelErr, "could not get child channel to extract parent id from")
+			d.mut.Unlock()
+
 			return
 		}
 
-		d.parentChannel, err = d.s.Channel(c.ParentID)
-		d.parentChannelErr = errors.WithStack(err)
+		if c.ParentID == 0 {
+			d.mut.Lock()
+			d.parentChannelErr = errors.Wrapf(d.channelErr, "%d has no parent channel", d.channel.ID)
+			d.mut.Unlock()
+
+			return
+		}
+
+		parent, err := d.s.Channel(c.ParentID)
+
+		d.mut.Lock()
+		d.parentChannel, d.parentChannelErr = parent, errors.WithStack(err)
+		d.mut.Unlock()
+
+		d.parentChannelWG.Done()
 	}()
 
 	return func() (*discord.Channel, error) {
@@ -188,17 +200,11 @@ func (d *discordDataProvider) ParentChannelAsync() func() (*discord.Channel, err
 
 //nolint:dupl
 func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) {
-	if d.self != nil || d.selfErr != nil {
-		return func() (*discord.Member, error) { return d.self, d.selfErr }
-	}
-
 	d.mut.Lock()
 	defer d.mut.Unlock()
 
-	m, err := d.s.Cabinet.Member(d.guildID, d.selfID)
-	if err == nil {
-		d.self = m
-		return func() (*discord.Member, error) { return m, nil }
+	if d.self != nil || d.selfErr != nil {
+		return func() (*discord.Member, error) { return d.self, d.selfErr }
 	}
 
 	if d.selfWG != nil {
@@ -208,12 +214,21 @@ func (d *discordDataProvider) SelfAsync() func() (*discord.Member, error) {
 		}
 	}
 
+	m, err := d.s.Cabinet.Member(d.guildID, d.selfID)
+	if err == nil {
+		d.self = m
+		return func() (*discord.Member, error) { return m, nil }
+	}
+
 	d.selfWG = new(sync.WaitGroup)
 	d.selfWG.Add(1)
 
 	go func() {
-		d.self, err = d.s.Member(d.guildID, d.selfID)
-		d.selfErr = errors.WithStack(err)
+		m, err = d.s.Member(d.guildID, d.selfID)
+
+		d.mut.Lock()
+		d.self, d.selfErr = m, errors.WithStack(err)
+		d.mut.Unlock()
 
 		d.selfWG.Done()
 	}()
