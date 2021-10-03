@@ -299,7 +299,7 @@ func InvokeCommand(next CommandFunc) CommandFunc {
 			return err
 		}
 
-		if err := sendReply(reply, s, ctx); err != nil {
+		if err := sendReply(reply, ctx); err != nil {
 			return err
 		}
 
@@ -307,8 +307,7 @@ func InvokeCommand(next CommandFunc) CommandFunc {
 	}
 }
 
-//nolint:funlen,gocyclo
-func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err error) {
+func sendReply(reply interface{}, ctx *plugin.Context) (err error) {
 	if reply == nil {
 		return nil
 	}
@@ -344,28 +343,20 @@ func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err erro
 		}
 	case discord.Embed:
 		_, err = ctx.ReplyEmbeds(reply)
-		if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
-			err = nil
-		}
 	case *discord.Embed:
 		if reply != nil {
 			_, err = ctx.ReplyEmbeds(*reply)
-			if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
-				err = nil
-			}
+		}
+	case *msgbuilder.Builder:
+		if reply != nil {
+			_, err = reply.Reply()
 		}
 	case *msgbuilder.EmbedBuilder:
 		if reply != nil {
 			_, err = ctx.ReplyEmbedBuilders(reply)
-			if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
-				err = nil
-			}
 		}
 	case api.SendMessageData:
 		_, err = ctx.ReplyMessage(reply)
-		if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
-			err = nil
-		}
 	case i18n.Term:
 		if len(reply) > 0 {
 			_, err = ctx.Replylt(reply)
@@ -374,12 +365,12 @@ func sendReply(reply interface{}, s *state.State, ctx *plugin.Context) (err erro
 		if reply != nil {
 			_, err = ctx.Replyl(reply)
 		}
-	case plugin.Reply:
-		if reply != nil {
-			err = reply.SendReply(s, ctx)
-		}
 	default:
 		err = &ReplyTypeError{Reply: reply}
+	}
+
+	if discorderr.Is(discorderr.As(err), discorderr.CannotSendEmptyMessage) {
+		return nil
 	}
 
 	return err

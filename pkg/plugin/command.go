@@ -184,10 +184,3 @@ type ResolvedCommand interface {
 	// See Command.Invoke for more details.
 	Invoke(*state.State, *Context) (interface{}, error)
 }
-
-// Reply is used to send a reply, if returned as first return value of a
-// Command.Invoke call.
-type Reply interface {
-	// SendReply sends the reply using the passed state.State and Context.
-	SendReply(s *state.State, ctx *Context) error
-}

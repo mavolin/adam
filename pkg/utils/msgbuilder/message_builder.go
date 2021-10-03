@@ -615,6 +615,8 @@ func (b *Builder) Await(timeout time.Duration, disable bool) error {
 //
 // Subsequent calls to AwaitContext will await further interactions/responses.
 //
+// To use await, the message that this builder builds must have been sent.
+//
 // If disable is set to true, all components will be disabled after the
 // function returns, making subsequent calls impossible.
 // When calling AwaitContext for the last time, disable should always

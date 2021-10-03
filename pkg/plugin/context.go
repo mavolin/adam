@@ -10,7 +10,6 @@ import (
 	"github.com/mavolin/disstate/v4/pkg/event"
 
 	"github.com/mavolin/adam/internal/embedbuilder"
-	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/permutil"
@@ -294,8 +293,7 @@ func (ctx *Context) EditEmbedBuilders(
 // EditMessage sends the passed api.EditMessageData to the channel the command
 // was originally sent in.
 func (ctx *Context) EditMessage(messageID discord.MessageID, data api.EditMessageData) (*discord.Message, error) {
-	msg, err := ctx.Replier.Edit(ctx, messageID, data)
-	return msg, errorutil.WithStack(err)
+	return ctx.Replier.Edit(ctx, messageID, data)
 }
 
 // EditDM edits the message with the passed id in the direct message channel
@@ -484,7 +482,7 @@ type (
 		ParentChannelAsync() func() (*discord.Channel, error)
 		// SelfAsync returns a callback returning the member object of the bot
 		// in the calling guild.
-		// If this happened in a private channel, SelfAsync will return
+		// If the command was used in a private channel, SelfAsync will return
 		// (nil, nil).
 		SelfAsync() func() (*discord.Member, error)
 	}
@@ -595,10 +593,8 @@ type (
 		Error error
 	}
 
-	// ErrorHandler is an embeddable interface used to provide direct error
-	// handling capabilities to a command.
-	// This is useful if an error is encountered, that should be captured
-	// through the bot's error handler, but execution can remain uninterrupted.
+	// ErrorHandler is an embedded interface used to provide error handling
+	// capabilities through a Context.
 	ErrorHandler interface {
 		// HandleError hands the error to the bot's error handler.
 		HandleError(err error)
