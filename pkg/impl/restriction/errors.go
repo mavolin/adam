@@ -49,7 +49,7 @@ type ChannelTypesError struct {
 
 // NewChannelTypesError returns a new *ChannelTypesError created using the
 // passed plugin.ChannelTypes.
-func NewChannelTypesError(l *i18n.Localizer, allowed plugin.ChannelTypes) error {
+func NewChannelTypesError(l *i18n.Localizer, allowed plugin.ChannelTypes) *ChannelTypesError {
 	err := plugin.NewChannelTypeError(allowed)
 	desc := err.Description(l)
 
@@ -61,11 +61,14 @@ func NewChannelTypesError(l *i18n.Localizer, allowed plugin.ChannelTypes) error 
 
 // NewFatalChannelTypesError returns a fatal new *ChannelTypesError created
 // using the passed plugin.ChannelTypes.
-func NewFatalChannelTypesError(l *i18n.Localizer, allowed plugin.ChannelTypes) error {
+func NewFatalChannelTypesError(l *i18n.Localizer, allowed plugin.ChannelTypes) *ChannelTypesError {
 	err := plugin.NewChannelTypeError(allowed)
 	desc := err.Description(l)
 
-	return plugin.NewFatalRestrictionError(desc)
+	return &ChannelTypesError{
+		Allowed:    allowed,
+		underlying: plugin.NewFatalRestrictionError(desc),
+	}
 }
 
 var _ error = new(ChannelTypesError)
