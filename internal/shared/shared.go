@@ -1,9 +1,8 @@
-// Package shared provides place to share variables used internally.
+// Package shared provides variables and constants used across multiple
+// packages.
 package shared
 
-import (
-	"github.com/mavolin/adam/internal/embedbuilder"
-)
+import "github.com/mavolin/adam/internal/embedbuilder"
 
 const Whitespace = " \n"
 
