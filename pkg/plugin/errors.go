@@ -36,12 +36,6 @@ func NewArgumentErrorl(description *i18n.Config) *ArgumentError {
 	return &ArgumentError{desc: description}
 }
 
-// NewArgumentErrorlt returns a new *ArgumentError using the passed term to
-// generate a description.
-func NewArgumentErrorlt(description i18n.Term) *ArgumentError {
-	return NewArgumentErrorl(description.AsConfig())
-}
-
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *ArgumentError) Description(l *i18n.Localizer) (string, error) {
@@ -53,6 +47,7 @@ func (e *ArgumentError) Error() string {
 }
 
 // Handle handles the ArgumentError.
+//
 // By default, it sends an error Embed containing a description of which
 // arg/flag was faulty in the channel the command was sent in.
 func (e *ArgumentError) Handle(s *state.State, ctx *Context) error {
@@ -65,10 +60,10 @@ var HandleArgumentError = func(_ *state.State, ctx *Context, aerr *ArgumentError
 		return err
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(desc)
+	e := shared.ErrorEmbedTemplate(ctx.Localizer)
+	e.Description = desc
 
-	_, err = ctx.ReplyEmbedBuilders(embed)
+	_, err = ctx.ReplyEmbeds(e)
 	return err
 }
 
@@ -128,7 +123,7 @@ func (e *BotPermissionsError) Description(l *i18n.Localizer) (desc string) {
 	}
 
 	if e.IsSinglePermission() {
-		missingNames := permutil.Namesl(missing, l)
+		missingNames := permutil.Names(l, missing)
 		if len(missingNames) == 0 {
 			return ""
 		}
@@ -149,7 +144,7 @@ func (e *BotPermissionsError) Description(l *i18n.Localizer) (desc string) {
 // PermissionList returns a written bullet point list of the missing
 // permissions, as used if multiple permissions are missing.
 func (e *BotPermissionsError) PermissionList(l *i18n.Localizer) string {
-	permNames := permutil.Namesl(e.Missing, l)
+	permNames := permutil.Names(l, e.Missing)
 	return "• " + strings.Join(permNames, "\n• ")
 }
 
@@ -179,8 +174,8 @@ var HandleBotPermissionsError = func(_ *state.State, ctx *Context, perr *BotPerm
 		return nil
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(perr.Description(ctx.Localizer))
+	e := shared.ErrorEmbedTemplate(ctx.Localizer)
+	e.Description = perr.Description(ctx.Localizer)
 
 	if !perr.IsSinglePermission() {
 		permsName, err := ctx.Localize(botPermissionsMissingPermissionsFieldName)
@@ -188,10 +183,13 @@ var HandleBotPermissionsError = func(_ *state.State, ctx *Context, perr *BotPerm
 			return err
 		}
 
-		embed.WithField(permsName, perr.PermissionList(ctx.Localizer))
+		e.Fields = append(e.Fields, discord.EmbedField{
+			Name:  permsName,
+			Value: perr.PermissionList(ctx.Localizer),
+		})
 	}
 
-	_, err := ctx.ReplyEmbedBuilders(embed)
+	_, err := ctx.ReplyEmbeds(e)
 	return err
 }
 
@@ -268,10 +266,10 @@ func (e *ChannelTypeError) Handle(s *state.State, ctx *Context) error {
 }
 
 var HandleChannelTypeError = func(s *state.State, ctx *Context, cerr *ChannelTypeError) error {
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(cerr.Description(ctx.Localizer))
+	e := shared.ErrorEmbedTemplate(ctx.Localizer)
+	e.Description = cerr.Description(ctx.Localizer)
 
-	_, err := ctx.ReplyEmbedBuilders(embed)
+	_, err := ctx.ReplyEmbeds(e)
 	return err
 }
 
@@ -319,12 +317,6 @@ func NewRestrictionErrorl(description *i18n.Config) *RestrictionError {
 	return &RestrictionError{desc: description}
 }
 
-// NewRestrictionErrorlt creates a new *RestrictionError using the message
-// generated from the passed term as description.
-func NewRestrictionErrorlt(description i18n.Term) *RestrictionError {
-	return NewRestrictionErrorl(description.AsConfig())
-}
-
 // NewFatalRestrictionError creates a new fatal *RestrictionError with the
 // passed description.
 func NewFatalRestrictionError(description string) *RestrictionError {
@@ -341,12 +333,6 @@ func NewFatalRestrictionErrorl(description *i18n.Config) *RestrictionError {
 		desc:  description,
 		Fatal: true,
 	}
-}
-
-// NewFatalRestrictionErrorlt creates a new fatal *RestrictionError using the
-// message generated from the passed term as description.
-func NewFatalRestrictionErrorlt(description i18n.Term) *RestrictionError {
-	return NewFatalRestrictionErrorl(description.AsConfig())
 }
 
 // Description returns the description of the error and localizes it, if
@@ -370,13 +356,13 @@ var HandleRestrictionError = func(s *state.State, ctx *Context, rerr *Restrictio
 		return err
 	}
 
-	embed := shared.ErrorEmbed.Clone().
-		WithDescription(desc)
+	e := shared.ErrorEmbedTemplate(ctx.Localizer)
+	e.Description = desc
 	if err != nil {
 		return err
 	}
 
-	_, err = ctx.ReplyEmbedBuilders(embed)
+	_, err = ctx.ReplyEmbeds(e)
 	return err
 }
 
@@ -404,12 +390,6 @@ func NewThrottlingErrorl(description *i18n.Config) *ThrottlingError {
 	return &ThrottlingError{desc: description}
 }
 
-// NewThrottlingErrorlt creates a new *ThrottlingError using the message
-// generated from the passed term as description.
-func NewThrottlingErrorlt(description i18n.Term) *ThrottlingError {
-	return NewThrottlingErrorl(description.AsConfig())
-}
-
 // Description returns the description of the error and localizes it, if
 // possible.
 func (e *ThrottlingError) Description(l *i18n.Localizer) (string, error) {
@@ -431,9 +411,9 @@ var HandleThrottlingError = func(s *state.State, ctx *Context, terr *ThrottlingE
 		return err
 	}
 
-	embed := shared.InfoEmbed.Clone().
-		WithDescription(desc)
+	e := shared.ErrorEmbedTemplate(ctx.Localizer)
+	e.Description = desc
 
-	_, err = ctx.ReplyEmbedBuilders(embed)
+	_, err = ctx.ReplyEmbeds(e)
 	return err
 }

@@ -653,67 +653,6 @@ func TestWithDescriptionl(t *testing.T) {
 	})
 }
 
-func TestWithDescriptionlt(t *testing.T) {
-	t.Parallel()
-
-	t.Run("nil", func(t *testing.T) {
-		t.Parallel()
-
-		err := WithDescriptionlt(nil, "")
-		assert.Nil(t, err)
-	})
-
-	t.Run("silent internal error", func(t *testing.T) {
-		t.Parallel()
-
-		cause := NewSilent("abc")
-
-		var expectDesc i18n.Term = "def"
-		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
-
-		require.NotSame(t, cause, ierr)
-		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, expectDesc.AsConfig(), ierr.desc)
-		assert.Equal(t, cause.stackTrace, ierr.stackTrace)
-	})
-
-	t.Run("non-silent internal error", func(t *testing.T) {
-		t.Parallel()
-
-		cause := NewWithStack("abc")
-
-		var expectDesc i18n.Term = "def"
-		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
-
-		require.NotSame(t, cause, ierr)
-		assert.Equal(t, cause.cause, ierr.cause)
-		assert.Equal(t, expectDesc.AsConfig(), ierr.desc)
-		assert.Equal(t, cause.stackTrace, ierr.stackTrace)
-	})
-
-	t.Run("Error", func(t *testing.T) {
-		t.Parallel()
-
-		cause := &asError{as: NewInformationalError("abc")}
-
-		err := WithDescriptionlt(cause, "def")
-
-		assert.Equal(t, cause.as, err)
-	})
-
-	t.Run("success", func(t *testing.T) {
-		t.Parallel()
-
-		cause := New("abc")
-
-		var expectDesc i18n.Term = "def"
-		ierr := WithDescriptionlt(cause, expectDesc).(*InternalError)
-
-		assert.Equal(t, expectDesc.AsConfig(), ierr.desc)
-		assert.Equal(t, cause, ierr.cause)
-	})
-}
-
 func TestInternalError_Description(t *testing.T) {
 	t.Parallel()
 
@@ -740,7 +679,7 @@ func TestInternalError_Description(t *testing.T) {
 			On(term, expect).
 			Build()
 
-		err := WithDescriptionlt(New("ghi"), term)
+		err := WithDescriptionl(New("ghi"), term.AsConfig())
 
 		actual := err.(*InternalError).Description(l)
 		assert.Equal(t, expect, actual)
@@ -787,21 +726,24 @@ func TestInternalError_Handle(t *testing.T) {
 		ctx := &plugin.Context{
 			Message: discord.Message{ChannelID: 123},
 			Localizer: mock.NewLocalizer(t).
+				On("error.title", "").
 				On(internalErrorTitle.Term, "abc").
 				Build(),
 			InvokedCommand: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{Name: "abc"}),
 			Replier:        mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed, err := NewErrorEmbed().
-			WithTitlelt(internalErrorTitle.Term).
-			WithDescription(expectDesc).
-			Build(ctx.Localizer)
+		expectTitle, err := ctx.Localize(internalErrorTitle)
+		require.NoError(t, err)
+
+		expectEmbed := NewErrorEmbed(ctx.Localizer)
+		expectEmbed.Title = expectTitle
+		expectEmbed.Description = expectDesc
 		require.NoError(t, err)
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
-			Embeds:    []discord.Embed{embed},
+			Embeds:    []discord.Embed{expectEmbed},
 		})
 
 		e := WithDescription(New(""), expectDesc)

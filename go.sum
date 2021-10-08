@@ -15,6 +15,8 @@ github.com/mavolin/dismock/v3 v3.0.0-20210831142601-d09b1b87b784 h1:Ijnhxk9myWL9
 github.com/mavolin/dismock/v3 v3.0.0-20210831142601-d09b1b87b784/go.mod h1:yUU2WJu761Jvr5uRuFrJEVdxLFag9ZP536qXopL1jy4=
 github.com/mavolin/disstate/v4 v4.0.0-20210919172014-e3fc0bab6ab8 h1:gXd8d3WFyCDUhMnUDJE7hofc0x1MUnFyWIVYwfBSRbU=
 github.com/mavolin/disstate/v4 v4.0.0-20210919172014-e3fc0bab6ab8/go.mod h1:oOUc0YfdDdXZjl4sB4l4DDQm+uO3vtxJbLYwOIPK/j4=
+github.com/mavolin/disstate/v4 v4.0.0-20211008173327-a7890b65cb47 h1:jvk6V70SNDVq9hk+XS1SBk0H1antVIBRgQyOphpmwVo=
+github.com/mavolin/disstate/v4 v4.0.0-20211008173327-a7890b65cb47/go.mod h1:oOUc0YfdDdXZjl4sB4l4DDQm+uO3vtxJbLYwOIPK/j4=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

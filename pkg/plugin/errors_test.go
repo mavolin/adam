@@ -44,7 +44,7 @@ func TestArgumentParsingError_Description(t *testing.T) {
 			On(term, expect).
 			Build()
 
-		e := NewArgumentErrorlt(term)
+		e := NewArgumentErrorl(term.AsConfig())
 
 		actual, err := e.Description(l)
 		require.NoError(t, err)
@@ -67,10 +67,8 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
-	expectEmbed, err := shared.ErrorEmbed.Clone().
-		WithDescription(expectDesc).
-		Build(ctx.Localizer)
-	require.NoError(t, err)
+	expectEmbed := shared.ErrorEmbedTemplate(ctx.Localizer)
+	expectEmbed.Description = expectDesc
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: channelID,
@@ -81,7 +79,7 @@ func TestArgumentParsingError_Handle(t *testing.T) {
 
 	e := NewArgumentError(expectDesc)
 
-	err = e.Handle(s, ctx)
+	err := e.Handle(s, ctx)
 	require.NoError(t, err)
 }
 
@@ -154,17 +152,15 @@ func TestBotPermissionsError_Handle(t *testing.T) {
 				MissingPermission: "Video",
 			}))
 
-		expectEmbed, err := shared.ErrorEmbed.Clone().
-			WithDescription(expectDesc).
-			Build(ctx.Localizer)
-		require.NoError(t, err)
+		expectEmbed := shared.ErrorEmbedTemplate(ctx.Localizer)
+		expectEmbed.Description = expectDesc
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
 			Embeds:    []discord.Embed{expectEmbed},
 		})
 
-		err = e.Handle(s, ctx)
+		err := e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 
@@ -179,11 +175,15 @@ func TestBotPermissionsError_Handle(t *testing.T) {
 			Replier:   newMockedWrappedReplier(s, 123, 0),
 		}
 
-		expectEmbed, err := shared.ErrorEmbed.Clone().
-			WithDescriptionl(botPermissionsDescMulti).
-			WithField("Missing Permissions", "• Video\n• View Audit Log").
-			Build(ctx.Localizer)
+		expectDesc, err := ctx.Localize(botPermissionsDescMulti)
 		require.NoError(t, err)
+
+		expectEmbed := shared.ErrorEmbedTemplate(ctx.Localizer)
+		expectEmbed.Description = expectDesc
+		expectEmbed.Fields = append(expectEmbed.Fields, discord.EmbedField{
+			Name:  "Missing Permissions",
+			Value: "• Video\n• View Audit Log",
+		})
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
@@ -248,10 +248,10 @@ func TestChannelTypeError_Handle(t *testing.T) {
 		Replier: newMockedWrappedReplier(s, 123, 0),
 	}
 
-	expectEmbed, err := shared.ErrorEmbed.Clone().
-		WithDescriptionl(channelTypeErrorGuild).
-		Build(ctx.Localizer)
-	require.NoError(t, err)
+	expectDesc, err := ctx.Localize(channelTypeErrorGuild)
+
+	expectEmbed := shared.ErrorEmbedTemplate(ctx.Localizer)
+	expectEmbed.Description = expectDesc
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
@@ -294,7 +294,7 @@ func TestRestrictionError_Description(t *testing.T) {
 			On(term, expect).
 			Build()
 
-		e := NewRestrictionErrorlt(term)
+		e := NewRestrictionErrorl(term.AsConfig())
 
 		actual, err := e.Description(l)
 		require.NoError(t, err)
@@ -315,10 +315,8 @@ func TestRestrictionError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
-	expectEmbed, err := shared.ErrorEmbed.Clone().
-		WithDescription(expectDesc).
-		Build(ctx.Localizer)
-	require.NoError(t, err)
+	expectEmbed := shared.ErrorEmbedTemplate(ctx.Localizer)
+	expectEmbed.Description = expectDesc
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
@@ -327,7 +325,7 @@ func TestRestrictionError_Handle(t *testing.T) {
 
 	e := NewRestrictionError(expectDesc)
 
-	err = e.Handle(s, ctx)
+	err := e.Handle(s, ctx)
 	require.NoError(t, err)
 }
 
@@ -361,7 +359,7 @@ func TestThrottlingError_Description(t *testing.T) {
 			On(term, expect).
 			Build()
 
-		e := NewThrottlingErrorlt(term)
+		e := NewThrottlingErrorl(term.AsConfig())
 
 		actual, err := e.Description(l)
 		require.NoError(t, err)
@@ -382,10 +380,8 @@ func TestThrottlingError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
-	expectEmbed, err := shared.InfoEmbed.Clone().
-		WithDescription(expectDesc).
-		Build(ctx.Localizer)
-	require.NoError(t, err)
+	expectEmbed := shared.ErrorEmbedTemplate(ctx.Localizer)
+	expectEmbed.Description = expectDesc
 
 	m.SendEmbeds(discord.Message{
 		ChannelID: ctx.ChannelID,
@@ -394,6 +390,6 @@ func TestThrottlingError_Handle(t *testing.T) {
 
 	e := NewThrottlingError(expectDesc)
 
-	err = e.Handle(s, ctx)
+	err := e.Handle(s, ctx)
 	require.NoError(t, err)
 }

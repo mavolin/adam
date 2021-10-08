@@ -35,21 +35,33 @@ type Error interface {
 // If the error does not make itself available as an Error via As, it will be
 // wrapped using WithStack.
 //
-// Up to maxHandles errors returned by Error.Handle and subsequent calls will
-// be handled.
-// If maxHandles is negative, subsequent handles won't be limited.
-func Handle(s *state.State, ctx *plugin.Context, err error, maxHandles int) {
-	for maxHandles != 0 && err != nil {
-		var Err Error
-		if !errors.As(err, &Err) {
-			Err = WithStack(err)
-		}
-
-		err = Err.Handle(s, ctx)
-		if maxHandles > 0 {
-			maxHandles--
-		}
+// If handling the error causes another error, that error will be given to
+// WithStack.
+// If the error returned by WithStack is of type *InternalError, that error
+// will be handled.
+// Other types of errors will be discarded.
+//
+// The goal behind this is to prevent infinite chains of errors, e.g. handling
+// error A returns error B, which when handled returns error A.
+func Handle(s *state.State, ctx *plugin.Context, err error) {
+	var Err Error
+	if !errors.As(err, &Err) {
+		Err = WithStack(err)
 	}
+
+	err = Err.Handle(s, ctx)
+	if err == nil {
+		return
+	}
+
+	Err = Silent(err)
+
+	ierr, ok := Err.(*InternalError)
+	if !ok {
+		return
+	}
+
+	_ = ierr.Handle(s, ctx) // as per doc, this will never return an error
 }
 
 type StackTrace = errorutil.StackTrace

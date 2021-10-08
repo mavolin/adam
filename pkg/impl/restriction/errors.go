@@ -369,7 +369,7 @@ func NewUserPermissionsError(l *i18n.Localizer, missing discord.Permissions) *Us
 		return nil
 	}
 
-	missingNames := permutil.Namesl(missing, l)
+	missingNames := permutil.Names(l, missing)
 
 	if len(missingNames) == 0 {
 		return nil

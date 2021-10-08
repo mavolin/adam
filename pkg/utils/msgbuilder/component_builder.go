@@ -140,13 +140,6 @@ func NewButton(style discord.ButtonStyle, label string, val interface{}) *Button
 	return NewButtonl(style, i18n.NewStaticConfig(label), val)
 }
 
-// NewButtonlt creates a new *ButtonBuilder with the given label and the
-// corresponding go value.
-// val must be the element type of the ButtonBuilder'state parent ActionRowBuilder.
-func NewButtonlt(style discord.ButtonStyle, label i18n.Term, val interface{}) *ButtonBuilder {
-	return NewButtonl(style, label.AsConfig(), val)
-}
-
 // NewButtonl creates a new *ButtonBuilder with the given label and the
 // corresponding go value.
 // val must be the element type of the ButtonBuilder'state parent ActionRowBuilder.
@@ -385,17 +378,6 @@ func NewSelectOption(label string, val interface{}) *SelectOptionBuilder {
 	return NewSelectOptionl(i18n.NewStaticConfig(label), val)
 }
 
-// NewSelectOptionlt creates a new *SelectOptionBuilder with the given label
-// and the corresponding go value.
-//
-// If the parent SelectBuilder uses the bounds (0, 1) or (1, 1), val must be of
-// the elem type of the SelectBuilder'state resultVar.
-// Otherwise, val must be of the element type of the SelectBuilder'state slice
-// type.
-func NewSelectOptionlt(label i18n.Term, val interface{}) *SelectOptionBuilder {
-	return NewSelectOptionl(label.AsConfig(), val)
-}
-
 // NewSelectOptionl creates a new *SelectOptionBuilder with the given label and
 // the corresponding go value.
 //
@@ -410,11 +392,6 @@ func NewSelectOptionl(label *i18n.Config, val interface{}) *SelectOptionBuilder 
 // WithDescription adds the passed description to the SelectOptionBuilder.
 func (b *SelectOptionBuilder) WithDescription(description string) *SelectOptionBuilder {
 	return b.WithDescriptionl(i18n.NewStaticConfig(description))
-}
-
-// WithDescriptionlt adds the passed description to the SelectOptionBuilder.
-func (b *SelectOptionBuilder) WithDescriptionlt(description i18n.Term) *SelectOptionBuilder {
-	return b.WithDescriptionl(description.AsConfig())
 }
 
 // WithDescriptionl adds the passed description to the SelectOptionBuilder.

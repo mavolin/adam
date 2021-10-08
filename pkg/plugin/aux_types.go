@@ -123,7 +123,7 @@ func (t ChannelTypes) String() string {
 	case t == (DirectMessages | Threads):
 		return "direct messages and threads"
 	default:
-		return fmt.Sprintf("unknown channel type (%d)", t)
+		return fmt.Sprintf("invalid channel type (%d)", t)
 	}
 }
 

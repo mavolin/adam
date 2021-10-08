@@ -173,7 +173,7 @@ func TestCheckRestrictions(t *testing.T) {
 			name:      "restricted",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
+				Restrictions: mock.RestrictionFunc(plugin.DefaultFatalRestrictionError),
 			}),
 			expect: HideList,
 		},
@@ -184,10 +184,18 @@ func TestCheckRestrictions(t *testing.T) {
 			expect:    Show,
 		},
 		{
-			name:      "level",
+			name:      "not fatal",
 			hiddenLvl: HideList,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
 				Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
+			}),
+			expect: Show,
+		},
+		{
+			name:      "level",
+			hiddenLvl: HideList,
+			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
+				Restrictions: mock.RestrictionFunc(plugin.DefaultFatalRestrictionError),
 			}),
 			expect: HideList,
 		},
@@ -195,7 +203,7 @@ func TestCheckRestrictions(t *testing.T) {
 			name:      "level",
 			hiddenLvl: Hide,
 			cmd: mock.ResolveCommand(plugin.BuiltInSource, mock.Command{
-				Restrictions: mock.RestrictionFunc(plugin.DefaultRestrictionError),
+				Restrictions: mock.RestrictionFunc(plugin.DefaultFatalRestrictionError),
 			}),
 			expect: Hide,
 		},

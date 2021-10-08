@@ -353,13 +353,13 @@ func sendReply(reply interface{}, ctx *plugin.Context) (err error) {
 		}
 	case *msgbuilder.EmbedBuilder:
 		if reply != nil {
-			_, err = ctx.ReplyEmbedBuilders(reply)
+			_, err = msgbuilder.ReplyEmbedBuilders(ctx, reply)
 		}
 	case api.SendMessageData:
 		_, err = ctx.ReplyMessage(reply)
 	case i18n.Term:
 		if len(reply) > 0 {
-			_, err = ctx.Replylt(reply)
+			_, err = ctx.Replyl(reply.AsConfig())
 		}
 	case *i18n.Config:
 		if reply != nil {

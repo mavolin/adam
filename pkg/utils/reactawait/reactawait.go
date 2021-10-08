@@ -192,7 +192,6 @@ func (w *Waiter) AwaitContext(ctx context.Context) (discord.APIEmoji, error) {
 	}
 }
 
-//nolint:gocognit,funlen
 func (w *Waiter) handleReactions(ctx context.Context, result chan<- interface{}) (func(), error) {
 	rmReact := w.state.AddHandler(func(s *state.State, e *event.MessageReactionAdd) {
 		if e.UserID != w.userID || e.MessageID != w.messageID {

@@ -18,7 +18,6 @@ import (
 	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
-	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
@@ -36,19 +35,21 @@ const typingInterval = 11 * time.Second
 
 type responseMiddlewaresKey struct{}
 
-var ResponseMiddlewaresKey = new(responseMiddlewaresKey)
-
-type EmbedBuilder = embedbuilder.Builder
-
-// NewEmbed creates a new EmbedBuilder.
-func NewEmbed() *EmbedBuilder {
-	return embedbuilder.New()
+// AddResponseMiddlewares adds the passed middlewares to the list of the
+// middlewares that are automatically added when awaiting a response from the
+// user.
+func AddResponseMiddlewares(ctx *plugin.Context, middlewares ...interface{}) {
+	if currentMiddlewares, ok := ctx.Get(responseMiddlewaresKey{}).([]interface{}); ok {
+		ctx.Set(responseMiddlewaresKey{}, append(currentMiddlewares, middlewares...))
+	} else {
+		ctx.Set(responseMiddlewaresKey{}, middlewares)
+	}
 }
 
 // Builder is a message builder.
 // After creating or editing a message, it must not be used again.
 type Builder struct {
-	// ========= message =========
+	// ========= Message =========
 
 	content *i18n.Config
 	embeds  *[]*EmbedBuilder
@@ -66,7 +67,7 @@ type Builder struct {
 	attachments *[]discord.Attachment
 	files       []sendpart.File
 
-	// ========= response await =========
+	// ========= Response Await =========
 
 	responseMsgPtr         *discord.Message
 	initialResponseTimeout time.Duration
@@ -74,7 +75,7 @@ type Builder struct {
 
 	responseMiddlewares []interface{}
 
-	// ========= internals =========
+	// ========= Internals =========
 
 	state     *state.State
 	pluginCtx *plugin.Context
@@ -101,7 +102,7 @@ func New(s *state.State, ctx *plugin.Context) *Builder {
 		userID:       ctx.Author.ID,
 	}
 
-	middlewares := ctx.Get(ResponseMiddlewaresKey)
+	middlewares := ctx.Get(responseMiddlewaresKey{})
 	if middlewares, ok := middlewares.([]interface{}); ok && middlewares != nil {
 		b.WithResponseMiddlewares(middlewares...)
 	}
@@ -119,14 +120,6 @@ func New(s *state.State, ctx *plugin.Context) *Builder {
 // Actions: send and edit
 func (b *Builder) WithContent(content string) *Builder {
 	return b.WithContentl(i18n.NewStaticConfig(content))
-}
-
-// WithContentlt sets the content of the message to the given content.
-// It may be no longer than 2000 characters.
-//
-// Actions: send and edit
-func (b *Builder) WithContentlt(content i18n.Term) *Builder {
-	return b.WithContentl(content.AsConfig())
 }
 
 // WithContentl sets the content of the message to the given content.
@@ -684,7 +677,7 @@ func (b *Builder) AwaitContext(ctx context.Context, disable bool) (err error) {
 				typingIntent = gateway.IntentDirectMessageTyping
 			}
 
-			if b.state.GatewayFromGuildID(b.pluginCtx.GuildID).HasIntents(typingIntent) {
+			if !b.state.GatewayFromGuildID(b.pluginCtx.GuildID).HasIntents(typingIntent) {
 				return errors.NewWithStackf("msgbuilder: need typing intent to use typing timeout when awaiting response")
 			}
 

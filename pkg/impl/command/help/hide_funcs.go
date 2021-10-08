@@ -66,18 +66,21 @@ func CheckChannelTypes(lvl HiddenLevel) HideFunc {
 
 // CheckRestrictions returns a HideFunc that returns the passed HiddenLevel, if
 // the checked command is restricted.
-// If plugin.ResolvedCommand.IsRestricted returns an error, for which
-// errors.As(err, **plugin.RestrictionError) fails, the error will be
-// handled silently, and Show will be returned.
-// If the error fulfils errors.As for that case lvl will be returned.
+// If plugin.ResolvedCommand.IsRestricted returns an error that fulfills
+// errors.As(err, **plugin.RestrictionError) and that is fatal, lvl is
+// returned.
+// Otherwise, Show is returned.
 func CheckRestrictions(lvl HiddenLevel) HideFunc {
 	return func(cmd plugin.ResolvedCommand, s *state.State, ctx *plugin.Context) HiddenLevel {
 		err := cmd.IsRestricted(s, ctx)
 		if err != nil {
 			var rerr *plugin.RestrictionError
-
 			if errors.As(err, &rerr) {
-				return lvl
+				if rerr.Fatal {
+					return lvl
+				}
+
+				return Show
 			}
 
 			ctx.HandleErrorSilently(err)

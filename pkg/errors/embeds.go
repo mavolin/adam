@@ -1,44 +1,44 @@
 package errors
 
 import (
-	"github.com/mavolin/adam/internal/embedbuilder"
+	"github.com/diamondburned/arikawa/v3/discord"
+
 	"github.com/mavolin/adam/internal/shared"
+	"github.com/mavolin/adam/pkg/i18n"
 )
 
-// SetErrorEmbed updates the *msgbuilder.EmbedBuilder used to create new error
+// SetErrorEmbedTemplate updates the template function used to create new error
 // embeds.
 //
-// It should be made sure that EmbedBuilder always succeeds in building, as
-// otherwise errors might not get sent.
-// This means if localizing the Embed, fallbacks should be defined.
+// The returned embed must have a title.
+// However, that title may be overwritten by the caller.
 //
 // SetErrorEmbed is not safe for concurrent use and should not be called after
 // the bot has been started.
-func SetErrorEmbed(b *embedbuilder.Builder) {
-	shared.ErrorEmbed = b
+func SetErrorEmbedTemplate(tmpl func(*i18n.Localizer) discord.Embed) {
+	shared.ErrorEmbedTemplate = tmpl
 }
 
-// NewErrorEmbed creates a new *msgbuilder.EmbedBuilder that can be used to
-// build error embeds.
-func NewErrorEmbed() *embedbuilder.Builder {
-	return shared.ErrorEmbed.Clone()
+// NewErrorEmbed creates a new discord.Embed that can be used to build error
+// embeds.
+func NewErrorEmbed(l *i18n.Localizer) discord.Embed {
+	return shared.ErrorEmbedTemplate(l)
 }
 
-// SetInfoEmbed updates the *msgbuilder.EmbedBuilder used to create new info
+// SetInfoEmbedTemplate updates the template function used to create new info
 // embeds.
 //
-// It should be made sure that Embed builder always succeeds in building, as
-// otherwise errors might not get sent.
-// This means if localizing the Embed, fallbacks should be defined.
+// The returned embed must have a title.
+// However, that title may be overwritten by the caller.
 //
-// SetInfoEmbed is not safe for concurrent use and should not be called after
-// the bot has been started.
-func SetInfoEmbed(b *embedbuilder.Builder) {
-	shared.InfoEmbed = b
+// SetInfoEmbedTemplate is not safe for concurrent use and should not be called
+// after the bot has been started.
+func SetInfoEmbedTemplate(tmpl func(localizer *i18n.Localizer) discord.Embed) {
+	shared.InfoEmbedTemplate = tmpl
 }
 
-// NewInfoEmbed creates a new *msgbuilder.EmbedBuilder that can be used to
-// build info embeds.
-func NewInfoEmbed() *embedbuilder.Builder {
-	return shared.InfoEmbed.Clone()
+// NewInfoEmbed creates a new discord.Embed that can be used to build info
+// embeds.
+func NewInfoEmbed(l *i18n.Localizer) discord.Embed {
+	return shared.InfoEmbedTemplate(l)
 }

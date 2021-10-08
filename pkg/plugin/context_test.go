@@ -124,38 +124,6 @@ func TestContext_Replyl(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func TestContext_Replylt(t *testing.T) {
-	t.Parallel()
-
-	m, s := state.NewMocker(t)
-
-	var (
-		term    i18n.Term = "abc"
-		content           = "def"
-	)
-
-	ctx := &Context{
-		Message: discord.Message{ChannelID: 123},
-		Localizer: mocki18n.NewLocalizer(t).
-			On(term, content).
-			Build(),
-		Replier: newMockedWrappedReplier(s, 123, 0),
-	}
-
-	expect := &discord.Message{
-		ID:        123,
-		Author:    discord.User{ID: 456},
-		ChannelID: ctx.ChannelID,
-		Content:   content,
-	}
-
-	m.SendMessage(*expect)
-
-	actual, err := ctx.Replylt(term)
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
 func TestContext_ReplyEmbed(t *testing.T) {
 	m, s := state.NewMocker(t)
 
@@ -318,47 +286,6 @@ func TestContext_ReplylDM(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
-func TestContext_ReplyltDM(t *testing.T) {
-	t.Parallel()
-
-	m, s := state.NewMocker(t)
-
-	var (
-		term    i18n.Term = "abc"
-		content           = "def"
-	)
-
-	ctx := &Context{
-		Message: discord.Message{
-			GuildID: 1,
-			Author:  discord.User{ID: 123},
-		},
-		Localizer: mocki18n.NewLocalizer(t).
-			On(term, content).
-			Build(),
-		Replier: newMockedWrappedReplier(s, 0, 123),
-	}
-
-	var channelID discord.ChannelID = 456
-
-	expect := &discord.Message{
-		ID:        789,
-		Author:    discord.User{ID: 123},
-		ChannelID: channelID,
-		Content:   content,
-	}
-
-	m.CreatePrivateChannel(discord.Channel{
-		ID:           channelID,
-		DMRecipients: []discord.User{{ID: ctx.Author.ID}},
-	})
-	m.SendMessage(*expect)
-
-	actual, err := ctx.ReplyltDM(term)
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
 func TestContext_ReplyEmbedDM(t *testing.T) {
 	t.Parallel()
 
@@ -510,38 +437,6 @@ func TestContext_Editl(t *testing.T) {
 	m.EditText(*expect)
 
 	actual, err := ctx.Editl(expect.ID, term.AsConfig())
-	require.NoError(t, err)
-	assert.Equal(t, expect, actual)
-}
-
-func TestContext_Editlt(t *testing.T) {
-	t.Parallel()
-
-	m, s := state.NewMocker(t)
-
-	var (
-		term    i18n.Term = "abc"
-		content           = "def"
-	)
-
-	ctx := &Context{
-		Message: discord.Message{ChannelID: 123},
-		Localizer: mocki18n.NewLocalizer(t).
-			On(term, content).
-			Build(),
-		Replier: newMockedWrappedReplier(s, 123, 0),
-	}
-
-	expect := &discord.Message{
-		ID:        123,
-		Author:    discord.User{ID: 456},
-		ChannelID: ctx.ChannelID,
-		Content:   content,
-	}
-
-	m.EditText(*expect)
-
-	actual, err := ctx.Editlt(expect.ID, term)
 	require.NoError(t, err)
 	assert.Equal(t, expect, actual)
 }

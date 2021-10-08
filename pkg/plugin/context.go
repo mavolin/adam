@@ -9,7 +9,6 @@ import (
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/mavolin/disstate/v4/pkg/event"
 
-	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/internal/shared"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/utils/permutil"
@@ -136,34 +135,10 @@ func (ctx *Context) Replyl(c *i18n.Config) (*discord.Message, error) {
 	return ctx.Reply(s)
 }
 
-// Replylt replies with the message translated from the passed term in the
-// channel the command was originally sent in.
-func (ctx *Context) Replylt(term i18n.Term) (*discord.Message, error) {
-	return ctx.Replyl(term.AsConfig())
-}
-
 // ReplyEmbeds replies with the passed discord.Embeds in the channel the
 // command was originally sent in.
 func (ctx *Context) ReplyEmbeds(embeds ...discord.Embed) (*discord.Message, error) {
 	return ctx.ReplyMessage(api.SendMessageData{Embeds: embeds})
-}
-
-// ReplyEmbedBuilders builds the discord.Embeds from the passed
-// *msgbuilder.EmbedBuilders and sends it in the channel the command was sent
-// in.
-func (ctx *Context) ReplyEmbedBuilders(builders ...*embedbuilder.Builder) (*discord.Message, error) {
-	embeds := make([]discord.Embed, len(builders))
-
-	for i, builder := range builders {
-		embed, err := builder.Build(ctx.Localizer)
-		if err != nil {
-			return nil, err
-		}
-
-		embeds[i] = embed
-	}
-
-	return ctx.ReplyEmbeds(embeds...)
 }
 
 // ReplyMessage sends the passed api.SendMessageData to the channel the command
@@ -197,34 +172,10 @@ func (ctx *Context) ReplylDM(c *i18n.Config) (*discord.Message, error) {
 	return ctx.ReplyDM(s)
 }
 
-// ReplyltDM replies with the message generated from the passed term in a
-// direct message to the invoking user.
-func (ctx *Context) ReplyltDM(term i18n.Term) (*discord.Message, error) {
-	return ctx.ReplylDM(term.AsConfig())
-}
-
 // ReplyEmbedsDM replies with the passed discord.Embeds in a direct message
 // to the invoking user.
 func (ctx *Context) ReplyEmbedsDM(embeds ...discord.Embed) (*discord.Message, error) {
 	return ctx.ReplyMessageDM(api.SendMessageData{Embeds: embeds})
-}
-
-// ReplyEmbedBuildersDM builds the discord.Embeds from the passed
-// *msgbuilder.EmbedBuilders and sends it in a direct message to the invoking
-// user.
-func (ctx *Context) ReplyEmbedBuildersDM(builders ...*embedbuilder.Builder) (*discord.Message, error) {
-	embeds := make([]discord.Embed, len(builders))
-
-	for i, builder := range builders {
-		embed, err := builder.Build(ctx.Localizer)
-		if err != nil {
-			return nil, err
-		}
-
-		embeds[i] = embed
-	}
-
-	return ctx.ReplyEmbedsDM(embeds...)
 }
 
 // ReplyMessageDM sends the passed api.SendMessageData in a direct message to
@@ -258,36 +209,10 @@ func (ctx *Context) Editl(messageID discord.MessageID, c *i18n.Config) (*discord
 	return ctx.Edit(messageID, s)
 }
 
-// Editlt edits the message with the passed id in the invoking channel, by
-// replacing it with the text generated from the passed i18n.Term.
-func (ctx *Context) Editlt(messageID discord.MessageID, term i18n.Term) (*discord.Message, error) {
-	return ctx.Editl(messageID, term.AsConfig())
-}
-
 // EditEmbeds replaces the embeds of the message with the passed id in the
 // invoking channel.
 func (ctx *Context) EditEmbeds(messageID discord.MessageID, embeds ...discord.Embed) (*discord.Message, error) {
 	return ctx.EditMessage(messageID, api.EditMessageData{Embeds: &embeds})
-}
-
-// EditEmbedBuilders builds the discord.Embeds from the passed
-// *msgbuilder.EmbedBuilders, and replaces the embeds of the message with the
-// passed id in the invoking channel.
-func (ctx *Context) EditEmbedBuilders(
-	messageID discord.MessageID, builders ...*embedbuilder.Builder,
-) (*discord.Message, error) {
-	embeds := make([]discord.Embed, len(builders))
-
-	for i, builder := range builders {
-		embed, err := builder.Build(ctx.Localizer)
-		if err != nil {
-			return nil, err
-		}
-
-		embeds[i] = embed
-	}
-
-	return ctx.EditEmbeds(messageID, embeds...)
 }
 
 // EditMessage sends the passed api.EditMessageData to the channel the command
@@ -335,26 +260,6 @@ func (ctx *Context) EditltDM(messageID discord.MessageID, term i18n.Term) (*disc
 // invoking channel.
 func (ctx *Context) EditEmbedsDM(messageID discord.MessageID, embeds ...discord.Embed) (*discord.Message, error) {
 	return ctx.EditMessageDM(messageID, api.EditMessageData{Embeds: &embeds})
-}
-
-// EditEmbedBuildersDM builds the discord.Embeds from the passed
-// *msgbuilder.EmbedBuilders, and replaces the embeds of the message with the
-// passed id in the direct message channel with the invoking user.
-func (ctx *Context) EditEmbedBuildersDM(
-	messageID discord.MessageID, builders ...*embedbuilder.Builder,
-) (*discord.Message, error) {
-	embeds := make([]discord.Embed, len(builders))
-
-	for i, builder := range builders {
-		embed, err := builder.Build(ctx.Localizer)
-		if err != nil {
-			return nil, err
-		}
-
-		embeds[i] = embed
-	}
-
-	return ctx.EditEmbedsDM(messageID, embeds...)
 }
 
 // EditMessageDM sends the passed api.EditMessageData to the direct message

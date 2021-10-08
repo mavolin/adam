@@ -392,7 +392,7 @@ func FilterGatewayError(err error) bool {
 }
 
 func DefaultErrorHandler(err error, s *state.State, ctx *plugin.Context) {
-	errors.Handle(s, ctx, err, 4)
+	errors.Handle(s, ctx, err)
 }
 
 func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Context) {
@@ -403,5 +403,5 @@ func DefaultPanicHandler(recovered interface{}, s *state.State, ctx *plugin.Cont
 		err = errors.NewWithStackf("panic: %+v", recovered)
 	}
 
-	errors.Handle(s, ctx, err, 4)
+	errors.Handle(s, ctx, err)
 }

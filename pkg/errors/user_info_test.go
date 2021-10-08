@@ -15,7 +15,7 @@ import (
 func TestUserInfo_Handle(t *testing.T) {
 	t.Parallel()
 
-	t.Run("without Embed", func(t *testing.T) {
+	t.Run("without description", func(t *testing.T) {
 		t.Parallel()
 
 		expectDesc := "abc"
@@ -28,23 +28,21 @@ func TestUserInfo_Handle(t *testing.T) {
 			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed, err := NewInfoEmbed().
-			WithDescription(expectDesc).
-			Build(ctx.Localizer)
-		require.NoError(t, err)
+		expectEmbed := NewErrorEmbed(ctx.Localizer)
+		expectEmbed.Description = expectDesc
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
-			Embeds:    []discord.Embed{embed},
+			Embeds:    []discord.Embed{expectEmbed},
 		})
 
-		e := NewUserInfo(expectDesc)
+		e := NewUserError(expectDesc)
 
-		err = e.Handle(s, ctx)
+		err := e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 
-	t.Run("with Embed", func(t *testing.T) {
+	t.Run("with description", func(t *testing.T) {
 		t.Parallel()
 
 		var (
@@ -61,21 +59,22 @@ func TestUserInfo_Handle(t *testing.T) {
 			Replier:   mockplugin.NewWrappedReplier(s, 123, 0),
 		}
 
-		embed, err := NewInfoEmbed().
-			WithDescription(expectDesc).
-			WithField(expectFieldName, expectFieldValue).
-			Build(ctx.Localizer)
-		require.NoError(t, err)
+		expectEmbed := NewErrorEmbed(ctx.Localizer)
+		expectEmbed.Description = expectDesc
+		expectEmbed.Fields = append(expectEmbed.Fields, discord.EmbedField{
+			Name:  expectFieldName,
+			Value: expectFieldValue,
+		})
 
 		m.SendEmbeds(discord.Message{
 			ChannelID: ctx.ChannelID,
-			Embeds:    []discord.Embed{embed},
+			Embeds:    []discord.Embed{expectEmbed},
 		})
 
-		e := NewUserInfo(expectDesc).
+		e := NewUserError(expectDesc).
 			WithField(expectFieldName, expectFieldValue)
 
-		err = e.Handle(s, ctx)
+		err := e.Handle(s, ctx)
 		require.NoError(t, err)
 	})
 }

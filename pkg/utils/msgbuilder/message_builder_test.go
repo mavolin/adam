@@ -28,6 +28,10 @@ func TestBuilder_Await(t *testing.T) {
 
 			_, s := state.NewMocker(t)
 
+			s.ApplyGateways(func(g *gateway.Gateway) {
+				g.AddIntents(gateway.IntentGuildMessageTyping)
+			})
+
 			ctx := &plugin.Context{
 				Base: event.NewBase(),
 				Message: discord.Message{
