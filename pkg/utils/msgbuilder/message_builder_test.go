@@ -136,7 +136,7 @@ func TestReplyWaiter_handleMessages(t *testing.T) {
 			_, s := state.NewMocker(t)
 
 			c.waiter.state = s
-			c.waiter.ctx = &plugin.Context{
+			c.waiter.pluginCtx = &plugin.Context{
 				Localizer: mock.NewLocalizer(t).Build(),
 			}
 

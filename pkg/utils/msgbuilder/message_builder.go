@@ -12,6 +12,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/diamondburned/arikawa/v3/utils/sendpart"
 	"github.com/mavolin/disstate/v4/pkg/event"
@@ -19,6 +20,7 @@ import (
 
 	"github.com/mavolin/adam/internal/embedbuilder"
 	"github.com/mavolin/adam/internal/errorutil"
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
 )
@@ -38,6 +40,7 @@ var ResponseMiddlewaresKey = new(responseMiddlewaresKey)
 
 type EmbedBuilder = embedbuilder.Builder
 
+// NewEmbed creates a new EmbedBuilder.
 func NewEmbed() *EmbedBuilder {
 	return embedbuilder.New()
 }
@@ -73,8 +76,8 @@ type Builder struct {
 
 	// ========= internals =========
 
-	state *state.State
-	ctx   *plugin.Context
+	state     *state.State
+	pluginCtx *plugin.Context
 
 	userID discord.UserID
 
@@ -94,7 +97,7 @@ func New(s *state.State, ctx *plugin.Context) *Builder {
 	b := &Builder{
 		awaitIndexes: make(map[int]struct{}),
 		state:        s,
-		ctx:          ctx,
+		pluginCtx:    ctx,
 		userID:       ctx.Author.ID,
 	}
 
@@ -320,19 +323,27 @@ func (b *Builder) WithFile(name string, reader io.Reader) *Builder {
 // The builder will wait for a response until the initial timeout expires and
 // the user is not typing, or until the user stops typing and the typing
 // timeout is reached.
+//
+// If typingTimeout is set to 0, typing will not be monitored.
+//
 // Note that you need the typing intent to monitor typing.
+// If typingTimeout is > 0 and the current shard has no typing intent for
+// guilds or direct messages, wherever the response is being awaited, Await and
+// AwaitContext will return with an error.
 //
 // If one of the timeouts is reached, a *TimeoutError will be returned.
 //
 // The typing timeout will start after the user first starts typing.
 // Because Discord sends the typing event in an interval of about 10 seconds,
-// the user might have stopped typing before the waiter notices that the typing
-// status was not updated.
+// Await and AwaitContext might, in the worst case, only notice that the user
+// ceased typing 10 seconds later.
+// In the best case, it will be noticed almost immediately.
 //
 // The timeout given to Await, or the cancellation of the context given to
-// AwaitContext servers as a maximum timeout.
+// AwaitContext serves as a maximum timeout.
 // If it is reached, the await functions will return no matter if the user is
 // still typing.
+// It will also serve as the only timeout, if the typing timeout was disabled.
 //
 // Besides that, a reply can also be canceled through a middleware.
 func (b *Builder) WithAwaitedResponse(
@@ -383,7 +394,8 @@ func (b *Builder) WithResponseMiddlewares(middlewares ...interface{}) *Builder {
 	return b
 }
 
-// AwaitingUser sets the id of the user that is awaited to the passed id.
+// AwaitingUser sets the id of the user, that is expected to interact with the
+// components and to respond to the message, to the passed id.
 func (b *Builder) AwaitingUser(userID discord.UserID) *Builder {
 	b.userID = userID
 	return b
@@ -402,7 +414,7 @@ func (b *Builder) sendMessageData() (data api.SendMessageData, err error) {
 	}
 
 	if b.content != nil {
-		data.Content, err = b.ctx.Localize(b.content)
+		data.Content, err = b.pluginCtx.Localize(b.content)
 		if err != nil {
 			return api.SendMessageData{}, nil
 		}
@@ -412,7 +424,7 @@ func (b *Builder) sendMessageData() (data api.SendMessageData, err error) {
 		data.Embeds = make([]discord.Embed, len(*b.embeds))
 
 		for i, embedBuilder := range *b.embeds {
-			embed, err := embedBuilder.Build(b.ctx.Localizer)
+			embed, err := embedBuilder.Build(b.pluginCtx.Localizer)
 			if err != nil {
 				return api.SendMessageData{}, nil
 			}
@@ -425,7 +437,7 @@ func (b *Builder) sendMessageData() (data api.SendMessageData, err error) {
 		data.Components = make([]discord.Component, len(*b.components))
 
 		for i, componentBuilder := range *b.components {
-			c, err := componentBuilder.Build(b.ctx.Localizer)
+			c, err := componentBuilder.Build(b.pluginCtx.Localizer)
 			if err != nil {
 				return api.SendMessageData{}, nil
 			}
@@ -444,7 +456,7 @@ func (b *Builder) Reply() (*discord.Message, error) {
 		return nil, err
 	}
 
-	msg, err := b.ctx.ReplyMessage(data)
+	msg, err := b.pluginCtx.ReplyMessage(data)
 	if err == nil {
 		b.channelID = discord.NullChannelID
 		b.messageID = msg.ID
@@ -472,7 +484,7 @@ func (b *Builder) ReplyDM() (*discord.Message, error) {
 		return nil, err
 	}
 
-	msg, err := b.ctx.ReplyMessageDM(data)
+	msg, err := b.pluginCtx.ReplyMessageDM(data)
 	if err == nil {
 		b.channelID = discord.NullChannelID
 		b.messageID = msg.ID
@@ -511,7 +523,7 @@ func (b *Builder) editMessageData() (api.EditMessageData, error) {
 	}
 
 	if b.content != nil {
-		content, err := b.ctx.Localize(b.content)
+		content, err := b.pluginCtx.Localize(b.content)
 		if err != nil {
 			return api.EditMessageData{}, err
 		}
@@ -527,7 +539,7 @@ func (b *Builder) editMessageData() (api.EditMessageData, error) {
 		*data.Embeds = make([]discord.Embed, len(*b.embeds))
 
 		for i, embedBuilder := range *b.embeds {
-			embed, err := embedBuilder.Build(b.ctx.Localizer)
+			embed, err := embedBuilder.Build(b.pluginCtx.Localizer)
 			if err != nil {
 				return api.EditMessageData{}, err
 			}
@@ -544,7 +556,7 @@ func (b *Builder) editMessageData() (api.EditMessageData, error) {
 		*data.Components = make([]discord.Component, len(*b.components))
 
 		for i, componentBuilder := range *b.components {
-			c, err := componentBuilder.Build(b.ctx.Localizer)
+			c, err := componentBuilder.Build(b.pluginCtx.Localizer)
 			if err != nil {
 				return api.EditMessageData{}, err
 			}
@@ -566,7 +578,7 @@ func (b *Builder) EditReply(messageID discord.MessageID) (*discord.Message, erro
 		return nil, err
 	}
 
-	return b.ctx.EditMessage(messageID, data)
+	return b.pluginCtx.EditMessage(messageID, data)
 }
 
 // EditReplyDM edits the direct message with the given id using the
@@ -581,7 +593,7 @@ func (b *Builder) EditReplyDM(messageID discord.MessageID) (*discord.Message, er
 		return nil, err
 	}
 
-	return b.ctx.EditMessageDM(messageID, data)
+	return b.pluginCtx.EditMessageDM(messageID, data)
 }
 
 // Edit edits the message with the passed channel and message id.
@@ -619,13 +631,16 @@ func (b *Builder) Await(timeout time.Duration, disable bool) error {
 //
 // If disable is set to true, all components will be disabled after the
 // function returns, making subsequent calls impossible.
-// When calling AwaitContext for the last time, disable should always
-// be true.
-// Errors that occur when disabling will be handled silently and will not be
-// returned, as disabling the components is just cosmetic, and has no influence
-// over the successful execution of await.
-// Even if AwaitContext returns with an error, all components will still be
-// disabled if disable is true.
+// You should do this when calling AwaitContext for the last time, to make
+// clear that no further interactions with the components in the message are
+// possible.
+//
+// Errors that occur when disabling components will be handled silently and
+// will not be returned, as disabling the components is just cosmetic and has
+// no influence over the successful execution of AwaitContext.
+//
+// If disable is set to true, and AwaitContext returns with an error, all
+// components will still be disabled.
 //
 // Interactions that happened before AwaitContext was called, or
 // those that happened between calls will not be evaluated.
@@ -633,7 +648,7 @@ func (b *Builder) AwaitContext(ctx context.Context, disable bool) (err error) {
 	if disable {
 		defer func() {
 			if err := b.disableAllComponents(); err != nil {
-				b.ctx.HandleErrorSilently(err)
+				b.pluginCtx.HandleErrorSilently(err)
 			}
 		}()
 	}
@@ -649,7 +664,7 @@ func (b *Builder) AwaitContext(ctx context.Context, disable bool) (err error) {
 	}
 
 	if b.responseMsgPtr != nil {
-		perms, err := b.ctx.SelfPermissions()
+		perms, err := b.pluginCtx.SelfPermissions()
 		if err != nil {
 			return err
 		}
@@ -663,8 +678,19 @@ func (b *Builder) AwaitContext(ctx context.Context, disable bool) (err error) {
 		msgCleanup := b.handleMessages(ctx, doneChan)
 		defer msgCleanup()
 
-		timeoutCleanup := b.watchTyping(ctx, b.initialResponseTimeout, b.typingResponseTimeout, doneChan)
-		defer timeoutCleanup()
+		if b.typingResponseTimeout != 0 {
+			typingIntent := gateway.IntentGuildMessageTyping
+			if b.pluginCtx.GuildID == 0 {
+				typingIntent = gateway.IntentDirectMessageTyping
+			}
+
+			if b.state.GatewayFromGuildID(b.pluginCtx.GuildID).HasIntents(typingIntent) {
+				return errors.NewWithStackf("msgbuilder: need typing intent to use typing timeout when awaiting response")
+			}
+
+			timeoutCleanup := b.watchTyping(ctx, b.initialResponseTimeout, b.typingResponseTimeout, doneChan)
+			defer timeoutCleanup()
+		}
 	}
 
 	select {
@@ -705,7 +731,7 @@ func (b *Builder) handleInteractions(ctx context.Context, doneChan chan<- error)
 				// We need this, because the mutex lock might queue up events
 				// that might get processed in between sending into done and
 				// the parent context being canceled.
-				// Cancelling ourselves closes this gap.
+				// Cancelling by ourselves closes this gap.
 				cancel()
 
 				return
@@ -743,7 +769,7 @@ func (b *Builder) handleMessages(ctx context.Context, doneChan chan<- error) fun
 
 	channelID := b.channelID
 	if channelID == discord.NullChannelID {
-		channelID = b.ctx.ChannelID
+		channelID = b.pluginCtx.ChannelID
 	}
 
 	return b.state.AddHandler(func(s *state.State, e *event.MessageCreate) {
@@ -801,7 +827,7 @@ func (b *Builder) watchTyping(
 				t.Stop()
 				return
 			case <-t.C:
-				doneChan <- &TimeoutError{UserID: b.userID}
+				sendDone(ctx, doneChan, &TimeoutError{UserID: b.userID})
 				return
 			}
 		}
