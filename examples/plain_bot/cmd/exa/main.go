@@ -20,7 +20,7 @@ import (
 func main() {
 	b, err := bot.New(bot.Options{
 		Token:            os.Getenv("DISCORD_BOT_TOKEN"),
-		SettingsProvider: bot.NewStaticSettingsProvider(parsePrefixes()...),
+		SettingsProvider: bot.StaticSettings(parsePrefixes()...),
 		Owners:           parseOwners(),
 		EditAge:          45 * time.Second,
 		ActivityName:     "with the adam 🤖 framework",

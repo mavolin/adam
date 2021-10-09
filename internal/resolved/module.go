@@ -97,13 +97,12 @@ func newModule(parent *Module, provider *PluginProvider, sourceName string, smod
 	return rmod
 }
 
-//nolint:funlen,gocognit
-func updateModule(rmod *Module, provider *PluginProvider, sourceName string, smod plugin.Module) {
-	if rmod.Parent() != nil {
-		for _, parentSource := range rmod.Parent().Sources() {
+func (mod *Module) update(provider *PluginProvider, sourceName string, smod plugin.Module) {
+	if mod.Parent() != nil {
+		for _, parentSource := range mod.Parent().Sources() {
 			if parentSource.SourceName == sourceName {
 				// append is safe since the underlying slice will never change
-				rmod.sources = append(rmod.sources, plugin.SourceModule{
+				mod.sources = append(mod.sources, plugin.SourceModule{
 					SourceName: sourceName,
 					Modules:    append(parentSource.Modules, smod),
 				})
@@ -111,13 +110,13 @@ func updateModule(rmod *Module, provider *PluginProvider, sourceName string, smo
 			}
 		}
 	} else {
-		rmod.sources = append(rmod.sources, plugin.SourceModule{
+		mod.sources = append(mod.sources, plugin.SourceModule{
 			SourceName: sourceName,
 			Modules:    []plugin.Module{smod},
 		})
 	}
 
-	parentInvoke := rmod.id.AsInvoke() + " "
+	parentInvoke := mod.id.AsInvoke() + " "
 
 	for i, subScmd := range smod.GetCommands() {
 		if _, ok := provider.usedNames[parentInvoke+subScmd.GetName()]; ok {
@@ -141,31 +140,31 @@ func updateModule(rmod *Module, provider *PluginProvider, sourceName string, smo
 		}
 
 		subRcmd := &Command{
-			parent:        rmod,
+			parent:        mod,
 			provider:      provider,
 			sourceName:    sourceName,
 			source:        subScmd,
-			sourceParents: rmod.sources[len(rmod.sources)-1].Modules,
-			id:            rmod.id + plugin.ID("."+subScmd.GetName()),
+			sourceParents: mod.sources[len(mod.sources)-1].Modules,
+			id:            mod.id + plugin.ID("."+subScmd.GetName()),
 			aliases:       aliases,
 		}
 
-		rmod.commands = insertCommand(rmod.commands, subRcmd, -1)
+		mod.commands = insertCommand(mod.commands, subRcmd, -1)
 	}
 
 	for _, subSmod := range smod.GetModules() {
-		i := searchModule(rmod.modules, smod.GetName())
-		if i < len(rmod.modules) && rmod.modules[i].Name() == smod.GetName() {
-			updateModule(rmod.modules[i].(*Module), provider, sourceName, subSmod)
-			if !rmod.modules[i].IsHidden() {
-				rmod.hidden = false
+		i := searchModule(mod.modules, smod.GetName())
+		if i < len(mod.modules) && mod.modules[i].Name() == smod.GetName() {
+			mod.modules[i].(*Module).update(provider, sourceName, subSmod)
+			if !mod.modules[i].IsHidden() {
+				mod.hidden = false
 			}
 		} else {
-			subRmod := newModule(rmod, provider, sourceName, subSmod)
+			subRmod := newModule(mod, provider, sourceName, subSmod)
 			if subRmod != nil {
-				rmod.modules = insertModule(rmod.modules, subRmod, i)
+				mod.modules = insertModule(mod.modules, subRmod, i)
 				if !subRmod.IsHidden() {
-					rmod.hidden = false
+					mod.hidden = false
 				}
 			}
 		}

@@ -9,59 +9,14 @@ import (
 	"github.com/mavolin/adam/pkg/plugin"
 )
 
-type (
-	PluginResolver struct {
-		Sources []UnqueriedPluginSource
-
-		Commands []plugin.Command
-		Modules  []plugin.Module
-
-		provider  *PluginProvider
-		argParser plugin.ArgParser
-	}
-
-	UnqueriedPluginSource struct {
-		Name string
-		Func PluginSourceFunc
-	}
-
-	PluginSourceFunc func(*event.Base, *discord.Message) ([]plugin.Command, []plugin.Module, error)
-)
-
-func NewPluginResolver(defaultArgParser plugin.ArgParser) *PluginResolver {
-	return &PluginResolver{
-		provider:  &PluginProvider{usedNames: make(map[string]struct{})},
-		argParser: defaultArgParser,
-	}
-}
-
-func (r *PluginResolver) AddSource(name string, f PluginSourceFunc) {
-	for i, rp := range r.Sources {
-		if rp.Name == name {
-			r.Sources = append(r.Sources[:i], r.Sources[i+1:]...)
-		}
-	}
-
-	r.Sources = append(r.Sources, UnqueriedPluginSource{
-		Name: name,
-		Func: f,
-	})
-}
-
-func (r *PluginResolver) AddBuiltInCommand(scmd plugin.Command) {
-	r.Commands = append(r.Commands, scmd)
-	r.provider.commands = insertCommand(r.provider.commands,
-		newCommand(nil, r.provider, plugin.BuiltInSource, scmd), -1)
-}
-
-func (r *PluginResolver) AddBuiltInModule(smod plugin.Module) {
-	r.Modules = append(r.Modules, smod)
-	r.provider.modules = insertModule(r.provider.modules,
-		newModule(nil, r.provider, plugin.BuiltInSource, smod), -1)
-}
-
 type PluginProvider struct {
 	resolver *PluginResolver
+
+	// mut is the sync.RWMutex used to secure sources, commands, modules,
+	// unavailableSources and userNames before all plugins are fully resolved.
+	// After fully resolving, no locks are needed, as the data won't be
+	// modified anymore.
+	mut sync.RWMutex
 
 	base *event.Base
 	msg  *discord.Message
@@ -79,11 +34,24 @@ var _ plugin.Provider = new(PluginProvider)
 
 func (r *PluginResolver) NewProvider(base *event.Base, msg *discord.Message) *PluginProvider {
 	p := &PluginProvider{
-		resolver:  r,
-		base:      base,
-		msg:       msg,
-		sources:   make([]plugin.Source, 0, len(r.Sources)),
-		usedNames: make(map[string]struct{}, len(r.provider.usedNames)),
+		resolver: r,
+		base:     base,
+		msg:      msg,
+	}
+
+	p.commands = replaceCommandProvider(nil, r.builtinProvider.commands, p)
+	p.modules = replaceModuleProvider(nil, r.builtinProvider.modules, p)
+
+	p.usedNames = make(map[string]struct{}, len(r.builtinProvider.usedNames))
+	for name := range r.builtinProvider.usedNames {
+		p.usedNames[name] = struct{}{}
+	}
+
+	p.sources = make([]plugin.Source, 1, len(r.CustomSources)+1)
+	p.sources[0] = plugin.Source{
+		Name:     plugin.BuiltInSource,
+		Commands: r.Commands,
+		Modules:  r.Modules,
 	}
 
 	return p
@@ -93,31 +61,74 @@ func (r *PluginResolver) NewProvider(base *event.Base, msg *discord.Message) *Pl
 
 func (p *PluginProvider) PluginSources() []plugin.Source {
 	p.Resolve()
+
+	// p.sources won't be modified again after resolving.
+	// No mutex or copy required.
 	return p.sources
 }
 
 func (p *PluginProvider) Commands() []plugin.ResolvedCommand {
 	p.Resolve()
+
+	// p.commands won't be modified again after resolving.
+	// No mutex or copy required.
 	return p.commands
 }
 
 func (p *PluginProvider) Modules() []plugin.ResolvedModule {
 	p.Resolve()
+
+	// p.modules won't be modified again after resolving.
+	// No mutex or copy required.
 	return p.modules
 }
 
 func (p *PluginProvider) Command(id plugin.ID) plugin.ResolvedCommand {
-	rcmd := p.FindCommand(id.AsInvoke())
-	if rcmd != nil && rcmd.ID() != id {
+	// do we have a match among the built-in commands?
+	p.mut.RLock()
+	rcmd := p.command(id)
+	p.mut.RUnlock()
+
+	if rcmd != nil {
+		return rcmd
+	}
+
+	// if there are any unresolved commands, resolve all and search among them
+	if p.Resolve() {
+		return p.command(id)
+	}
+
+	// already searched anything, found nothing
+	return nil
+}
+
+// command returns the plugin.ResolvedCommand with the passed id, as found
+// among the already resolved commands.
+//
+// Callers must ensure that a read lock exist, if needed.
+func (p *PluginProvider) command(id plugin.ID) plugin.ResolvedCommand {
+	if id.Parent().IsRoot() {
+		return findCommand(p.commands, id.Name(), false)
+	}
+
+	rmod := p.module(id.Parent())
+	if rmod == nil {
 		return nil
 	}
 
-	return rcmd
+	return findCommand(rmod.Commands(), id.Name(), false)
 }
 
 func (p *PluginProvider) Module(id plugin.ID) plugin.ResolvedModule {
 	p.Resolve()
+	return p.module(id)
+}
 
+// module returns the plugin.ResolvedModule with the passed id, as found
+// among the already resolved modules.
+//
+// Callers must ensure that a read lock exist, if needed.
+func (p *PluginProvider) module(id plugin.ID) plugin.ResolvedModule {
 	all := id.All()
 	if len(all) < 1 {
 		return nil
@@ -130,8 +141,8 @@ func (p *PluginProvider) Module(id plugin.ID) plugin.ResolvedModule {
 		return nil
 	}
 
-	for _, id := range all[1:] {
-		rmod = findModule(rmod.Modules(), id.Name())
+	for _, subID := range all[1:] {
+		rmod = rmod.FindModule(subID.Name())
 		if rmod == nil {
 			return nil
 		}
@@ -141,24 +152,36 @@ func (p *PluginProvider) Module(id plugin.ID) plugin.ResolvedModule {
 }
 
 func (p *PluginProvider) FindCommand(invoke string) plugin.ResolvedCommand {
-	if invoke == "" {
-		return nil
+	id := plugin.NewIDFromInvoke(invoke)
+
+	// try built-in sources first
+	p.mut.RLock()
+	rcmd := p.findCommand(id)
+	p.mut.RUnlock()
+
+	if rcmd != nil {
+		return rcmd
 	}
 
-	id := plugin.NewIDFromInvoke(invoke)
-	if id.Parent().IsRoot() {
-		// try built-in sources first
-		if rcmd := findCommand(p.commands, id.Name(), true); rcmd != nil {
-			return rcmd
-		}
+	// if didn't search all sources already, resolve and search again
+	if p.Resolve() {
+		return p.findCommand(id)
+	}
 
-		// didn't work, maybe a source other than built-in has it?
-		p.Resolve()
+	return nil
+}
+
+// findCommand attempts to find the command whose parent id matches id.Parent()
+// and whose name or alias matches id.Name(), among the already resolved
+// commands.
+//
+// Callers must ensure that a read lock exist, if needed.
+func (p *PluginProvider) findCommand(id plugin.ID) plugin.ResolvedCommand {
+	if id.Parent().IsRoot() {
 		return findCommand(p.commands, id.Name(), true)
 	}
 
-	// try built-in sources first
-	rmod := p.Module(id.Parent())
+	rmod := p.module(id.Parent())
 	if rmod == nil {
 		return nil
 	}
@@ -166,19 +189,38 @@ func (p *PluginProvider) FindCommand(invoke string) plugin.ResolvedCommand {
 	return rmod.FindCommand(id.Name())
 }
 
-func (p *PluginProvider) FindCommandWithArgs(invoke string) (rcmd plugin.ResolvedCommand, args string) {
+func (p *PluginProvider) FindCommandWithArgs(invoke string) (plugin.ResolvedCommand, string) {
+	p.mut.RLock()
+	rcmd, args := p.findCommandWithArgs(invoke)
+	p.mut.RUnlock()
+
+	if rcmd != nil {
+		return rcmd, args
+	}
+
+	p.Resolve()
+	return p.findCommandWithArgs(invoke)
+}
+
+// findCommandWithArgs attempts to find a command with the given invoke among
+// the already resolved commands.
+//
+// Callers must ensure that a read lock exist, if needed.
+func (p *PluginProvider) findCommandWithArgs(invoke string) (rcmd plugin.ResolvedCommand, args string) {
 	var word string
 	word, invoke = firstWord(invoke)
 	if len(word) == 0 {
 		return nil, ""
 	}
 
-	rcmd = p.FindCommand(word)
+	id := plugin.NewIDFromInvoke(word)
+
+	rcmd = p.findCommand(id) // top-level command?
 	if rcmd != nil {
 		return rcmd, invoke
 	}
 
-	rmod := p.FindModule(word)
+	rmod := p.module(id)
 	if rmod == nil {
 		return nil, ""
 	}
@@ -210,11 +252,12 @@ func (p *PluginProvider) UnavailablePluginSources() []plugin.UnavailableSource {
 	return p.unavailableSources
 }
 
-func (p *PluginProvider) Resolve() {
-	p.resolveBuiltIn()
+func (p *PluginProvider) Resolve() bool {
+	p.mut.Lock()
+	defer p.mut.Unlock()
 
-	if len(p.sources) > 1 || len(p.resolver.Sources) == 0 {
-		return
+	if len(p.sources) > 1 || len(p.resolver.CustomSources) == 0 {
+		return false
 	}
 
 	type result struct {
@@ -223,13 +266,13 @@ func (p *PluginProvider) Resolve() {
 		err   error
 	}
 
-	results := make([]result, len(p.resolver.Sources))
+	results := make([]result, len(p.resolver.CustomSources))
 
 	var wg sync.WaitGroup
 	var mut sync.Mutex
 
-	wg.Add(len(p.resolver.Sources))
-	for i, src := range p.resolver.Sources {
+	wg.Add(len(p.resolver.CustomSources))
+	for i, src := range p.resolver.CustomSources {
 		go func(i int, src UnqueriedPluginSource) {
 			scmds, smods, err := src.Func(p.base, p.msg)
 
@@ -248,7 +291,7 @@ func (p *PluginProvider) Resolve() {
 	wg.Wait()
 
 	for i, r := range results {
-		sourceName := p.resolver.Sources[i].Name
+		sourceName := p.resolver.CustomSources[i].Name
 
 		if r.err != nil {
 			p.unavailableSources = append(p.unavailableSources, plugin.UnavailableSource{
@@ -266,26 +309,8 @@ func (p *PluginProvider) Resolve() {
 			p.addModules(sourceName, r.smods)
 		}
 	}
-}
 
-func (p *PluginProvider) resolveBuiltIn() {
-	if len(p.sources) > 0 {
-		return
-	}
-
-	p.commands = replaceCommandProvider(nil, p.resolver.provider.commands, p)
-
-	p.modules = replaceModuleProvider(nil, p.resolver.provider.modules, p)
-
-	for name := range p.resolver.provider.usedNames {
-		p.usedNames[name] = struct{}{}
-	}
-
-	p.sources = append(p.sources, plugin.Source{
-		Name:     plugin.BuiltInSource,
-		Commands: p.resolver.Commands,
-		Modules:  p.resolver.Modules,
-	})
+	return true
 }
 
 func (p *PluginProvider) addCommands(sourceName string, scmds []plugin.Command) {
@@ -309,7 +334,7 @@ func (p *PluginProvider) addModules(sourceName string, smods []plugin.Module) {
 	for _, smod := range smods {
 		i := searchModule(p.modules, smod.GetName())
 		if i < len(p.modules) && p.modules[i].Name() == smod.GetName() {
-			updateModule(p.modules[i].(*Module), p, sourceName, smod)
+			p.modules[i].(*Module).update(p, sourceName, smod)
 		} else {
 			rmod := newModule(nil, p, sourceName, smod)
 			if rmod != nil {

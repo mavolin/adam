@@ -70,10 +70,11 @@ type (
 		// They are sorted in ascending order by name.
 		Modules() []ResolvedModule
 
-		// FindCommand finds the command with the given name inside this module.
-		// A name can either be the actual name of a command, or an alias.
+		// FindCommand finds the command with the given name or alias inside
+		// this module.
 		//
-		// If there is no command with the given name, nil will be returned.
+		// If there is no command with the given name or alias, nil will be
+		// returned.
 		FindCommand(name string) ResolvedCommand
 		// FindModule finds the module with the given name inside the module.
 		//

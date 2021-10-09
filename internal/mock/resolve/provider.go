@@ -12,7 +12,7 @@ import (
 
 // Provider mocks the plugin.Provider interface.
 type Provider struct {
-	// Sources are the plugin.Sources the plugin provider provides.
+	// Sources are the plugin.CustomSources the plugin provider provides.
 	//
 	// Modifying this after using one of the Providers methods will have no
 	// effect.

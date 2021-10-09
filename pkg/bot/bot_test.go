@@ -34,7 +34,7 @@ func TestBot_AddPluginSource(t *testing.T) {
 		b := &Bot{pluginResolver: resolved.NewPluginResolver(nil)}
 
 		b.AddPluginSource("abc", nil)
-		assert.Len(t, b.pluginResolver.Sources, 0)
+		assert.Len(t, b.pluginResolver.CustomSources, 0)
 	})
 
 	t.Run("replace", func(t *testing.T) {
@@ -49,7 +49,7 @@ func TestBot_AddPluginSource(t *testing.T) {
 		b.AddPluginSource("abc", p)
 		b.AddPluginSource("def", p)
 
-		assert.Len(t, b.pluginResolver.Sources, 2)
+		assert.Len(t, b.pluginResolver.CustomSources, 2)
 
 		var called bool
 
@@ -59,11 +59,11 @@ func TestBot_AddPluginSource(t *testing.T) {
 				return nil, nil, nil
 			})
 
-		assert.Len(t, b.pluginResolver.Sources, 2)
-		assert.Equal(t, b.pluginResolver.Sources[0].Name, "def")
-		assert.Equal(t, b.pluginResolver.Sources[1].Name, "abc")
+		assert.Len(t, b.pluginResolver.CustomSources, 2)
+		assert.Equal(t, b.pluginResolver.CustomSources[0].Name, "def")
+		assert.Equal(t, b.pluginResolver.CustomSources[1].Name, "abc")
 
-		_, _, _ = b.pluginResolver.Sources[1].Func(nil, nil)
+		_, _, _ = b.pluginResolver.CustomSources[1].Func(nil, nil)
 		assert.True(t, called, "Bot.AddPluginSource did not replace abc")
 	})
 
@@ -77,6 +77,6 @@ func TestBot_AddPluginSource(t *testing.T) {
 		}
 
 		b.AddPluginSource("abc", p)
-		assert.Len(t, b.pluginResolver.Sources, 1)
+		assert.Len(t, b.pluginResolver.CustomSources, 1)
 	})
 }
