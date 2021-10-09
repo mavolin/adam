@@ -38,6 +38,8 @@ type MiddlewareManager struct {
 	middlewares []Middleware
 }
 
+var _ Middlewarer = new(MiddlewareManager)
+
 // TryAddMiddleware adds the passed middleware to the MiddlewareManager.
 // If the middleware's type is invalid, TryAddMiddleware will return
 // ErrMiddleware.
