@@ -21,7 +21,7 @@ with custom commands.
 
 * 🖥️ Typed (variadic) arguments and flags, as well as out-of-the-box parsing for shellword, and delimiter-based notations
 * 🌍 Support for localization
-* 🗒️ Utilities for permission handling, emojis, and awaiting responses and reactions
+* 🗒️ Utilities for permission handling, emojis, and awaiting responses, component interactions and reactions
 * ⚡ Error handling with automatic stack trace generation
 * 👪 Command grouping through modules
 * ⏳ Command throttling/cooldowns
