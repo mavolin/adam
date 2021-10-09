@@ -49,7 +49,7 @@ func (r *PluginResolver) AddSource(name string, f PluginSourceFunc) {
 func (r *PluginResolver) AddBuiltInCommand(scmd plugin.Command) {
 	r.Commands = append(r.Commands, scmd)
 	r.builtinProvider.commands = insertCommand(r.builtinProvider.commands,
-		newCommand(nil, r.builtinProvider, plugin.BuiltInSource, scmd), -1)
+		newCommand(nil, r.builtinProvider, plugin.BuiltInSource, nil, scmd), -1)
 }
 
 func (r *PluginResolver) AddBuiltInModule(smod plugin.Module) {

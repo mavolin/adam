@@ -23,19 +23,20 @@ type Command struct {
 var _ plugin.ResolvedCommand = new(Command)
 
 func newCommand(
-	parent plugin.ResolvedModule, provider *PluginProvider, sourceName string,
+	parent plugin.ResolvedModule, provider *PluginProvider, sourceName string, sourceParents []plugin.Module,
 	scmd plugin.Command,
 ) *Command {
-	if _, ok := provider.usedNames[scmd.GetName()]; ok {
-		return nil
-	}
-
-	provider.usedNames[scmd.GetName()] = struct{}{}
-
 	parentInvoke := ""
 	if parent != nil {
 		parentInvoke = parent.ID().AsInvoke() + " "
 	}
+
+	invoke := parentInvoke + scmd.GetName()
+	if _, ok := provider.usedNames[invoke]; ok {
+		return nil
+	}
+
+	provider.usedNames[invoke] = struct{}{}
 
 	var aliases []string
 
@@ -53,13 +54,18 @@ func newCommand(
 		}
 	}
 
+	id := plugin.ID("." + scmd.GetName())
+	if parent != nil {
+		id = parent.ID() + id
+	}
+
 	return &Command{
 		parent:        parent,
 		provider:      provider,
 		sourceName:    sourceName,
 		source:        scmd,
-		sourceParents: nil,
-		id:            plugin.ID("." + scmd.GetName()),
+		sourceParents: sourceParents,
+		id:            id,
 		aliases:       aliases,
 	}
 }

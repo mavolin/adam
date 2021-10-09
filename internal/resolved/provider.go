@@ -319,7 +319,7 @@ func (p *PluginProvider) addCommands(sourceName string, scmds []plugin.Command) 
 	p.commands = cp
 
 	for _, scmd := range scmds {
-		rcmd := newCommand(nil, p, sourceName, scmd)
+		rcmd := newCommand(nil, p, sourceName, nil, scmd)
 		if rcmd != nil {
 			p.commands = insertCommand(p.commands, rcmd, -1)
 		}

@@ -27,71 +27,54 @@ func newModule(parent *Module, provider *PluginProvider, sourceName string, smod
 		parentInvoke = parent.id.AsInvoke() + " "
 	}
 
-	if _, ok := provider.usedNames[parentInvoke+smod.GetName()]; ok {
+	invoke := parentInvoke + smod.GetName()
+	if _, ok := provider.usedNames[invoke]; ok {
 		return nil
 	}
 
-	rmod := &Module{
-		sources:  []plugin.SourceModule{{SourceName: sourceName}},
-		id:       plugin.ID("." + smod.GetName()),
-		hidden:   true,
-		commands: nil,
+	provider.usedNames[invoke] = struct{}{}
+
+	id := plugin.ID("." + smod.GetName())
+	if parent != nil {
+		id = parent.ID() + id
 	}
 
-	if len(smod.GetCommands()) > 0 {
-		rmod.commands = make([]plugin.ResolvedCommand, len(smod.GetCommands()))
+	rmod := &Module{id: id, hidden: true}
+	if parent != nil {
+		// setting rmod.parent directly wouldn't work, as the nil's types would
+		// mismatch
+		rmod.parent = parent
 	}
 
 	if len(smod.GetModules()) > 0 {
-		rmod.modules = make([]plugin.ResolvedModule, len(smod.GetModules()))
+		rmod.modules = make([]plugin.ResolvedModule, 0, len(smod.GetModules()))
 	}
 
-	if parent != nil {
-		rmod.parent = parent
+	rmod.sources = []plugin.SourceModule{{SourceName: sourceName}}
 
+	if parent != nil {
 		for _, parentSource := range parent.Sources() {
 			if parentSource.SourceName == sourceName {
-				// append is safe since the underlying slice will never change
-				rmod.sources[0].Modules = append(parentSource.Modules, smod) //nolint:gocritic
+				rmod.sources[0].Modules = make([]plugin.Module, len(parentSource.Modules)+1)
+				copy(rmod.sources[0].Modules, parentSource.Modules)
+				rmod.sources[0].Modules[len(rmod.sources[0].Modules)-1] = smod
+
 				break
 			}
 		}
-
-		rmod.id = parent.id + rmod.id
 	} else {
 		rmod.sources[0].Modules = []plugin.Module{smod}
 	}
 
-	parentInvoke += rmod.Name() + " "
+	rmod.addCommands(provider, rmod.sources[0], smod.GetCommands())
 
-	for i, subScmd := range smod.GetCommands() {
-		provider.usedNames[parentInvoke+subScmd.GetName()] = struct{}{}
-
-		aliases := subScmd.GetAliases()
-		for _, alias := range aliases {
-			provider.usedNames[parentInvoke+alias] = struct{}{}
-		}
-
-		rmod.commands[i] = &Command{
-			parent:        rmod,
-			provider:      provider,
-			sourceName:    sourceName,
-			source:        subScmd,
-			sourceParents: rmod.sources[0].Modules,
-			id:            rmod.id + plugin.ID("."+subScmd.GetName()),
-			aliases:       aliases,
-		}
-
-		if !subScmd.IsHidden() {
+	for _, subSmod := range smod.GetModules() {
+		subRmod := newModule(rmod, provider, sourceName, subSmod)
+		if !subRmod.IsHidden() {
 			rmod.hidden = false
 		}
-	}
 
-	for i, subSmod := range smod.GetModules() {
-		rmod.modules[i] = newModule(rmod, provider, sourceName, subSmod)
-		if !rmod.modules[i].IsHidden() {
-			rmod.hidden = false
-		}
+		rmod.modules = insertModule(rmod.modules, subRmod, -1)
 	}
 
 	return rmod
@@ -101,10 +84,13 @@ func (mod *Module) update(provider *PluginProvider, sourceName string, smod plug
 	if mod.Parent() != nil {
 		for _, parentSource := range mod.Parent().Sources() {
 			if parentSource.SourceName == sourceName {
-				// append is safe since the underlying slice will never change
+				modules := make([]plugin.Module, len(parentSource.Modules)+1)
+				copy(modules, parentSource.Modules)
+				modules[len(modules)-1] = smod
+
 				mod.sources = append(mod.sources, plugin.SourceModule{
 					SourceName: sourceName,
-					Modules:    append(parentSource.Modules, smod),
+					Modules:    modules,
 				})
 				break
 			}
@@ -116,58 +102,52 @@ func (mod *Module) update(provider *PluginProvider, sourceName string, smod plug
 		})
 	}
 
-	parentInvoke := mod.id.AsInvoke() + " "
-
-	for i, subScmd := range smod.GetCommands() {
-		if _, ok := provider.usedNames[parentInvoke+subScmd.GetName()]; ok {
-			continue
-		}
-
-		provider.usedNames[parentInvoke+subScmd.GetName()] = struct{}{}
-
-		var aliases []string
-		if len(subScmd.GetAliases()) > 0 {
-			aliases = make([]string, len(subScmd.GetAliases()))
-			copy(aliases, subScmd.GetAliases())
-			for _, alias := range aliases {
-				if _, ok := provider.usedNames[parentInvoke+alias]; ok {
-					copy(aliases[i:], aliases[i+1:])
-					aliases = aliases[:len(aliases)-1]
-				}
-
-				provider.usedNames[parentInvoke+alias] = struct{}{}
-			}
-		}
-
-		subRcmd := &Command{
-			parent:        mod,
-			provider:      provider,
-			sourceName:    sourceName,
-			source:        subScmd,
-			sourceParents: mod.sources[len(mod.sources)-1].Modules,
-			id:            mod.id + plugin.ID("."+subScmd.GetName()),
-			aliases:       aliases,
-		}
-
-		mod.commands = insertCommand(mod.commands, subRcmd, -1)
-	}
+	mod.addCommands(provider, mod.sources[len(mod.sources)-1], smod.GetCommands())
 
 	for _, subSmod := range smod.GetModules() {
-		i := searchModule(mod.modules, smod.GetName())
+		i := searchModule(mod.modules, subSmod.GetName())
 		if i < len(mod.modules) && mod.modules[i].Name() == smod.GetName() {
-			mod.modules[i].(*Module).update(provider, sourceName, subSmod)
-			if !mod.modules[i].IsHidden() {
+			subRmod := mod.modules[i].(*Module)
+			subRmod.update(provider, sourceName, subSmod)
+
+			if subRmod.IsHidden() {
 				mod.hidden = false
 			}
 		} else {
 			subRmod := newModule(mod, provider, sourceName, subSmod)
-			if subRmod != nil {
-				mod.modules = insertModule(mod.modules, subRmod, i)
-				if !subRmod.IsHidden() {
-					mod.hidden = false
-				}
+			if subRmod == nil {
+				continue
+			}
+
+			mod.modules = insertModule(mod.modules, subRmod, i)
+
+			if subRmod.IsHidden() {
+				mod.hidden = false
 			}
 		}
+	}
+}
+
+func (mod *Module) addCommands(provider *PluginProvider, sourceModule plugin.SourceModule, scmds []plugin.Command) {
+	if len(scmds) == 0 {
+		return
+	}
+
+	cp := make([]plugin.ResolvedCommand, len(mod.commands), len(mod.commands)+len(scmds))
+	copy(cp, mod.commands)
+	mod.commands = cp
+
+	for _, scmd := range scmds {
+		rcmd := newCommand(mod, provider, sourceModule.SourceName, sourceModule.Modules, scmd)
+		if rcmd == nil {
+			continue
+		}
+
+		if !rcmd.IsHidden() {
+			mod.hidden = false
+		}
+
+		mod.commands = insertCommand(mod.commands, rcmd, -1)
 	}
 }
 
