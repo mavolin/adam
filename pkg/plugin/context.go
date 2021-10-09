@@ -47,7 +47,7 @@ type Context struct {
 
 	// Prefixes contains the prefixes of the bot as defined for the invoking
 	// guild or user.
-	// Prefixes does not include the bot's mention, which is always a valid
+	// It does not include the bot's mention, which is always a valid
 	// prefix.
 	// It may be empty, in which case the command was invoked using the bot's
 	// mention.
@@ -105,7 +105,7 @@ func (ctx *Context) RawInvoke() string {
 	return strings.TrimRight(ctx.Content[ctx.InvokeIndex:ctx.ArgsIndex], shared.Whitespace)
 }
 
-// RawArgs returns the raw argument, as the user typed them.
+// RawArgs returns the raw arguments, as the user typed them.
 func (ctx *Context) RawArgs() string {
 	return ctx.Content[ctx.ArgsIndex:]
 }
@@ -454,7 +454,7 @@ type (
 		// to contain trailing arguments.
 		//
 		// If a command is found, it is returned alongside the arguments.
-		// Otherwise (nil, "") will be returned.
+		// Otherwise, (nil, "") will be returned.
 		FindCommandWithArgs(invoke string) (cmd ResolvedCommand, args string)
 		// FindModule returns the ResolvedModule with the passed invoke.
 		//

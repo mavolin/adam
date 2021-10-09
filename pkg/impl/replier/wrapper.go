@@ -1,6 +1,8 @@
 package replier
 
 import (
+	"sync"
+
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/mavolin/disstate/v4/pkg/state"
@@ -14,7 +16,9 @@ type wrappedReplier struct {
 	s           *state.State
 	inlineReply bool
 
-	dmID discord.ChannelID
+	dmID   discord.ChannelID
+	dmErr  error
+	dmOnce sync.Once
 }
 
 var _ plugin.Replier = new(wrappedReplier)
@@ -23,6 +27,8 @@ var _ plugin.Replier = new(wrappedReplier)
 // plugin.Replier.
 // If inlineReply is set to true, messages will reference the invoke, unless
 // MessageReference is non-nil.
+//
+// The returned plugin.Replier is safe for concurrent use.
 func WrapState(s *state.State, inlineReply bool) plugin.Replier {
 	return &wrappedReplier{s: s, inlineReply: inlineReply}
 }
@@ -51,11 +57,12 @@ func (r *wrappedReplier) Reply(ctx *plugin.Context, data api.SendMessageData) (*
 }
 
 func (r *wrappedReplier) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*discord.Message, error) {
-	if err := r.lazyDM(ctx); err != nil {
+	dmID, err := r.lazyDMID(ctx)
+	if err != nil {
 		return nil, err
 	}
 
-	msg, err := r.s.SendMessageComplex(r.dmID, data)
+	msg, err := r.s.SendMessageComplex(dmID, data)
 	return msg, errors.WithStack(err)
 }
 
@@ -83,26 +90,25 @@ func (r *wrappedReplier) Edit(
 func (r *wrappedReplier) EditDM(
 	ctx *plugin.Context, messageID discord.MessageID, data api.EditMessageData,
 ) (*discord.Message, error) {
-	if err := r.lazyDM(ctx); err != nil {
+	dmID, err := r.lazyDMID(ctx)
+	if err != nil {
 		return nil, err
 	}
 
-	msg, err := r.s.EditMessageComplex(r.dmID, messageID, data)
+	msg, err := r.s.EditMessageComplex(dmID, messageID, data)
 	return msg, errors.WithStack(err)
 }
 
-// lazyDM lazily gets the id of the direct message channel with the invoking
+// lazyDMID lazily gets the id of the direct message channel with the invoking
 // user.
-func (r *wrappedReplier) lazyDM(ctx *plugin.Context) error {
-	if r.dmID.IsValid() {
-		return nil
-	}
+func (r *wrappedReplier) lazyDMID(ctx *plugin.Context) (discord.ChannelID, error) {
+	r.dmOnce.Do(func() {
+		c, err := r.s.CreatePrivateChannel(ctx.Author.ID)
+		r.dmErr = err
+		if err == nil {
+			r.dmID = c.ID
+		}
+	})
 
-	c, err := r.s.CreatePrivateChannel(ctx.Author.ID)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	r.dmID = c.ID
-	return nil
+	return r.dmID, r.dmErr
 }

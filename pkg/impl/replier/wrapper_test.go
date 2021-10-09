@@ -205,10 +205,9 @@ func Test_wrappedReplier_ReplyDM(t *testing.T) {
 
 		var dmID discord.ChannelID = 789
 
-		r := &wrappedReplier{
-			s:    s,
-			dmID: dmID,
-		}
+		r := &wrappedReplier{s: s, dmID: dmID}
+
+		r.dmOnce.Do(func() {})
 
 		data := api.SendMessageData{Content: "abc"}
 
@@ -331,10 +330,9 @@ func Test_wrappedReplier_EditDM(t *testing.T) {
 
 		var dmID discord.ChannelID = 789
 
-		r := &wrappedReplier{
-			s:    s,
-			dmID: dmID,
-		}
+		r := &wrappedReplier{s: s, dmID: dmID}
+
+		r.dmOnce.Do(func() {})
 
 		data := api.EditMessageData{Content: option.NewNullableString("abc")}
 

@@ -21,7 +21,8 @@ type Tracker struct {
 	editedGuildMessages []discord.Message
 	guildMessagesMutex  sync.Mutex
 
-	dmID discord.ChannelID
+	dmID  discord.ChannelID
+	dmErr error
 
 	dms       []discord.Message
 	editedDMs []discord.Message
@@ -58,12 +59,15 @@ var _ plugin.Replier = new(Tracker)
 // 			return nil
 // 		}
 // 	})
+//
+// Creating replies with the Tracker is concurrent-safe.
+// However, retrieving the message sent is not.
 func NewTracker(s *state.State, inlineReply bool) *Tracker {
 	return &Tracker{s: s, inlineReply: inlineReply}
 }
 
 // GuildMessages returns the guild messages that were sent.
-// This may include edited messages, if they were sent earlier by the command.
+// This may include edited messages, if they were sent earlier by this replier.
 func (t *Tracker) GuildMessages() (cp []discord.Message) {
 	cp = make([]discord.Message, len(t.guildMessages))
 	copy(cp, t.guildMessages)
@@ -72,7 +76,7 @@ func (t *Tracker) GuildMessages() (cp []discord.Message) {
 }
 
 // DMs returns the direct messages that were sent.
-// This may include edited messages, if they were sent earlier by the command.
+// This may include edited messages, if they were sent earlier by this replier.
 func (t *Tracker) DMs() (cp []discord.Message) {
 	cp = make([]discord.Message, len(t.dms))
 	copy(cp, t.dms)
@@ -81,7 +85,7 @@ func (t *Tracker) DMs() (cp []discord.Message) {
 }
 
 // EditedGuildMessages returns the guild messages that were edited, but not
-// previously sent by the command.
+// previously sent by this replier.
 func (t *Tracker) EditedGuildMessages() (cp []discord.Message) {
 	cp = make([]discord.Message, len(t.editedGuildMessages))
 	copy(cp, t.editedGuildMessages)
@@ -90,7 +94,7 @@ func (t *Tracker) EditedGuildMessages() (cp []discord.Message) {
 }
 
 // EditedDMs returns the guild messages that were edited, but not previously
-// sent by the command.
+// sent by this replier.
 func (t *Tracker) EditedDMs() (cp []discord.Message) {
 	cp = make([]discord.Message, len(t.editedDMs))
 	copy(cp, t.editedDMs)
@@ -123,9 +127,8 @@ func (t *Tracker) Reply(ctx *plugin.Context, data api.SendMessageData) (*discord
 	}
 
 	t.guildMessagesMutex.Lock()
-	defer t.guildMessagesMutex.Unlock()
-
 	t.guildMessages = append(t.guildMessages, *msg)
+	t.guildMessagesMutex.Unlock()
 
 	return msg, nil
 }
@@ -140,20 +143,19 @@ func (t *Tracker) ReplyDM(ctx *plugin.Context, data api.SendMessageData) (*disco
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
-	err = t.lazyDM(ctx)
+	dmID, err := t.lazyDM(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := t.s.SendMessageComplex(t.dmID, data)
+	msg, err := t.s.SendMessageComplex(dmID, data)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
 	t.dmMutex.Lock()
-	defer t.dmMutex.Unlock()
-
 	t.dms = append(t.dms, *msg)
+	t.dmMutex.Unlock()
 
 	return msg, nil
 }
@@ -210,12 +212,12 @@ func (t *Tracker) EditDM(
 		return nil, plugin.NewBotPermissionsError(discord.PermissionSendMessages)
 	}
 
-	err = t.lazyDM(ctx)
+	dmID, err := t.lazyDM(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := t.s.EditMessageComplex(t.dmID, messageID, data)
+	msg, err := t.s.EditMessageComplex(dmID, messageID, data)
 	if err != nil {
 		t.dmMutex.Lock()
 		defer t.dmMutex.Unlock()
@@ -240,17 +242,21 @@ func (t *Tracker) EditDM(
 
 // lazyDM lazily gets the id of the direct message channel with the invoking
 // user.
-func (t *Tracker) lazyDM(ctx *plugin.Context) error {
-	if !t.dmID.IsValid() {
-		c, err := t.s.CreatePrivateChannel(ctx.Author.ID)
-		if err != nil {
-			return errors.WithStack(err)
-		}
+func (t *Tracker) lazyDM(ctx *plugin.Context) (discord.ChannelID, error) {
+	t.dmMutex.Lock()
+	defer t.dmMutex.Unlock()
 
+	if t.dmID != 0 || t.dmErr != nil {
+		return t.dmID, t.dmErr
+	}
+
+	c, err := t.s.CreatePrivateChannel(ctx.Author.ID)
+	t.dmErr = err
+	if err == nil {
 		t.dmID = c.ID
 	}
 
-	return nil
+	return t.dmID, t.dmErr
 }
 
 func (t *Tracker) hasID(id discord.MessageID) bool {
