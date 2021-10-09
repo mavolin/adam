@@ -25,7 +25,7 @@ func main() {
 		// language of the guild.
 		// In it's current version, the bot will still run, but always fall
 		// back to the fallback messages.
-		SettingsProvider: bot.NewStaticSettingsProvider(parsePrefixes()...),
+		SettingsProvider: bot.StaticSettings(parsePrefixes()...),
 		Owners:           parseOwners(),
 		EditAge:          45 * time.Second,
 		ActivityName:     "with the adam 🤖 framework",

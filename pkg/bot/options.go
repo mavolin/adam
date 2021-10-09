@@ -30,7 +30,7 @@ type Options struct {
 	// SettingsProvider is the settings provider for the bot.
 	// If left nil, only the mention prefix will be usable.
 	//
-	// Default: NewStaticSettingsProvider()
+	// Default: StaticSettings()
 	SettingsProvider SettingsProvider
 	// Owners are the ids of the bot owners.
 	// These are accessible through plugin.Context.BotOwnerIDs.
@@ -263,7 +263,7 @@ type Options struct {
 // SetDefaults fills the defaults for all options, that weren't manually set.
 func (o *Options) SetDefaults() (err error) {
 	if o.SettingsProvider == nil {
-		o.SettingsProvider = NewStaticSettingsProvider()
+		o.SettingsProvider = StaticSettings()
 	}
 
 	if o.ArgParser == nil {
@@ -358,12 +358,12 @@ func (o *Options) SetDefaults() (err error) {
 // are responsible for ensuring that error are properly captured.
 type SettingsProvider func(b *event.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer, ok bool)
 
-// NewStaticSettingsProvider creates a new SettingsProvider that returns the
-// same prefixes for all guilds and users.
+// StaticSettings creates a new SettingsProvider that returns the same prefixes
+// for all guilds and users.
 // The returned localizer will always be a fallback localizer.
-func NewStaticSettingsProvider(prefixes ...string) SettingsProvider {
+func StaticSettings(prefixes ...string) SettingsProvider {
 	return func(*event.Base, *discord.Message) ([]string, *i18n.Localizer, bool) {
-		return prefixes, nil, true
+		return prefixes, i18n.NewFallbackLocalizer(), true
 	}
 }
 
