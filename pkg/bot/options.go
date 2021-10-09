@@ -302,8 +302,9 @@ func (o *Options) SetDefaults() (err error) {
 // SettingsProvider is the function used to retrieve the settings for the guild
 // or direct message.
 //
-// The passed *event.Base is the base of the event triggering settings check.
-// This will either stem from either message create event, or a message update
+// The passed *event.Base is the base of the event triggering the settings
+// check.
+// This will either stem from a message create event, or a message update
 // event, if Options.EditAge is greater than 0.
 //
 // First Return Value
@@ -312,11 +313,12 @@ func (o *Options) SetDefaults() (err error) {
 // In a guild, the message must start with one of the prefixes or with a bot
 // mention.
 // Direct Messages are not subject to this limitation.
-// However, if prefixes are returned for a direct message invoke (msg.GuildID
-// == 0), or the message starts with a mention, the prefix will still be
-// stripped before being routed.
+// However, if prefixes are returned for a direct message invoke and the user
+// prefixes their message with one, the prefix will still be stripped.
+// Similarly, if the user uses the bot mention prefix in a direct message, it
+// will also get stripped.
 //
-// All spaces, tabs, and newlines, between a prefix and the rest of the message
+// All spaces, tabs, and newlines, between prefix and the rest of the message
 // will be removed before given to the router.
 // If prefixes is empty, the only valid prefix will be a mention of the bot.
 //
