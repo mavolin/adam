@@ -5,7 +5,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/discord"
 
-	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/errors"
 )
 
@@ -21,7 +20,7 @@ type ActionRowError struct {
 
 	Cause error
 
-	s errorutil.StackTrace
+	s errors.StackTrace
 }
 
 var _ errors.StackTracer = new(ActionRowError)
@@ -36,7 +35,7 @@ func newActionRowError(index int, typ string, cause error) *ActionRowError {
 	}
 }
 
-func (e *ActionRowError) StackTrace() errorutil.StackTrace {
+func (e *ActionRowError) StackTrace() errors.StackTrace {
 	return e.s
 }
 
@@ -73,7 +72,7 @@ func newSelectError(index int, cause error) *SelectError {
 	}
 }
 
-func (e *SelectError) StackTrace() errorutil.StackTrace {
+func (e *SelectError) StackTrace() errors.StackTrace {
 	return e.s
 }
 

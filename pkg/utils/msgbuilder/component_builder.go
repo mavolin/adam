@@ -1,7 +1,6 @@
 package msgbuilder
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 	"sync/atomic"
@@ -10,7 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 
-	"github.com/mavolin/adam/internal/errorutil"
+	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 )
 
@@ -296,8 +295,7 @@ func (b *SelectBuilder) handle(data *gateway.InteractionData) (bool, error) {
 			}
 		}
 
-		return false, errorutil.WithStack(
-			fmt.Errorf("msgbuilder: SelectBuilder: found unknown option value %s", data.Values[0]))
+		return false, errors.NewWithStackf("msgbuilder: SelectBuilder: found unknown option value %s", data.Values[0])
 	}
 
 	resultV := reflect.ValueOf(b.resultVar)
@@ -321,8 +319,7 @@ OptionBuilders:
 		return true, nil
 	}
 
-	return false, errorutil.WithStack(
-		fmt.Errorf("msgbuilder: SelectBuilder: found unknown option values %v", data.Values))
+	return false, errors.NewWithStackf("msgbuilder: SelectBuilder: found unknown option values %v", data.Values)
 }
 
 func (b *SelectBuilder) Build(l *i18n.Localizer) (c discord.Component, err error) {
@@ -424,7 +421,10 @@ func (b *SelectOptionBuilder) Build(l *i18n.Localizer) (selectOption discord.Sel
 
 	if b.description != nil {
 		selectOption.Description, err = l.Localize(b.description)
+		if err != nil {
+			return discord.SelectComponentOption{}, err
+		}
 	}
 
-	return selectOption, err
+	return selectOption, nil
 }

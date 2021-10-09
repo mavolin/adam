@@ -18,7 +18,6 @@ import (
 	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
-	"github.com/mavolin/adam/internal/errorutil"
 	"github.com/mavolin/adam/pkg/errors"
 	"github.com/mavolin/adam/pkg/i18n"
 	"github.com/mavolin/adam/pkg/plugin"
@@ -500,7 +499,7 @@ func (b *Builder) Send(channelID discord.ChannelID) (msg *discord.Message, err e
 		b.messageID = msg.ID
 	}
 
-	return msg, errorutil.WithStack(err)
+	return msg, errors.WithStack(err)
 }
 
 // =============================================================================
@@ -600,7 +599,7 @@ func (b *Builder) Edit(channelID discord.ChannelID, messageID discord.MessageID)
 	}
 
 	msg, err := b.state.EditMessageComplex(channelID, messageID, data)
-	return msg, errorutil.WithStack(err)
+	return msg, errors.WithStack(err)
 }
 
 // =============================================================================
