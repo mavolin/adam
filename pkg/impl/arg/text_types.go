@@ -141,8 +141,8 @@ type Link struct {
 	// By default, Validator will check if the scheme is either 'http' or
 	// 'https'.
 	Validator func(u *url.URL) bool
-	// ErrorArg is the error message used if an argument doesn't match
-	// the regular expression defined, or does not pass url.ParseRequestURI.
+	// ErrorArg is the error message used if an argument doesn't pass the
+	// validator, or url.ParseRequestURI.
 	// If you want an unlocalized error, just fill Fallback.Other field of the
 	// config.
 	//
@@ -155,8 +155,8 @@ type Link struct {
 	//
 	// Defaults to: linkInvalidErrorArg
 	ErrorArg *i18n.Config
-	// ErrorFlag is the error message used if a flag doesn't match the
-	// regular expression defined, or does not pass url.ParseRequestURI.
+	// ErrorFlag is the error message used if an argument doesn't pass the
+	// validator, or url.ParseRequestURI.
 	// If you want an unlocalized error, just fill Fallback.Other field of the
 	// config.
 	//
