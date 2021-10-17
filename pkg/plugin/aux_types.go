@@ -29,7 +29,9 @@ const (
 	AllChannels = DirectMessages | GuildChannels
 	// GuildChannels is a combination of all ChannelTypes used in guilds, i.e.
 	// GuildTextChannels, GuildNewsChannels, and Threads.
-	GuildChannels = GuildTextChannels | GuildNewsChannels | Threads
+	GuildChannels = PersistentGuildChannels | Threads
+	// PersistentGuildChannels are all non-thread guild channels.
+	PersistentGuildChannels = GuildTextChannels | GuildNewsChannels
 )
 
 // Has checks if the passed discord.ChannelType is found in the ChannelTypes.
