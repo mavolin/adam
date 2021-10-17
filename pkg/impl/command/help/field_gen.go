@@ -136,14 +136,17 @@ func (h *Help) genUsage(
 		return usage
 	}
 
+	requiredArgs := cmd.Args().GetRequiredArgs()
+	optionalArgs := cmd.Args().GetOptionalArgs()
+	if len(requiredArgs) == 0 && len(optionalArgs) == 0 {
+		b.WriteString("```")
+		usage.Value = b.String()
+		return usage
+	}
+
 	b.WriteRune(' ')
 
-	var (
-		requiredArgs = cmd.Args().GetRequiredArgs()
-		optionalArgs = cmd.Args().GetOptionalArgs()
-
-		usageArgs = make([]string, 0, len(requiredArgs)+len(optionalArgs))
-	)
+	usageArgs := make([]string, 0, len(requiredArgs)+len(optionalArgs))
 
 	for i, arg := range requiredArgs {
 		name := arg.GetName(ctx.Localizer)
@@ -168,7 +171,6 @@ func (h *Help) genUsage(
 	return usage
 }
 
-//nolint:funlen,gocognit
 func (h *Help) genArguments(
 	b *strings.Builder, ctx *plugin.Context, cmd plugin.ResolvedCommand,
 ) *discord.EmbedField {

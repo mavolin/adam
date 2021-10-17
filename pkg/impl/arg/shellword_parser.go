@@ -97,6 +97,10 @@ func (p *shellwordParser) FormatArgs(_ plugin.ArgConfig, args []string, flags ma
 }
 
 func (p *shellwordParser) FormatUsage(_ plugin.ArgConfig, args []string) string {
+	if len(args) == 0 {
+		return ""
+	}
+
 	// we need (len(args)-1) space-separators
 	n := len(args) - 1
 

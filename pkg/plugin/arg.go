@@ -51,13 +51,17 @@ type (
 		// See package arg for example implementations.
 		FormatArgs(argConfig ArgConfig, args []string, flags map[string]string) string
 		// FormatUsage formats the passed arguments and flags so that they are
-		// properly delimited.
+		// properly separated.
 		// It should ignore the need for escapes, as the produced output is
 		// solely intended to be used for usage illustrations such as
 		//	<Required Argument 1>, <Required Argument 2>, [Optional Argument 1]
 		// The above output would be produced if the args slice contained
 		// {"<Required Argument 1>", "<Required Argument 2>",
-		// "[Optional Argument 1"} and the ArgParser uses a "," as delimiter.
+		// "[Optional Argument 1"} and the ArgParser uses arg.DelimiterParser.
+		//
+		// The passed args must always correspond to the arguments specified
+		// in the passed ArgConfig, which implementing parsers can use if they
+		// need to infer further information.
 		FormatUsage(argConfig ArgConfig, args []string) string
 		// FormatFlag formats the passed name of a flag as it would be required
 		// if using that flag.

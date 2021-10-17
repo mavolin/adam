@@ -108,6 +108,10 @@ func (p *DelimiterParser) FormatArgs(_ plugin.ArgConfig, args []string, flags ma
 }
 
 func (p *DelimiterParser) FormatUsage(_ plugin.ArgConfig, args []string) string {
+	if len(args) == 0 {
+		return ""
+	}
+
 	// we need to use the separator (p.Delimiter+" ") (len(args)-1) times
 	n := (len(args) - 1) * 2
 
