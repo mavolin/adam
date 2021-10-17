@@ -39,7 +39,7 @@ type (
 
 var id uint64
 
-// nextID is used to generate custom id'state for components.
+// nextID is used to generate custom ids for components.
 func nextID() string {
 	return strconv.FormatUint(atomic.AddUint64(&id, 1), 10)
 }
@@ -134,14 +134,14 @@ var _ ActionRowComponentBuilder = new(ButtonBuilder)
 
 // NewButton creates a new *ButtonBuilder with the given label and the
 // corresponding go value.
-// val must be the element type of the ButtonBuilder'state parent ActionRowBuilder.
+// val must be the element type of the ButtonBuilder's parent ActionRowBuilder.
 func NewButton(style discord.ButtonStyle, label string, val interface{}) *ButtonBuilder {
 	return NewButtonl(style, i18n.NewStaticConfig(label), val)
 }
 
 // NewButtonl creates a new *ButtonBuilder with the given label and the
 // corresponding go value.
-// val must be the element type of the ButtonBuilder'state parent ActionRowBuilder.
+// val must be the element type of the ButtonBuilder's parent ActionRowBuilder.
 func NewButtonl(style discord.ButtonStyle, label *i18n.Config, val interface{}) *ButtonBuilder {
 	return &ButtonBuilder{style: style, label: label, id: nextID(), val: val}
 }
@@ -217,7 +217,7 @@ type SelectBuilder struct {
 
 var _ TopLevelComponentBuilder = new(SelectBuilder)
 
-// NewSelect creates a new *SelectBuilder that stores the value(state) of its
+// NewSelect creates a new *SelectBuilder that stores the value (state) of its
 // components in the passed resultVar.
 // If using the default bounds (1, 1), or (0, 1), resultVar must be a pointer.
 // Otherwise, resultVar must be a pointer to a slice.
@@ -368,8 +368,8 @@ type SelectOptionBuilder struct {
 // the corresponding go value.
 //
 // If the parent SelectBuilder uses the bounds (0, 1) or (1, 1), val must be of
-// the elem type of the SelectBuilder'state resultVar.
-// Otherwise, val must be of the element type of the SelectBuilder'state slice
+// the elem type of the SelectBuilder's resultVar.
+// Otherwise, val must be of the element type of the SelectBuilder's slice
 // type.
 func NewSelectOption(label string, val interface{}) *SelectOptionBuilder {
 	return NewSelectOptionl(i18n.NewStaticConfig(label), val)
@@ -379,8 +379,8 @@ func NewSelectOption(label string, val interface{}) *SelectOptionBuilder {
 // the corresponding go value.
 //
 // If the parent SelectBuilder uses the bounds (0, 1) or (1, 1), val must be of
-// the elem type of the SelectBuilder'state resultVar.
-// Otherwise, val must be of the element type of the SelectBuilder'state slice
+// the elem type of the SelectBuilder's resultVar.
+// Otherwise, val must be of the element type of the SelectBuilder's slice
 // type.
 func NewSelectOptionl(label *i18n.Config, val interface{}) *SelectOptionBuilder {
 	return &SelectOptionBuilder{label: label, id: nextID(), val: val}

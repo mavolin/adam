@@ -137,13 +137,13 @@ func (b *EmbedBuilder) WithThumbnail(thumbnail discord.URL) *EmbedBuilder {
 	return b
 }
 
-// WithAuthor sets the author'state name (max. 256 characters) to the passed
+// WithAuthor sets the author's name (max. 256 characters) to the passed
 // name.
 func (b *EmbedBuilder) WithAuthor(name string) *EmbedBuilder {
 	return b.WithAuthorl(i18n.NewStaticConfig(name))
 }
 
-// WithAuthorl sets the author'state name (max. 256 characters) to the passed
+// WithAuthorl sets the author's name (max. 256 characters) to the passed
 // name.
 func (b *EmbedBuilder) WithAuthorl(name *i18n.Config) *EmbedBuilder {
 	if b.author == nil {
