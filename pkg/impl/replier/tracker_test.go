@@ -35,7 +35,7 @@ func TestTracker_GuildMessages(t *testing.T) {
 		},
 	}
 
-	r := NewTracker(s, false)
+	r := NewTracker(WrapState(s, false))
 
 	data := api.SendMessageData{Content: "abc"}
 
@@ -76,16 +76,18 @@ func TestTracker_DMs(t *testing.T) {
 		},
 	}
 
-	r := &Tracker{
-		s:    s,
-		dmID: 789,
-	}
+	var dmID discord.ChannelID = 789
+
+	baseReplier := &wrappedReplier{s: s, dmID: dmID}
+	baseReplier.dmOnce.Do(func() {})
+
+	r := &Tracker{r: baseReplier}
 
 	data := api.SendMessageData{Content: "abc"}
 
 	expectMessage := discord.Message{
 		ID:        12,
-		ChannelID: r.dmID,
+		ChannelID: dmID,
 		Author:    ctx.Author,
 		Content:   data.Content,
 	}
@@ -123,7 +125,7 @@ func TestTracker_EditedGuildMessages(t *testing.T) {
 		},
 	}
 
-	r := NewTracker(s, false)
+	r := NewTracker(WrapState(s, false))
 
 	data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
@@ -164,16 +166,18 @@ func TestTracker_EditedDMs(t *testing.T) {
 		},
 	}
 
-	r := &Tracker{
-		s:    s,
-		dmID: 789,
-	}
+	var dmID discord.ChannelID = 789
+
+	baseReplier := &wrappedReplier{s: s, dmID: dmID}
+	baseReplier.dmOnce.Do(func() {})
+
+	r := &Tracker{r: baseReplier}
 
 	data := api.EditMessageData{Content: option.NewNullableString("abc")}
 
 	expectMessage := discord.Message{
 		ID:        12,
-		ChannelID: r.dmID,
+		ChannelID: dmID,
 		Author:    ctx.Author,
 		Content:   data.Content.Val,
 	}
@@ -305,7 +309,7 @@ func TestTracker_ReplyMessage(t *testing.T) {
 
 			m, s := state.NewMocker(t)
 
-			r := NewTracker(s, c.inlineReply)
+			r := NewTracker(WrapState(s, c.inlineReply))
 
 			m.SendMessageComplex(c.expectData, c.expectMessage)
 
@@ -339,7 +343,7 @@ func TestTracker_ReplyDM(t *testing.T) {
 
 		var dmID discord.ChannelID = 789
 
-		r := NewTracker(s, false)
+		r := NewTracker(WrapState(s, false))
 
 		data := api.SendMessageData{Content: "abc"}
 
@@ -382,10 +386,10 @@ func TestTracker_ReplyDM(t *testing.T) {
 			},
 		}
 
-		r := &Tracker{
-			s:    s,
-			dmID: ctx.ChannelID,
-		}
+		baseReplier := &wrappedReplier{s: s, dmID: ctx.ChannelID}
+		baseReplier.dmOnce.Do(func() {})
+
+		r := &Tracker{r: baseReplier}
 
 		data := api.SendMessageData{Content: "abc"}
 
