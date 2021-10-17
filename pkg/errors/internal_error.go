@@ -502,6 +502,10 @@ func (e *InternalError) Format(s fmt.State, verb rune) {
 //
 // Handle will never return a non-nil error.
 func (e *InternalError) Handle(s *state.State, ctx *plugin.Context) error {
+	if e == nil {
+		return nil
+	}
+
 	var err Error = e
 
 	if derr := discorderr.As(e); derr != nil {

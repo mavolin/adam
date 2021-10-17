@@ -29,7 +29,9 @@ func (h ctxErrorHandler) HandleError(err error) {
 }
 
 func (h ctxErrorHandler) HandleErrorSilently(err error) {
-	h.HandleError(errors.Silent(err))
+	if err != nil {
+		h(errors.Silent(err))
+	}
 }
 
 // =============================================================================
