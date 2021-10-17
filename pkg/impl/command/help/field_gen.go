@@ -197,10 +197,10 @@ func (h *Help) genArguments(
 		typeName := arg.GetType().GetName(ctx.Localizer)
 
 		if b.Len() > 0 {
-			b.WriteRune('\n')
+			b.WriteString("\n\n")
 		}
 
-		b.WriteRune('`')
+		b.WriteString("**`")
 
 		b.WriteString(name)
 
@@ -217,7 +217,7 @@ func (h *Help) genArguments(
 			b.WriteRune(')')
 		}
 
-		b.WriteString("` - ")
+		b.WriteString("`** - ")
 		b.WriteString(desc)
 	}
 
@@ -232,10 +232,10 @@ func (h *Help) genArguments(
 		typeName := arg.GetType().GetName(ctx.Localizer)
 
 		if b.Len() > 0 {
-			b.WriteRune('\n')
+			b.WriteString("\n\n")
 		}
 
-		b.WriteRune('`')
+		b.WriteString("**`")
 		b.WriteString(name)
 
 		variadic := cmd.Args().IsVariadic() && i == len(optionalArgs)-1
@@ -251,7 +251,7 @@ func (h *Help) genArguments(
 			b.WriteRune(')')
 		}
 
-		b.WriteString("` - ")
+		b.WriteString("`** - ")
 		b.WriteString(desc)
 	}
 
@@ -279,10 +279,10 @@ func (h *Help) genFlags(b *strings.Builder, ctx *plugin.Context, cmd plugin.Reso
 
 	for i, flag := range flags {
 		if i > 0 {
-			b.WriteRune('\n')
+			b.WriteString("\n\n")
 		}
 
-		b.WriteRune('`')
+		b.WriteString("**`")
 		b.WriteString(cmd.ArgParser().FormatFlag(flag.GetName()))
 
 		for _, alias := range flag.GetAliases() {
@@ -299,7 +299,7 @@ func (h *Help) genFlags(b *strings.Builder, ctx *plugin.Context, cmd plugin.Reso
 				b.WriteRune('+')
 			}
 
-			b.WriteString(")`")
+			b.WriteString(")`**")
 		}
 
 		desc := flag.GetDescription(ctx.Localizer)

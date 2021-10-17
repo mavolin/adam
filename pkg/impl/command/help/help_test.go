@@ -316,10 +316,10 @@ func TestHelp_Invoke(t *testing.T) {
 				WithField(ctx.MustLocalize(usageFieldNameSingle),
 					"```abc <my arg>, <date>, [optional arg], [decimal+]```").
 				WithField(ctx.MustLocalize(argumentsFieldName),
-					"`my arg (Text)` - my arg description\n`date` - date description\n"+
-						"`decimal (Decimal+)` - decimal description").
+					"**`my arg (Text)`** - my arg description\n\n**`date`** - date description\n\n"+
+						"**`decimal (Decimal+)`** - decimal description").
 				WithField(ctx.MustLocalize(flagsFieldName),
-					"`-flag (User)` - flag description\n`-multi, -m (ID+)`").
+					"**`-flag (User)`** - flag description\n\n**`-multi, -m (ID+)`**").
 				WithField(ctx.MustLocalize(examplesFieldName),
 					"```abc example one, 2021-06-24``````abc example two, 2003-05-09```").
 				Build(ctx.Localizer)
