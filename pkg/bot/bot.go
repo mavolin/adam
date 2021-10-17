@@ -144,6 +144,9 @@ func (b *Bot) Open(singleTimeout time.Duration) error {
 //
 // If no gateway.Intents were added to the State before opening, Open will
 // derive intents from the registered handlers.
+//
+// gateway.IntentGuildMessages and gateway.IntentDirectMessages will always be
+// added.
 // Additionally, gateway.IntentGuilds will be added, if guild caching is
 // enabled.
 //
@@ -154,14 +157,15 @@ func (b *Bot) Open(singleTimeout time.Duration) error {
 // Refer to the docs of state.State.Open and state.State.CalcOpenTimeout for
 // more information.
 func (b *Bot) OpenContext(ctx context.Context) error {
+	b.AddIntents(gateway.IntentGuildMessages)
+	b.AddIntents(gateway.IntentDirectMessages)
+
+	if b.State.Cabinet.GuildStore != store.Noop {
+		b.AddIntents(gateway.IntentGuilds)
+	}
+
 	if b.State.Gateway.Identifier.Intents == 0 {
 		b.AddIntents(b.State.DeriveIntents())
-		b.AddIntents(gateway.IntentGuildMessages)
-		b.AddIntents(gateway.IntentDirectMessages)
-
-		if b.State.Cabinet.GuildStore != store.Noop {
-			b.AddIntents(gateway.IntentGuilds)
-		}
 	}
 
 	if b.autoOpen {
