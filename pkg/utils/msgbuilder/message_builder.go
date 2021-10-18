@@ -639,7 +639,7 @@ func (b *Builder) Await(timeout time.Duration, disable bool) error {
 func (b *Builder) AwaitContext(ctx context.Context, disable bool) (err error) {
 	if disable {
 		defer func() {
-			if err := b.disableAllComponents(); err != nil {
+			if err := b.DisableComponents(); err != nil {
 				b.pluginCtx.HandleErrorSilently(err)
 			}
 		}()
@@ -832,8 +832,8 @@ func (b *Builder) watchTyping(
 // Utils
 // =====================================================================================
 
-// disableAllComponents disables all components and edits the message.
-func (b *Builder) disableAllComponents() error {
+// DisableComponents disables all components, by editing the sent message.
+func (b *Builder) DisableComponents() error {
 	if b.components != nil {
 		for _, c := range *b.components {
 			c.disable()
