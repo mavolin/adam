@@ -272,7 +272,7 @@ func (b *SelectBuilder) With(option *SelectOptionBuilder) *SelectBuilder {
 // WithDefault adds the passed *SelectOptionBuilder as the default option to the
 // SelectBuilder.
 func (b *SelectBuilder) WithDefault(option *SelectOptionBuilder) *SelectBuilder {
-	option._default = true
+	option.default_ = true
 	b.options = append(b.options, option)
 
 	return b
@@ -358,7 +358,7 @@ type SelectOptionBuilder struct {
 	label       *i18n.Config
 	description *i18n.Config
 	emoji       *discord.ButtonEmoji
-	_default    bool
+	default_    bool
 
 	id  string
 	val interface{}
@@ -410,8 +410,9 @@ func (b *SelectOptionBuilder) WithUnicodeEmoji(emoji string) *SelectOptionBuilde
 
 func (b *SelectOptionBuilder) Build(l *i18n.Localizer) (selectOption discord.SelectComponentOption, err error) {
 	selectOption = discord.SelectComponentOption{
-		Value: b.id,
-		Emoji: b.emoji,
+		Value:   b.id,
+		Emoji:   b.emoji,
+		Default: b.default_,
 	}
 
 	selectOption.Label, err = l.Localize(b.label)
