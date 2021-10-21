@@ -380,7 +380,7 @@ func TestThrottlingError_Handle(t *testing.T) {
 		Replier:   newMockedWrappedReplier(s, 123, 0),
 	}
 
-	expectEmbed := shared.ErrorEmbedTemplate(ctx.Localizer)
+	expectEmbed := shared.InfoEmbedTemplate(ctx.Localizer)
 	expectEmbed.Description = expectDesc
 
 	m.SendEmbeds(discord.Message{
