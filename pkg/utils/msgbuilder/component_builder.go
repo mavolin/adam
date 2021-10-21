@@ -6,7 +6,6 @@ import (
 	"sync/atomic"
 
 	"github.com/diamondburned/arikawa/v3/discord"
-	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 
 	"github.com/mavolin/adam/pkg/errors"
@@ -25,14 +24,14 @@ type (
 	TopLevelComponentBuilder interface {
 		ComponentBuilder
 		// handle handles the passed *gateway.InteractionData.
-		handle(*gateway.InteractionData) (bool, error)
+		handle(*discord.ComponentInteractionData) (bool, error)
 	}
 
 	// ActionRowComponentBuilder is the abstraction of a builder that produces
 	// components that can be put into an ActionRowBuilder.
 	ActionRowComponentBuilder interface {
 		ComponentBuilder
-		is(data *gateway.InteractionData) bool
+		is(*discord.ComponentInteractionData) bool
 		value() interface{}
 	}
 )
@@ -82,7 +81,7 @@ func (b *ActionRowBuilder) disable() {
 	}
 }
 
-func (b *ActionRowBuilder) handle(data *gateway.InteractionData) (bool, error) {
+func (b *ActionRowBuilder) handle(data *discord.ComponentInteractionData) (bool, error) {
 	for _, c := range b.components {
 		if c.is(data) {
 			result := reflect.ValueOf(c.value())
@@ -174,7 +173,7 @@ func (b *ButtonBuilder) disable() {
 	b.Disable()
 }
 
-func (b *ButtonBuilder) is(data *gateway.InteractionData) bool {
+func (b *ButtonBuilder) is(data *discord.ComponentInteractionData) bool {
 	return data.CustomID == b.id
 }
 
@@ -278,7 +277,7 @@ func (b *SelectBuilder) WithDefault(option *SelectOptionBuilder) *SelectBuilder 
 	return b
 }
 
-func (b *SelectBuilder) handle(data *gateway.InteractionData) (bool, error) {
+func (b *SelectBuilder) handle(data *discord.ComponentInteractionData) (bool, error) {
 	if data.CustomID != b.id {
 		return false, nil
 	}
@@ -347,7 +346,7 @@ func (b *SelectBuilder) Build(l *i18n.Localizer) (c discord.Component, err error
 		sel.Options[i] = opt
 	}
 
-	return discord.ActionRowComponent{Components: []discord.Component{sel}}, nil
+	return &discord.ActionRowComponent{Components: []discord.Component{sel}}, nil
 }
 
 // =============================================================================

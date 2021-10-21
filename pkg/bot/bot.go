@@ -8,6 +8,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/state/store"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/mavolin/disstate/v4/pkg/event"
 	"github.com/mavolin/disstate/v4/pkg/state"
 
@@ -130,17 +131,7 @@ func New(o Options) (b *Bot, err error) {
 	return b, nil
 }
 
-// Open takes in a timeout that is applied to each shard's call to
-// gateway.Gateway.Open individually.
-// This eliminates the need to account for rate limits between each open.
-func (b *Bot) Open(singleTimeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), b.State.CalcOpenTimeout(singleTimeout))
-	defer cancel()
-
-	return b.OpenContext(ctx)
-}
-
-// OpenContext opens a connection to the gateway and starts the bot.
+// Open opens a connection to the gateway and starts the bot.
 //
 // If no gateway.Intents were added to the State before opening, Open will
 // derive intents from the registered handlers.
@@ -150,22 +141,17 @@ func (b *Bot) Open(singleTimeout time.Duration) error {
 // Additionally, gateway.IntentGuilds will be added, if guild caching is
 // enabled.
 //
-// The context Bot accepts is prone to the same caveats as the one of
-// state.State.Open.
-// Therefore, if using timeouts, you should use Bot.State.CalcOpenTimeout
-// instead of using a fixed number.
-// Refer to the docs of state.State.Open and state.State.CalcOpenTimeout for
-// more information.
-func (b *Bot) OpenContext(ctx context.Context) error {
+// Refer to the doc of State.Open to understand how the timeout is applied.
+func (b *Bot) Open(timeout time.Duration) error {
+	if i := b.State.Gateway.Identifier.Intents; i == nil || i == option.ZeroUint {
+		b.AddIntents(b.State.DeriveIntents())
+	}
+
 	b.AddIntents(gateway.IntentGuildMessages)
 	b.AddIntents(gateway.IntentDirectMessages)
 
 	if b.State.Cabinet.GuildStore != store.Noop {
 		b.AddIntents(gateway.IntentGuilds)
-	}
-
-	if b.State.Gateway.Identifier.Intents == 0 {
-		b.AddIntents(b.State.DeriveIntents())
 	}
 
 	if b.autoOpen {
@@ -194,7 +180,7 @@ func (b *Bot) OpenContext(ctx context.Context) error {
 		}, b.MessageUpdateMiddlewares...)
 	}
 
-	return b.State.Open(ctx)
+	return b.State.Open(timeout)
 }
 
 func (b *Bot) openModule(mod plugin.Module) error {
@@ -237,8 +223,12 @@ func (b *Bot) callOpen(i interface{}) (err error) {
 // Close closes the websocket connection to Discord's gateway gracefully.
 // Afterwards, if AutoOpen is enabled, it calls Close on all commands.
 // Close may take in an optional *Bot argument, and may return an error.
-func (b *Bot) Close() error {
-	if err := b.State.Close(); err != nil {
+//
+// The context given to close is only used to close the event handler.
+// It is guaranteed that upon returning, all gateway connections are closed,
+// unless closing a gateway returned an error.
+func (b *Bot) Close(ctx context.Context) error {
+	if err := b.State.Close(ctx); err != nil {
 		return err
 	}
 

@@ -699,7 +699,7 @@ func (b *Builder) handleInteractions(ctx context.Context, doneChan chan<- error)
 	var mut sync.Mutex
 
 	return b.state.AddHandler(func(_ *state.State, e *event.InteractionCreate) {
-		if e.Data == nil || e.Message.ID != b.messageID ||
+		if e.Data == nil || e.Data.Type() != discord.ComponentInteraction || e.Message.ID != b.messageID ||
 			(e.User != nil && e.User.ID != b.userID) || (e.Member != nil && e.Member.User.ID != b.userID) {
 			return
 		}
@@ -713,8 +713,10 @@ func (b *Builder) handleInteractions(ctx context.Context, doneChan chan<- error)
 		default:
 		}
 
+		data := e.Data.(*discord.ComponentInteractionData)
+
 		for i, c := range *b.components {
-			ok, err := c.handle(e.Data)
+			ok, err := c.handle(data)
 			if err != nil { // something went wrong, this takes precedence
 				sendDone(ctx, doneChan, err)
 
