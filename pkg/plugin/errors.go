@@ -411,7 +411,7 @@ var HandleThrottlingError = func(s *state.State, ctx *Context, terr *ThrottlingE
 		return err
 	}
 
-	e := shared.ErrorEmbedTemplate(ctx.Localizer)
+	e := shared.InfoEmbedTemplate(ctx.Localizer)
 	e.Description = desc
 
 	_, err = ctx.ReplyEmbeds(e)

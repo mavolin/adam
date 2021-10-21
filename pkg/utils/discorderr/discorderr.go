@@ -7,8 +7,8 @@ import (
 	"github.com/diamondburned/arikawa/v3/utils/httputil"
 )
 
-// As calls errors.As(*httputil.HTTPError) on the passed error.
-// If errors.As returns true, As returns the httputil.HTTPError, otherwise As
+// As calls errors.As(**httputil.HTTPError) on the passed error.
+// If errors.As returns true, As returns the *httputil.HTTPError, otherwise As
 // returns nil.
 func As(err error) (herr *httputil.HTTPError) {
 	if errors.As(err, &herr) {
