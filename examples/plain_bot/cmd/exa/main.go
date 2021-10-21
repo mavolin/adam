@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
@@ -44,7 +45,10 @@ func main() {
 
 	log.Println("received SIGINT, shutting down")
 
-	if err = b.Close(); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err = b.Close(ctx); err != nil {
 		log.Println("could not close bot properly:", err.Error())
 	}
 }
