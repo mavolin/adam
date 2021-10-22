@@ -6,7 +6,7 @@ package emoji
 
 import "strings"
 
-// discord uses Unicode Emoji version 13.0
+// discord uses Unicode Emoji version 13.1
 //go:generate go run ../../../tools/codegen/emoji/... 13.1
 
 type (
