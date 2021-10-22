@@ -25,7 +25,6 @@ func New() *Kick {
 	return &Kick{
 		LocalizedMeta: command.LocalizedMeta{
 			Name:             "kick",
-			Aliases:          nil,
 			ShortDescription: shortDescription,
 			ExampleArgs:      examples,
 			Args: &arg.LocalizedConfig{
@@ -37,7 +36,6 @@ func New() *Kick {
 					},
 				},
 			},
-			Hidden:         false,
 			ChannelTypes:   plugin.GuildChannels,
 			BotPermissions: discord.PermissionSendMessages | discord.PermissionKickMembers,
 			Restrictions:   restriction.UserPermissions(discord.PermissionManageGuild),

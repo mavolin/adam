@@ -26,7 +26,6 @@ func New() *Kick {
 	return &Kick{
 		Meta: command.Meta{
 			Name:             "kick",
-			Aliases:          nil,
 			ShortDescription: "Kicks a user.",
 			ExampleArgs: plugin.ExampleArgs{
 				{Args: []string{"@Clyde", "@Clyde, self-botting"}},
@@ -40,7 +39,6 @@ func New() *Kick {
 					},
 				},
 			},
-			Hidden:         false,
 			ChannelTypes:   plugin.GuildChannels,
 			BotPermissions: discord.PermissionSendMessages | discord.PermissionKickMembers,
 			Restrictions:   restriction.UserPermissions(discord.PermissionManageGuild),

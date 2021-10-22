@@ -1,8 +1,7 @@
 # Example Bots
 
-In this directory you will find two example bot. Both bots provide the same commands, however, [Exal](./localized_bot)
-is localized and [Exa](./plain_bot) is not. You can use either of these bots as reference, if you are first getting
-started, or are unsure about how to structure your bot.
+In this directory you will find two example bots. 
+Both bots provide the same commands, however, [Exal](./localized_bot) is localized and [Exa](./plain_bot) is not.
 
 ## Commands
 

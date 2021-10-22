@@ -21,7 +21,6 @@ func New() *Embed {
 	return &Embed{
 		Meta: command.Meta{
 			Name:             "embed",
-			Aliases:          nil,
 			ShortDescription: "Create an embed.",
 			LongDescription:  "Create a custom embed from the input you give me.",
 			BotPermissions:   discord.PermissionSendMessages,

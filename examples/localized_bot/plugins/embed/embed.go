@@ -22,7 +22,6 @@ func New() *Embed {
 	return &Embed{
 		LocalizedMeta: command.LocalizedMeta{
 			Name:             "embed",
-			Aliases:          nil,
 			ShortDescription: shortDescription,
 			LongDescription:  longDescription,
 			BotPermissions:   discord.PermissionSendMessages,
