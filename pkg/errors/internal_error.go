@@ -552,10 +552,10 @@ var HandleDiscordError = func(ierr *InternalError, derr *httputil.HTTPError) Err
 
 // Log logs an InternalError.
 //
-// As InternalErrors can arise during the execution of a default middleware,
-// not all context fields might be set.
-// Hence, nil-checks should be performed on every nillable field, that are not
-// set by the router directly.
+// As InternalErrors can arise during any middleware, not all fields of the
+// Context might be set.
+// Hence, nil-checks should be performed on every nillable field not set by the
+// router directly.
 var Log = func(ctx *plugin.Context, err *InternalError) {
 	if ctx.InvokedCommand == nil {
 		log.Printf("internal error: %+v\n%+v\n", err, err.StackTrace())

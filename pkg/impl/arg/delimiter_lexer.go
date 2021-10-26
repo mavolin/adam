@@ -61,7 +61,7 @@ func (i delimiterItemType) String() string {
 func newCommaLexer(args string, delim rune) *delimiterLexer {
 	l := &delimiterLexer{
 		raw:          []rune(args),
-		emitChan:     make(chan delimiterItem, 2), // pseudo ring buffer, see nextItem
+		emitChan:     make(chan delimiterItem, 1), // pseudo ring buffer, see nextItem
 		parsingFlags: true,
 		delimiter:    delim,
 	}
@@ -124,7 +124,7 @@ func (l *delimiterLexer) peek(numAhead int) rune {
 	return l.raw[l.pos+numAhead-1]
 }
 
-// skip skips the next num characters.
+// skip skips the next character.
 func (l *delimiterLexer) skip() {
 	if l.has(1) {
 		l.pos++
@@ -147,7 +147,7 @@ func (l *delimiterLexer) emit(typ delimiterItemType) {
 }
 
 func (l *delimiterLexer) ignoreWhitespace() {
-	for l.has(1) { // skip whitespace
+	for l.has(1) {
 		if !strings.ContainsRune(shared.Whitespace, l.next()) {
 			l.backup()
 			break
