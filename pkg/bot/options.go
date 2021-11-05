@@ -88,12 +88,6 @@ type Options struct {
 	//
 	// Default: false
 	NoAutoOpen bool
-	// AutoAddHandlers specifies whether all methods of plugins that resemble
-	// a handler func should be added automatically.
-	// All methods that don't represent a handler will be discarded.
-	//
-	// Default: false
-	AutoAddHandlers bool
 
 	// ThrottlerCancelChecker is the function run every time a command returns
 	// with a non-nil error.

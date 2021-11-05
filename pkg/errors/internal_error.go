@@ -233,10 +233,8 @@ func Wrap(err error, message string) Error {
 	return wrap(err, message, false)
 }
 
-// WrapSilent wraps the passed error with passed message, enriches the
-// error with a stack trace.
-// The returned error will be an *InternalError with no description, unless
-// one of the below exceptions says applies.
+// WrapSilent wraps the passed error with passed message, enriches the error with a stack trace. The returned error will
+// be an *InternalError with no description, unless one of the below exceptions says applies.
 //
 // The returned error will print as:
 // 	fmt.Sprintf("%s: %s, fmt.Sprintf(format, a...), err.Error())

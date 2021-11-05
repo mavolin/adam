@@ -35,8 +35,6 @@ type Bot struct {
 
 	autoOpen bool
 
-	autoAddHandlers bool
-
 	ErrorHandler func(error, *state.State, *plugin.Context)
 
 	PanicHandler             func(recovered interface{}, s *state.State, ctx *plugin.Context)
@@ -103,7 +101,6 @@ func New(o Options) (b *Bot, err error) {
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
 	b.autoOpen = !o.NoAutoOpen
-	b.autoAddHandlers = o.AutoAddHandlers
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
@@ -132,6 +129,9 @@ func New(o Options) (b *Bot, err error) {
 }
 
 // Open opens a connection to the gateway and starts the bot.
+// If AutoOpen is enabled, Open will call the Open method of every command
+// and module that implements it first.
+// Open may take in an optional *Bot argument and may return an error.
 //
 // If no gateway.Intents were added to the State before opening, Open will
 // derive intents from the registered handlers.
@@ -294,15 +294,8 @@ func (b *Bot) AddIntents(i gateway.Intents) {
 }
 
 // AddCommand adds the passed top-level command to the bot.
-//
-// If automatic handler adding is enabled, all methods of the Command
-// representing a handler func will be added to the State's event handler.
 func (b *Bot) AddCommand(cmd plugin.Command) {
 	b.pluginResolver.AddBuiltInCommand(cmd)
-
-	if b.autoAddHandlers {
-		b.State.AutoAddHandlers(cmd)
-	}
 }
 
 // AddModule adds the passed top-level module to the Bot.
@@ -312,10 +305,6 @@ func (b *Bot) AddCommand(cmd plugin.Command) {
 // The same goes for all sub-modules and sub-commands of the module.
 func (b *Bot) AddModule(mod plugin.Module) {
 	b.pluginResolver.AddBuiltInModule(mod)
-
-	if b.autoAddHandlers {
-		b.autoAddModuleHandlers(mod)
-	}
 }
 
 func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
@@ -356,16 +345,14 @@ func (b *Bot) AddPostMiddleware(f interface{}) {
 	b.postMiddlewares.AddMiddleware(f)
 }
 
-// AddPluginSource adds the passed PluginSourceFunc under the passed name.
-// The is similar name to a key and can be used later on to distinguish between
+// AddPluginSource adds the passed PluginSourceFunc under the passed unique
+// name.
+// The name is similar to a key and can be used later on to distinguish between
 // different plugin sources.
 // It is typically snake_case.
 //
 // 'built_in' is reserved for built-in plugins, and AddPluginSource will panic
 // if attempting to use it.
-//
-// If there is another plugin source with the passed name, it will be removed
-// first.
 //
 // The plugin sources will be used in the order they are added in.
 func (b *Bot) AddPluginSource(name string, f PluginSourceFunc) {

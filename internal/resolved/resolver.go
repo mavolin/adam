@@ -34,12 +34,6 @@ func NewPluginResolver(defaultArgParser plugin.ArgParser) *PluginResolver {
 }
 
 func (r *PluginResolver) AddSource(name string, f PluginSourceFunc) {
-	for i, rp := range r.CustomSources {
-		if rp.Name == name {
-			r.CustomSources = append(r.CustomSources[:i], r.CustomSources[i+1:]...)
-		}
-	}
-
 	r.CustomSources = append(r.CustomSources, UnqueriedPluginSource{
 		Name: name,
 		Func: f,
