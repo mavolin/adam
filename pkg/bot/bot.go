@@ -307,16 +307,6 @@ func (b *Bot) AddModule(mod plugin.Module) {
 	b.pluginResolver.AddBuiltInModule(mod)
 }
 
-func (b *Bot) autoAddModuleHandlers(mod plugin.Module) {
-	for _, cmd := range mod.GetCommands() {
-		b.State.AutoAddHandlers(cmd)
-	}
-
-	for _, mod := range mod.GetModules() {
-		b.autoAddModuleHandlers(mod)
-	}
-}
-
 // TryAddPostMiddleware adds a middleware to the Bot that is invoked after all
 // command and module middlewares were called.
 // The order of invocation of post middlewares is the same as the order they
