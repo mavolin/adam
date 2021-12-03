@@ -113,7 +113,7 @@ func NewSettingsRetriever(settingsProvider SettingsProvider) Middleware {
 // The prefix must either be the mention of the bot, or one of the prefixes
 // found in the context.
 //
-// Direct message don't require prefixes, however, if a message starts with a
+// Direct messages don't require prefixes, however, if a message starts with a
 // prefix, it will still be stripped from the invoke.
 //
 // If the prefix doesn't match, an *errors.InformationalError will be returned.
@@ -152,7 +152,7 @@ func CheckPrefix(next CommandFunc) CommandFunc {
 			}
 		}
 
-		// prefixes aren't required in direct messages, so DM's always "match"
+		// prefixes aren't required in direct messages, so DMs always "match"
 		if ctx.GuildID == 0 {
 			return next(s, ctx)
 		}

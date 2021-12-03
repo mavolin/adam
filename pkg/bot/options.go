@@ -73,6 +73,9 @@ type Options struct {
 
 	// AllowBot specifies whether bots may trigger commands.
 	//
+	// Settings this field has no effect if NoDefaultMiddlewares is set to
+	// true.
+	//
 	// Default: false
 	AllowBot bool
 
@@ -94,9 +97,10 @@ type Options struct {
 	// If the function returns true, the command's throttler will not count the
 	// invoke.
 	//
-	// Settings this field has no effect, if NoDefaultMiddlewares is set to true.
+	// Settings this field has no effect if NoDefaultMiddlewares is set to
+	// true.
 	//
-	// Default: DefaultThrottlerErrorCheck
+	// Default: DefaultThrottlerCancelCheck
 	ThrottlerCancelChecker func(error) bool
 
 	// Cabinet is the store.Cabinet used for caching.
@@ -167,7 +171,7 @@ type Options struct {
 	// both.
 	Gateways []*gateway.Gateway
 
-	// Rescale is the function called, if Discord closes any of the gateways
+	// Rescale is the function called if Discord closes any of the gateways
 	// with a 4011 close code aka. 'Sharding Required'.
 	//
 	// Usage
@@ -230,11 +234,11 @@ type Options struct {
 	// Also keep in mind that middlewares added after field-setting
 	// middlewares, may rely on those field being set.
 	// Fully removing a default middleware that sets some fields without
-	// filling them otherwise is highly discouraged, as plugins will assume
-	// all fields to be filled.
+	// setting  them otherwise is highly discouraged, as plugins will assume
+	// all fields to be set.
 	//
-	// To see which fields are always filled, i.e. which fields are available
-	// to all middlewares, refer to the source of Bot.Route.
+	// To see which fields are always set, i.e. which fields are available
+	// to all middlewares, refer to the doc of Bot.Route.
 	//
 	// By default, the following middlewares are added upon creation of the
 	// bot.
@@ -265,7 +269,7 @@ func (o *Options) SetDefaults() (err error) {
 	}
 
 	if o.ThrottlerCancelChecker == nil {
-		o.ThrottlerCancelChecker = DefaultThrottlerErrorCheck
+		o.ThrottlerCancelChecker = DefaultThrottlerCancelCheck
 	}
 
 	if o.GatewayErrorHandler == nil {
@@ -309,15 +313,17 @@ func (o *Options) SetDefaults() (err error) {
 // Direct Messages are not subject to this limitation.
 // However, if prefixes are returned for a direct message invoke and the user
 // prefixes their message with one, the prefix will still be stripped.
-// Similarly, if the user uses the bot mention prefix in a direct message, it
+// Similarly, if the user prefixes a direct message with the bot's mention, it
 // will also get stripped.
+// This behavior can be changed by replacing the CheckPrefix default
+// middleware.
 //
-// All spaces, tabs, and newlines, between prefix and the rest of the message
-// will be removed before given to the router.
+// All spaces and newlines between prefix and the rest of the message will be
+// removed before given to the router.
 // If prefixes is empty, the only valid prefix will be a mention of the bot.
 //
-// Prefix matching is lazy, meaning the first matching prefix will be used and
-// the bot will not look for longer prefix that matches as well.
+// Prefix matching is non-exhaustive, meaning the first matching prefix will be
+// used and the bot will not look for longer prefix that matches as well.
 //
 // Second Return Value
 //
@@ -351,7 +357,7 @@ func (o *Options) SetDefaults() (err error) {
 // identified as a command.
 //
 // For those reasons, error handling is left implementation-specific, and you
-// are responsible for ensuring that error are properly captured.
+// are responsible for ensuring that errors are properly captured.
 type SettingsProvider func(b *event.Base, m *discord.Message) (prefixes []string, localizer *i18n.Localizer, ok bool)
 
 // StaticSettings creates a new SettingsProvider that returns the same prefixes
@@ -367,7 +373,9 @@ func StaticSettings(prefixes ...string) SettingsProvider {
 // Defaults
 // =====================================================================================
 
-func DefaultThrottlerErrorCheck(err error) bool {
+// DefaultThrottlerCancelCheck checks if the error is an *InformationalError.
+// If so, it returns false otherwise it returns true.
+func DefaultThrottlerCancelCheck(err error) bool {
 	var ierr *errors.InformationalError
 	return !errors.As(err, &ierr)
 }
