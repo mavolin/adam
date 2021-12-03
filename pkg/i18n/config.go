@@ -134,8 +134,7 @@ func (t Term) AsConfig() *Config {
 }
 
 // Fallback is the English fallback used if a translation is not available.
-// The message is created using go's text/template system and '{{' and '}}' are
-// used as left and right delimiters, respectively.
+// The message is created using go's text/template system.
 type Fallback struct {
 	// One is the singular form of the fallback message, if there is any.
 	One string
@@ -143,6 +142,9 @@ type Fallback struct {
 	// This is also the default form, meaning if no pluralization is needed
 	// this field should be used.
 	Other string
+
+	// Delims is the delimiter pair given to template.Template.Delim.
+	Delims [2]string
 }
 
 // genTranslation attempts to generate the translation using the passed
@@ -152,10 +154,10 @@ func (f *Fallback) genTranslation(placeholderData map[string]interface{}, plural
 		if isOne, err := isOne(plural); err != nil { // attempt to check if plural is == 1
 			return "", err
 		} else if isOne {
-			return fillTemplate(f.One, placeholderData)
+			return fillTemplate(f.One, placeholderData, f.Delims)
 		}
 	}
 
 	// no plural information or plural was != 1
-	return fillTemplate(f.Other, placeholderData)
+	return fillTemplate(f.Other, placeholderData, f.Delims)
 }
