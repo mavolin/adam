@@ -13,6 +13,8 @@ github.com/mavolin/dismock/v3 v3.0.0-20211021161430-c1b022969c48 h1:Y/QAX3WF4Rri
 github.com/mavolin/dismock/v3 v3.0.0-20211021161430-c1b022969c48/go.mod h1:7SsC5QuEsGYdTnks/DC+e6jbzag7WAtwKNLk99/Q83s=
 github.com/mavolin/disstate/v4 v4.0.0-20211021161749-693e37b1dacf h1:6KloAuOvZYgRgRzaF2aQxIkHHRQXVjOy4rphpE7JWbc=
 github.com/mavolin/disstate/v4 v4.0.0-20211021161749-693e37b1dacf/go.mod h1:Xi65H3yHcgfonioLM2yUmQyTvrpYhUTmEDJUcJAG004=
+github.com/mavolin/disstate/v4 v4.0.0-20211107170227-d73fcde212f1 h1:+auAMlemCMM03cSl5tyYGJGM4OVnOfwt18JMtPSFqec=
+github.com/mavolin/disstate/v4 v4.0.0-20211107170227-d73fcde212f1/go.mod h1:Xi65H3yHcgfonioLM2yUmQyTvrpYhUTmEDJUcJAG004=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
