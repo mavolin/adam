@@ -28,7 +28,6 @@ var units = map[string]int64{
 	"hr":  int64(Hour),
 	"d":   int64(Day),
 	"w":   int64(Week),
-	"m":   int64(Month),
 	"mon": int64(Month),
 	"y":   int64(Year),
 	"yr":  int64(Year),
