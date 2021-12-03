@@ -24,8 +24,7 @@ var EmptyConfig = new(Config)
 type Config struct {
 	// Term is the key of the translation.
 	//
-	// Term may be empty, in which case the Config will be considered static.
-	// A static Config will always resort to it's Other fallback.
+	// Term may be empty in which case Fallback will always be used.
 	Term Term
 	// Placeholders contains the placeholder data.
 	// This can either be a map[string]string or a struct.
@@ -54,9 +53,13 @@ func NewTermConfig(term Term) *Config {
 	return term.AsConfig()
 }
 
-// NewStaticConfig returns a *Config that always produces string s.
+// NewStaticConfig returns a static *Config that always produces s, even
+// if '{{' and '}}' are used.
 func NewStaticConfig(s string) *Config {
-	return NewFallbackConfig("", s)
+	c := NewFallbackConfig("", s)
+	c.Fallback.literal = true
+
+	return c
 }
 
 // NewFallbackConfig is a utility function that can be used to inline
@@ -135,6 +138,7 @@ func (t Term) AsConfig() *Config {
 
 // Fallback is the English fallback used if a translation is not available.
 // The message is created using go's text/template system.
+// `{{` and `}}` are used as delimiters, respectively.
 type Fallback struct {
 	// One is the singular form of the fallback message, if there is any.
 	One string
@@ -143,8 +147,7 @@ type Fallback struct {
 	// this field should be used.
 	Other string
 
-	// Delims is the delimiter pair given to template.Template.Delim.
-	Delims [2]string
+	literal bool
 }
 
 // genTranslation attempts to generate the translation using the passed
@@ -154,10 +157,14 @@ func (f *Fallback) genTranslation(placeholderData map[string]interface{}, plural
 		if isOne, err := isOne(plural); err != nil { // attempt to check if plural is == 1
 			return "", err
 		} else if isOne {
-			return fillTemplate(f.One, placeholderData, f.Delims)
+			return fillTemplate(f.One, placeholderData)
 		}
 	}
 
+	if f.literal {
+		return f.Other, nil
+	}
+
 	// no plural information or plural was != 1
-	return fillTemplate(f.Other, placeholderData, f.Delims)
+	return fillTemplate(f.Other, placeholderData)
 }

@@ -38,7 +38,8 @@ type Text struct {
 	Regexp *regexp.Regexp
 	// RegexpErrorArg is the error message used if an argument doesn't match
 	// the regular expression defined.
-	// If you want to use an unlocalized error, use i18n.NewStaticConfig.
+	// If you want to use an unlocalized error, use a i18n.Config with a set
+	// Fallback.Other.
 	//
 	// Available Placeholders are:
 	//
@@ -51,7 +52,8 @@ type Text struct {
 	RegexpErrorArg *i18n.Config
 	// RegexpErrorFlag is the error message used if a flag doesn't match the
 	// regular expression defined.
-	// If you want to use an unlocalized error, use i18n.NewStaticConfig.
+	// If you want to use an unlocalized error, use a i18n.Config with a set
+	// Fallback.Other.
 	//
 	// Available Placeholders are:
 	//

@@ -18,6 +18,18 @@ func TestNewTermConfig(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
+func TestNewStaticConfig(t *testing.T) {
+	t.Parallel()
+
+	expect := "{{abc}}"
+
+	c := NewStaticConfig(expect)
+
+	actual, err := NewFallbackLocalizer().Localize(c)
+	require.NoError(t, err)
+	assert.Equal(t, expect, actual)
+}
+
 func TestNewFallbackConfig(t *testing.T) {
 	t.Parallel()
 
