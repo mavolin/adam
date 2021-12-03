@@ -136,7 +136,7 @@ func Test_fillName(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				t.Parallel()
 
-				actual, err := fillTemplate(c.tmpl, c.placeholders)
+				actual, err := fillTemplate(c.tmpl, c.placeholders, [2]string{})
 				require.NoError(t, err)
 				assert.Equal(t, c.expect, actual)
 			})
@@ -151,7 +151,7 @@ func Test_fillName(t *testing.T) {
 
 			tmpl := "{{{.Error}}"
 
-			actual, err := fillTemplate(tmpl, nil)
+			actual, err := fillTemplate(tmpl, nil, [2]string{})
 			assert.Errorf(t, err, "succeeded with return '%s'", actual)
 		})
 	})
