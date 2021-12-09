@@ -83,8 +83,7 @@ func (b *Ban) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	return success.
-		WithPlaceholders(successPlaceholders{
-			Username: m.User.Username,
-		}), nil
+	return success.WithPlaceholders(successPlaceholders{
+		Username: m.User.Username,
+	}), nil
 }

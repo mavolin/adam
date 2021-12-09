@@ -30,26 +30,26 @@ func New() *Embed {
 }
 
 func (e *Embed) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
-	var cancelled bool
+	var cancel bool
 	var title, desc discord.Message
 
 	_, err := msgbuilder.New(s, ctx).
 		WithContentl(titleQuestion).
 		WithAwaitedResponse(&title, 10*time.Second, 5*time.Second).
-		WithComponent(msgbuilder.NewActionRow(&cancelled).
+		WithComponent(msgbuilder.NewActionRow(&cancel).
 			With(msgbuilder.NewButtonl(discord.DangerButton, term.Cancel, true))).
 		ReplyAndAwait(20 * time.Second)
-	if err != nil {
+	if err != nil || cancel {
 		return nil, err
 	}
 
 	_, err = msgbuilder.New(s, ctx).
 		WithContentl(descriptionQuestion).
 		WithAwaitedResponse(&desc, 10*time.Second, 5*time.Second).
-		WithComponent(msgbuilder.NewActionRow(&cancelled).
+		WithComponent(msgbuilder.NewActionRow(&cancel).
 			With(msgbuilder.NewButtonl(discord.DangerButton, term.Cancel, true))).
 		ReplyAndAwait(20 * time.Second)
-	if err != nil {
+	if err != nil || cancel {
 		return nil, err
 	}
 

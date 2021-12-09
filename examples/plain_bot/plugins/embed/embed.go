@@ -38,7 +38,7 @@ func (e *Embed) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error)
 		WithComponent(msgbuilder.NewActionRow(&cancelled).
 			With(msgbuilder.NewButton(discord.DangerButton, "Cancel", true))).
 		ReplyAndAwait(20 * time.Second)
-	if err != nil {
+	if err != nil || cancelled {
 		return nil, err
 	}
 
@@ -48,7 +48,7 @@ func (e *Embed) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error)
 		WithComponent(msgbuilder.NewActionRow(&cancelled).
 			With(msgbuilder.NewButton(discord.DangerButton, "Cancel", true))).
 		ReplyAndAwait(20 * time.Second)
-	if err != nil {
+	if err != nil || cancelled {
 		return nil, err
 	}
 

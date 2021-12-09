@@ -33,7 +33,7 @@ func New() *Ban {
 			Aliases:          []string{"banhammer"},
 			ShortDescription: "Bans someone.",
 			ExampleArgs: plugin.ExampleArgs{
-				{Args: []string{"@Wumpus", "@Wumpus, using offensive language"}},
+				{Args: []string{"@Wumpus", "using offensive language"}},
 			},
 			Args: &arg.Config{
 				RequiredArgs: []arg.RequiredArg{
@@ -74,7 +74,7 @@ func New() *Ban {
 func (b *Ban) Invoke(s *state.State, ctx *plugin.Context) (interface{}, error) {
 	m := ctx.Args.Member(0)
 	if m.User.ID == ctx.Author.ID {
-		return nil, errors.NewUserError("Good try, but you can ban yourself.")
+		return nil, errors.NewUserError("Good try, but you can't ban yourself.")
 	}
 
 	banData := api.BanData{

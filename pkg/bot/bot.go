@@ -2,6 +2,7 @@
 package bot
 
 import (
+	"context"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -160,6 +161,20 @@ func (b *Bot) Open(timeout time.Duration) error {
 	}
 
 	return b.State.Open(timeout)
+}
+
+// Close closes all gateways handled by the bot.
+//
+// If an error occurs, Close will attempt to close all remaining gateways
+// first, before returning. If multiple errors occur during that process, a
+// MultiError will be returned.
+//
+// The passed context will only be checked while waiting for all event handlers
+// to finish.
+// Even if the context expires, Close guarantees that all gateways are closed,
+// except if errors occurred.
+func (b *Bot) Close(ctx context.Context) error {
+	return b.State.Close(ctx)
 }
 
 // AddIntents adds the passed gateway.Intents to the bot.

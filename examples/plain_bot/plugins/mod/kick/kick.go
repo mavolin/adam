@@ -28,7 +28,7 @@ func New() *Kick {
 			Name:             "kick",
 			ShortDescription: "Kicks a user.",
 			ExampleArgs: plugin.ExampleArgs{
-				{Args: []string{"@Clyde", "@Clyde, self-botting"}},
+				{Args: []string{"@Clyde", "self-botting"}},
 			},
 			Args: &arg.Config{
 				RequiredArgs: []arg.RequiredArg{

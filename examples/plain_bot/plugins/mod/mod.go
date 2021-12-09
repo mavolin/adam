@@ -13,7 +13,7 @@ func New() plugin.Module {
 	m := module.New(module.Meta{
 		Name:             "mod",
 		ShortDescription: "Moderate a server.",
-		LongDescription:  "The moderation module provides utilities for moderating your server easily.",
+		LongDescription:  "Provides utilities for moderating your server.",
 	})
 
 	m.AddCommand(ban.New())

@@ -67,4 +67,4 @@ type successPlaceholders struct {
 // Errors
 // =====================================================================================
 
-var selfBanError = i18n.NewFallbackConfig("plugin.mod.ban.error.self_ban", "Good try, but you can ban yourself.")
+var selfBanError = i18n.NewFallbackConfig("plugin.mod.ban.error.self_ban", "Good try, but you can't ban yourself.")
