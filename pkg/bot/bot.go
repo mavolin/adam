@@ -2,7 +2,6 @@
 package bot
 
 import (
-	"context"
 	"time"
 
 	"github.com/diamondburned/arikawa/v3/discord"
@@ -32,8 +31,6 @@ type Bot struct {
 	Owners []discord.UserID
 
 	EditAge time.Duration
-
-	autoOpen bool
 
 	ErrorHandler func(error, *state.State, *plugin.Context)
 
@@ -100,7 +97,6 @@ func New(o Options) (b *Bot, err error) {
 
 	b.Owners = o.Owners
 	b.EditAge = o.EditAge
-	b.autoOpen = !o.NoAutoOpen
 	b.ErrorHandler = o.ErrorHandler
 	b.PanicHandler = o.PanicHandler
 
@@ -129,9 +125,6 @@ func New(o Options) (b *Bot, err error) {
 }
 
 // Open opens a connection to the gateway and starts the bot.
-// If AutoOpen is enabled, Open will call the Open method of every command
-// and module that implements it first.
-// Open may take in an optional *Bot argument and may return an error.
 //
 // If no gateway.Intents were added to the State before opening, Open will
 // derive intents from the registered handlers.
@@ -154,20 +147,6 @@ func (b *Bot) Open(timeout time.Duration) error {
 		b.AddIntents(gateway.IntentGuilds)
 	}
 
-	if b.autoOpen {
-		for _, cmd := range b.pluginResolver.Commands {
-			if err := b.callOpen(cmd); err != nil {
-				return err
-			}
-		}
-
-		for _, mod := range b.pluginResolver.Modules {
-			if err := b.openModule(mod); err != nil {
-				return err
-			}
-		}
-	}
-
 	b.State.AddHandler(func(_ *state.State, e *event.MessageCreate) {
 		b.Route(e.Base, &e.Message, e.Member)
 	}, b.MessageCreateMiddlewares...)
@@ -181,111 +160,6 @@ func (b *Bot) Open(timeout time.Duration) error {
 	}
 
 	return b.State.Open(timeout)
-}
-
-func (b *Bot) openModule(mod plugin.Module) error {
-	for _, cmd := range mod.GetCommands() {
-		if err := b.callOpen(cmd); err != nil {
-			return err
-		}
-	}
-
-	for _, mod = range mod.GetModules() {
-		if err := b.openModule(mod); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// callOpen tries to call i.Open.
-// Open may have an optional *Bot argument and an optional error return.
-//
-// If none of i's methods match those parameters, the function is a no-op.
-//
-// An error will only be returned if i.Open returns it.
-func (b *Bot) callOpen(i interface{}) (err error) {
-	switch opener := i.(type) {
-	case interface{ Open() }:
-		opener.Open()
-	case interface{ Open(*Bot) }:
-		opener.Open(b)
-	case interface{ Open() error }:
-		err = opener.Open()
-	case interface{ Open(*Bot) error }:
-		err = opener.Open(b)
-	}
-
-	return err
-}
-
-// Close closes the websocket connection to Discord's gateway gracefully.
-// Afterwards, if AutoOpen is enabled, it calls Close on all commands.
-// Close may take in an optional *Bot argument, and may return an error.
-//
-// The context given to close is only used to close the event handler.
-// It is guaranteed that upon returning, all gateway connections are closed,
-// unless closing a gateway returned an error.
-func (b *Bot) Close(ctx context.Context) error {
-	if err := b.State.Close(ctx); err != nil {
-		return err
-	}
-
-	if !b.autoOpen {
-		return nil
-	}
-
-	for _, cmd := range b.pluginResolver.Commands {
-		if err := b.callClose(cmd); err != nil {
-			return err
-		}
-	}
-
-	for _, mod := range b.pluginResolver.Modules {
-		if err := b.closeModule(mod); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (b *Bot) closeModule(mod plugin.Module) error {
-	for _, cmd := range mod.GetCommands() {
-		if err := b.callClose(cmd); err != nil {
-			return err
-		}
-	}
-
-	for _, mod = range mod.GetModules() {
-		if err := b.closeModule(mod); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// callClose tries to call i.Close.
-// Close may have an optional *Bot argument and an optional error return.
-//
-// If none of i's methods match those parameters, the function is a no-op.
-//
-// An error will only be returned if i.Close returns it.
-func (b *Bot) callClose(i interface{}) (err error) {
-	switch closer := i.(type) {
-	case interface{ Close() }:
-		closer.Close()
-	case interface{ Close(*Bot) }:
-		closer.Close(b)
-	case interface{ Close() error }:
-		err = closer.Close()
-	case interface{ Close(*Bot) error }:
-		err = closer.Close(b)
-	}
-
-	return err
 }
 
 // AddIntents adds the passed gateway.Intents to the bot.

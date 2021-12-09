@@ -79,19 +79,6 @@ type Options struct {
 	// Default: false
 	AllowBot bool
 
-	// NoAutoOpen defines whether to call the Open and Close methods of plugins
-	// automatically when bot.Open() and bot.Close() is called.
-	// Both Open and Close may take in an optional *bot.Bot parameter, and may
-	// return an error.
-	//
-	// The call to Open will be made before the gateway is opened.
-	// It is therefore safe to add Ready handlers.
-	//
-	// The call to Close will be made after the event listener is Closed.
-	//
-	// Default: false
-	NoAutoOpen bool
-
 	// ThrottlerCancelChecker is the function run every time a command returns
 	// with a non-nil error.
 	// If the function returns true, the command's throttler will not count the
